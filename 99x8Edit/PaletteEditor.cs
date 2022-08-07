@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
+    // RGB888 Palette editor window
     public partial class PaletteEditor : Form
     {
         public PaletteEditor(int R, int G, int B)

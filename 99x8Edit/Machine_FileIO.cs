@@ -6,6 +6,7 @@ using System.Drawing;
 
 namespace _99x8Edit
 {
+    // Partial definition of Machine class, offers file access
     public partial class Machine
     {
         // Supported Export types

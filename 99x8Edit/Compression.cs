@@ -6,16 +6,11 @@ namespace _99x8Edit
 {
     public abstract class CompressionBase
     {
+        // Compression
         public abstract byte[] Compress(byte[] source); 
         public static CompressionBase CreateInstance()
         {
             // Select the compression type here
-            /*
-             *          CompressionBase(abstract)
-             *              ↑          ↑
-             *      CompressBPE         CompressRLE
-             *      Byte pair encode    Simple run length encode
-             */
             return new CompressBPE();
         }
     }

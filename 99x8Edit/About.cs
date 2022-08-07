@@ -11,8 +11,10 @@ namespace _99x8Edit
 {
     public partial class About : Form
     {
+        // Application information window
         public About()
         {
+            // Acquire version info from itself
             InitializeComponent();
             System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
             Version ver = asm.GetName().Version;

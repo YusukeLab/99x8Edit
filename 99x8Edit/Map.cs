@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
+    // Map editor window
     public partial class Map : Form
     {
         Machine dataSource;
@@ -182,7 +183,7 @@ namespace _99x8Edit
         // Controls
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
-            panelPCG.Focus();   // Catch key events at parent panel
+            panelPCG.Focus();   // Key events are handled by parent panel
             int clicked_pcg = (e.Y / 16) * 32 + e.X / 16;
             if (clicked_pcg != currentPCG)
             {
@@ -250,7 +251,7 @@ namespace _99x8Edit
         }
         private void viewPatterns_MouseDown(object sender, MouseEventArgs e)
         {
-            panelPatterns.Focus();  // Catch CTRL+C at the parent panel
+            panelPatterns.Focus();  // Key events are handled by parent panel
             // Tile pattern selected
             int selected_ptn_x = e.X / 32;
             int selected_ptn_y = e.Y / 32;
@@ -549,7 +550,7 @@ namespace _99x8Edit
         }
         private void Map_Activated(object sender, EventArgs e)
         {
-            // Refresh everything when form has been activated, since PCGs may be edited
+            // Refresh everything when form has been activated, since it may be edited
             this.RefreshAllViews();
         }
         public void ChangeOccuredByHost()
@@ -581,6 +582,7 @@ namespace _99x8Edit
                     this.paintMap(x + 1, y, val);
         }
     }
+    // For DnD actions
     class DnDMapPattern{ }
     class DnDMapPCG { }
 }

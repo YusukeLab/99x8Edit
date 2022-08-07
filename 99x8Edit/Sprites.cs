@@ -9,6 +9,7 @@ using System.IO;
 
 namespace _99x8Edit
 {
+    // Sprite editor window
     public partial class Sprites : Form
     {
         private Machine dataSource;
@@ -51,7 +52,7 @@ namespace _99x8Edit
             toolStripEditorDel.Click += new EventHandler(contextEditor_del);
         }
         //------------------------------------------------------------------------------
-        // Override
+        // Overrides
         protected override bool ProcessDialogKey(Keys keyData)
         {
             switch (keyData)
@@ -221,13 +222,13 @@ namespace _99x8Edit
             // 16x16 on TMS9918, 8x1 on V9938
             if(dataSource.IsTMS9918())
             {
-                // On TMS9918, there's no color selection by line
+                // On TMS9918, select all, since only one color can be applied
                 g.DrawRectangle(new Pen(Color.Red), 0, 0, 255, 255);
                 panelEditor.ContextMenuStrip = null;    // disable copy/paste by line
             }
             else
             {
-                // On V9938, one can select color by each line
+                // On V9938, each lines can be selected to the corresponding colors
                 g.DrawRectangle(new Pen(Color.Red), currentLineX * 128, currentLineY * 16, 127, 15);
                 panelEditor.ContextMenuStrip = contextEditor;
             }
@@ -319,7 +320,7 @@ namespace _99x8Edit
         }
         private void viewSprites_MouseClick(object sender, MouseEventArgs e)
         {
-            panelSprites.Focus();   // CTRL+C and other context menu is at parent panel
+            panelSprites.Focus();   // Key events are handled by parent panel
             // Sprite selected
             currentSpriteX = e.X / 32;
             currentSpriteY = e.Y / 32;
@@ -378,7 +379,7 @@ namespace _99x8Edit
         }
         private void viewSpriteEdit_MouseClick(object sender, MouseEventArgs e)
         {
-            panelEditor.Focus();    // Catch CTRL+C and others at parent panel
+            panelEditor.Focus();    // Key events are handled by parent panel
             int clicked_x = e.X / 128;
             int clicled_y = e.Y / 16;
             if(!dataSource.IsTMS9918())

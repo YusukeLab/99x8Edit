@@ -4,6 +4,7 @@ using System.Text;
 
 namespace _99x8Edit
 {
+    // Mementos for undo/redo actions
     class Memento
     {
         // [For editor] When other data source is needed, add here

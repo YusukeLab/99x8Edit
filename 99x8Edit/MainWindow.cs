@@ -11,6 +11,7 @@ using System.IO;
 
 namespace _99x8Edit 
 {
+    // Main window
     public partial class MainWindow : Form
     {
         private Machine dataSource;
@@ -78,6 +79,8 @@ namespace _99x8Edit
             // Open PCG editor as default
             PCGWin.Show();
         }
+        //----------------------------------------------------------------------
+        // Controls
         private void btnPCGWin_Click(object sender, EventArgs e)
         {
             if (PCGWin.IsDisposed)
@@ -135,12 +138,12 @@ namespace _99x8Edit
                 String target = this.SaveDialog(dir);
                 if (target != null)
                 {
-                    this.Save(target);      // Save and update current file
+                    this.SaveFile(target);      // Save and update current file
                 }
             }
             else
             {
-                this.Save(currentFile);
+                this.SaveFile(currentFile);
             }
         }
         private void contextSave_saveAs(object sender, EventArgs e)
@@ -153,7 +156,7 @@ namespace _99x8Edit
             String target = this.SaveDialog(dir);
             if(target != null)
             {
-                this.Save(target);
+                this.SaveFile(target);
             }
         }
         private void btnSavePCG_Click(object sender, EventArgs e)
@@ -164,52 +167,13 @@ namespace _99x8Edit
                 String target = this.SaveDialog(dir);
                 if (target != null)
                 {
-                    this.Save(target);      // Save and update current file
+                    this.SaveFile(target);      // Save and update current file
                 }
             }
             else
             {
-                this.Save(currentFile);
+                this.SaveFile(currentFile);
             }
-        }
-        private void Save(String path)
-        {
-            // Save and update current file path if OK
-            BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-            try
-            {
-                dataSource.SaveAllSettings(br);
-                currentFile = path;
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                currentFile = "";
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            finally
-            {
-                br.Close();
-            }
-        }
-        private String SaveDialog(String dir)
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.FileName = "";
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "VDP File(*.vdp)|*.vdp";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save settings";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                return dlg.FileName;
-            }
-            return null;
         }
         private void btnLoadPCG_Click(object sender, EventArgs e)
         {
@@ -228,34 +192,6 @@ namespace _99x8Edit
             {
                 this.LoadFile(dlg.FileName);
             }
-        }
-        private void LoadFile(String path)
-        {
-            BinaryReader br = new BinaryReader(new FileStream(path, FileMode.Open));
-            try
-            {
-                dataSource.LoadAllSettings(br);
-                currentFile = path;
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                currentFile = "";
-                PCGWin.CurrentFile = "";
-                spriteWin.CurrentFile = "";
-            }
-            finally
-            {
-                br.Close();
-            }
-            // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
-            // Clear mementos
-            MementoCaretaker.Instance.Clear();
         }
         private void btnPCGExport_Click(object sender, EventArgs e)
         {
@@ -413,6 +349,75 @@ namespace _99x8Edit
             }
             aboutWin = new About();
             aboutWin.Show();
+        }
+        //----------------------------------------------------------------------
+        // Utilities
+        private void SaveFile(String path)
+        {
+            // Save and update current file path if OK
+            BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
+            try
+            {
+                dataSource.SaveAllSettings(br);
+                currentFile = path;
+                PCGWin.CurrentFile = currentFile;
+                spriteWin.CurrentFile = currentFile;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                currentFile = "";
+                PCGWin.CurrentFile = currentFile;
+                spriteWin.CurrentFile = currentFile;
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private String SaveDialog(String dir)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.FileName = "";
+            dlg.InitialDirectory = dir;
+            dlg.Filter = "VDP File(*.vdp)|*.vdp";
+            dlg.FilterIndex = 1;
+            dlg.Title = "Save settings";
+            dlg.RestoreDirectory = true;
+            dlg.OverwritePrompt = true;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                return dlg.FileName;
+            }
+            return null;
+        }
+        private void LoadFile(String path)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(path, FileMode.Open));
+            try
+            {
+                dataSource.LoadAllSettings(br);
+                currentFile = path;
+                PCGWin.CurrentFile = currentFile;
+                spriteWin.CurrentFile = currentFile;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                currentFile = "";
+                PCGWin.CurrentFile = "";
+                spriteWin.CurrentFile = "";
+            }
+            finally
+            {
+                br.Close();
+            }
+            // Update UI
+            PCGWin.ChangeOccuredByHost();
+            mapWin.ChangeOccuredByHost();
+            spriteWin.ChangeOccuredByHost();
+            // Clear mementos
+            MementoCaretaker.Instance.Clear();
         }
     }
 }

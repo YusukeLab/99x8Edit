@@ -5,7 +5,8 @@ using System.Drawing;
 
 namespace _99x8Edit
 {
-    public partial class Machine    // Wrap all VDP related data
+    // All VDP related data will be wrapped here
+    public partial class Machine
     {
         // Data, of PCG
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table

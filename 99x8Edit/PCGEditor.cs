@@ -9,6 +9,7 @@ using System.IO;
 
 namespace _99x8Edit
 {
+    // PCG editor window
     public partial class PCGEditor : Form
     {
         Machine dataSource;
@@ -227,6 +228,7 @@ namespace _99x8Edit
         }
         private int viewColorL_ColorSelectionCallback(int val)
         {
+            // This should be callbacked from color selection window
             int current_target_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, true);
             this.UpdateCurrentColorView();          // Update view of current color
@@ -244,6 +246,7 @@ namespace _99x8Edit
         }
         private int viewColorR_ColorSelectionCallback(int val)
         {
+            // This should be callbacked from color selection window
             int current_target_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, false);
             this.UpdateCurrentColorView();  // Update view of current color
@@ -270,7 +273,7 @@ namespace _99x8Edit
         private void viewPCGEdit_MouseClick(object sender, MouseEventArgs e)
         {
             // PCG editor is clicked
-            panelEditor.Focus();    // To catch CTRL+C and others in parent panel
+            panelEditor.Focus();    // Key events are handled by parent panel
             int clicked_line_x = e.X / 128;
             int clicked_line_y = e.Y / 16;
             if ((currentLineX != clicked_line_x) || (currentLineY != clicked_line_y))
@@ -365,7 +368,7 @@ namespace _99x8Edit
         }
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
-            panelPCG.Focus();   // Need this to catch CTRL+C and others
+            panelPCG.Focus();   // Key events are handled by parent panel
             int clicked_pcg = (e.Y / 16) * 32 + e.X / 16;
             if (clicked_pcg != currentPCG)
             {

@@ -9,6 +9,7 @@ using System.IO;
 
 namespace _99x8Edit
 {
+    // Binary file viewer window
     public partial class Peek : Form
     {
         private BinaryReader reader = null;
@@ -22,6 +23,8 @@ namespace _99x8Edit
             Sprite,
         }
         private PeekType type = PeekType.Linear;
+        //----------------------------------------------------------------------
+        // Initialize
         public Peek(String filename)
         {
             InitializeComponent();
@@ -31,6 +34,13 @@ namespace _99x8Edit
             toolStripCopy.Click += new EventHandler(contextPeek_copy);
             RefreshAllViews();
         }
+        private void Peek_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            reader.Close();
+            reader = null;
+        }
+        //----------------------------------------------------------------------
+        // Overrides
         protected override bool ProcessDialogKey(Keys keyData)
         {
             switch (keyData)
@@ -45,11 +55,6 @@ namespace _99x8Edit
                     return base.ProcessDialogKey(keyData);
             }
             return true;
-        }
-        private void Peek_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            reader.Close();
-            reader = null;
         }
         //----------------------------------------------------------------------
         // Refreshing views
@@ -99,7 +104,7 @@ namespace _99x8Edit
         // Controls
         private void viewPeek_MouseDown(object sender, MouseEventArgs e)
         {
-            panelPeek.Focus();  // Catch key events at parent panel
+            panelPeek.Focus();  // Key events are handled by parent panel
             currentCol = e.X / 16;
             if (currentCol >= 31) currentCol = 30;
             currentRow = e.Y / 16;

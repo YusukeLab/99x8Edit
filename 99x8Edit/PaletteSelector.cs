@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
+    // Color selection window
     public partial class PaletteSelector : Form
     {
         private Func<int, int> functionColorSelected;
@@ -24,7 +25,7 @@ namespace _99x8Edit
         private void pictureBox_Click(object sender, MouseEventArgs e)
         {
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-            functionColorSelected(clicked_color_num);
+            functionColorSelected(clicked_color_num);   // Callback
             this.Dispose();
         }
     }

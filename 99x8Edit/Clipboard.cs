@@ -4,10 +4,9 @@ using System.Text;
 
 namespace _99x8Edit
 {
-    //----------------------------------------------------------------------
-    // For internal copy paste actions
     public class Clipboard
     {
+        // Classes for internal copy and paste actions
         private static Clipboard _singleInstance = new Clipboard();
         private ClipBase copiedObj = null;
         public static Clipboard Instance

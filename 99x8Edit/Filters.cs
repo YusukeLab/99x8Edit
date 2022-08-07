@@ -7,12 +7,14 @@ using System.IO;
 
 namespace _99x8Edit
 {
+    // Image effects
     public abstract class FilterBase
     {
         public abstract void Process(Bitmap src);
     }
     public class FilterCRT : FilterBase
     {
+        // Emulation of CRT display
         public override void Process(Bitmap src)
         {
             // Lock the bitmap and see in the array
@@ -37,10 +39,19 @@ namespace _99x8Edit
                 int t = y * stride;
                 for (int x = 0; x < stride; x += ch_num)
                 {
+                    // Darkened line will be enlighted by upper and lower lines
                     adst[t + x + 0] = (byte)(asrc[t + x + 0 - stride] >> 3 + asrc[t + x + 0 + stride] >> 3);
                     adst[t + x + 1] = (byte)(asrc[t + x + 1 - stride] >> 3 + asrc[t + x + 1 + stride] >> 3);
                     adst[t + x + 2] = (byte)(asrc[t + x + 2 - stride] >> 3 + asrc[t + x + 2 + stride] >> 3);
                 }
+            }
+            int last_line = (bd.Height - 1) * stride;
+            for (int x = 0; x < stride; x += ch_num)
+            {
+                // Last line
+                adst[last_line + x + 0] = (byte)(asrc[last_line + x + 0 - stride] >> 3);
+                adst[last_line + x + 1] = (byte)(asrc[last_line + x + 1 - stride] >> 3);
+                adst[last_line + x + 2] = (byte)(asrc[last_line + x + 2 - stride] >> 3);
             }
             // Write back into the bitmap
             System.Runtime.InteropServices.Marshal.Copy(adst, 0, bd.Scan0, adst.Length);
