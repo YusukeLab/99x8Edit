@@ -47,7 +47,14 @@ namespace _99x8Edit
             dataSource = new Machine();
             dataSource.Initialize();
             Stream s = new MemoryStream(Properties.Resources._default);
-            dataSource.LoadAllSettings(new BinaryReader(s));
+            try
+            {
+                dataSource.LoadAllSettings(new BinaryReader(s));    // Init by resource
+            }
+            finally
+            {
+                s.Close();
+            }
             // Undo/Redo            
             MementoCaretaker.Instance.Initialize(this, dataSource);
             // Export menu
@@ -60,6 +67,15 @@ namespace _99x8Edit
             PCGWin = new PCGEditor(dataSource);
             mapWin = new Map(dataSource);
             spriteWin = new Sprites(dataSource);
+            // Check drag and drop of files
+            String[] args = System.Environment.GetCommandLineArgs();
+            if (args.Length > 1)
+            {
+                // See the last args since many files may have been dropped
+                String dnd_path = args[args.Length - 1];
+                this.LoadFile(dnd_path);
+            }
+            // Open PCG editor as default
             PCGWin.Show();
         }
         private void btnPCGWin_Click(object sender, EventArgs e)
@@ -210,32 +226,36 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
-                try
-                {
-                    dataSource.LoadAllSettings(br);
-                    currentFile = dlg.FileName;
-                    PCGWin.CurrentFile = currentFile;
-                    spriteWin.CurrentFile = currentFile;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    currentFile = "";
-                    PCGWin.CurrentFile = currentFile;
-                    spriteWin.CurrentFile = currentFile;
-                }
-                finally
-                {
-                    br.Close();
-                }
-                // Update UI
-                PCGWin.ChangeOccuredByHost();
-                mapWin.ChangeOccuredByHost();
-                spriteWin.ChangeOccuredByHost();
-                // Clear mementos
-                MementoCaretaker.Instance.Clear();
+                this.LoadFile(dlg.FileName);
             }
+        }
+        private void LoadFile(String path)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(path, FileMode.Open));
+            try
+            {
+                dataSource.LoadAllSettings(br);
+                currentFile = path;
+                PCGWin.CurrentFile = currentFile;
+                spriteWin.CurrentFile = currentFile;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                currentFile = "";
+                PCGWin.CurrentFile = "";
+                spriteWin.CurrentFile = "";
+            }
+            finally
+            {
+                br.Close();
+            }
+            // Update UI
+            PCGWin.ChangeOccuredByHost();
+            mapWin.ChangeOccuredByHost();
+            spriteWin.ChangeOccuredByHost();
+            // Clear mementos
+            MementoCaretaker.Instance.Clear();
         }
         private void btnPCGExport_Click(object sender, EventArgs e)
         {

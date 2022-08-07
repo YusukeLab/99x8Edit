@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>_99x8Edit</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>0.0.1.2</Version>
+    <Version>0.0.1.3</Version>
     <Authors>Yusuke Miyauchi</Authors>
     <Company />
   </PropertyGroup>
