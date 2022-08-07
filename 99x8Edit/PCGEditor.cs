@@ -29,20 +29,37 @@ namespace _99x8Edit
             }
         }
         //------------------------------------------------------------------------------
+        // Override
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                // prevent focus movement by the cursor
+                case Keys.Down:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Left:
+                    break;
+                default:
+                    return base.ProcessDialogKey(keyData);
+            }
+            return true;
+        }
+        //------------------------------------------------------------------------------
         // Initialize
         public PCGEditor(Machine dataSource)
         {
             InitializeComponent();
             // Set corresponding data
             this.dataSource = dataSource;
-            // Refresh all views
-            this.RefreshAllViews();
             // Initialize controls
             this.viewPalette.Image = bmpPalette;
             this.viewPCG.Image = bmpPCGList;
             this.viewSandbox.Image = bmpSandbox;
             this.viewPCGEdit.Image = bmpPCGEdit;
             checkTMS.Checked = this.dataSource.IsTMS9918();
+            // Refresh all views
+            this.RefreshAllViews();
             // Context menu
             toolStripPCGCopy.Click += new EventHandler(contextPCGList_MouseClick_copy);
             toolStripPCGPaste.Click += new EventHandler(contextPCGList_MouseClick_paste);
@@ -75,7 +92,7 @@ namespace _99x8Edit
             this.btnOpenPalette.Enabled = !dataSource.IsTMS9918();
             this.btnSavePalette.Enabled = !dataSource.IsTMS9918();
         }
-        private void UpdatePaletteView()
+        private void UpdatePaletteView(bool refresh = true)
         {
             // Update palette view
             Graphics g = Graphics.FromImage(bmpPalette);
@@ -84,9 +101,9 @@ namespace _99x8Edit
                 Color c = dataSource.ColorCodeToWindowsColor(i);
                 g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
             }
-            this.viewPalette.Refresh();
+            if(refresh) this.viewPalette.Refresh();
         }
-        private void UpdatePCGEditView()
+        private void UpdatePCGEditView(bool refresh = true)
         {
             // Update PCG editor
             Graphics g = Graphics.FromImage(bmpPCGEdit);
@@ -104,9 +121,9 @@ namespace _99x8Edit
                 }
             }
             g.DrawRectangle(new Pen(Color.Red), currentLineX * 128, currentLineY * 16, 127, 15);
-            this.viewPCGEdit.Refresh();
+            if(refresh) this.viewPCGEdit.Refresh();
         }
-        private void UpdateCurrentColorView()
+        private void UpdateCurrentColorView(bool refresh = true)
         {
             // Update current color
             int current_target_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
@@ -114,28 +131,32 @@ namespace _99x8Edit
             int color_code_r = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
             viewColorL.BackColor = dataSource.ColorCodeToWindowsColor(color_code_l);
             viewColorR.BackColor = dataSource.ColorCodeToWindowsColor(color_code_r);
-            this.viewColorL.Refresh();
-            this.viewColorR.Refresh();
+            if(refresh) this.viewColorL.Refresh();
+            if(refresh) this.viewColorR.Refresh();
         }
-        private void UpdatePCGList()
+        private void UpdatePCGList(bool refresh = true)
         {
             // Update all PCG list
-            for (int i = 0; i < 256; ++i)
-            {
-                this.UpdatePCGList(i);
-            }
-        }
-        private void UpdatePCGList(int pcg)
-        {
-            // Update one PCG of PCG list
             Graphics g = Graphics.FromImage(bmpPCGList);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.DrawImage(dataSource.GetBitmapOfPCG(pcg), (pcg % 32) * 16, (pcg / 32) * 16, 17, 17);
-            if (pcg == currentPCG)
-                g.DrawRectangle(new Pen(Color.Red), (pcg % 32) * 16, (pcg / 32) * 16, 15, 15);
-            this.viewPCG.Refresh();
+            for (int i = 0; i < 256; ++i)
+            {
+                g.DrawImage(dataSource.GetBitmapOfPCG(i), (i % 32) * 16, (i / 32) * 16, 17, 17);
+            }
+            if (refresh)
+            {
+                if (chkCRT.Checked)
+                {
+                    // CRT Filter
+                    FilterCRT f = new FilterCRT();
+                    f.Process(bmpPCGList);
+                }
+                // Current selection
+                g.DrawRectangle(new Pen(Color.Red), (currentPCG % 32) * 16, (currentPCG / 32) * 16, 15, 15);
+                this.viewPCG.Refresh();
+            }
         }
-        private void UpdateSandbox()
+        private void UpdateSandbox(bool refresh = true)
         {
             // Update all sandbox
             Graphics g = Graphics.FromImage(bmpSandbox);
@@ -144,27 +165,19 @@ namespace _99x8Edit
             {
                 int ptn = dataSource.GetNameTable(i);
                 g.DrawImage(dataSource.GetBitmapOfPCG(ptn), (i % 32) * 16, (i / 32) * 16, 17, 17);
-                if (i == currentSandbox)
-                    g.DrawRectangle(new Pen(Color.Red), (i % 32) * 16, (i / 32) * 16, 15, 15);
             }
-            this.viewSandbox.Refresh();
-        }
-        private void UpdateSandbox(int pcg)
-        {
-            // Update sandbox by updated PCG
-            Graphics g = Graphics.FromImage(bmpSandbox);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            for (int i = 0; i < 768; ++i)
+            if (refresh)
             {
-                int ptn = dataSource.GetNameTable(i);
-                if (ptn == pcg)
+                if (chkCRT.Checked)
                 {
-                    g.DrawImage(dataSource.GetBitmapOfPCG(ptn), (i % 32) * 16, (i / 32) * 16, 17, 17);
-                    if (i == currentSandbox)
-                        g.DrawRectangle(new Pen(Color.Red), (i % 32) * 16, (i / 32) * 16, 15, 15);
+                    // CRT Filter
+                    FilterCRT f = new FilterCRT();
+                    f.Process(bmpSandbox);
                 }
+                // Current selection
+                g.DrawRectangle(new Pen(Color.Red), (currentSandbox % 32) * 16, (currentSandbox / 32) * 16, 15, 15);
+                this.viewSandbox.Refresh();
             }
-            this.viewSandbox.Refresh();
         }
         //-----------------------------------------------------------------------------
         // Controls
@@ -184,10 +197,10 @@ namespace _99x8Edit
                 // Background color has changed
                 dataSource.SetColorTable(current_target_pcg, currentLineY % 8, clicked_color_num, false);
             }
-            this.UpdateCurrentColorView();          // Update view of current color
-            this.UpdatePCGEditView();               // PCG Editor view changes also
-            this.UpdatePCGList(current_target_pcg); // PCG list view changes also
-            this.UpdateSandbox(current_target_pcg); // Update sandbox view
+            this.UpdateCurrentColorView();  // Update view of current color
+            this.UpdatePCGEditView();       // PCG Editor view changes also
+            this.UpdatePCGList();           // PCG list view changes also
+            this.UpdateSandbox();           // Update sandbox view
         }
         private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -218,8 +231,8 @@ namespace _99x8Edit
             dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, true);
             this.UpdateCurrentColorView();          // Update view of current color
             this.UpdatePCGEditView();               // PCG Editor view changes also
-            this.UpdatePCGList(current_target_pcg); // PCG list view changes also
-            this.UpdateSandbox(current_target_pcg); // Update sandbox view
+            this.UpdatePCGList();                   // PCG list view changes also
+            this.UpdateSandbox();                   // Update sandbox view
             return 0;
         }
         private void viewColorR_Click(object sender, EventArgs e)
@@ -233,13 +246,13 @@ namespace _99x8Edit
         {
             int current_target_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, false);
-            this.UpdateCurrentColorView();          // Update view of current color
-            this.UpdatePCGEditView();               // PCG Editor view changes also
-            this.UpdatePCGList(current_target_pcg); // PCG list view changes also
-            this.UpdateSandbox(current_target_pcg); // Update sandbox view
+            this.UpdateCurrentColorView();  // Update view of current color
+            this.UpdatePCGEditView();       // PCG Editor view changes also
+            this.UpdatePCGList();           // PCG list view changes also
+            this.UpdateSandbox();           // Update sandbox view
             return 0;
         }
-        private void checkTMS_CheckedChanged(object sender, EventArgs e)
+        private void checkTMS_Click(object sender, EventArgs e)
         {
             if (this.checkTMS.Checked && !dataSource.IsTMS9918())
             {
@@ -284,9 +297,49 @@ namespace _99x8Edit
                 {
                     dataSource.SetPCGPixel(current_target_pcg, y, x, 0);
                 }
-                this.UpdatePCGEditView();               // PCG Editor view changes
-                this.UpdatePCGList(current_target_pcg); // PCG list view changes also
-                this.UpdateSandbox(current_target_pcg); // Update sandbox view
+                this.UpdatePCGEditView();   // PCG Editor view changes
+                this.UpdatePCGList();       // PCG list view changes also
+                this.UpdateSandbox();       // Update sandbox view
+            }
+        }
+        private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            bool update = false;
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    if (currentLineY > 0)
+                    {
+                        currentLineY--;
+                        update = true;
+                    }
+                    break;
+                case Keys.Left:
+                    if (currentLineX > 0)
+                    {
+                        currentLineX--;
+                        update = true;
+                    }
+                    break;
+                case Keys.Right:
+                    if (currentLineX < 1)
+                    {
+                        currentLineX++;
+                        update = true;
+                    }
+                    break;
+                case Keys.Down:
+                    if (currentLineY < 15)
+                    {
+                        currentLineY++;
+                        update = true;
+                    }
+                    break;
+            }
+            if(update)
+            {
+                this.UpdatePCGEditView();               // Update editor view
+                this.UpdateCurrentColorView();          // Update view of current color
             }
         }
         private void contextEditor_MouseClick_copy(object sender, EventArgs e)
@@ -298,17 +351,17 @@ namespace _99x8Edit
         {
             int dst_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.PastePCGLineFromClip(dst_pcg, currentLineY % 8);
-            this.UpdatePCGEditView();               // PCG Editor view changes
-            this.UpdatePCGList(dst_pcg); // PCG list view changes also
-            this.UpdateSandbox(dst_pcg); // Update sandbox view
+            this.UpdatePCGEditView();   // PCG Editor view changes
+            this.UpdatePCGList();       // PCG list view changes also
+            this.UpdateSandbox();       // Update sandbox view
         }
         private void contextEditor_MouseClick_delete(object sender, EventArgs e)
         {
             int dst_pcg = (currentPCG + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.ClearPCGLine(dst_pcg, currentLineY % 8);
-            this.UpdatePCGEditView();               // PCG Editor view changes
-            this.UpdatePCGList(dst_pcg); // PCG list view changes also
-            this.UpdateSandbox(dst_pcg); // Update sandbox view
+            this.UpdatePCGEditView();   // PCG Editor view changes
+            this.UpdatePCGList();       // PCG list view changes also
+            this.UpdateSandbox();       // Update sandbox view
         }
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
@@ -319,14 +372,59 @@ namespace _99x8Edit
                 // Selected PCG has changed
                 int previous_pcg = currentPCG;
                 currentPCG = clicked_pcg;
-                this.UpdatePCGList(previous_pcg);   // Erase previous selection
-                this.UpdatePCGList(currentPCG);     // Redraw current selection
-                this.UpdatePCGEditView();           // Update editor view
-                this.UpdateCurrentColorView();      // Update view of current color
+                this.UpdatePCGList();
+                this.UpdatePCGEditView();
+                this.UpdateCurrentColorView();
             }
             if (e.Button == MouseButtons.Left)
             {
                 viewPCG.DoDragDrop(new DnDPCG(), DragDropEffects.Copy);
+            }
+        }
+        private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            bool update = false;
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    if (currentPCG > 32)
+                    {
+                        currentPCG -= 32;
+                        update = true;
+                    }
+                    break;
+                case Keys.Left:
+                    if (currentPCG % 32 > 0)
+                    {
+                        currentPCG--;
+                        update = true;
+                    }
+                    break;
+                case Keys.Right:
+                    if (currentPCG % 32 < 31)
+                    {
+                        currentPCG++;
+                        update = true;
+                    }
+                    break;
+                case Keys.Down:
+                    if (currentPCG < 224)
+                    {
+                        currentPCG += 32;
+                        update = true;
+                    }
+                    break;
+                case Keys.Enter:
+                    dataSource.SetNameTable(currentSandbox, currentPCG);
+                    currentSandbox = (currentSandbox + 1) % 768;
+                    this.UpdateSandbox();
+                    break;
+            }
+            if(update)
+            {
+                this.UpdatePCGList();
+                this.UpdatePCGEditView();
+                this.UpdateCurrentColorView();
             }
         }
         private void panelPCG_DragEnter(object sender, DragEventArgs e)
@@ -371,6 +469,45 @@ namespace _99x8Edit
                 this.UpdateSandbox();
             }
         }
+        private void panelSandbox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    if (currentSandbox > 0)
+                    {
+                        currentSandbox -= 32;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Left:
+                    if (currentSandbox % 32 > 0)
+                    {
+                        currentSandbox--;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Right:
+                    if (currentSandbox % 32 < 31)
+                    {
+                        currentSandbox++;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Down:
+                    if (currentSandbox < 736)
+                    {
+                        currentSandbox += 32;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Enter:
+                    dataSource.SetNameTable(currentSandbox, currentPCG);
+                    currentSandbox = (currentSandbox + 1) % 768;
+                    this.UpdateSandbox();
+                    break;
+            }
+        }
         private void contextSandbox_MouseClick_copy(object sender, EventArgs e)
         {
             ClipOneChrOfNametable clip = new ClipOneChrOfNametable();
@@ -386,6 +523,12 @@ namespace _99x8Edit
                 dataSource.SetNameTable(currentSandbox, pcgIndex);
                 this.UpdateSandbox();
             }
+            else if(clip is ClipOnePCG)
+            {
+                int pcgIndex = clip.index;
+                dataSource.SetNameTable(currentSandbox, pcgIndex);
+                this.UpdateSandbox();
+            }
         }
         private void contextSandbox_MouseClick_delete(object sender, EventArgs e)
         {
@@ -394,6 +537,7 @@ namespace _99x8Edit
         }
         private void contextSandbox_MouseClick_paint(object sender, EventArgs e)
         {
+            MementoCaretaker.Instance.Push();   // For undo action
             this.paintSandbox(currentSandbox % 32, currentSandbox / 32, currentPCG);
             this.UpdateSandbox();
         }
@@ -484,12 +628,17 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
+        private void chkCRT_CheckedChanged(object sender, EventArgs e)
+        {
+            this.RefreshAllViews();
+        }
         //---------------------------------------------------------------------
         // Utility
         private void paintSandbox(int x, int y, int val)
         {
             int pcg_to_paint = dataSource.GetNameTable(y * 32 + x);
-            dataSource.SetNameTable(y * 32 + x, val);
+            if (pcg_to_paint == val) return;
+            dataSource.SetNameTable(y * 32 + x, val, false);
             if (y > 0)
                 if (dataSource.GetNameTable((y - 1) * 32 + x) == pcg_to_paint)
                     this.paintSandbox(x, y - 1, val);

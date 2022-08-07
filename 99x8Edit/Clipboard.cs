@@ -4,7 +4,9 @@ using System.Text;
 
 namespace _99x8Edit
 {
-    class Clipboard
+    //----------------------------------------------------------------------
+    // For internal copy paste actions
+    public class Clipboard
     {
         private static Clipboard _singleInstance = new Clipboard();
         private ClipBase copiedObj = null;
@@ -27,32 +29,34 @@ namespace _99x8Edit
             }
         }
     }
-    abstract class ClipBase
+    public abstract class ClipBase
     {
     }
-    class ClipPCGLine : ClipBase
+    public class ClipPCGLine : ClipBase
     {
         public byte genData;
         public byte clrData;
     }
-    class ClipOnePCG : ClipBase
+    public class ClipOnePCG : ClipBase
     {
+        public byte index;
         public byte[] genData = new byte[8];
         public byte[] clrData = new byte[8];
     }
-    class ClipOneChrOfNametable : ClipBase
+    public class ClipOneChrOfNametable : ClipBase
     {
         public int pcgIndex;
     }
-    class ClipOneMapPattern : ClipBase
+    public class ClipOneMapPattern : ClipBase
     {
+        public byte index;
         public byte[] pattern = new byte[4];
     }
-    class ClipMapCell : ClipBase
+    public class ClipMapCell : ClipBase
     {
         public int dat;
     }
-    class Clip16x16Sprite : ClipBase
+    public class Clip16x16Sprite : ClipBase
     {
         public byte[] genData = new byte[32];   // 16x16 sprite
         public byte[] clr2Data = new byte[32];
@@ -62,7 +66,7 @@ namespace _99x8Edit
         public byte[] clr2Data_ov = new byte[32];
         public byte clr_ov = 0;
     }
-    class ClipOneSpriteLine : ClipBase
+    public class ClipOneSpriteLine : ClipBase
     {
         public byte genData = 0;
         public byte clrData = 0;
@@ -70,8 +74,11 @@ namespace _99x8Edit
         public byte genData2 = 0;
         public byte clrData2 = 0;
     }
-
-
-
-
+    public class ClipOneChrInRom : ClipBase
+    {
+        public byte[] leftTop = new byte[8];
+        public byte[] leftBottom = new byte[8];
+        public byte[] rightTop = new byte[8];
+        public byte[] rightBottom = new byte[8];
+    }
 }

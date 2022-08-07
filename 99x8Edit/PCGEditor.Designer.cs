@@ -66,6 +66,7 @@ namespace _99x8Edit
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.panelEditor = new System.Windows.Forms.FlowLayoutPanel();
+            this.chkCRT = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).BeginInit();
             this.contextPCGList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
@@ -83,6 +84,7 @@ namespace _99x8Edit
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label1.Location = new System.Drawing.Point(13, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 20);
@@ -103,6 +105,7 @@ namespace _99x8Edit
             // 
             this.label2.AutoSize = true;
             this.label2.ContextMenuStrip = this.contextPCGList;
+            this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(301, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 20);
@@ -149,6 +152,7 @@ namespace _99x8Edit
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(13, 301);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 20);
@@ -178,6 +182,7 @@ namespace _99x8Edit
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label4.Location = new System.Drawing.Point(13, 489);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 20);
@@ -199,9 +204,9 @@ namespace _99x8Edit
             // 
             this.btnOpenPalette.BackColor = System.Drawing.Color.White;
             this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(209, 484);
+            this.btnOpenPalette.Location = new System.Drawing.Point(208, 484);
             this.btnOpenPalette.Name = "btnOpenPalette";
             this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
             this.btnOpenPalette.TabIndex = 14;
@@ -214,19 +219,20 @@ namespace _99x8Edit
             this.checkTMS.AutoSize = true;
             this.checkTMS.Checked = true;
             this.checkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.checkTMS.Location = new System.Drawing.Point(109, 489);
             this.checkTMS.Name = "checkTMS";
             this.checkTMS.Size = new System.Drawing.Size(92, 24);
             this.checkTMS.TabIndex = 15;
             this.checkTMS.Text = "TMS9918";
             this.checkTMS.UseVisualStyleBackColor = true;
-            this.checkTMS.CheckedChanged += new System.EventHandler(this.checkTMS_CheckedChanged);
+            this.checkTMS.Click += new System.EventHandler(this.checkTMS_Click);
             // 
             // btnSavePalette
             // 
             this.btnSavePalette.BackColor = System.Drawing.Color.White;
             this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
-            this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnSavePalette.Enabled = false;
             this.btnSavePalette.Location = new System.Drawing.Point(239, 484);
             this.btnSavePalette.Name = "btnSavePalette";
@@ -239,7 +245,7 @@ namespace _99x8Edit
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label5.Location = new System.Drawing.Point(24, 361);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 15);
@@ -249,7 +255,7 @@ namespace _99x8Edit
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label6.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label6.Location = new System.Drawing.Point(52, 361);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(13, 15);
@@ -259,6 +265,7 @@ namespace _99x8Edit
             // label7
             // 
             this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label7.Location = new System.Drawing.Point(301, 173);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(67, 20);
@@ -287,6 +294,7 @@ namespace _99x8Edit
             this.panelPCG.TabStop = true;
             this.panelPCG.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPCG_DragDrop);
             this.panelPCG.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPCG_DragEnter);
+            this.panelPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPCG_PreviewKeyDown);
             // 
             // viewPCG
             // 
@@ -307,39 +315,39 @@ namespace _99x8Edit
             this.toolStripSandboxDel,
             this.toolStripSandboxPaint});
             this.contextSandbox.Name = "contextPCGList";
-            this.contextSandbox.Size = new System.Drawing.Size(212, 106);
+            this.contextSandbox.Size = new System.Drawing.Size(176, 106);
             // 
             // toolStripSandboxCopy
             // 
             this.toolStripSandboxCopy.Name = "toolStripSandboxCopy";
             this.toolStripSandboxCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripSandboxCopy.Size = new System.Drawing.Size(211, 24);
+            this.toolStripSandboxCopy.Size = new System.Drawing.Size(175, 24);
             this.toolStripSandboxCopy.Text = "Copy";
             // 
             // toolStripSandboxPaste
             // 
             this.toolStripSandboxPaste.Name = "toolStripSandboxPaste";
             this.toolStripSandboxPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripSandboxPaste.Size = new System.Drawing.Size(211, 24);
+            this.toolStripSandboxPaste.Size = new System.Drawing.Size(175, 24);
             this.toolStripSandboxPaste.Text = "Paste";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
             // 
             // toolStripSandboxDel
             // 
             this.toolStripSandboxDel.Name = "toolStripSandboxDel";
             this.toolStripSandboxDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripSandboxDel.Size = new System.Drawing.Size(211, 24);
+            this.toolStripSandboxDel.Size = new System.Drawing.Size(175, 24);
             this.toolStripSandboxDel.Text = "Delete";
             // 
             // toolStripSandboxPaint
             // 
             this.toolStripSandboxPaint.Name = "toolStripSandboxPaint";
-            this.toolStripSandboxPaint.Size = new System.Drawing.Size(211, 24);
-            this.toolStripSandboxPaint.Text = "toolStripMenuItem1";
+            this.toolStripSandboxPaint.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSandboxPaint.Text = "Paint";
             // 
             // panelSandbox
             // 
@@ -352,6 +360,7 @@ namespace _99x8Edit
             this.panelSandbox.TabIndex = 24;
             this.panelSandbox.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragDrop);
             this.panelSandbox.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragEnter);
+            this.panelSandbox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSandbox_PreviewKeyDown);
             // 
             // contextEditor
             // 
@@ -398,12 +407,25 @@ namespace _99x8Edit
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(267, 264);
             this.panelEditor.TabIndex = 26;
+            this.panelEditor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelEditor_PreviewKeyDown);
+            // 
+            // chkCRT
+            // 
+            this.chkCRT.AutoSize = true;
+            this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.chkCRT.Location = new System.Drawing.Point(723, 5);
+            this.chkCRT.Name = "chkCRT";
+            this.chkCRT.Size = new System.Drawing.Size(94, 24);
+            this.chkCRT.TabIndex = 27;
+            this.chkCRT.Text = "CRT Filter";
+            this.chkCRT.UseVisualStyleBackColor = true;
+            this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
             // 
             // PCGEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 598);
+            this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
             this.Controls.Add(this.panelSandbox);
             this.Controls.Add(this.panelPCG);
@@ -420,6 +442,7 @@ namespace _99x8Edit
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -484,5 +507,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
         private System.Windows.Forms.FlowLayoutPanel panelEditor;
+        private System.Windows.Forms.CheckBox chkCRT;
     }
 }

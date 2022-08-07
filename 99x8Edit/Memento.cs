@@ -42,7 +42,7 @@ namespace _99x8Edit
                 m.vdpData = vdpData.CreateCopy();
             }
             mementoList.Add(m);
-            if(mementoList.Count > 32)
+            if(mementoList.Count > 256)
             {
                 mementoList.RemoveAt(0);
             }

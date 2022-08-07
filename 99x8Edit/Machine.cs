@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace _99x8Edit
 {
-    public partial class Machine
+    public partial class Machine    // Wrap all VDP related data
     {
         // Data, of PCG
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
@@ -129,7 +129,7 @@ namespace _99x8Edit
             spriteClr1 = m.spriteClr1.Clone() as byte[];
             spriteClr2 = m.spriteClr2.Clone() as byte[];
             spriteOverlay = m.spriteOverlay.Clone() as byte[];
-            this.UpdateAllBitmaps();
+            this.UpdateAllViewItems();  // Update bitmaps
         }
         //--------------------------------------------------------------------
         // Palette methods
@@ -137,32 +137,15 @@ namespace _99x8Edit
         {
             // Set the windows color to palette based on TMS9918
             MementoCaretaker.Instance.Push();
-            for (int i = 0; i < 16; ++i)
-            {
-                int R = palette9918[i] >> 16;
-                int G = (palette9918[i] & 0xffff) >> 8;
-                int B = palette9918[i] & 0xff;
-                colorOf[i] = Color.FromArgb(R, G, B);
-            }
             isTMS9918 = true;
-            this.UpdateAllBitmaps();
+            this.UpdateAllViewItems();  // Update bitmaps
         }
         public void SetPaletteToV9938()
         {
             // Set the windows color to palette based on internal palette data
             MementoCaretaker.Instance.Push();
-            for (int i = 0; i < 16; ++i)
-            {
-                int R = (pltDat[i * 2] >> 4);
-                int G = (pltDat[i * 2 + 1]);
-                int B = (pltDat[i * 2] & 0x0F);
-                R = (R * 255) / 7;
-                G = (G * 255) / 7;
-                B = (B * 255) / 7;
-                colorOf[i] = Color.FromArgb(R, G, B);
-            }
             isTMS9918 = false;
-            this.UpdateAllBitmaps();
+            this.UpdateAllViewItems();  // Update bitmaps
         }
         //--------------------------------------------------------------------
         // Properties
@@ -179,7 +162,7 @@ namespace _99x8Edit
             // Update windows color corresponding to the color code
             colorOf[colorCode] = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
             // Update bitmaps
-            this.UpdateAllBitmaps();
+            this.UpdateAllViewItems();
         }
         public int GetPaletteR(int colorCode)
         {
@@ -229,6 +212,7 @@ namespace _99x8Edit
         public void CopyPCGToClip(int index)
         {
             ClipOnePCG clip = new ClipOnePCG();
+            clip.index = (byte)index;
             for(int i = 0; i < 8; ++i)
             {
                 clip.genData[i] = ptnGen[index * 8 + i];
@@ -248,6 +232,18 @@ namespace _99x8Edit
                     ptnClr[index * 8 + i] = clip.clrData[i];
                 }
                 this.UpdatePCGBitmap(index);
+            }
+            else if(clip is ClipOneChrInRom)
+            {
+                MementoCaretaker.Instance.Push();
+                for (int i = 0; i < 8; ++i)
+                {
+                    ptnGen[index * 8 + i] = clip.leftTop[i];                    // Left top
+                    ptnGen[((index + 32) % 256) * 8 + i] = clip.leftBottom[i];  // Left bottom
+                    ptnGen[((index + 1) % 256) * 8 + i] = clip.rightTop[i];     // Right top
+                    ptnGen[((index + 33) % 256) * 8 + i] = clip.rightBottom[i]; // Right bottom
+                }
+                this.UpdatePCGBitmap();
             }
         }
         public void ClearPCG(int index)
@@ -288,9 +284,12 @@ namespace _99x8Edit
         {
             return nameTable[addr];
         }
-        public void SetNameTable(int addr, int data)
+        public void SetNameTable(int addr, int data, bool push = true)
         {
-            MementoCaretaker.Instance.Push();
+            if(push)
+            {
+                MementoCaretaker.Instance.Push();
+            }
             nameTable[addr] = (byte)data;
         }
         public int GetColorTable(int pcg, int line, bool isForeGround)
@@ -348,6 +347,7 @@ namespace _99x8Edit
         public void CopyMapPatternToClip(int index)
         {
             ClipOneMapPattern clip = new ClipOneMapPattern();
+            clip.index = (byte)index;
             clip.pattern[0] = mapPattern[index * 4 + 0];
             clip.pattern[1] = mapPattern[index * 4 + 1];
             clip.pattern[2] = mapPattern[index * 4 + 2];
@@ -370,9 +370,12 @@ namespace _99x8Edit
         {
             return mapData[x, y];
         }
-        public void SetMapData(int x, int y, int value)
+        public void SetMapData(int x, int y, int value, bool push = true)
         {
-            MementoCaretaker.Instance.Push();
+            if(push)
+            {
+                MementoCaretaker.Instance.Push();
+            }
             mapData[x, y] = (byte)value;
         }
         public int MapWidth
@@ -447,6 +450,10 @@ namespace _99x8Edit
                 {
                     spriteClr2[overlay_target_8x8 * 8 + i] &= 0b11011111;
                 }
+                // These CC flags above may not be reliable,
+                // there are too many actions, such as CTRL+V,
+                // which ignore the overlay status - no good idea to manage.
+                // But anyway, these flags will be generated dynamically in real machine.
             }
         }
         public int GetSpriteColorCode(int index, int line)
@@ -530,6 +537,19 @@ namespace _99x8Edit
                     }
                     spriteOverlay[(index16x16 + 1) % 64] = 0;
                 }
+            }
+            else if(clip is ClipOneChrInRom)
+            {
+                MementoCaretaker.Instance.Push();
+                spriteOverlay[index16x16] = 0;
+                for(int i = 0; i < 8; ++i)
+                {
+                    spriteGen[index16x16 * 4 * 8 + 0 + i] = clip.leftTop[i];
+                    spriteGen[index16x16 * 4 * 8 + 8 + i] = clip.leftBottom[i];
+                    spriteGen[index16x16 * 4 * 8 + 16 + i] = clip.rightTop[i];
+                    spriteGen[index16x16 * 4 * 8 + 24 + i] = clip.rightTop[i];
+                }
+                this.UpdateSpriteBitmap();
             }
         }
         public void Clear16x16Sprite(int index16x16)
@@ -616,10 +636,37 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Internal methods
-        private void UpdateAllBitmaps()
+        private void UpdateAllViewItems()
         {
+            this.UpdatePaletteView();
             this.UpdatePCGBitmap();
             this.UpdateSpriteBitmap();
+        }
+        private void UpdatePaletteView()
+        {
+            if (isTMS9918)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    int R = palette9918[i] >> 16;
+                    int G = (palette9918[i] & 0xffff) >> 8;
+                    int B = palette9918[i] & 0xff;
+                    colorOf[i] = Color.FromArgb(R, G, B);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    int R = (pltDat[i * 2] >> 4);
+                    int G = (pltDat[i * 2 + 1]);
+                    int B = (pltDat[i * 2] & 0x0F);
+                    R = (R * 255) / 7;
+                    G = (G * 255) / 7;
+                    B = (B * 255) / 7;
+                    colorOf[i] = Color.FromArgb(R, G, B);
+                }
+            }
         }
         private void UpdatePCGBitmap()
         {

@@ -83,6 +83,16 @@ namespace _99x8Edit.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap info {
+            get {
+                object obj = ResourceManager.GetObject("info", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap maps {
             get {
                 object obj = ResourceManager.GetObject("maps", resourceCulture);
@@ -106,6 +116,16 @@ namespace _99x8Edit.Properties {
         internal static System.Drawing.Bitmap pcg {
             get {
                 object obj = ResourceManager.GetObject("pcg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap peek {
+            get {
+                object obj = ResourceManager.GetObject("peek", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

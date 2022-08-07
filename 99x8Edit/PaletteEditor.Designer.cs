@@ -50,6 +50,7 @@ namespace _99x8Edit
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.button1.Location = new System.Drawing.Point(174, 144);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 35);
@@ -60,6 +61,7 @@ namespace _99x8Edit
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.button2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.button2.Location = new System.Drawing.Point(93, 144);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 35);
@@ -70,6 +72,7 @@ namespace _99x8Edit
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label1.Location = new System.Drawing.Point(12, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(18, 20);
@@ -88,6 +91,7 @@ namespace _99x8Edit
             // 
             // textBoxR
             // 
+            this.textBoxR.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.textBoxR.Location = new System.Drawing.Point(206, 20);
             this.textBoxR.Name = "textBoxR";
             this.textBoxR.Size = new System.Drawing.Size(40, 27);
@@ -97,6 +101,7 @@ namespace _99x8Edit
             // 
             // textBoxG
             // 
+            this.textBoxG.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.textBoxG.Location = new System.Drawing.Point(206, 58);
             this.textBoxG.Name = "textBoxG";
             this.textBoxG.Size = new System.Drawing.Size(40, 27);
@@ -117,6 +122,7 @@ namespace _99x8Edit
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(12, 61);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(19, 20);
@@ -125,6 +131,7 @@ namespace _99x8Edit
             // 
             // textBoxB
             // 
+            this.textBoxB.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.textBoxB.Location = new System.Drawing.Point(206, 96);
             this.textBoxB.Name = "textBoxB";
             this.textBoxB.Size = new System.Drawing.Size(40, 27);
@@ -145,6 +152,7 @@ namespace _99x8Edit
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(12, 99);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(18, 20);
@@ -162,8 +170,7 @@ namespace _99x8Edit
             // 
             // PaletteEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(257, 193);
             this.Controls.Add(this.pictColor);
             this.Controls.Add(this.button1);

@@ -38,15 +38,22 @@ namespace _99x8Edit
             this.btnMapWin = new System.Windows.Forms.Button();
             this.btnLoadPCG = new System.Windows.Forms.Button();
             this.btnSavePCG = new System.Windows.Forms.Button();
+            this.contextSave = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.btnPCGExport = new System.Windows.Forms.Button();
             this.btnExportMap = new System.Windows.Forms.Button();
             this.btnPCGWin = new System.Windows.Forms.Button();
             this.btnUndo = new System.Windows.Forms.Button();
             this.btnRedo = new System.Windows.Forms.Button();
+            this.btnPeek = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
+            this.contextSave.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnExportSprites
             // 
+            this.btnExportSprites.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.btnExportSprites.Location = new System.Drawing.Point(68, 127);
             this.btnExportSprites.Name = "btnExportSprites";
             this.btnExportSprites.Size = new System.Drawing.Size(94, 29);
@@ -72,6 +79,7 @@ namespace _99x8Edit
             // comboExportType
             // 
             this.comboExportType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboExportType.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.comboExportType.FormattingEnabled = true;
             this.comboExportType.Location = new System.Drawing.Point(21, 177);
             this.comboExportType.Name = "comboExportType";
@@ -97,7 +105,7 @@ namespace _99x8Edit
             this.btnLoadPCG.BackColor = System.Drawing.Color.White;
             this.btnLoadPCG.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnLoadPCG.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnLoadPCG.Location = new System.Drawing.Point(34, 236);
+            this.btnLoadPCG.Location = new System.Drawing.Point(8, 236);
             this.btnLoadPCG.Name = "btnLoadPCG";
             this.btnLoadPCG.Size = new System.Drawing.Size(48, 48);
             this.btnLoadPCG.TabIndex = 8;
@@ -110,7 +118,8 @@ namespace _99x8Edit
             this.btnSavePCG.BackColor = System.Drawing.Color.White;
             this.btnSavePCG.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
             this.btnSavePCG.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSavePCG.Location = new System.Drawing.Point(88, 236);
+            this.btnSavePCG.ContextMenuStrip = this.contextSave;
+            this.btnSavePCG.Location = new System.Drawing.Point(62, 236);
             this.btnSavePCG.Name = "btnSavePCG";
             this.btnSavePCG.Size = new System.Drawing.Size(48, 48);
             this.btnSavePCG.TabIndex = 9;
@@ -118,8 +127,33 @@ namespace _99x8Edit
             this.btnSavePCG.UseVisualStyleBackColor = false;
             this.btnSavePCG.Click += new System.EventHandler(this.btnSavePCG_Click);
             // 
+            // contextSave
+            // 
+            this.contextSave.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextSave.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSave,
+            this.toolStripSaveAs});
+            this.contextSave.Name = "contextSave";
+            this.contextSave.Size = new System.Drawing.Size(220, 52);
+            // 
+            // toolStripSave
+            // 
+            this.toolStripSave.Name = "toolStripSave";
+            this.toolStripSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.toolStripSave.Size = new System.Drawing.Size(219, 24);
+            this.toolStripSave.Text = "Save";
+            // 
+            // toolStripSaveAs
+            // 
+            this.toolStripSaveAs.Name = "toolStripSaveAs";
+            this.toolStripSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.toolStripSaveAs.Size = new System.Drawing.Size(219, 24);
+            this.toolStripSaveAs.Text = "Save As";
+            // 
             // btnPCGExport
             // 
+            this.btnPCGExport.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.btnPCGExport.Location = new System.Drawing.Point(68, 22);
             this.btnPCGExport.Name = "btnPCGExport";
             this.btnPCGExport.Size = new System.Drawing.Size(94, 29);
@@ -131,6 +165,7 @@ namespace _99x8Edit
             // 
             // btnExportMap
             // 
+            this.btnExportMap.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.btnExportMap.Location = new System.Drawing.Point(68, 74);
             this.btnExportMap.Name = "btnExportMap";
             this.btnExportMap.Size = new System.Drawing.Size(94, 29);
@@ -155,35 +190,64 @@ namespace _99x8Edit
             // 
             // btnUndo
             // 
+            this.btnUndo.BackColor = System.Drawing.Color.White;
             this.btnUndo.BackgroundImage = global::_99x8Edit.Properties.Resources.undo;
             this.btnUndo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnUndo.Enabled = false;
-            this.btnUndo.Location = new System.Drawing.Point(34, 290);
+            this.btnUndo.Location = new System.Drawing.Point(7, 290);
             this.btnUndo.Name = "btnUndo";
             this.btnUndo.Size = new System.Drawing.Size(48, 48);
             this.btnUndo.TabIndex = 19;
             this.toolTipMain.SetToolTip(this.btnUndo, "Undo");
-            this.btnUndo.UseVisualStyleBackColor = true;
+            this.btnUndo.UseVisualStyleBackColor = false;
             this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
             // btnRedo
             // 
+            this.btnRedo.BackColor = System.Drawing.Color.White;
             this.btnRedo.BackgroundImage = global::_99x8Edit.Properties.Resources.redo;
             this.btnRedo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnRedo.Enabled = false;
-            this.btnRedo.Location = new System.Drawing.Point(88, 290);
+            this.btnRedo.Location = new System.Drawing.Point(62, 290);
             this.btnRedo.Name = "btnRedo";
             this.btnRedo.Size = new System.Drawing.Size(48, 48);
             this.btnRedo.TabIndex = 20;
             this.toolTipMain.SetToolTip(this.btnRedo, "Redo");
-            this.btnRedo.UseVisualStyleBackColor = true;
+            this.btnRedo.UseVisualStyleBackColor = false;
             this.btnRedo.Click += new System.EventHandler(this.btnRedo_Click);
+            // 
+            // btnPeek
+            // 
+            this.btnPeek.BackColor = System.Drawing.Color.White;
+            this.btnPeek.BackgroundImage = global::_99x8Edit.Properties.Resources.peek;
+            this.btnPeek.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnPeek.Location = new System.Drawing.Point(116, 236);
+            this.btnPeek.Name = "btnPeek";
+            this.btnPeek.Size = new System.Drawing.Size(48, 48);
+            this.btnPeek.TabIndex = 21;
+            this.toolTipMain.SetToolTip(this.btnPeek, "Peek binaries");
+            this.btnPeek.UseVisualStyleBackColor = false;
+            this.btnPeek.Click += new System.EventHandler(this.btnPeek_Click);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.BackColor = System.Drawing.Color.White;
+            this.btnAbout.BackgroundImage = global::_99x8Edit.Properties.Resources.info;
+            this.btnAbout.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnAbout.Location = new System.Drawing.Point(116, 290);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(48, 48);
+            this.btnAbout.TabIndex = 22;
+            this.toolTipMain.SetToolTip(this.btnAbout, "About");
+            this.btnAbout.UseVisualStyleBackColor = false;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // MainWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(175, 353);
+            this.Controls.Add(this.btnAbout);
+            this.Controls.Add(this.btnPeek);
             this.Controls.Add(this.btnRedo);
             this.Controls.Add(this.btnUndo);
             this.Controls.Add(this.btnExportSprites);
@@ -203,6 +267,7 @@ namespace _99x8Edit
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "99x8Edit";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.contextSave.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -220,6 +285,11 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnPCGWin;
         private System.Windows.Forms.Button btnUndo;
         private System.Windows.Forms.Button btnRedo;
+        private System.Windows.Forms.Button btnPeek;
+        private System.Windows.Forms.Button btnAbout;
+        private System.Windows.Forms.ContextMenuStrip contextSave;
+        private System.Windows.Forms.ToolStripMenuItem toolStripSave;
+        private System.Windows.Forms.ToolStripMenuItem toolStripSaveAs;
     }
 }
 

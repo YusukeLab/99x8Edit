@@ -40,6 +40,7 @@ namespace _99x8Edit
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.button1.Location = new System.Drawing.Point(134, 104);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(74, 29);
@@ -50,6 +51,7 @@ namespace _99x8Edit
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.button2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.button2.Location = new System.Drawing.Point(52, 104);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(74, 29);
@@ -60,6 +62,7 @@ namespace _99x8Edit
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label1.Location = new System.Drawing.Point(27, 19);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 20);
@@ -68,6 +71,7 @@ namespace _99x8Edit
             // 
             // txtW
             // 
+            this.txtW.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.txtW.Location = new System.Drawing.Point(119, 14);
             this.txtW.Name = "txtW";
             this.txtW.Size = new System.Drawing.Size(74, 27);
@@ -77,6 +81,7 @@ namespace _99x8Edit
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(27, 59);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 20);
@@ -85,6 +90,7 @@ namespace _99x8Edit
             // 
             // txtH
             // 
+            this.txtH.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.txtH.Location = new System.Drawing.Point(119, 58);
             this.txtH.Name = "txtH";
             this.txtH.Size = new System.Drawing.Size(74, 27);
@@ -93,8 +99,7 @@ namespace _99x8Edit
             // 
             // MapSize
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(232, 144);
             this.Controls.Add(this.txtH);
             this.Controls.Add(this.label2);

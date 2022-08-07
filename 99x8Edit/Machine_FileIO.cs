@@ -9,13 +9,29 @@ namespace _99x8Edit
     public partial class Machine
     {
         // Supported Export types
-        public Dictionary<String, String> exportTypes = new Dictionary<String, String>()
+        public enum ExportType
         {
-            {"C header", ".h"},
-            {"C compressed", ".h"},
-            {"ASM data", ".asm"},
-            {"ASM compressed", ".asm"},
-            {"BIN(MSX BASIC)", ".bin"}
+            CHeader = 0,
+            CCompressed,
+            ASMData,
+            ASMCompressed,
+            MSXBASIC
+        }
+        public List<String> exportTypeList = new List<String>()
+        {
+            {"C header"},
+            {"C compressed"},
+            {"ASM data"},
+            {"ASM compressed"},
+            {"BIN(MSX BASIC)"}
+        };
+        public List<String> exportTypeExt = new List<String>()
+        {
+            {".h"},
+            {".h"},
+            {".asm"},
+            {".asm"},
+            {".bin"}
         };
         public void SaveAllSettings(BinaryWriter br)
         {
@@ -67,8 +83,7 @@ namespace _99x8Edit
                 }
             }
             // Update bitmaps
-            this.UpdatePCGBitmap();            // Update PCG bitmaps
-            this.UpdateSpriteBitmap();         // Update Sprite bitmaps
+            this.UpdateAllViewItems();
         }
         public void SavePaletteSettings(BinaryWriter br)
         {
@@ -88,17 +103,15 @@ namespace _99x8Edit
                 B = (B * 255) / 7;
                 colorOf[i] = Color.FromArgb(R, G, B);
             }
-            this.UpdatePCGBitmap();            // Update PCG bitmaps
-            this.UpdateSpriteBitmap();         // Update Sprite bitmaps        }
+            this.UpdateAllViewItems();
         }
-        public void ExportPCG(int type, String path)
+        public void ExportPCG(ExportType type, String path)
         {
-            if (type == 0 || type == 1)
+            if (type == ExportType.CHeader || type == ExportType.CCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __PCGDAT_H__");
                 sr.WriteLine("#define __PCGDAT_H__");
-                sr.WriteLine("// this export data is not tested");
                 String str = "";
                 if (!isTMS9918)
                 {
@@ -122,7 +135,7 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.WriteLine("};");
                 sr.WriteLine("// Character pattern color table");
-                if (type == 0)
+                if (type == ExportType.CHeader)
                 {
                     sr.WriteLine("const unsigned char ptnclr[] = {");
                     str = ArrayToCHeaderString(ptnClr, false);
@@ -135,7 +148,7 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.WriteLine("};");
                 sr.WriteLine("// Name table");
-                if (type == 0)
+                if (type == ExportType.CHeader)
                 {
                     sr.WriteLine("const unsigned char nametable[] = {");
                     str = ArrayToCHeaderString(nameTable, false);
@@ -150,7 +163,7 @@ namespace _99x8Edit
                 sr.WriteLine("#endif");
                 sr.Close();
             }
-            else if (type == 2 || type == 3)
+            else if (type == ExportType.ASMData || type == ExportType.ASMCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; PCG Data");
@@ -164,7 +177,7 @@ namespace _99x8Edit
                     sr.WriteLine(str);
                 }
                 sr.WriteLine("; Character pattern generator table");
-                if (type == 2)
+                if (type == ExportType.ASMData)
                 {
                     sr.WriteLine("ptngen:");
                     str = ArrayToASMString(ptnGen, false);
@@ -176,7 +189,7 @@ namespace _99x8Edit
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Character pattern color table");
-                if (type == 2)
+                if (type == ExportType.ASMData)
                 {
                     sr.WriteLine("prnclr:");
                     str = ArrayToASMString(ptnClr, false);
@@ -188,7 +201,7 @@ namespace _99x8Edit
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Name table");
-                if (type == 2)
+                if (type == ExportType.ASMData)
                 {
                     sr.WriteLine("namtbl:");
                     str = ArrayToASMString(nameTable, false);
@@ -201,7 +214,7 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.Close();
             }
-            else if (type == 4)
+            else if (type == ExportType.MSXBASIC)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path + "_GEN", FileMode.Create));
                 br.Write((byte)0xFE);       // BSAVE/BLOAD header
@@ -225,9 +238,9 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        public void ExportMap(int type, String path)
+        public void ExportMap(ExportType type, String path)
         {
-            if (type == 0 || type == 1)
+            if (type == ExportType.CHeader || type == ExportType.CCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __MAPDAT_H__");
@@ -243,7 +256,7 @@ namespace _99x8Edit
                 sr.WriteLine("};");
                 str = "\t";
                 sr.WriteLine("// Map data");
-                if (type == 0)
+                if (type == ExportType.CHeader)
                 {
                     sr.WriteLine("const unsigned char mapData[] = {");
                     for (int i = 0; i < mapWidth * mapHeight; ++i)
@@ -258,7 +271,7 @@ namespace _99x8Edit
                     List<byte> org_dat = new List<byte>();
                     for (int i = 0; i < mapWidth * mapHeight; ++i)
                         org_dat.Add(mapData[i % mapWidth, i / mapWidth]);
-                    byte[] comp = CompressData(org_dat.ToArray());
+                    byte[] comp = CompressionBase.CreateInstance().Compress(org_dat.ToArray());
                     for (int i = 0; i < comp.Length; ++i)
                     {
                         if ((i != 0) && (i % 16) == 0) str += "\r\n\t";
@@ -270,7 +283,7 @@ namespace _99x8Edit
                 sr.WriteLine("#endif");
                 sr.Close();
             }
-            else if (type == 2 || type == 3)
+            else if (type == ExportType.ASMData || type == ExportType.ASMCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; Map Data");
@@ -286,7 +299,7 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.WriteLine("; Map data");
                 str = "";
-                if (type == 2)
+                if (type == ExportType.ASMData)
                 {
                     sr.WriteLine("mapdat:");
                     for (int i = 0; i < mapWidth * mapHeight; ++i)
@@ -303,7 +316,7 @@ namespace _99x8Edit
                     List<byte> org = new List<byte>();
                     for (int i = 0; i < mapWidth * mapHeight; ++i)
                         org.Add(mapData[i % mapWidth, i / mapWidth]);
-                    byte[] comp = CompressData(org.ToArray());
+                    byte[] comp = CompressionBase.CreateInstance().Compress(org.ToArray());
                     for (int i = 0; i < comp.Length; ++i)
                     {
                         if (i % 16 == 0) str += "\tdb\t";
@@ -315,14 +328,14 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.Close();
             }
-            else if (type == 4)
+            else if (type == ExportType.MSXBASIC)
             {
                 throw new Exception("Map data cannot be BLOADed in BASIC");
             }
         }
-        public void ExportSprites(int type, String path)
+        public void ExportSprites(ExportType type, String path)
         {
-            if (type == 0 || type == 1)
+            if (type == ExportType.CHeader || type == ExportType.CCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __SPRITEDAT_H__");
@@ -330,7 +343,7 @@ namespace _99x8Edit
                 sr.WriteLine("// this export data is not tested");
                 String str = "";
                 sr.WriteLine("// Sprite generator table");
-                if (type == 0)
+                if (type == ExportType.CHeader)
                 {
                     sr.WriteLine("const unsigned char sprptn[] = {");
                     str = ArrayToCHeaderString(spriteGen, false);
@@ -345,7 +358,7 @@ namespace _99x8Edit
                 if (!isTMS9918)
                 {
                     sr.WriteLine("// Sprite color table");
-                    if (type == 0)
+                    if (type == ExportType.CHeader)
                     {
                         sr.WriteLine("const unsigned char sprclr[] = {");
                         str = ArrayToCHeaderString(spriteClr2, false);
@@ -361,7 +374,7 @@ namespace _99x8Edit
                 sr.WriteLine("#endif");
                 sr.Close();
             }
-            else if (type == 2 || type == 3)
+            else if (type == ExportType.ASMData || type == ExportType.ASMCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; Sprite Data");
@@ -369,7 +382,7 @@ namespace _99x8Edit
                 String str = "";
                 sr.WriteLine("; Sprite generator table");
                 str = "";
-                if (type == 2)
+                if (type == ExportType.ASMData)
                 {
                     sr.WriteLine("sprgen:");
                     str = ArrayToASMString(spriteGen, false);
@@ -384,7 +397,7 @@ namespace _99x8Edit
                 {
                     sr.WriteLine("; Sprite color table");
                     str = "";
-                    if (type == 2)
+                    if (type == ExportType.ASMData)
                     {
                         sr.WriteLine("sprclr:");
                         str = ArrayToASMString(spriteClr2, false);
@@ -398,7 +411,7 @@ namespace _99x8Edit
                 }
                 sr.Close();
             }
-            else if (type == 4)
+            else if (type == ExportType.MSXBASIC)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
                 br.Write((byte)0xFE);       // BSAVE/BLOAD header
@@ -412,47 +425,12 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private static byte[] CompressData(byte[] values)
-        {
-            List<byte> outputData = new List<byte>();
-            int current_data = -1;
-            int count = 0;
-            for (int i = 0; i < values.Length; ++i)
-            {
-                if ((int)(values[i]) != current_data)
-                {
-                    if (count > 0)                      // New type of data started
-                    {
-                        outputData.Add((byte)count);   // Record size and value of previous data
-                        outputData.Add((byte)current_data);
-                    }
-                    count = 1;
-                    current_data = (int)values[i];
-                }
-                else
-                {
-                    if (count == 255)                  // Size data is only one byte
-                    {
-                        outputData.Add((byte)count);   // Record size and value of previous data
-                        outputData.Add((byte)current_data);
-                        count = 1;
-                    }
-                    else
-                    {
-                        count++;
-                    }
-                }
-            }
-            outputData.Add((byte)count);      // Record size and value of previous data
-            outputData.Add((byte)current_data);
-            return outputData.ToArray();
-        }
         private String ArrayToCHeaderString(byte[] src, bool compress)
         {
             String ret = "\t";
             if (compress)
             {
-                byte[] comp = CompressData(src);
+                byte[] comp = CompressionBase.CreateInstance().Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if ((i != 0) && (i % 16) == 0) ret += "\r\n\t";
@@ -474,7 +452,7 @@ namespace _99x8Edit
             String ret = "";
             if (compress)
             {
-                byte[] comp = CompressData(src);
+                byte[] comp = CompressionBase.CreateInstance().Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if (i % 16 == 0) ret += "\tdb\t";

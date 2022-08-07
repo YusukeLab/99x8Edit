@@ -54,6 +54,8 @@ namespace _99x8Edit
             this.toolStripMapPaint = new System.Windows.Forms.ToolStripMenuItem();
             this.panelMap = new System.Windows.Forms.FlowLayoutPanel();
             this.btnMapSize = new System.Windows.Forms.Button();
+            this.panelPCG = new System.Windows.Forms.FlowLayoutPanel();
+            this.chkCRT = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
@@ -61,6 +63,7 @@ namespace _99x8Edit
             this.contextPattern.SuspendLayout();
             this.contextMap.SuspendLayout();
             this.panelMap.SuspendLayout();
+            this.panelPCG.SuspendLayout();
             this.SuspendLayout();
             // 
             // viewPatterns
@@ -77,6 +80,7 @@ namespace _99x8Edit
             // label7
             // 
             this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label7.Location = new System.Drawing.Point(577, 6);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(90, 20);
@@ -86,7 +90,7 @@ namespace _99x8Edit
             // viewPCG
             // 
             this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPCG.Location = new System.Drawing.Point(14, 32);
+            this.viewPCG.Location = new System.Drawing.Point(0, 0);
             this.viewPCG.Margin = new System.Windows.Forms.Padding(0);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.Size = new System.Drawing.Size(514, 130);
@@ -97,6 +101,7 @@ namespace _99x8Edit
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(14, 8);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 20);
@@ -117,6 +122,7 @@ namespace _99x8Edit
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(14, 180);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 20);
@@ -126,6 +132,7 @@ namespace _99x8Edit
             // txtMapX
             // 
             this.txtMapX.Enabled = false;
+            this.txtMapX.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.txtMapX.Location = new System.Drawing.Point(261, 175);
             this.txtMapX.Name = "txtMapX";
             this.txtMapX.Size = new System.Drawing.Size(41, 27);
@@ -136,6 +143,7 @@ namespace _99x8Edit
             // txtMapY
             // 
             this.txtMapY.Enabled = false;
+            this.txtMapY.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.txtMapY.Location = new System.Drawing.Point(529, 374);
             this.txtMapY.Name = "txtMapY";
             this.txtMapY.Size = new System.Drawing.Size(37, 27);
@@ -194,6 +202,7 @@ namespace _99x8Edit
             this.panelPatterns.TabIndex = 36;
             this.panelPatterns.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragDrop);
             this.panelPatterns.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragEnter);
+            this.panelPatterns.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPatterns_PreviewKeyDown);
             // 
             // contextPattern
             // 
@@ -273,9 +282,11 @@ namespace _99x8Edit
             this.panelMap.TabIndex = 38;
             this.panelMap.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelMap_DragDrop);
             this.panelMap.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelMap_DragEnter);
+            this.panelMap.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelMap_PreviewKeyDown);
             // 
             // btnMapSize
             // 
+            this.btnMapSize.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.btnMapSize.Location = new System.Drawing.Point(465, 174);
             this.btnMapSize.Name = "btnMapSize";
             this.btnMapSize.Size = new System.Drawing.Size(65, 29);
@@ -284,11 +295,33 @@ namespace _99x8Edit
             this.btnMapSize.UseVisualStyleBackColor = true;
             this.btnMapSize.Click += new System.EventHandler(this.btnMapSize_Click);
             // 
+            // panelPCG
+            // 
+            this.panelPCG.Controls.Add(this.viewPCG);
+            this.panelPCG.Location = new System.Drawing.Point(14, 31);
+            this.panelPCG.Name = "panelPCG";
+            this.panelPCG.Size = new System.Drawing.Size(532, 138);
+            this.panelPCG.TabIndex = 40;
+            this.panelPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPCG_PreviewKeyDown);
+            // 
+            // chkCRT
+            // 
+            this.chkCRT.AutoSize = true;
+            this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.chkCRT.Location = new System.Drawing.Point(433, 6);
+            this.chkCRT.Name = "chkCRT";
+            this.chkCRT.Size = new System.Drawing.Size(94, 24);
+            this.chkCRT.TabIndex = 41;
+            this.chkCRT.Text = "CRT Filter";
+            this.chkCRT.UseVisualStyleBackColor = true;
+            this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
+            // 
             // Map
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1102, 598);
+            this.Controls.Add(this.chkCRT);
+            this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.btnMapSize);
             this.Controls.Add(this.panelMap);
             this.Controls.Add(this.panelPatterns);
@@ -300,8 +333,8 @@ namespace _99x8Edit
             this.Controls.Add(this.txtMapX);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.viewPCG);
             this.Controls.Add(this.label2);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -318,6 +351,7 @@ namespace _99x8Edit
             this.contextPattern.ResumeLayout(false);
             this.contextMap.ResumeLayout(false);
             this.panelMap.ResumeLayout(false);
+            this.panelPCG.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -349,5 +383,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripMapDel;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapPaint;
         private System.Windows.Forms.Button btnMapSize;
+        private System.Windows.Forms.FlowLayoutPanel panelPCG;
+        private System.Windows.Forms.CheckBox chkCRT;
     }
 }
