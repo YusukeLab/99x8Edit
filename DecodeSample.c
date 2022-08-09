@@ -1,8 +1,8 @@
-//-----------------------------------------------------
+//------------------------------------------------------------------------------
 // Decode compressed data
 /*
 	On real machine, decode the compressed data as below
-	This should be optimized, but as a sample
+	Actual routine should be optimized
 */
 void decode(unsigned char* src, unsigned char* dst)
 {

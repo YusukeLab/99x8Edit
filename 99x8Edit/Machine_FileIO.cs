@@ -16,7 +16,8 @@ namespace _99x8Edit
             CCompressed,
             ASMData,
             ASMCompressed,
-            MSXBASIC
+            MSXBASIC,
+            Raw
         }
         public List<String> exportTypeList = new List<String>()
         {
@@ -24,7 +25,8 @@ namespace _99x8Edit
             {"C compressed"},
             {"ASM data"},
             {"ASM compressed"},
-            {"BIN(MSX BASIC)"}
+            {"BIN(MSX BASIC)"},
+            {"Raw data"}
         };
         public List<String> exportTypeExt = new List<String>()
         {
@@ -32,7 +34,8 @@ namespace _99x8Edit
             {".h"},
             {".asm"},
             {".asm"},
-            {".bin"}
+            {".bin"},
+            {".raw"}
         };
         public void SaveAllSettings(BinaryWriter br)
         {
@@ -238,6 +241,15 @@ namespace _99x8Edit
                 br.Write(ptnClr);
                 br.Close();
             }
+            else if (type == ExportType.Raw)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path + "_GEN", FileMode.Create));
+                br.Write(ptnGen);
+                br.Close();
+                br = new BinaryWriter(new FileStream(path + "_CLR", FileMode.Create));
+                br.Write(ptnClr);
+                br.Close();
+            }
         }
         public void ExportMap(ExportType type, String path)
         {
@@ -333,6 +345,21 @@ namespace _99x8Edit
             {
                 throw new Exception("Map data cannot be BLOADed in BASIC");
             }
+            else if (type == ExportType.Raw)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path + "_PTN", FileMode.Create));
+                br.Write(mapPattern);
+                br.Close();
+                br = new BinaryWriter(new FileStream(path + "_DAT", FileMode.Create));
+                for(int i = 0; i < mapHeight; ++i)
+                {
+                    for(int j = 0; j < mapWidth; ++j)
+                    {
+                        br.Write(mapData[j, i]);
+                    }
+                }
+                br.Close();
+            }
         }
         public void ExportSprites(ExportType type, String path)
         {
@@ -422,6 +449,12 @@ namespace _99x8Edit
                 br.Write((byte)0x3F);
                 br.Write((byte)0);          // Execution address
                 br.Write((byte)0);
+                br.Write(spriteGen);
+                br.Close();
+            }
+            else if (type == ExportType.Raw)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
                 br.Write(spriteGen);
                 br.Close();
             }
