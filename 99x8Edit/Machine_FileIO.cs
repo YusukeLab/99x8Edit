@@ -17,7 +17,8 @@ namespace _99x8Edit
             ASMData,
             ASMCompressed,
             MSXBASIC,
-            Raw
+            Raw,
+            RawCompressed,
         }
         public List<String> exportTypeList = new List<String>()
         {
@@ -26,7 +27,8 @@ namespace _99x8Edit
             {"ASM data"},
             {"ASM compressed"},
             {"BIN(MSX BASIC)"},
-            {"Raw data"}
+            {"Raw data"},
+            {"Raw compressed"}
         };
         public List<String> exportTypeExt = new List<String>()
         {
@@ -35,7 +37,8 @@ namespace _99x8Edit
             {".asm"},
             {".asm"},
             {".bin"},
-            {".raw"}
+            {".raw"},
+            {".raw"},
         };
         public void SaveAllSettings(BinaryWriter br)
         {
@@ -250,6 +253,17 @@ namespace _99x8Edit
                 br.Write(ptnClr);
                 br.Close();
             }
+            else if (type == ExportType.RawCompressed)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path + "_GEN", FileMode.Create));
+                byte[] comp = CompressionBase.CreateInstance().Compress(ptnGen);
+                br.Write(comp);
+                br.Close();
+                br = new BinaryWriter(new FileStream(path + "_CLR", FileMode.Create));
+                comp = CompressionBase.CreateInstance().Compress(ptnClr);
+                br.Write(comp);
+                br.Close();
+            }
         }
         public void ExportMap(ExportType type, String path)
         {
@@ -360,6 +374,20 @@ namespace _99x8Edit
                 }
                 br.Close();
             }
+            else if (type == ExportType.RawCompressed)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path + "_PTN", FileMode.Create));
+                byte[] comp = CompressionBase.CreateInstance().Compress(mapPattern);
+                br.Write(comp);
+                br.Close();
+                br = new BinaryWriter(new FileStream(path + "_DAT", FileMode.Create));
+                List<byte> org = new List<byte>();
+                for (int i = 0; i < mapWidth * mapHeight; ++i)
+                    org.Add(mapData[i % mapWidth, i / mapWidth]);
+                comp = CompressionBase.CreateInstance().Compress(org.ToArray());
+                br.Write(comp);
+                br.Close();
+            }
         }
         public void ExportSprites(ExportType type, String path)
         {
@@ -456,6 +484,13 @@ namespace _99x8Edit
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
                 br.Write(spriteGen);
+                br.Close();
+            }
+            else if (type == ExportType.RawCompressed)
+            {
+                BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
+                byte[] comp = CompressionBase.CreateInstance().Compress(spriteGen);
+                br.Write(comp);
                 br.Close();
             }
         }
