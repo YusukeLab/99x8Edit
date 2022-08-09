@@ -256,11 +256,11 @@ namespace _99x8Edit
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path + "_GEN", FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance().Compress(ptnGen);
+                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(ptnGen);
                 br.Write(comp);
                 br.Close();
                 br = new BinaryWriter(new FileStream(path + "_CLR", FileMode.Create));
-                comp = CompressionBase.CreateInstance().Compress(ptnClr);
+                comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(ptnClr);
                 br.Write(comp);
                 br.Close();
             }
@@ -295,10 +295,7 @@ namespace _99x8Edit
                 else
                 {
                     sr.WriteLine("const unsigned char mapData_compressed[] = {");
-                    List<byte> org_dat = new List<byte>();
-                    for (int i = 0; i < mapWidth * mapHeight; ++i)
-                        org_dat.Add(mapData[i % mapWidth, i / mapWidth]);
-                    byte[] comp = CompressionBase.CreateInstance().Compress(org_dat.ToArray());
+                    byte[] comp = this.CompressMapData();
                     for (int i = 0; i < comp.Length; ++i)
                     {
                         if ((i != 0) && (i % 16) == 0) str += "\r\n\t";
@@ -340,10 +337,7 @@ namespace _99x8Edit
                 else
                 {
                     sr.WriteLine("mapdat_compressed:");
-                    List<byte> org = new List<byte>();
-                    for (int i = 0; i < mapWidth * mapHeight; ++i)
-                        org.Add(mapData[i % mapWidth, i / mapWidth]);
-                    byte[] comp = CompressionBase.CreateInstance().Compress(org.ToArray());
+                    byte[] comp = this.CompressMapData();
                     for (int i = 0; i < comp.Length; ++i)
                     {
                         if (i % 16 == 0) str += "\tdb\t";
@@ -377,15 +371,11 @@ namespace _99x8Edit
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path + "_PTN", FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance().Compress(mapPattern);
+                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(mapPattern);
                 br.Write(comp);
                 br.Close();
                 br = new BinaryWriter(new FileStream(path + "_DAT", FileMode.Create));
-                List<byte> org = new List<byte>();
-                for (int i = 0; i < mapWidth * mapHeight; ++i)
-                    org.Add(mapData[i % mapWidth, i / mapWidth]);
-                comp = CompressionBase.CreateInstance().Compress(org.ToArray());
-                br.Write(comp);
+                br.Write(this.CompressMapData());
                 br.Close();
             }
         }
@@ -489,7 +479,7 @@ namespace _99x8Edit
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance().Compress(spriteGen);
+                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(spriteGen);
                 br.Write(comp);
                 br.Close();
             }
@@ -499,7 +489,7 @@ namespace _99x8Edit
             String ret = "\t";
             if (compress)
             {
-                byte[] comp = CompressionBase.CreateInstance().Compress(src);
+                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if ((i != 0) && (i % 16) == 0) ret += "\r\n\t";
@@ -521,7 +511,7 @@ namespace _99x8Edit
             String ret = "";
             if (compress)
             {
-                byte[] comp = CompressionBase.CreateInstance().Compress(src);
+                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if (i % 16 == 0) ret += "\tdb\t";
@@ -541,6 +531,46 @@ namespace _99x8Edit
                 }
             }
             return ret;
+        }
+        private byte[] CompressMapData()
+        {
+            // Map will be compressed by run length encode, to be decoded realtime
+            List<byte[]> comp_data = new List<byte[]>();
+            // Head of data will be [offset to the data of row] * [number of rows]
+            ushort[] offset_to_row = new ushort[mapHeight];
+            ushort offset = (ushort)(mapHeight * 2);
+            // Create data
+            for(int y = 0; y < mapHeight; ++y)
+            {
+                // Offset to the row data
+                offset_to_row[y] = offset;
+                // Compress each row
+                List<byte> src_row = new List<byte>();
+                for(int i = 0; i < mapWidth; ++i)
+                {
+                    src_row.Add(mapData[i, y]);
+                }
+                CompressionBase encoder = CompressionBase.CreateInstance(CompressionBase.Type.RunLength);
+                byte[] comp = encoder.Compress(src_row.ToArray() as byte[]);
+                comp_data.Add(comp);
+                offset += (ushort)comp.Length;
+            }
+            // Make one compressed data
+            List<byte> ret = new List<byte>();
+            for(int i = 0; i < mapHeight; ++i)
+            {
+                // Offset is stored as 2 byte little endian data
+                ret.Add((byte)(offset_to_row[i] & 0xFF));
+                ret.Add((byte)((offset_to_row[i]) >> 8 & 0xFF));
+            }
+            for (int i = 0; i < mapHeight; ++i)
+            {
+                for(int j = 0; j < comp_data[i].Length; ++j)
+                {
+                    ret.Add(comp_data[i][j]);
+                }
+            }
+            return ret.ToArray() as byte[];
         }
     }
 }
