@@ -256,11 +256,11 @@ namespace _99x8Edit
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path + "_GEN", FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(ptnGen);
+                byte[] comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(ptnGen);
                 br.Write(comp);
                 br.Close();
                 br = new BinaryWriter(new FileStream(path + "_CLR", FileMode.Create));
-                comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(ptnClr);
+                comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(ptnClr);
                 br.Write(comp);
                 br.Close();
             }
@@ -371,7 +371,7 @@ namespace _99x8Edit
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path + "_PTN", FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(mapPattern);
+                byte[] comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(mapPattern);
                 br.Write(comp);
                 br.Close();
                 br = new BinaryWriter(new FileStream(path + "_DAT", FileMode.Create));
@@ -403,16 +403,25 @@ namespace _99x8Edit
                 sr.WriteLine("};");
                 if (!isTMS9918)
                 {
+                    byte[] sprite_clr16x16 = new byte[16 * 64];
+                    for(int i = 0; i < 64; ++i)
+                    {
+                        for(int j = 0; j < 16; ++j)
+                        {
+                            // 8x8 color table to 16x16 color table
+                            sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
+                        }
+                    }
                     sr.WriteLine("// Sprite color table");
                     if (type == ExportType.CHeader)
                     {
                         sr.WriteLine("const unsigned char sprclr[] = {");
-                        str = ArrayToCHeaderString(spriteClr2, false);
+                        str = ArrayToCHeaderString(sprite_clr16x16, false);
                     }
                     else
                     {
                         sr.WriteLine("const unsigned char sprclr_compressed[] = {");
-                        str = ArrayToCHeaderString(spriteClr2, true);
+                        str = ArrayToCHeaderString(sprite_clr16x16, true);
                     }
                     sr.WriteLine(str);
                     sr.WriteLine("};");
@@ -441,17 +450,26 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 if (!isTMS9918)
                 {
+                    byte[] sprite_clr16x16 = new byte[16 * 64];
+                    for (int i = 0; i < 64; ++i)
+                    {
+                        for (int j = 0; j < 16; ++j)
+                        {
+                            // 8x8 color table to 16x16 color table
+                            sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
+                        }
+                    }
                     sr.WriteLine("; Sprite color table");
                     str = "";
                     if (type == ExportType.ASMData)
                     {
                         sr.WriteLine("sprclr:");
-                        str = ArrayToASMString(spriteClr2, false);
+                        str = ArrayToASMString(sprite_clr16x16, false);
                     }
                     else
                     {
                         sr.WriteLine("sprclr_compressed:");
-                        str = ArrayToASMString(spriteClr2, true);
+                        str = ArrayToASMString(sprite_clr16x16, true);
                     }
                     sr.WriteLine(str);
                 }
@@ -475,13 +493,40 @@ namespace _99x8Edit
                 BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
                 br.Write(spriteGen);
                 br.Close();
+                br = new BinaryWriter(new FileStream(path + "_color", FileMode.Create));
+                byte[] sprite_clr16x16 = new byte[16 * 64];
+                for (int i = 0; i < 64; ++i)
+                {
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        // 8x8 color table to 16x16 color table
+                        sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
+                    }
+                }
+                br.Write(sprite_clr16x16);
+                br.Close();
             }
             else if (type == ExportType.RawCompressed)
             {
                 BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(spriteGen);
+                byte[] comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(spriteGen);
                 br.Write(comp);
                 br.Close();
+
+                br = new BinaryWriter(new FileStream(path + "_color", FileMode.Create));
+                byte[] sprite_clr16x16 = new byte[16 * 64];
+                for (int i = 0; i < 64; ++i)
+                {
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        // 8x8 color table to 16x16 color table
+                        sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
+                    }
+                }
+                comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(sprite_clr16x16);
+                br.Write(comp);
+                br.Close();
+
             }
         }
         private String ArrayToCHeaderString(byte[] src, bool compress)
@@ -489,7 +534,7 @@ namespace _99x8Edit
             String ret = "\t";
             if (compress)
             {
-                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(src);
+                byte[] comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if ((i != 0) && (i % 16) == 0) ret += "\r\n\t";
@@ -511,7 +556,7 @@ namespace _99x8Edit
             String ret = "";
             if (compress)
             {
-                byte[] comp = CompressionBase.CreateInstance(CompressionBase.Type.BytePair).Compress(src);
+                byte[] comp = CompressionBase.Create(CompressionBase.Type.BytePair).Compress(src);
                 for (int i = 0; i < comp.Length; ++i)
                 {
                     if (i % 16 == 0) ret += "\tdb\t";
@@ -550,7 +595,7 @@ namespace _99x8Edit
                 {
                     src_row.Add(mapData[i, y]);
                 }
-                CompressionBase encoder = CompressionBase.CreateInstance(CompressionBase.Type.RunLength);
+                CompressionBase encoder = CompressionBase.Create(CompressionBase.Type.RunLength);
                 byte[] comp = encoder.Compress(src_row.ToArray() as byte[]);
                 comp_data.Add(comp);
                 offset += (ushort)comp.Length;

@@ -13,7 +13,7 @@ namespace _99x8Edit
         }
         // Compression
         public abstract byte[] Compress(byte[] source); 
-        public static CompressionBase CreateInstance(Type type)
+        public static CompressionBase Create(Type type)
         {
             if(type == Type.BytePair)
             {

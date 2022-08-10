@@ -477,8 +477,14 @@ namespace _99x8Edit
             }
             else
             {
-                spriteClr2[index * 8 + line] &= 0xF0;
-                spriteClr2[index * 8 + line] |= (byte)(value);
+                // internal data have color for each 8x1 dots
+                int index_base = (index / 4) * 4;
+                int index_target_l = index_base + (index % 2);
+                int index_target_r= index_base + (index % 2) + 2;
+                spriteClr2[index_target_l * 8 + line] &= 0xF0;
+                spriteClr2[index_target_l * 8 + line] |= (byte)(value);
+                spriteClr2[index_target_r * 8 + line] &= 0xF0;
+                spriteClr2[index_target_r * 8 + line] |= (byte)(value);
             }
             this.UpdateSpriteBitmap(index);
         }
