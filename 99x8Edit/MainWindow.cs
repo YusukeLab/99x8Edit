@@ -24,9 +24,6 @@ namespace _99x8Edit
         public MainWindow()
         {
             InitializeComponent();
-            // context menu
-            toolStripSave.Click += new EventHandler(contextSave_save);
-            toolStripSaveAs.Click += new EventHandler(contextSave_saveAs);
         }
         public bool UndoEnable
         {
@@ -129,36 +126,6 @@ namespace _99x8Edit
                 spriteWin.BringToFront();
             }
         }
-
-        private void contextSave_save(object sender, EventArgs e)
-        {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                String target = this.SaveDialog(dir);
-                if (target != null)
-                {
-                    this.SaveFile(target);      // Save and update current file
-                }
-            }
-            else
-            {
-                this.SaveFile(currentFile);
-            }
-        }
-        private void contextSave_saveAs(object sender, EventArgs e)
-        {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            String target = this.SaveDialog(dir);
-            if(target != null)
-            {
-                this.SaveFile(target);
-            }
-        }
         private void btnSavePCG_Click(object sender, EventArgs e)
         {
             String dir = Path.GetDirectoryName(currentFile);
@@ -173,6 +140,19 @@ namespace _99x8Edit
             else
             {
                 this.SaveFile(currentFile);
+            }
+        }
+        private void btnSaveAs_Click(object sender, EventArgs e)
+        {
+            String dir = Path.GetDirectoryName(currentFile);
+            if (dir == null)
+            {
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+            String target = this.SaveDialog(dir);
+            if (target != null)
+            {
+                this.SaveFile(target);
             }
         }
         private void btnLoadPCG_Click(object sender, EventArgs e)

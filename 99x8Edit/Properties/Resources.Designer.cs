@@ -153,6 +153,16 @@ namespace _99x8Edit.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap saveas {
+            get {
+                object obj = ResourceManager.GetObject("saveas", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap sprite {
             get {
                 object obj = ResourceManager.GetObject("sprite", resourceCulture);
