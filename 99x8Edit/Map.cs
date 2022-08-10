@@ -15,7 +15,8 @@ namespace _99x8Edit
         private Bitmap bmpPCGList = new Bitmap(512, 128);       // PCG list view
         private Bitmap bmpMapPatterns = new Bitmap(512, 512);   // Map pattern view
         private Bitmap bmpMap = new Bitmap(512, 384);           // Map view
-        private int currentPCG = 0;             // Selected character(0-255)
+        private int currentPCGX = 0;            // Selected character
+        private int currentPCGY = 0;
         private int currentTilePatternX = 0;    // Selected tile pattern 0-15
         private int currentTilePatternY = 0;    // Selected tile pattern 0-15
         private int currentCellInPatternX = 0;  // Selected cell in tile pattern 0-1
@@ -90,7 +91,7 @@ namespace _99x8Edit
                 f.Process(bmpPCGList);
             }
             // Selection
-            g.DrawRectangle(new Pen(Color.Red), (currentPCG % 32) * 16, (currentPCG / 32) * 16, 15, 15);
+            g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
             if (refresh) this.viewPCG.Refresh();
         }
         private void RefreshMapPatterns(bool refresh = true)
@@ -184,12 +185,15 @@ namespace _99x8Edit
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
             panelPCG.Focus();   // Key events are handled by parent panel
-            int clicked_pcg = (e.Y / 16) * 32 + e.X / 16;
-            if (clicked_pcg != currentPCG)
+            int clicked_pcg_x = e.X / 16;
+            int clicked_pcg_y = e.Y / 16;
+            if (clicked_pcg_x > 31) clicked_pcg_x = 31;
+            if (clicked_pcg_y > 7) clicked_pcg_y = 7;
+            if ((clicked_pcg_x != currentPCGX) || (clicked_pcg_y != currentPCGY))
             {
                 // Selected PCG has changed
-                int previous_pcg = currentPCG;
-                currentPCG = clicked_pcg;
+                currentPCGX = clicked_pcg_x;
+                currentPCGY = clicked_pcg_y;
                 this.UpdatePCGList();
             }
             if (e.Button == MouseButtons.Left)
@@ -199,40 +203,40 @@ namespace _99x8Edit
         }
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            int previous = currentPCG;
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    if(currentPCG / 32 > 0)
+                    if(currentPCGY > 0)
                     {
-                        currentPCG -= 32;
+                        currentPCGY--;
                         this.UpdatePCGList();
                     }
                     break;
                 case Keys.Left:
-                    if(currentPCG % 32 > 0)
+                    if(currentPCGX > 0)
                     {
-                        currentPCG -= 1;
+                        currentPCGX--;
                         this.UpdatePCGList();
                     }
                     break;
                 case Keys.Right:
-                    if (currentPCG % 32 < 31)
+                    if (currentPCGX < 31)
                     {
-                        currentPCG += 1;
+                        currentPCGX++;
                         this.UpdatePCGList();
                     }
                     break;
                 case Keys.Down:
-                    if (currentPCG / 32 < 7)
+                    if (currentPCGY < 7)
                     {
-                        currentPCG += 32;
+                        currentPCGY++;
                         this.UpdatePCGList();
                     }
                     break;
                 case Keys.Enter:
                     dataSource.SetMapPattern(currentTilePatternY * 16 + currentTilePatternX,
-                        currentCellInPatternX * 2 + currentCellInPatternY / 2, currentPCG);
+                                             currentCellInPatternX * 2 + currentCellInPatternY / 2,
+                                             currentPCGY * 32 + currentPCGX);
                     this.RefreshMapPatterns();
                     this.RefreshMap();
                     break;
@@ -366,7 +370,7 @@ namespace _99x8Edit
                 if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
                 int target_ptn = p.X / 32 + (p.Y / 32) * 16;
                 int target_cell = (p.X / 16) % 2 + ((p.Y / 16) % 2) * 2;
-                dataSource.SetMapPattern(target_ptn, target_cell, currentPCG);
+                dataSource.SetMapPattern(target_ptn, target_cell, currentPCGY * 32 + currentPCGX);
                 this.RefreshMapPatterns(); 
                 this.RefreshMap();
             }

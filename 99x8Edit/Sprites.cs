@@ -218,20 +218,8 @@ namespace _99x8Edit
                     }
                 }
             }
-            // Draw selection rectangle here
-            // 16x16 on TMS9918, 8x1 on V9938
-            if(dataSource.IsTMS9918())
-            {
-                // On TMS9918, select all, since only one color can be applied
-                g.DrawRectangle(new Pen(Color.Red), 0, 0, 255, 255);
-                panelEditor.ContextMenuStrip = null;    // disable copy/paste by line
-            }
-            else
-            {
-                // On V9938, each lines can be selected to the corresponding colors
-                g.DrawRectangle(new Pen(Color.Red), currentLineX * 128, currentLineY * 16, 127, 15);
-                panelEditor.ContextMenuStrip = contextEditor;
-            }
+            // Draw selection rectangle
+            g.DrawRectangle(new Pen(Color.Red), currentLineX * 128, currentLineY * 16, 127, 15);
             // CRT Filter
             if (chkCRT.Checked)
             {
@@ -382,102 +370,126 @@ namespace _99x8Edit
             panelEditor.Focus();    // Key events are handled by parent panel
             int clicked_x = e.X / 128;
             int clicled_y = e.Y / 16;
-            if(!dataSource.IsTMS9918())
+            // selected line had changed
+            if((currentLineX != clicked_x) || (currentLineY != clicled_y))
             {
-                // VDP is V9938 and selected line had changed
-                if((currentLineX != clicked_x) || (currentLineY != clicled_y))
-                {
-                    currentLineX = clicked_x;
-                    currentLineY = clicled_y;
-                    this.UpdateSpriteEditView();
-                    this.UpdateCurrentColorView();
-                    return;
-                }
+                currentLineX = clicked_x;
+                currentLineY = clicled_y;
+                this.UpdateSpriteEditView();
+                this.UpdateCurrentColorView();
+                return;
             }
-            // line clicked
-            int line_x = e.X / 128;
-            int line_y = e.Y / 128;
-            // check pixel of first sprite
-            int target_col = (e.X / 16) % 8;
-            int target_row = (e.Y / 16) % 8;
-            int target_sprite16x16 = currentSpriteY * 8 + currentSpriteX;
-            int target_sprite8x8 = target_sprite16x16 * 4 + line_x * 2 + line_y;
-            int target_prev_pixel = dataSource.GetSpritePixel(target_sprite8x8, target_row, target_col);
-            // check pixel of second sprite
-            int target_sprite16x16_ov = (target_sprite16x16 + 1) % 64;
-            int target_sprite8x8_ov = target_sprite16x16_ov * 4 + line_x * 2 + line_y;
-            int target_prev_pixel_ov = dataSource.GetSpritePixel(target_sprite8x8_ov, target_row, target_col);
-            // current status 0:transparent, 1:first sprite, 2:second sprie, 3:both
-            int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
-            // so the next status will be....
-            int target_stat = current_stat + 1;
-            if(dataSource.GetSpriteOverlay(target_sprite16x16))
-            {
-                if(dataSource.IsTMS9918())
-                {
-                    target_stat %= 3;       // Overlayed, no OR color
-                }
-                else
-                {
-                    target_stat %= 4;       // Overlayed, OR color available
-                }
-            }
-            else
-            {
-                target_stat %= 2;           // No overlay
-            }
-            // set pixel 0:transparent, 1:first sprite, 2:second sprie, 3:both
-            int pixel = ((target_stat & 0x01) > 0) ? 1 : 0;
-            dataSource.SetSpritePixel(target_sprite8x8, target_row, target_col, pixel);
-            if(dataSource.GetSpriteOverlay(target_sprite16x16))
-            {
-                pixel = ((target_stat & 0x02) > 0) ? 1 : 0;
-                dataSource.SetSpritePixel(target_sprite8x8_ov, target_row, target_col, pixel);
-            }
-            this.UpdateSpriteEditView();
-            this.UpdateSpriteView();
+            // toggle the color of selected pixel
+            this.EditCurrentSprite((e.X / 16) % 8, currentLineY % 8);
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            bool update = false;
             switch (e.KeyCode)
             {
                 case Keys.Up:
                     if (currentLineY > 0)
                     {
                         currentLineY--;
-                        update = true;
+                        this.UpdateSpriteEditView();
+                        this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Left:
                     if (currentLineX > 0)
                     {
                         currentLineX--;
-                        update = true;
+                        this.UpdateSpriteEditView();
+                        this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Right:
                     if (currentLineX < 1)
                     {
                         currentLineX++;
-                        update = true;
+                        this.UpdateSpriteEditView();
+                        this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Down:
                     if (currentLineY < 15)
                     {
                         currentLineY++;
-                        update = true;
+                        this.UpdateSpriteEditView();
+                        this.UpdateCurrentColorView();
+                    }
+                    break;
+                case Keys.D1:
+                    this.EditCurrentSprite(0, currentLineY % 8);
+                    break;
+                case Keys.D2:
+                    this.EditCurrentSprite(1, currentLineY % 8);
+                    break;
+                case Keys.D3:
+                    this.EditCurrentSprite(2, currentLineY % 8);
+                    break;
+                case Keys.D4:
+                    this.EditCurrentSprite(3, currentLineY % 8);
+                    break;
+                case Keys.D5:
+                    this.EditCurrentSprite(4, currentLineY % 8);
+                    break;
+                case Keys.D6:
+                    this.EditCurrentSprite(5, currentLineY % 8);
+                    break;
+                case Keys.D7:
+                    this.EditCurrentSprite(6, currentLineY % 8);
+                    break;
+                case Keys.D8:
+                    this.EditCurrentSprite(7, currentLineY % 8);
+                    break;
+                case Keys.Oemplus:
+                case Keys.Add:
+                case Keys.OemMinus:
+                case Keys.Subtract:
+                    {
+                        int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
+                        int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
+                        int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+                        if ((e.KeyCode == Keys.Oemplus) || (e.KeyCode == Keys.Add))
+                        {
+                            // Increment color of the primary sprite
+                            color_code_primary = (color_code_primary + 1) % 16;
+                        }
+                        else
+                        {
+                            // Decrement color of the primary sprite
+                            color_code_primary = (color_code_primary + 15) % 16;
+                        }
+                        this.chgSpriteClrOfCurrent(sprite_num_16x16, color_code_primary);
+                        this.RefreshAllViews();
+                    }
+                    break;
+                case Keys.OemCloseBrackets:
+                case Keys.OemOpenBrackets:
+                    // Check overlays
+                    if (dataSource.GetSpriteOverlay(currentSpriteY * 8 + currentSpriteX))
+                    {
+                        int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
+                        int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
+                        int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
+                        int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
+                        if (e.KeyCode == Keys.OemCloseBrackets)
+                        {
+                            // Increment color of the secondary sprite
+                            color_code_secondary = (color_code_secondary + 1) % 16;
+                        }
+                        else
+                        {
+                            // Decrement color of the secondary sprite
+                            color_code_secondary = (color_code_secondary + 15) % 16;
+                        }
+                        this.chgSpriteClrOfCurrent(sprite_num_8x8_secondary / 4, color_code_secondary);
+                        this.RefreshAllViews();
                     }
                     break;
             }
-            if (update)
-            {
-                this.UpdateSpriteEditView();
-                this.UpdateCurrentColorView();
-            }
         }
-        private void contextEditor_copy(object sender, EventArgs e)
+            private void contextEditor_copy(object sender, EventArgs e)
         {
             int src16x16 = currentSpriteY * 8 + currentSpriteX;
             int src8x8 = src16x16 * 4 + currentLineX * 2 + currentLineY / 8;
@@ -658,10 +670,11 @@ namespace _99x8Edit
             if (dataSource.IsTMS9918())
             {
                 // Set color to four current sprites
-                dataSource.SetSpriteColorCode(target8x8 + 0, 0, val);
-                dataSource.SetSpriteColorCode(target8x8 + 1, 0, val);
-                dataSource.SetSpriteColorCode(target8x8 + 2, 0, val);
-                dataSource.SetSpriteColorCode(target8x8 + 3, 0, val);
+                MementoCaretaker.Instance.Push();
+                dataSource.SetSpriteColorCode(target8x8 + 0, 0, val, false);
+                dataSource.SetSpriteColorCode(target8x8 + 1, 0, val, false);
+                dataSource.SetSpriteColorCode(target8x8 + 2, 0, val, false);
+                dataSource.SetSpriteColorCode(target8x8 + 3, 0, val, false);
             }
             else
             {
@@ -670,6 +683,47 @@ namespace _99x8Edit
                 dataSource.SetSpriteColorCode(target8x8, currentLineY % 8, val);
             }
             this.RefreshAllViews();     // Everything changes
+        }
+        private void EditCurrentSprite(int x, int y)
+        {
+            int col = currentLineX;
+            int row = currentLineY / 8;
+            int target_sprite16x16 = currentSpriteY * 8 + currentSpriteX;
+            int target_sprite8x8 = target_sprite16x16 * 4 + col * 2 + row;
+            int target_prev_pixel = dataSource.GetSpritePixel(target_sprite8x8, y, x);
+            // check pixel of second sprite
+            int target_sprite16x16_ov = (target_sprite16x16 + 1) % 64;
+            int target_sprite8x8_ov = target_sprite16x16_ov * 4 + col * 2 + row;
+            int target_prev_pixel_ov = dataSource.GetSpritePixel(target_sprite8x8_ov, y, x);
+            // current status 0:transparent, 1:first sprite, 2:second sprie, 3:both
+            int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
+            // so the next status will be....
+            int target_stat = current_stat + 1;
+            if (dataSource.GetSpriteOverlay(target_sprite16x16))
+            {
+                if (dataSource.IsTMS9918())
+                {
+                    target_stat %= 3;       // Overlayed, no OR color
+                }
+                else
+                {
+                    target_stat %= 4;       // Overlayed, OR color available
+                }
+            }
+            else
+            {
+                target_stat %= 2;           // No overlay
+            }
+            // set pixel 0:transparent, 1:first sprite, 2:second sprie, 3:both
+            int pixel = ((target_stat & 0x01) > 0) ? 1 : 0;
+            dataSource.SetSpritePixel(target_sprite8x8, y, x, pixel);
+            if (dataSource.GetSpriteOverlay(target_sprite16x16))
+            {
+                pixel = ((target_stat & 0x02) > 0) ? 1 : 0;
+                dataSource.SetSpritePixel(target_sprite8x8_ov, y, x, pixel);
+            }
+            this.UpdateSpriteEditView();
+            this.UpdateSpriteView();
         }
     }
 }

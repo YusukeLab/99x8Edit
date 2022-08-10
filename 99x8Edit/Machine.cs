@@ -468,9 +468,9 @@ namespace _99x8Edit
                 return spriteClr2[index * 8 + line] & 0x0F;
             }
         }
-        public void SetSpriteColorCode(int index, int line, int value)
+        public void SetSpriteColorCode(int index, int line, int value, bool push = true)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
             {
                 spriteClr1[index] = (byte)value;
