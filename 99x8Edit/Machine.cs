@@ -436,26 +436,6 @@ namespace _99x8Edit
             spriteOverlay[indexBy16x16] = value ? (byte)1 : (byte)0;
             // Set sprite attributes
             int overlay_target_8x8 = (indexBy16x16 * 4 + 4) % 256;
-            if (value)
-            {
-                // set CC flag of the color table corresponding to next sprite
-                for (int i = 0; i < 32; ++i)
-                {
-                    spriteClr2[overlay_target_8x8 * 8 + i] |= 0x20;
-                }
-            }
-            else
-            {
-                // reset CC flag of the color table corresponding to next sprite
-                for (int i = 0; i < 32; ++i)
-                {
-                    spriteClr2[overlay_target_8x8 * 8 + i] &= 0b11011111;
-                }
-                // These CC flags above may not be reliable,
-                // there are too many actions, such as CTRL+V,
-                // which ignore the overlay status - no good idea to manage.
-                // But anyway, these flags will be generated dynamically in real machine.
-            }
         }
         public int GetSpriteColorCode(int index, int line)
         {
@@ -563,8 +543,6 @@ namespace _99x8Edit
         {
             MementoCaretaker.Instance.Push();
             int left = (index16x16 + 1) % 64;
-            int overlayed = spriteOverlay[left];    // to keep the overlayed CC flag
-            spriteOverlay[index16x16] = 0;
             for (int i = 0; i < 4; ++i)
             {
                 int dst = index16x16 * 4 + i;
@@ -572,7 +550,7 @@ namespace _99x8Edit
                 for (int j = 0; j < 8; ++j)
                 {
                     spriteGen[dst * 8 + j] = 0;
-                    spriteClr2[dst * 8 + j] = (byte)(0x0F | (overlayed << 5));
+                    spriteClr2[dst * 8 + j] = 0x0F;
                 }
                 this.UpdateSpriteBitmap(dst);
             }
@@ -731,6 +709,27 @@ namespace _99x8Edit
                         bmpOneSprite[index].SetPixel(7 - j, i, Fore);
                     else
                         bmpOneSprite[index].SetPixel(7 - j, i, Back);
+                }
+            }
+        }
+        private void SetSpriteCCFlags()
+        {
+            // Set the CC flags of sprite colors to make the export data
+            for(int i = 1; i < 64; ++i)
+            {
+                if(spriteOverlay[i - 1] != 0)
+                {
+                    for(int j = 0; j < 8; ++j)
+                    {
+                        spriteClr2[i * 4 * 8 + j] |= 0x40;
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < 8; ++j)
+                    {
+                        spriteClr2[i * 4 * 8 + j] &= 0x0F;
+                    }
                 }
             }
         }

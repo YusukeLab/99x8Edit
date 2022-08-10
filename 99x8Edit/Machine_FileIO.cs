@@ -381,6 +381,14 @@ namespace _99x8Edit
         }
         public void ExportSprites(ExportType type, String path)
         {
+            // Set the CC flags of the sprite color
+            /*
+                We don't update the CC flags when editing, since it will be a quite mess
+                when there are copy, paste and other actions to overlayed sprite.
+                Anyway, we only need the CC flags for exporting, so we're going to update here.
+             */
+            this.SetSpriteCCFlags();
+            // Start exporting
             if (type == ExportType.CHeader || type == ExportType.CCompressed)
             {
                 StreamWriter sr = new StreamWriter(path, false);
