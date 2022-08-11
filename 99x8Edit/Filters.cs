@@ -8,6 +8,21 @@ using System.IO;
 namespace _99x8Edit
 {
     // Image effects
+    public class Filter
+    {
+        public enum Type
+        {
+            CRT
+        }
+        public static FilterBase Create(Type type)
+        {
+            if(type == Type.CRT)
+            {
+                return new FilterCRT();
+            }
+            return null;
+        }
+    }
     public abstract class FilterBase
     {
         public abstract void Process(Bitmap src);

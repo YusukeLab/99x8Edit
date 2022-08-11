@@ -87,8 +87,7 @@ namespace _99x8Edit
             // CRT Filter
             if (chkCRT.Checked)
             {
-                FilterCRT f = new FilterCRT();
-                f.Process(bmpPCGList);
+                Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
             }
             // Selection
             g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
@@ -112,8 +111,7 @@ namespace _99x8Edit
             // CRT Filter
             if (chkCRT.Checked)
             {
-                FilterCRT f = new FilterCRT();
-                f.Process(bmpMapPatterns);
+                Filter.Create(Filter.Type.CRT).Process(bmpMapPatterns);
             }
             // Selection
             int cx = currentTilePatternX * 32;
@@ -138,8 +136,7 @@ namespace _99x8Edit
             // CRT Filter
             if (chkCRT.Checked)
             {
-                FilterCRT f = new FilterCRT();
-                f.Process(bmpMap);
+                Filter.Create(Filter.Type.CRT).Process(bmpMap);
             }
             // Selection
             g.DrawRectangle(new Pen(Color.Red), currentMapX * 32, currentMapY * 32, 31, 31);
@@ -280,55 +277,54 @@ namespace _99x8Edit
         }
         private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            bool update = false;
             switch (e.KeyCode)
             {
                 case Keys.Up:
                     if (currentCellInPatternY > 0)
                     {
                         currentCellInPatternY--;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     else if(currentTilePatternY > 0)
                     {
                         currentTilePatternY--;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     break;
                 case Keys.Left:
                     if (currentCellInPatternX > 0)
                     {
                         currentCellInPatternX--;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     else if (currentTilePatternX > 0)
                     {
                         currentTilePatternX--;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     break;
                 case Keys.Right:
                     if (currentCellInPatternX == 0)
                     {
                         currentCellInPatternX++;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     else if (currentTilePatternX < 15)
                     {
                         currentTilePatternX++;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     break;
                 case Keys.Down:
                     if (currentCellInPatternY == 0)
                     {
                         currentCellInPatternY++;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     else if (currentTilePatternY < 15)
                     {
                         currentTilePatternY++;
-                        update = true;
+                        this.RefreshMapPatterns();
                     }
                     break;
                 case Keys.Enter:
@@ -340,10 +336,6 @@ namespace _99x8Edit
                     if (currentMapX == 0) currentMapY = (currentMapY + 1) % 12;
                     this.RefreshMap();
                     break;
-            }
-            if (update)
-            {
-                this.RefreshMapPatterns();
             }
         }
         private void panelPatterns_DragEnter(object sender, DragEventArgs e)

@@ -7,7 +7,7 @@ namespace _99x8Edit
     // Mementos for undo/redo actions
     class Memento
     {
-        // [For editor] When other data source is needed, add here
+        // [For editor] When other data sources are needed, add here
         public Machine vdpData;
     }
     class MementoCaretaker
@@ -27,7 +27,7 @@ namespace _99x8Edit
         public void Initialize(MainWindow ui, Machine vdp)
         {
             UI = ui;
-            // [For editor] When other data source is needed, add here
+            // [For editor] When other data sources are needed, add here
             vdpData = vdp;
         }
         public void Push()
@@ -39,7 +39,7 @@ namespace _99x8Edit
             }
             Memento m = new Memento();
             {
-                // [For editor] When other data source is needed, add here
+                // [For editor] When other data sources are needed, add here
                 m.vdpData = vdpData.CreateCopy();
             }
             mementoList.Add(m);
@@ -63,7 +63,7 @@ namespace _99x8Edit
             Memento m = mementoList[mementoList.Count - 1];
             mementoList.RemoveAt(mementoList.Count - 1);
             {
-                // [For editor] When other data source is needed, add here
+                // [For editor] When other data sources are needed, add here
                 vdpData.SetAllData(m.vdpData);
             }
             if (mementoList.Count == 0)
@@ -88,7 +88,7 @@ namespace _99x8Edit
             Memento m = mementoRedo[mementoRedo.Count - 1];
             mementoRedo.RemoveAt(mementoRedo.Count - 1);
             {
-                // [For editor] When other data source is needed, add here
+                // [For editor] When other data sources are needed, add here
                 vdpData.SetAllData(m.vdpData);
             }
             if (mementoRedo.Count == 0)
@@ -109,7 +109,7 @@ namespace _99x8Edit
         {
             Memento current = new Memento();
             {
-                // [For editor] When other data source is needed, add here
+                // [For editor] When other data sources are needed, add here
                 current.vdpData = vdpData.CreateCopy();
             }
             return current;

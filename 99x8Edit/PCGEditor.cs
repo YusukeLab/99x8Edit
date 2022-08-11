@@ -84,14 +84,7 @@ namespace _99x8Edit
             this.UpdateSandbox();           // Sandbox view
             this.UpdatePCGEditView();       // PCG Editor
             this.UpdateCurrentColorView();  // Current color
-            if (dataSource.IsTMS9918() && !this.checkTMS.Checked)
-            {
-                this.checkTMS.Checked = true;
-            }
-            if (!dataSource.IsTMS9918() && this.checkTMS.Checked)
-            {
-                this.checkTMS.Checked = false;
-            }
+            this.checkTMS.Checked = dataSource.IsTMS9918();
             this.btnOpenPalette.Enabled = !dataSource.IsTMS9918();
             this.btnSavePalette.Enabled = !dataSource.IsTMS9918();
         }
@@ -153,8 +146,7 @@ namespace _99x8Edit
                 if (chkCRT.Checked)
                 {
                     // CRT Filter
-                    FilterCRT f = new FilterCRT();
-                    f.Process(bmpPCGList);
+                    Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
                 }
                 // Current selection
                 g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
@@ -176,8 +168,7 @@ namespace _99x8Edit
                 if (chkCRT.Checked)
                 {
                     // CRT Filter
-                    FilterCRT f = new FilterCRT();
-                    f.Process(bmpSandbox);
+                    Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
                 g.DrawRectangle(new Pen(Color.Red), currentSandboxX * 16, currentSandboxY * 16, 15, 15);
@@ -285,7 +276,7 @@ namespace _99x8Edit
             else
             {
                 // Update PCG pattern
-                this.EditCurrentPCG((e.X / 16) % 8, currentLineY % 8);
+                this.editCurrentPCG((e.X / 16) % 8, currentLineY % 8);
             }
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -325,28 +316,28 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.D1:
-                    this.EditCurrentPCG(0, currentLineY % 8);
+                    this.editCurrentPCG(0, currentLineY % 8);
                     break;
                 case Keys.D2:
-                    this.EditCurrentPCG(1, currentLineY % 8);
+                    this.editCurrentPCG(1, currentLineY % 8);
                     break;
                 case Keys.D3:
-                    this.EditCurrentPCG(2, currentLineY % 8);
+                    this.editCurrentPCG(2, currentLineY % 8);
                     break;
                 case Keys.D4:
-                    this.EditCurrentPCG(3, currentLineY % 8);
+                    this.editCurrentPCG(3, currentLineY % 8);
                     break;
                 case Keys.D5:
-                    this.EditCurrentPCG(4, currentLineY % 8);
+                    this.editCurrentPCG(4, currentLineY % 8);
                     break;
                 case Keys.D6:
-                    this.EditCurrentPCG(5, currentLineY % 8);
+                    this.editCurrentPCG(5, currentLineY % 8);
                     break;
                 case Keys.D7:
-                    this.EditCurrentPCG(6, currentLineY % 8);
+                    this.editCurrentPCG(6, currentLineY % 8);
                     break;
                 case Keys.D8:
-                    this.EditCurrentPCG(7, currentLineY % 8);
+                    this.editCurrentPCG(7, currentLineY % 8);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:
@@ -692,7 +683,7 @@ namespace _99x8Edit
         }
         //---------------------------------------------------------------------
         // Utility
-        private void EditCurrentPCG(int x, int y)
+        private void editCurrentPCG(int x, int y)
         {
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;

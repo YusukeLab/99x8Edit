@@ -76,8 +76,8 @@ namespace _99x8Edit
             {
                 // Address to col, row
                 byte dat = reader.ReadByte();
-                int chr_x = this.AddressToCol(i);
-                int chr_y = this.AddressToRow(i);                
+                int chr_x = this.addressToCol(i);
+                int chr_y = this.addressToRow(i);                
                 int pix_y = i % 8;      // y coorinate in row
                 for(int j = 0; j < 8; ++j)
                 {
@@ -115,28 +115,28 @@ namespace _99x8Edit
         {
             ClipOneChrInRom clip = new ClipOneChrInRom();
             // Left top
-            int addr = this.ColRowToAddr(currentCol, currentRow);
+            int addr = this.colRowToAddr(currentCol, currentRow);
             reader.BaseStream.Seek(addr, SeekOrigin.Begin);
             for (int i = 0; i < 8; ++i)
             {
                 clip.leftTop[i] = reader.ReadByte();
             }
             // Left bottom
-            addr = this.ColRowToAddr(currentCol, currentRow + 1);
+            addr = this.colRowToAddr(currentCol, currentRow + 1);
             reader.BaseStream.Seek(addr, SeekOrigin.Begin);
             for (int i = 0; i < 8; ++i)
             {
                 clip.leftBottom[i] = reader.ReadByte();
             }
             // Right top
-            addr = this.ColRowToAddr(currentCol + 1, currentRow);
+            addr = this.colRowToAddr(currentCol + 1, currentRow);
             reader.BaseStream.Seek(addr, SeekOrigin.Begin);
             for (int i = 0; i < 8; ++i)
             {
                 clip.rightTop[i] = reader.ReadByte();
             }
             // Right bottom
-            addr = this.ColRowToAddr(currentCol + 1, currentRow + 1);
+            addr = this.colRowToAddr(currentCol + 1, currentRow + 1);
             reader.BaseStream.Seek(addr, SeekOrigin.Begin);
             for (int i = 0; i < 8; ++i)
             {
@@ -200,7 +200,7 @@ namespace _99x8Edit
             long validated_addr = 0;
             if(long.TryParse(txtAddr.Text, System.Globalization.NumberStyles.HexNumber, null, out input_addr))
             {
-                if(input_addr < reader.BaseStream.Length)
+                if((input_addr > 0) && (input_addr < reader.BaseStream.Length))
                 {
                     validated_addr = input_addr;
                 }
@@ -245,7 +245,7 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utilities
-        private int ColRowToAddr(int col, int row)
+        private int colRowToAddr(int col, int row)
         {
             if (type == PeekType.Linear)
             {
@@ -262,7 +262,7 @@ namespace _99x8Edit
                 return addr;
             }
         }
-        private int AddressToCol(int addr)
+        private int addressToCol(int addr)
         {
             if (type == PeekType.Linear)
             {
@@ -278,7 +278,7 @@ namespace _99x8Edit
                 return block_x * 2 + (addr / 16) % 2;
             }
         }
-        private int AddressToRow(int addr)
+        private int addressToRow(int addr)
         {
             if (type == PeekType.Linear)
             {

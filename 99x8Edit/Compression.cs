@@ -4,27 +4,30 @@ using System.Text;
 
 namespace _99x8Edit
 {
-    public abstract class CompressionBase
+    public class Compression
     {
         public enum Type
         {
             BytePair,
             RunLength
         }
-        // Compression
-        public abstract byte[] Compress(byte[] source); 
         public static CompressionBase Create(Type type)
         {
-            if(type == Type.BytePair)
+            if (type == Type.BytePair)
             {
                 return new CompressBPE();
             }
-            else if(type == Type.RunLength)
+            else if (type == Type.RunLength)
             {
                 return new CompressRLE();
             }
             return null;
         }
+    }
+    public abstract class CompressionBase
+    {
+        // Compression
+        public abstract byte[] Compress(byte[] source); 
     }
     public class CompressRLE : CompressionBase
     {

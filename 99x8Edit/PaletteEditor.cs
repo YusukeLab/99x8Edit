@@ -53,6 +53,7 @@ namespace _99x8Edit
             int val = 0;
             if (int.TryParse(textBoxR.Text, out val))
             {
+                if (val < 0) val = 0;
                 if (val > 7) val = 7;
             }
             textBoxR.Text = val.ToString();
@@ -64,6 +65,7 @@ namespace _99x8Edit
             int val = 0;
             if (int.TryParse(textBoxG.Text, out val))
             {
+                if (val < 0) val = 0;
                 if (val > 7) val = 7;
             }
             textBoxG.Text = val.ToString();
@@ -75,6 +77,7 @@ namespace _99x8Edit
             int val = 0;
             if (int.TryParse(textBoxB.Text, out val))
             {
+                if (val < 0) val = 0;
                 if (val > 7) val = 7;
             }
             textBoxB.Text = val.ToString();
