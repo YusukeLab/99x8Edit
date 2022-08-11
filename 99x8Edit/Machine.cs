@@ -200,21 +200,38 @@ namespace _99x8Edit
             }
             this.updatePCGBitmap(dst);
         }
-        public void CopyPCGToClip(int index)
+        public byte[] GetPCGGen(int index)
         {
-            ClipOnePCG clip = new ClipOnePCG();
-            clip.index = (byte)index;
-            for(int i = 0; i < 8; ++i)
+            byte[] ret = new byte[8];
+            for (int i = 0; i < 8; ++i)
             {
-                clip.genData[i] = ptnGen[index * 8 + i];
-                clip.clrData[i] = ptnClr[index * 8 + i];
+                ret[i] = ptnGen[index * 8 + i];
             }
-            ClipboardWrapper.SetData(clip);
+            return ret;
+        }
+        public byte[] GetPCGClr(int index)
+        {
+            byte[] ret = new byte[8];
+            for (int i = 0; i < 8; ++i)
+            {
+                ret[i] = ptnClr[index * 8 + i];
+            }
+            return ret;
+        }
+        public void SetPCG(int index, byte[] gen, byte[] clr, bool push)
+        {
+            if(push) MementoCaretaker.Instance.Push();
+            for (int i = 0; i < 8; ++i)
+            {
+                if (gen != null)  ptnGen[index * 8 + i] = gen[i];
+                if (clr != null) ptnClr[index * 8 + i] = clr[i];
+            }
+            this.updatePCGBitmap(index);
         }
         public void PastePCGFromClip(int index)
         {
             dynamic clip = ClipboardWrapper.GetData();
-            if (clip is ClipOnePCG)
+            if (clip is ClipPCG)
             {
                 MementoCaretaker.Instance.Push();
                 for (int i = 0; i < 8; ++i)

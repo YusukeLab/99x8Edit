@@ -302,6 +302,7 @@ namespace _99x8Edit
             this.panelPCG.TabStop = true;
             this.panelPCG.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPCG_DragDrop);
             this.panelPCG.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPCG_DragEnter);
+            this.panelPCG.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPCG_DragOver);
             this.panelPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPCG_PreviewKeyDown);
             // 
             // viewPCG

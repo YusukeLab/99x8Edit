@@ -31,11 +31,11 @@ namespace _99x8Edit
         public byte clrData;
     }
     [Serializable]
-    public class ClipOnePCG : ClipBase
+    public class ClipPCG : ClipBase
     {
         public byte index;
-        public byte[] genData = new byte[8];
-        public byte[] clrData = new byte[8];
+        public List<List<Byte[]>> pcgGen = new List<List<byte[]>>();
+        public List<List<Byte[]>> pcgClr = new List<List<byte[]>>();
     }
     [Serializable]
     public class ClipNametable : ClipBase

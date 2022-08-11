@@ -18,6 +18,8 @@ namespace _99x8Edit
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private int currentPCGX = 0;        // Selected PCG in PCG list
         private int currentPCGY = 0;
+        private int selStartPCGX = 0;       // For multiple selection
+        private int selStartPCGY = 0;
         private int currentSandboxX = 0;    // Selected cell in sandbox
         private int currentSandboxY = 0;
         private int selStartSandX = 0;      // For multiple selection
@@ -177,7 +179,11 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
                 }
                 // Current selection
-                g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
+                g.DrawRectangle(new Pen(Color.Red),
+                                Math.Min(currentPCGX, selStartPCGX) * 16,
+                                Math.Min(currentPCGY, selStartPCGY) * 16,
+                                (Math.Abs(currentPCGX - selStartPCGX) + 1) * 16 - 1,
+                                (Math.Abs(currentPCGY - selStartPCGY) + 1) * 16 - 1);
                 this.viewPCG.Refresh();
             }
         }
@@ -446,21 +452,23 @@ namespace _99x8Edit
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
             panelPCG.Focus();   // Key events are handled by parent panel
-            int clicked_pcg_x = e.X / 16;
-            int clicked_pcg_y = e.Y / 16;
-            if (clicked_pcg_x > 31) clicked_pcg_x = 31;
-            if (clicked_pcg_y > 7) clicked_pcg_y = 7;
-            if ((clicked_pcg_x != currentPCGX) || (clicked_pcg_y != currentPCGY))
-            {
-                // Selected PCG has changed
-                currentPCGX = clicked_pcg_x;
-                currentPCGY = clicked_pcg_y;
-                this.UpdatePCGList();
-                this.UpdatePCGEditView();
-                this.UpdateCurrentColorView();
-            }
             if (e.Button == MouseButtons.Left)
             {
+                int clicked_pcg_x = e.X / 16;
+                int clicked_pcg_y = e.Y / 16;
+                if (clicked_pcg_x > 31) clicked_pcg_x = 31;
+                if (clicked_pcg_y > 7) clicked_pcg_y = 7;
+                if ((clicked_pcg_x != currentPCGX) || (clicked_pcg_y != currentPCGY))
+                {
+                    // Selected PCG has changed
+                    currentPCGX = selStartPCGX = clicked_pcg_x;
+                    currentPCGY = selStartPCGY = clicked_pcg_y;
+                    this.UpdatePCGList();
+                    this.UpdatePCGEditView();
+                    this.UpdateCurrentColorView();
+                    viewPCG.DoDragDrop(new DnDPCGSel(), DragDropEffects.Copy);
+                    return;
+                }
                 viewPCG.DoDragDrop(new DnDPCG(), DragDropEffects.Copy);
             }
         }
@@ -469,10 +477,40 @@ namespace _99x8Edit
             bool update = false;
             switch (e.KeyData)
             {
+                case Keys.Up | Keys.Shift:
+                    if (currentPCGY > 0)
+                    {
+                        currentPCGY--;
+                        update = true;
+                    }
+                    break;
+                case Keys.Down | Keys.Shift:
+                    if (currentPCGY < 7)
+                    {
+                        currentPCGY++;
+                        update = true;
+                    }
+                    break;
+                case Keys.Left | Keys.Shift:
+                    if (currentPCGX > 0)
+                    {
+                        currentPCGX--;
+                        update = true;
+                    }
+                    break;
+                case Keys.Right | Keys.Shift:
+                    if (currentPCGX < 31)
+                    {
+                        currentPCGX++;
+                        update = true;
+                    }
+                    break;
                 case Keys.Up:
                     if (currentPCGY > 0)
                     {
                         currentPCGY--;
+                        selStartPCGX = currentPCGX;
+                        selStartPCGY = currentPCGY;
                         update = true;
                     }
                     break;
@@ -480,6 +518,8 @@ namespace _99x8Edit
                     if (currentPCGX > 0)
                     {
                         currentPCGX--;
+                        selStartPCGX = currentPCGX;
+                        selStartPCGY = currentPCGY;
                         update = true;
                     }
                     break;
@@ -487,6 +527,8 @@ namespace _99x8Edit
                     if (currentPCGX < 31)
                     {
                         currentPCGX++;
+                        selStartPCGX = currentPCGX;
+                        selStartPCGY = currentPCGY;
                         update = true;
                     }
                     break;
@@ -494,6 +536,8 @@ namespace _99x8Edit
                     if (currentPCGY < 7)
                     {
                         currentPCGY++;
+                        selStartPCGX = currentPCGX;
+                        selStartPCGY = currentPCGY;
                         update = true;
                     }
                     break;
@@ -513,8 +557,27 @@ namespace _99x8Edit
         }
         private void panelPCG_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDPCG))) e.Effect = DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(typeof(DnDPCG)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else if (e.Data.GetDataPresent(typeof(DnDPCGSel)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
             else e.Effect = DragDropEffects.None;
+        }
+        private void panelPCG_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDPCGSel)))
+            {
+                Point p = viewPCG.PointToClient(Cursor.Position);
+                currentPCGX = Math.Min(p.X / 16, 31);
+                currentPCGY = Math.Min(p.Y / 16, 7);
+                this.UpdatePCGList();
+                this.UpdatePCGEditView();
+                this.UpdateCurrentColorView();
+            }
         }
         private void panelPCG_DragDrop(object sender, DragEventArgs e)
         {
@@ -530,16 +593,73 @@ namespace _99x8Edit
         }
         private void contextPCGList_copy(object sender, EventArgs e)
         {
-            dataSource.CopyPCGToClip(currentPCGY * 32 + currentPCGX);
+            ClipPCG clip = new ClipPCG();
+            clip.index = (byte)(currentPCGY * 32 + currentPCGX);
+            int x = Math.Min(currentPCGX, selStartPCGX);
+            int y = Math.Min(currentPCGY, selStartPCGY);
+            int w = Math.Abs(currentPCGX - selStartPCGX) + 1;
+            int h = Math.Abs(currentPCGY - selStartPCGY) + 1;
+            List<List<Byte[]>> gen_all = new List<List<byte[]>>();
+            List<List<Byte[]>> clr_all = new List<List<byte[]>>();
+            for (int i = y; i < y + h; ++i)
+            {
+                List<byte[]> gen_row = new List<byte[]>();
+                List<byte[]> clr_row = new List<byte[]>();
+                for (int j = x; j < x + w; ++j)
+                {
+                    gen_row.Add(dataSource.GetPCGGen(i * 32 + j));
+                    clr_row.Add(dataSource.GetPCGClr(i * 32 + j));
+                }
+                gen_all.Add(gen_row);
+                clr_all.Add(clr_row);
+            }
+            clip.pcgGen = gen_all;
+            clip.pcgClr = clr_all;
+            ClipboardWrapper.SetData(clip);
         }
         private void contextPCGList_paste(object sender, EventArgs e)
         {
-            dataSource.PastePCGFromClip(currentPCGY * 32 + currentPCGX);
-            this.RefreshAllViews();
+            dynamic clip = ClipboardWrapper.GetData();
+            if (clip is ClipPCG)
+            {
+                MementoCaretaker.Instance.Push();
+                for (int i = 0; (i < clip.pcgGen.Count) && (currentPCGY + i < 8); ++i)
+                {
+                    List<byte[]> gen_line = clip.pcgGen[i];
+                    List<byte[]> clr_line = clip.pcgClr[i];
+                    for (int j = 0; (j < gen_line.Count) && (currentPCGX + j < 32); ++j)
+                    {
+                        dataSource.SetPCG((currentPCGY + i) * 32 + currentPCGX + j,
+                                          gen_line[j], clr_line[j], false);
+                    }
+                }
+                this.RefreshAllViews();
+            }
+            else if(clip is ClipOneChrInRom)
+            {
+                MementoCaretaker.Instance.Push();
+                int index = currentPCGY * 32 + currentPCGX;
+                dataSource.SetPCG(index, clip.leftTop, null, false);                     // Left top
+                dataSource.SetPCG((index + 32) % 256, clip.leftBottom, null, false);     // Left bottom
+                dataSource.SetPCG((index + 1) % 256, clip.rightTop, null, false);        // Right top
+                dataSource.SetPCG((index + 33) % 256, clip.rightBottom, null, false);    // Right top
+                this.RefreshAllViews();
+            }
         }
         private void contextPCGList_delete(object sender, EventArgs e)
         {
-            dataSource.ClearPCG(currentPCGY * 32 + currentPCGX);
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentPCGX, selStartPCGX);
+            int y = Math.Min(currentPCGY, selStartPCGY);
+            int w = Math.Abs(currentPCGX - selStartPCGX) + 1;
+            int h = Math.Abs(currentPCGY - selStartPCGY) + 1;
+            for (int i = y; (i < y + h) && (i < 24); ++i)
+            {
+                for (int j = x; (j < x + w) && (j < 32); ++j)
+                {
+                    dataSource.ClearPCG(i * 32 + j);
+                }
+            }
             this.RefreshAllViews();
         }
         private void contextPCGList_inverse(object sender, EventArgs e)
@@ -663,7 +783,7 @@ namespace _99x8Edit
         private void contextSandbox_paste(object sender, EventArgs e)
         {
             dynamic clip = ClipboardWrapper.GetData();
-            if (clip is ClipOnePCG)
+            if (clip is ClipPCG)
             {
                 int pcgIndex = clip.index;
                 dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, pcgIndex);
@@ -853,5 +973,6 @@ namespace _99x8Edit
         }
     }
     public class DnDPCG { }
+    public class DnDPCGSel { }
     public class DnDSandbox { }
 }
