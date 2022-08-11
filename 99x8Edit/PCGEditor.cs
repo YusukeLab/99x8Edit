@@ -17,6 +17,8 @@ namespace _99x8Edit
         private Bitmap bmpPalette = new Bitmap(256, 64);     // Palette view
         private Bitmap bmpSandbox = new Bitmap(512, 384);    // Sandbox view
         private Bitmap bmpPCGEdit = new Bitmap(256, 256);    // PCG Editor view
+        private Bitmap bmpColorL = new Bitmap(32, 32);
+        private Bitmap bmpColorR = new Bitmap(32, 32);
         private int currentPCGX = 0;
         private int currentPCGY = 0;
         private int currentSandboxX = 0;
@@ -60,6 +62,8 @@ namespace _99x8Edit
             this.viewPCG.Image = bmpPCGList;
             this.viewSandbox.Image = bmpSandbox;
             this.viewPCGEdit.Image = bmpPCGEdit;
+            this.viewColorL.Image = bmpColorL;
+            this.viewColorR.Image = bmpColorR;
             checkTMS.Checked = this.dataSource.IsTMS9918();
             // Refresh all views
             this.RefreshAllViews();
@@ -91,8 +95,9 @@ namespace _99x8Edit
         private void UpdatePaletteView(bool refresh = true)
         {
             // Update palette view
+            Utility.DrawTransparent(bmpPalette);
             Graphics g = Graphics.FromImage(bmpPalette);
-            for (int i = 0; i < 16; ++i)
+            for (int i = 1; i < 16; ++i)
             {
                 Color c = dataSource.ColorCodeToWindowsColor(i);
                 g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
@@ -102,8 +107,8 @@ namespace _99x8Edit
         private void UpdatePCGEditView(bool refresh = true)
         {
             // Update PCG editor
+            Utility.DrawTransparent(bmpPCGEdit);
             Graphics g = Graphics.FromImage(bmpPCGEdit);
-            g.FillRectangle(new SolidBrush(Color.Gray), 0, 0, 256, 256);
             for (int i = 0; i < 4; ++i)      // four PCG in one editor
             {
                 int pcg = currentPCGY * 32 + currentPCGX;
@@ -112,8 +117,14 @@ namespace _99x8Edit
                 {
                     for (int k = 0; k < 8; ++k)
                     {
-                        Color c = dataSource.GetBitmapOfPCG(target_pcg).GetPixel(k, j);
-                        g.FillRectangle(new SolidBrush(c), (i % 2) * 128 + k * 16, (i / 2) * 128 + j * 16, 15, 15);
+                        int p = dataSource.GetPCGPixel(target_pcg, j, k);
+                        int code = dataSource.GetColorTable(target_pcg, j, (p != 0));
+                        if(code != 0)
+                        {
+                            Color c = dataSource.ColorCodeToWindowsColor(code);
+                            g.FillRectangle(new SolidBrush(Color.Gray), (i % 2) * 128 + k * 16, (i / 2) * 128 + j * 16, 16, 16);
+                            g.FillRectangle(new SolidBrush(c), (i % 2) * 128 + k * 16, (i / 2) * 128 + j * 16, 15, 15);
+                        }
                     }
                 }
             }
@@ -127,9 +138,21 @@ namespace _99x8Edit
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             int color_code_l = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
             int color_code_r = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
-            viewColorL.BackColor = dataSource.ColorCodeToWindowsColor(color_code_l);
-            viewColorR.BackColor = dataSource.ColorCodeToWindowsColor(color_code_r);
-            if(refresh) this.viewColorL.Refresh();
+            Utility.DrawTransparent(bmpColorL);
+            if(color_code_l > 0)
+            {
+                Graphics g = Graphics.FromImage(bmpColorL);
+                Color c = dataSource.ColorCodeToWindowsColor(color_code_l);
+                g.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
+            }
+            Utility.DrawTransparent(bmpColorR);
+            if (color_code_r > 0)
+            {
+                Graphics g = Graphics.FromImage(bmpColorR);
+                Color c = dataSource.ColorCodeToWindowsColor(color_code_r);
+                g.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
+            }
+            if (refresh) this.viewColorL.Refresh();
             if(refresh) this.viewColorR.Refresh();
         }
         private void UpdatePCGList(bool refresh = true)
@@ -137,6 +160,7 @@ namespace _99x8Edit
             // Update all PCG list
             Graphics g = Graphics.FromImage(bmpPCGList);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpPCGList.Width, bmpPCGList.Height);
             for (int i = 0; i < 256; ++i)
             {
                 g.DrawImage(dataSource.GetBitmapOfPCG(i), (i % 32) * 16, (i / 32) * 16, 17, 17);
@@ -157,6 +181,7 @@ namespace _99x8Edit
         {
             // Update all sandbox
             Graphics g = Graphics.FromImage(bmpSandbox);
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpSandbox.Width, bmpSandbox.Height);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             for (int i = 0; i < 768; ++i)
             {

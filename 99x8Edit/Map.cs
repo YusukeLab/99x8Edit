@@ -78,8 +78,10 @@ namespace _99x8Edit
         private void UpdatePCGList(bool refresh = true)
         {
             // Update all PCG list
+            Utility.DrawTransparent(bmpPCGList);
             Graphics g = Graphics.FromImage(bmpPCGList);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpPCGList.Width, bmpPCGList.Height);
             for (int i = 0; i < 256; ++i)
             {
                 g.DrawImage(dataSource.GetBitmapOfPCG(i), (i % 32) * 16, (i / 32) * 16, 17, 17);
@@ -97,6 +99,7 @@ namespace _99x8Edit
         {
             Graphics g = Graphics.FromImage(bmpMapPatterns);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpMapPatterns.Width, bmpMapPatterns.Height);
             for (int i = 0; i < 256; ++i)
             {
                 for (int j = 0; j < 4; ++j)
@@ -126,6 +129,7 @@ namespace _99x8Edit
         {
             Graphics g = Graphics.FromImage(bmpMap);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpMap.Width, bmpMap.Height);
             for (int i = 0; i < 12; ++i)
             {
                 for (int j = 0; j < 16; ++j)

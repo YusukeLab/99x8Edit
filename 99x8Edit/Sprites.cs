@@ -83,8 +83,9 @@ namespace _99x8Edit
         private void UpdatePaletteView(bool refresh = true)
         {
             // Update palette view
+            Utility.DrawTransparent(bmpPalette);
             Graphics g = Graphics.FromImage(bmpPalette);
-            for (int i = 0; i < 16; ++i)
+            for (int i = 1; i < 16; ++i)
             {
                 Color c = dataSource.ColorCodeToWindowsColor(i);
                 g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
@@ -93,9 +94,9 @@ namespace _99x8Edit
         }
         private void UpdateSpriteView(bool refresh = true)
         {
-            this.drawTransparent(bmpSprites);
             Graphics g = Graphics.FromImage(bmpSprites);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpSprites.Width, bmpSprites.Height);
             for (int i = 0; i < 8; ++i)
             {
                 for(int j = 0; j < 8; ++j)
@@ -147,8 +148,8 @@ namespace _99x8Edit
         }
         private void UpdateSpriteEditView(bool refresh = true)
         {
-            this.drawTransparent(bmpSpriteEdit);
-            this.drawTransparent(bmpPreview);
+            Utility.DrawTransparent(bmpSpriteEdit);
+            Utility.DrawTransparent(bmpPreview);
             Graphics g = Graphics.FromImage(bmpSpriteEdit);
             Graphics preview = Graphics.FromImage(bmpPreview);
             int index_of_16x16 = currentSpriteX + currentSpriteY * 8;
@@ -509,6 +510,7 @@ namespace _99x8Edit
         }
         private int viewColorL_ColorSelectionCallback(int val)
         {
+            if (val == 0) return 0;
             int current_target16x16 = (currentSpriteY * 8 + currentSpriteX) % 64;
             this.setSpriteColor(current_target16x16, val);
             return 0;
@@ -522,6 +524,7 @@ namespace _99x8Edit
         }
         private int viewColorR_ColorSelectionCallback(int val)
         {
+            if (val == 0) return 0;
             int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
             this.setSpriteColor(current_target16x16, val);
             return 0;
@@ -530,6 +533,7 @@ namespace _99x8Edit
         {
             // Palette view clicked
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
+            if (clicked_color_num == 0) return;
             // Update color table of current line
             int current_target16x16 = 0;
             if (e.Button == MouseButtons.Left)          // To current sprite
@@ -639,20 +643,7 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utility
-        private void drawTransparent(Bitmap bmp)
-        {
-            Graphics g = Graphics.FromImage(bmp);
-            for (int y = 0; y < bmp.Height / 16; ++y)
-            {
-                for (int x = 0; x < bmp.Width / 16; ++x)
-                {
-                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16, y * 16, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16 + 8, y * 16, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16, y * 16 + 8, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16 + 8, y * 16 + 8, 8, 8);
-                }
-            }
-        }
+
         private void setSpriteColor(int target16x16, int val)
         {
             int target8x8 = target16x16 * 4;

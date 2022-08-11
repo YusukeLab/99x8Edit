@@ -659,15 +659,18 @@ namespace _99x8Edit
                 byte pattern_per_line = ptnGen[pcg * 8 + i];    // Pattern of the line
                 int fore_color = ptnClr[pcg * 8 + i] >> 4;      // Color of the line
                 int back_color = ptnClr[pcg * 8 + i] & 0xF;
-                Color Fore = colorOf[fore_color];               // Color code to windows color
-                Color Back = colorOf[back_color];
+                Color fore = Color.Transparent;
+                Color back = Color.Transparent;
+                // Color code to windows color
+                if (fore_color != 0) fore = colorOf[fore_color];
+                if (back_color != 0) back = colorOf[back_color];
                 for (int j = 0; j < 8; ++j)                     // Each pixel right to left
                 {
                     int x = (pattern_per_line >> j) & 1;        // Get one bit of pattern
                     if (x != 0)
-                        bmpOneChr[pcg].SetPixel(7 - j, i, Fore);
+                        bmpOneChr[pcg].SetPixel(7 - j, i, fore);
                     else
-                        bmpOneChr[pcg].SetPixel(7 - j, i, Back);
+                        bmpOneChr[pcg].SetPixel(7 - j, i, back);
                 }
             }
         }
