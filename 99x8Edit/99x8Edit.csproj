@@ -8,11 +8,18 @@
     <Version>0.0.2.2</Version>
     <Authors>Yusuke Miyauchi</Authors>
     <Company />
+    <PackageIcon></PackageIcon>
+    <ApplicationIcon>pcg.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="resources\pcg.png" />
+    <None Remove="resources\pcg.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

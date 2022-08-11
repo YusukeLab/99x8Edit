@@ -21,7 +21,6 @@ namespace _99x8Edit
         private int currentSpriteY = 0;     // 0-7
         private int currentLineX = 0;       // Selected line in editor(0-1)
         private int currentLineY = 0;       // Selected line in editor(0-15)
-        Color colorSpriteBack = Color.Orange;
         String currentFile = "";
         public String CurrentFile
         {
@@ -94,13 +93,25 @@ namespace _99x8Edit
         }
         private void UpdateSpriteView(bool refresh = true)
         {
+            this.drawTransparent(bmpSprites);
             Graphics g = Graphics.FromImage(bmpSprites);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             for (int i = 0; i < 8; ++i)
             {
                 for(int j = 0; j < 8; ++j)
                 {
-                    this.drawOneSprite(g, j, i); // For each 16x16 sprites
+                    // Four sprites in one 16x16 sprites
+                    for (int dx = 0; dx < 2; ++dx)
+                    {
+                        for (int dy = 0; dy < 2; ++dy)
+                        {
+                            int target_num8x8 = (i * 8 + j) * 4 + dx * 2 + dy;
+                            int target_x = j * 32 + dx * 16;
+                            int target_y = i * 32 + dy * 16;
+                            Bitmap b = dataSource.GetBitmapOfSprite(target_num8x8);
+                            g.DrawImage(b, target_x, target_y, 17, 17);
+                        }
+                    }
                 }
             }
             // CRT Filter
@@ -136,10 +147,10 @@ namespace _99x8Edit
         }
         private void UpdateSpriteEditView(bool refresh = true)
         {
+            this.drawTransparent(bmpSpriteEdit);
+            this.drawTransparent(bmpPreview);
             Graphics g = Graphics.FromImage(bmpSpriteEdit);
-            g.FillRectangle(new SolidBrush(colorSpriteBack), 0, 0, 256, 256);
-            Graphics g_prev = Graphics.FromImage(bmpPreview);
-            g_prev.FillRectangle(new SolidBrush(colorSpriteBack), 0, 0, 32, 32);
+            Graphics preview = Graphics.FromImage(bmpPreview);
             int index_of_16x16 = currentSpriteX + currentSpriteY * 8;
             bool overlayed = dataSource.GetSpriteOverlay(index_of_16x16);
             // Four sprites are in one 16x16 sprite
@@ -186,9 +197,10 @@ namespace _99x8Edit
                             }
                             if (color_code != 0)
                             {
+                                g.FillRectangle(new SolidBrush(Color.Gray), x * 128 + k * 16, y * 128 + j * 16, 16, 16);
                                 Color c = dataSource.ColorCodeToWindowsColor(color_code);
                                 g.FillRectangle(new SolidBrush(c), x * 128 + k * 16, y * 128 + j * 16, 15, 15);
-                                g_prev.FillRectangle(new SolidBrush(c), x * 16 + k * 2, y * 16 + j * 2, 2, 2);
+                                preview.FillRectangle(new SolidBrush(c), x * 16 + k * 2, y * 16 + j * 2, 2, 2);
                             }
                         }
                     }
@@ -627,19 +639,17 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utility
-        private void drawOneSprite(Graphics g, int x, int y)
+        private void drawTransparent(Bitmap bmp)
         {
-            for (int dx = 0; dx < 2; ++dx)
+            Graphics g = Graphics.FromImage(bmp);
+            for (int y = 0; y < bmp.Height / 16; ++y)
             {
-                for (int dy = 0; dy < 2; ++dy)
+                for (int x = 0; x < bmp.Width / 16; ++x)
                 {
-                    // Four sprites in one 16x16 sprites
-                    int target_num8x8 = (y * 8 + x) * 4 + dx * 2 + dy;
-                    int target_x = x * 32 + dx * 16;
-                    int target_y = y * 32 + dy * 16;
-                    Bitmap b = dataSource.GetBitmapOfSprite(target_num8x8);
-                    g.FillRectangle(new SolidBrush(colorSpriteBack), target_x, target_y, 17, 17);
-                    g.DrawImage(b, target_x, target_y, 17, 17);
+                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16, y * 16, 8, 8);
+                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16 + 8, y * 16, 8, 8);
+                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16, y * 16 + 8, 8, 8);
+                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16 + 8, y * 16 + 8, 8, 8);
                 }
             }
         }
