@@ -4,57 +4,56 @@ using System.Text;
 
 namespace _99x8Edit
 {
-    public class Clipboard
+    public class ClipboardWrapper
     {
-        // Classes for internal copy and paste actions
-        private static Clipboard _singleInstance = new Clipboard();
-        private ClipBase copiedObj = null;
-        public static Clipboard Instance
+        // For copy and paste actions
+        public static void SetData(ClipBase clip)
         {
-            get
-            {
-                return _singleInstance;
-            }
+            System.Windows.Forms.Clipboard.SetData("99x8Edit", clip);
         }
-        public ClipBase Clip
+        public static ClipBase GetData()
         {
-            get
+            if (System.Windows.Forms.Clipboard.ContainsData("99x8Edit"))
             {
-                return copiedObj;
+                return System.Windows.Forms.Clipboard.GetData("99x8Edit") as ClipBase;
             }
-            set
-            {
-                copiedObj = value;
-            }
+            return null;
         }
     }
+    [Serializable]
     public abstract class ClipBase
     {
     }
+    [Serializable]
     public class ClipPCGLine : ClipBase
     {
         public byte genData;
         public byte clrData;
     }
+    [Serializable]
     public class ClipOnePCG : ClipBase
     {
         public byte index;
         public byte[] genData = new byte[8];
         public byte[] clrData = new byte[8];
     }
+    [Serializable]
     public class ClipNametable : ClipBase
     {
         public List<List<int>> pcgID = new List<List<int>>();
     }
+    [Serializable]
     public class ClipOneMapPattern : ClipBase
     {
         public byte index;
         public byte[] pattern = new byte[4];
     }
+    [Serializable]
     public class ClipMapCell : ClipBase
     {
         public List<List<int>> ptnID = new List<List<int>>();
     }
+    [Serializable]
     public class Clip16x16Sprite : ClipBase
     {
         public byte[] genData = new byte[32];   // 16x16 sprite
@@ -65,6 +64,7 @@ namespace _99x8Edit
         public byte[] clr2Data_ov = new byte[32];
         public byte clr_ov = 0;
     }
+    [Serializable]
     public class ClipOneSpriteLine : ClipBase
     {
         public byte genData = 0;
@@ -73,6 +73,7 @@ namespace _99x8Edit
         public byte genData2 = 0;
         public byte clrData2 = 0;
     }
+    [Serializable]
     public class ClipOneChrInRom : ClipBase
     {
         public byte[] leftTop = new byte[8];

@@ -550,19 +550,19 @@ namespace _99x8Edit
         private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
         {
             panelSandbox.Focus();   // Need this to catch CTRL+C and others
-            int clicked_cell_x = e.X / 16;
-            int clicled_cell_y = e.Y / 16;
-            if (clicked_cell_x > 31) clicked_cell_x = 31;
-            if (clicled_cell_y > 23) clicled_cell_y = 23;
-            if ((clicked_cell_x != currentSandboxX) || (clicked_cell_x != currentSandboxY))
-            {
-                // Selected sandbox cell have changed
-                currentSandboxX = selStartSandX = clicked_cell_x;
-                currentSandboxY = selStartSandY = clicled_cell_y;
-                this.UpdateSandbox();
-            }
             if (e.Button == MouseButtons.Left)
             {
+                int clicked_cell_x = e.X / 16;
+                int clicled_cell_y = e.Y / 16;
+                if (clicked_cell_x > 31) clicked_cell_x = 31;
+                if (clicled_cell_y > 23) clicled_cell_y = 23;
+                if ((clicked_cell_x != currentSandboxX) || (clicked_cell_x != currentSandboxY))
+                {
+                    // Selected sandbox cell have changed
+                    currentSandboxX = selStartSandX = clicked_cell_x;
+                    currentSandboxY = selStartSandY = clicled_cell_y;
+                    this.UpdateSandbox();
+                }
                 viewPCG.DoDragDrop(new DnDSandbox(), DragDropEffects.Copy);
             }
         }
@@ -658,11 +658,11 @@ namespace _99x8Edit
                 }
                 clip.pcgID.Add(l);
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         private void contextSandbox_paste(object sender, EventArgs e)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipOnePCG)
             {
                 int pcgIndex = clip.index;

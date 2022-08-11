@@ -209,11 +209,11 @@ namespace _99x8Edit
                 clip.genData[i] = ptnGen[index * 8 + i];
                 clip.clrData[i] = ptnClr[index * 8 + i];
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         public void PastePCGFromClip(int index)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipOnePCG)
             {
                 MementoCaretaker.Instance.Push();
@@ -252,11 +252,11 @@ namespace _99x8Edit
             ClipPCGLine clip = new ClipPCGLine();
             clip.genData = ptnGen[index * 8 + line];
             clip.clrData = ptnClr[index * 8 + line];
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         public void PastePCGLineFromClip(int index, int line)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipPCGLine)
             {
                 MementoCaretaker.Instance.Push();
@@ -353,11 +353,11 @@ namespace _99x8Edit
             clip.pattern[1] = mapPattern[index * 4 + 1];
             clip.pattern[2] = mapPattern[index * 4 + 2];
             clip.pattern[3] = mapPattern[index * 4 + 3];
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         public void PasteMapPatternFromClip(int index)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if(clip is ClipOneMapPattern)
             {
                 MementoCaretaker.Instance.Push();
@@ -488,11 +488,11 @@ namespace _99x8Edit
                 }
                 clip.clr_ov = spriteClr1[target8x8];
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         public void Paste16x16SpriteFromClip(int index16x16)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is Clip16x16Sprite)
             {
                 MementoCaretaker.Instance.Push();
@@ -587,11 +587,11 @@ namespace _99x8Edit
                 clip.genData2 = spriteGen[index * 8 + line];
                 clip.clrData2 = spriteClr2[index * 8 + line];
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         public void PasteSpriteLineFromClip(int index, int line)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipOneSpriteLine)
             {
                 MementoCaretaker.Instance.Push();

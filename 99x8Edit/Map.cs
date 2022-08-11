@@ -387,18 +387,18 @@ namespace _99x8Edit
         {
             // Selected map cell has changed
             panelMap.Focus();   // CTRL+C and others will be cathced at parent panel
-            int selected_x = e.X / 32;
-            int selected_y = e.Y / 32;
-            int previous_x = currentMapX;
-            int previous_y = currentMapY;
-            if ((selected_x != previous_x) || (selected_y != previous_y))
-            {
-                currentMapX = selStartMapX = selected_x;
-                currentMapY = selStartMapY = selected_y;
-                this.UpdateMap();
-            }
             if (e.Button == MouseButtons.Left)
             {
+                int selected_x = e.X / 32;
+                int selected_y = e.Y / 32;
+                int previous_x = currentMapX;
+                int previous_y = currentMapY;
+                if ((selected_x != previous_x) || (selected_y != previous_y))
+                {
+                    currentMapX = selStartMapX = selected_x;
+                    currentMapY = selStartMapY = selected_y;
+                    this.UpdateMap();
+                }
                 viewPCG.DoDragDrop(new DnDMap(), DragDropEffects.Copy);
             }
         }
@@ -492,11 +492,11 @@ namespace _99x8Edit
                 }
                 clip.ptnID.Add(l);
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         private void contextMap_paste(object sender, EventArgs e)
         {
-            dynamic clip = Clipboard.Instance.Clip;
+            dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipOneMapPattern)
             {
                 dataSource.SetMapData(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, clip.index);

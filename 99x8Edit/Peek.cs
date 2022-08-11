@@ -146,7 +146,7 @@ namespace _99x8Edit
             {
                 clip.rightBottom[i] = reader.ReadByte();
             }
-            Clipboard.Instance.Clip = clip;
+            ClipboardWrapper.SetData(clip);
         }
         private void panelPeek_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
