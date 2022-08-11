@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
 namespace _99x8Edit
 {
@@ -23,6 +20,8 @@ namespace _99x8Edit
         private int currentPCGY = 0;
         private int currentSandboxX = 0;
         private int currentSandboxY = 0;
+        private int sandSelStartX = 0;
+        private int sandSelStartY = 0;
         private int currentLineX = 0;       // Selected line in editor(0-1)
         private int currentLineY = 0;       // Selected line in editor(0-15)
         String currentFile = "";
@@ -44,6 +43,10 @@ namespace _99x8Edit
                 case Keys.Right:
                 case Keys.Up:
                 case Keys.Left:
+                case Keys.Down | Keys.Shift:
+                case Keys.Right | Keys.Shift:
+                case Keys.Up | Keys.Shift:
+                case Keys.Left | Keys.Shift:
                     break;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -68,16 +71,17 @@ namespace _99x8Edit
             // Refresh all views
             this.RefreshAllViews();
             // Context menu
-            toolStripPCGCopy.Click += new EventHandler(contextPCGList_MouseClick_copy);
-            toolStripPCGPaste.Click += new EventHandler(contextPCGList_MouseClick_paste);
-            toolStripPCGDel.Click += new EventHandler(contextPCGList_MouseClick_delete);
-            toolStripSandboxCopy.Click += new EventHandler(contextSandbox_MouseClick_copy);
-            toolStripSandboxPaste.Click += new EventHandler(contextSandbox_MouseClick_paste);
-            toolStripSandboxDel.Click += new EventHandler(contextSandbox_MouseClick_delete);
-            toolStripSandboxPaint.Click += new EventHandler(contextSandbox_MouseClick_paint);
-            toolStripEditorCopy.Click += new EventHandler(contextEditor_MouseClick_copy);
-            toolStripEditorPaste.Click += new EventHandler(contextEditor_MouseClick_paste);
-            toolStripEditorDel.Click += new EventHandler(contextEditor_MouseClick_delete);
+            toolStripPCGCopy.Click += new EventHandler(contextPCGList_copy);
+            toolStripPCGPaste.Click += new EventHandler(contextPCGList_paste);
+            toolStripPCGDel.Click += new EventHandler(contextPCGList_delete);
+            toolStripPCGInverse.Click += new EventHandler(contextPCGList_inverse);
+            toolStripSandboxCopy.Click += new EventHandler(contextSandbox_copy);
+            toolStripSandboxPaste.Click += new EventHandler(contextSandbox_paste);
+            toolStripSandboxDel.Click += new EventHandler(contextSandbox_delete);
+            toolStripSandboxPaint.Click += new EventHandler(contextSandbox_paint);
+            toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
+            toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
+            toolStripEditorDel.Click += new EventHandler(contextEditor_delete);
         }
         //------------------------------------------------------------------------------
         // Refreshing Views
@@ -196,7 +200,10 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
-                g.DrawRectangle(new Pen(Color.Red), currentSandboxX * 16, currentSandboxY * 16, 15, 15);
+                g.DrawRectangle(new Pen(Color.Red),
+                                Math.Min(currentSandboxX, sandSelStartX) * 16, Math.Min(currentSandboxY, sandSelStartY) * 16,
+                                (Math.Abs(currentSandboxX - sandSelStartX) + 1) * 16 - 1,
+                                (Math.Abs(currentSandboxY - sandSelStartY) + 1) * 16 - 1);
                 this.viewSandbox.Refresh();
             }
         }
@@ -306,7 +313,7 @@ namespace _99x8Edit
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if (currentLineY > 0)
@@ -341,27 +348,35 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.D1:
+                case Keys.NumPad1:
                     this.editCurrentPCG(0, currentLineY % 8);
                     break;
                 case Keys.D2:
+                case Keys.NumPad2:
                     this.editCurrentPCG(1, currentLineY % 8);
                     break;
                 case Keys.D3:
+                case Keys.NumPad3:
                     this.editCurrentPCG(2, currentLineY % 8);
                     break;
                 case Keys.D4:
+                case Keys.NumPad4:
                     this.editCurrentPCG(3, currentLineY % 8);
                     break;
                 case Keys.D5:
+                case Keys.NumPad5:
                     this.editCurrentPCG(4, currentLineY % 8);
                     break;
                 case Keys.D6:
+                case Keys.NumPad6:
                     this.editCurrentPCG(5, currentLineY % 8);
                     break;
                 case Keys.D7:
+                case Keys.NumPad7:
                     this.editCurrentPCG(6, currentLineY % 8);
                     break;
                 case Keys.D8:
+                case Keys.NumPad8:
                     this.editCurrentPCG(7, currentLineY % 8);
                     break;
                 case Keys.Oemplus:
@@ -372,28 +387,28 @@ namespace _99x8Edit
                 case Keys.OemOpenBrackets:
                     int current_pcg = currentPCGY * 32 + currentPCGX;
                     int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-                    if((e.KeyCode == Keys.Oemplus) || (e.KeyCode == Keys.Add))
+                    if((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
                         color = (color + 1) % 16;
                         dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true);
                     }
-                    if ((e.KeyCode == Keys.OemMinus) || (e.KeyCode == Keys.Subtract))
+                    if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
                         color = (color + 15) % 16;
                         dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true);
                     }
-                    if (e.KeyCode == Keys.OemCloseBrackets)
+                    if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
                         color = (color + 1) % 16;
                         dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, false);
                     }
-                    if (e.KeyCode == Keys.OemOpenBrackets)
+                    if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
@@ -404,13 +419,13 @@ namespace _99x8Edit
                     break;
             }
         }
-        private void contextEditor_MouseClick_copy(object sender, EventArgs e)
+        private void contextEditor_copy(object sender, EventArgs e)
         {
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             dataSource.CopyPCGLineToClip(pcg, currentLineY % 8);
         }
-        private void contextEditor_MouseClick_paste(object sender, EventArgs e)
+        private void contextEditor_paste(object sender, EventArgs e)
         {
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int dst_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
@@ -419,7 +434,7 @@ namespace _99x8Edit
             this.UpdatePCGList();       // PCG list view changes also
             this.UpdateSandbox();       // Update sandbox view
         }
-        private void contextEditor_MouseClick_delete(object sender, EventArgs e)
+        private void contextEditor_delete(object sender, EventArgs e)
         {
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int dst_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
@@ -452,7 +467,7 @@ namespace _99x8Edit
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             bool update = false;
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if (currentPCGY > 0)
@@ -513,21 +528,26 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
-        private void contextPCGList_MouseClick_copy(object sender, EventArgs e)
+        private void contextPCGList_copy(object sender, EventArgs e)
         {
             dataSource.CopyPCGToClip(currentPCGY * 32 + currentPCGX);
         }
-        private void contextPCGList_MouseClick_paste(object sender, EventArgs e)
+        private void contextPCGList_paste(object sender, EventArgs e)
         {
             dataSource.PastePCGFromClip(currentPCGY * 32 + currentPCGX);
             this.RefreshAllViews();
         }
-        private void contextPCGList_MouseClick_delete(object sender, EventArgs e)
+        private void contextPCGList_delete(object sender, EventArgs e)
         {
             dataSource.ClearPCG(currentPCGY * 32 + currentPCGX);
             this.RefreshAllViews();
         }
-        private void viewSandbox_MouseClick(object sender, MouseEventArgs e)
+        private void contextPCGList_inverse(object sender, EventArgs e)
+        {
+            dataSource.InversePCG(currentPCGY * 32 + currentPCGX);
+            this.RefreshAllViews();
+        }
+        private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
         {
             panelSandbox.Focus();   // Need this to catch CTRL+C and others
             int clicked_cell_x = e.X / 16;
@@ -537,19 +557,53 @@ namespace _99x8Edit
             if ((clicked_cell_x != currentSandboxX) || (clicked_cell_x != currentSandboxY))
             {
                 // Selected sandbox cell have changed
-                currentSandboxX = clicked_cell_x;
-                currentSandboxY = clicled_cell_y;
+                currentSandboxX = sandSelStartX = clicked_cell_x;
+                currentSandboxY = sandSelStartY = clicled_cell_y;
                 this.UpdateSandbox();
+            }
+            if (e.Button == MouseButtons.Left)
+            {
+                viewPCG.DoDragDrop(new DnDSandbox(), DragDropEffects.Copy);
             }
         }
         private void panelSandbox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
+                case Keys.Right | Keys.Shift:
+                    if (currentSandboxX < 31)
+                    {
+                        currentSandboxX++;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Left | Keys.Shift:
+                    if (currentSandboxX > 0)
+                    {
+                        currentSandboxX--;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Down | Keys.Shift:
+                    if (currentSandboxY < 23)
+                    {
+                        currentSandboxY++;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Up | Keys.Shift:
+                    if (currentSandboxY > 0)
+                    {
+                        currentSandboxY--;
+                        this.UpdateSandbox();
+                    }
+                    break;
                 case Keys.Up:
                     if (currentSandboxY > 0)
                     {
                         currentSandboxY--;
+                        sandSelStartX = currentSandboxX;
+                        sandSelStartY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -557,6 +611,8 @@ namespace _99x8Edit
                     if (currentSandboxX > 0)
                     {
                         currentSandboxX--;
+                        sandSelStartX = currentSandboxX;
+                        sandSelStartY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -564,6 +620,8 @@ namespace _99x8Edit
                     if (currentSandboxX < 31)
                     {
                         currentSandboxX++;
+                        sandSelStartX = currentSandboxX;
+                        sandSelStartY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -571,6 +629,8 @@ namespace _99x8Edit
                     if (currentSandboxY < 23)
                     {
                         currentSandboxY++;
+                        sandSelStartX = currentSandboxX;
+                        sandSelStartY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -582,34 +642,64 @@ namespace _99x8Edit
                     break;
             }
         }
-        private void contextSandbox_MouseClick_copy(object sender, EventArgs e)
+        private void contextSandbox_copy(object sender, EventArgs e)
         {
-            ClipOneChrOfNametable clip = new ClipOneChrOfNametable();
-            clip.pcgIndex = dataSource.GetNameTable(currentSandboxY * 32 + currentSandboxX);
+            ClipNametable clip = new ClipNametable();
+            int x = Math.Min(currentSandboxX, sandSelStartX);
+            int y = Math.Min(currentSandboxY, sandSelStartY);
+            int w = Math.Abs(currentSandboxX - sandSelStartX) + 1;
+            int h = Math.Abs(currentSandboxY - sandSelStartY) + 1;
+            for(int i = y; i < y + h; ++i)
+            {
+                List<int> l = new List<int>();
+                for(int j = x; j < x + w; ++j)
+                {
+                    l.Add(dataSource.GetNameTable(i * 32 + j));
+                }
+                clip.pcgID.Add(l);
+            }
             Clipboard.Instance.Clip = clip;
         }
-        private void contextSandbox_MouseClick_paste(object sender, EventArgs e)
+        private void contextSandbox_paste(object sender, EventArgs e)
         {
             dynamic clip = Clipboard.Instance.Clip;
-            if(clip is ClipOneChrOfNametable)
-            {
-                int pcgIndex = clip.pcgIndex;
-                dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, pcgIndex);
-                this.UpdateSandbox();
-            }
-            else if(clip is ClipOnePCG)
+            if (clip is ClipOnePCG)
             {
                 int pcgIndex = clip.index;
                 dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, pcgIndex);
                 this.UpdateSandbox();
             }
+            else if (clip is ClipNametable)
+            {
+                MementoCaretaker.Instance.Push();
+                for(int i = 0; (i < clip.pcgID.Count) && (i + currentSandboxY < 24); ++i)
+                {
+                    List<int> l = clip.pcgID[i];
+                    for(int j = 0; (j < l.Count) && (j + currentSandboxX < 32); ++j)
+                    {
+                        dataSource.SetNameTable((currentSandboxY + i) * 32 + currentSandboxX + j, l[j], false);
+                    }
+                }
+                this.UpdateSandbox();
+            }
         }
-        private void contextSandbox_MouseClick_delete(object sender, EventArgs e)
+        private void contextSandbox_delete(object sender, EventArgs e)
         {
-            dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, 0);
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentSandboxX, sandSelStartX);
+            int y = Math.Min(currentSandboxY, sandSelStartY);
+            int w = Math.Abs(currentSandboxX - sandSelStartX) + 1;
+            int h = Math.Abs(currentSandboxY - sandSelStartY) + 1;
+            for(int i = y; (i < y + h) && (i < 24); ++i)
+            {
+                for(int j = x; (j < x + w) && (j < 32); ++j)
+                {
+                    dataSource.SetNameTable(i * 32 + j, 0, false);
+                }
+            }
             this.UpdateSandbox();
         }
-        private void contextSandbox_MouseClick_paint(object sender, EventArgs e)
+        private void contextSandbox_paint(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();   // For undo action
             this.paintSandbox(currentSandboxX, currentSandboxY, currentPCGY * 32 + currentPCGX);
@@ -617,8 +707,25 @@ namespace _99x8Edit
         }
         private void panelSandbox_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDPCG))) e.Effect = DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(typeof(DnDPCG)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else if (e.Data.GetDataPresent(typeof(DnDSandbox)))
+            {
+                e.Effect = DragDropEffects.All;
+            }
             else e.Effect = DragDropEffects.None;
+        }
+        private void panelSandbox_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDSandbox)))
+            {
+                Point p = viewSandbox.PointToClient(Cursor.Position);
+                currentSandboxX = Math.Min(p.X / 16, 31);
+                currentSandboxY = Math.Min(p.Y / 16, 23);
+                this.UpdateSandbox();
+            }
         }
         private void panelSandbox_DragDrop(object sender, DragEventArgs e)
         {
@@ -746,6 +853,9 @@ namespace _99x8Edit
         }
     }
     public class DnDPCG
+    {
+    }
+    public class DnDSandbox
     {
     }
 }

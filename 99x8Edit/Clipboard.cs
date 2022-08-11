@@ -42,9 +42,9 @@ namespace _99x8Edit
         public byte[] genData = new byte[8];
         public byte[] clrData = new byte[8];
     }
-    public class ClipOneChrOfNametable : ClipBase
+    public class ClipNametable : ClipBase
     {
-        public int pcgIndex;
+        public List<List<int>> pcgID = new List<List<int>>();
     }
     public class ClipOneMapPattern : ClipBase
     {

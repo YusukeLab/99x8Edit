@@ -271,6 +271,16 @@ namespace _99x8Edit
             ptnGen[index * 8 + line] = 0;
             this.updatePCGBitmap(index);
         }
+        public void InversePCG(int index)
+        {
+            for(int i = 0; i < 8; ++i)
+            {
+                ptnGen[index * 8 + i] = (byte)(~ptnGen[index * 8 + i]);
+                byte color = ptnClr[index * 8 + i];
+                ptnClr[index * 8 + i] = (byte)((color >> 4) | ((color << 4) & 0xF0));
+            }
+            this.updatePCGBitmap(index);
+        }
         public int GetNameTable(int addr)
         {
             return nameTable[addr];
@@ -456,7 +466,7 @@ namespace _99x8Edit
                 spriteClr2[index_target_r * 8 + line] &= 0xF0;
                 spriteClr2[index_target_r * 8 + line] |= (byte)(value);
             }
-            this.updateSpriteBitmap(index);
+            this.updateSpriteBitmap();
         }
         public void Copy16x16SpriteToClip(int index16x16)
         {

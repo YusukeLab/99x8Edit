@@ -46,6 +46,7 @@ namespace _99x8Edit
             toolStripSprCopy.Click += new EventHandler(contextSprites_copy);
             toolStripSprPaste.Click += new EventHandler(contextSprites_paste);
             toolStripSprDel.Click += new EventHandler(contextSprites_del);
+            toolStripSprReverse.Click += new EventHandler(contextSprites_reverse);
             toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
             toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
             toolStripEditorDel.Click += new EventHandler(contextEditor_del);
@@ -61,6 +62,10 @@ namespace _99x8Edit
                 case Keys.Right:
                 case Keys.Up:
                 case Keys.Left:
+                case Keys.Down | Keys.Shift:
+                case Keys.Right | Keys.Shift:
+                case Keys.Up | Keys.Shift:
+                case Keys.Left | Keys.Shift:
                     break;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -292,7 +297,7 @@ namespace _99x8Edit
         }
         private void panelSprites_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if(currentSpriteY > 0)
@@ -341,6 +346,33 @@ namespace _99x8Edit
             this.UpdateOverlayCheck();
             this.RefreshAllViews();
         }
+        private void contextSprites_reverse(object sender, EventArgs e)
+        {
+            int current = currentSpriteY * 8 + currentSpriteX;
+            int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
+            for(int i = 0; i < loop_cnt; ++i)
+            {
+                int target16x16 = (current + i) % 64;
+                int target8x8 = target16x16 * 4;
+                for (int y = 0; y < 16; ++y)
+                {
+                    List<int> one_line = new List<int>();
+                    for (int x = 0; x < 16; ++x)
+                    {
+                        // Read from right to left
+                        int src8x8 = target8x8 + ((1 - x / 8) * 2) + (y / 8);
+                        one_line.Add(dataSource.GetSpritePixel(src8x8, y % 8, 7 - (x % 8)));
+                    }
+                    for (int x = 0; x < 16; ++x)
+                    {
+                        // Write from left to right
+                        int dst8x8 = target8x8 + ((x / 8) * 2) + (y / 8);
+                        dataSource.SetSpritePixel(dst8x8, y % 8, x % 8, one_line[x]);
+                    }
+                }
+            }
+            this.RefreshAllViews();
+        }
         private void viewSpriteEdit_MouseClick(object sender, MouseEventArgs e)
         {
             panelEditor.Focus();    // Key events are handled by parent panel
@@ -360,7 +392,7 @@ namespace _99x8Edit
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if (currentLineY > 0)
@@ -395,27 +427,35 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.D1:
+                case Keys.NumPad1:
                     this.editCurrentSprite(0, currentLineY % 8);
                     break;
                 case Keys.D2:
+                case Keys.NumPad2:
                     this.editCurrentSprite(1, currentLineY % 8);
                     break;
                 case Keys.D3:
+                case Keys.NumPad3:
                     this.editCurrentSprite(2, currentLineY % 8);
                     break;
                 case Keys.D4:
+                case Keys.NumPad4:
                     this.editCurrentSprite(3, currentLineY % 8);
                     break;
                 case Keys.D5:
+                case Keys.NumPad5:
                     this.editCurrentSprite(4, currentLineY % 8);
                     break;
                 case Keys.D6:
+                case Keys.NumPad6:
                     this.editCurrentSprite(5, currentLineY % 8);
                     break;
                 case Keys.D7:
+                case Keys.NumPad7:
                     this.editCurrentSprite(6, currentLineY % 8);
                     break;
                 case Keys.D8:
+                case Keys.NumPad8:
                     this.editCurrentSprite(7, currentLineY % 8);
                     break;
                 case Keys.Oemplus:
@@ -426,15 +466,15 @@ namespace _99x8Edit
                         int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
                         int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
                         int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
-                        if ((e.KeyCode == Keys.Oemplus) || (e.KeyCode == Keys.Add))
+                        if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                         {
                             // Increment color of the primary sprite
-                            color_code_primary = (color_code_primary + 1) % 16;
+                            if (color_code_primary < 15) color_code_primary++;
                         }
                         else
                         {
                             // Decrement color of the primary sprite
-                            color_code_primary = (color_code_primary + 15) % 16;
+                            if (color_code_primary > 1) color_code_primary--;
                         }
                         this.setSpriteColor(sprite_num_16x16, color_code_primary);
                         this.RefreshAllViews();
@@ -449,15 +489,15 @@ namespace _99x8Edit
                         int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
                         int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
                         int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
-                        if (e.KeyCode == Keys.OemCloseBrackets)
+                        if (e.KeyData == Keys.OemCloseBrackets)
                         {
                             // Increment color of the secondary sprite
-                            color_code_secondary = (color_code_secondary + 1) % 16;
+                            if (color_code_secondary < 15) color_code_secondary++;
                         }
                         else
                         {
                             // Decrement color of the secondary sprite
-                            color_code_secondary = (color_code_secondary + 15) % 16;
+                            if (color_code_secondary > 1) color_code_secondary--;
                         }
                         this.setSpriteColor(sprite_num_8x8_secondary / 4, color_code_secondary);
                         this.RefreshAllViews();

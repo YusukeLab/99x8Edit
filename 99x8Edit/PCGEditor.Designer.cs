@@ -38,6 +38,7 @@ namespace _99x8Edit
             this.toolStripPCGPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripPCGDel = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripPCGInverse = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.viewColorL = new System.Windows.Forms.PictureBox();
             this.viewColorR = new System.Windows.Forms.PictureBox();
@@ -119,9 +120,10 @@ namespace _99x8Edit
             this.toolStripPCGCopy,
             this.toolStripPCGPaste,
             this.toolStripSeparator1,
-            this.toolStripPCGDel});
+            this.toolStripPCGDel,
+            this.toolStripPCGInverse});
             this.contextPCGList.Name = "contextPCGList";
-            this.contextPCGList.Size = new System.Drawing.Size(176, 82);
+            this.contextPCGList.Size = new System.Drawing.Size(176, 106);
             // 
             // toolStripPCGCopy
             // 
@@ -148,6 +150,12 @@ namespace _99x8Edit
             this.toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.toolStripPCGDel.Size = new System.Drawing.Size(175, 24);
             this.toolStripPCGDel.Text = "Delete";
+            // 
+            // toolStripPCGInverse
+            // 
+            this.toolStripPCGInverse.Name = "toolStripPCGInverse";
+            this.toolStripPCGInverse.Size = new System.Drawing.Size(175, 24);
+            this.toolStripPCGInverse.Text = "Inverse";
             // 
             // label3
             // 
@@ -280,7 +288,7 @@ namespace _99x8Edit
             this.viewSandbox.Size = new System.Drawing.Size(514, 386);
             this.viewSandbox.TabIndex = 20;
             this.viewSandbox.TabStop = false;
-            this.viewSandbox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewSandbox_MouseClick);
+            this.viewSandbox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewSandbox_MouseDown);
             // 
             // panelPCG
             // 
@@ -360,6 +368,7 @@ namespace _99x8Edit
             this.panelSandbox.TabIndex = 24;
             this.panelSandbox.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragDrop);
             this.panelSandbox.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragEnter);
+            this.panelSandbox.DragOver += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragOver);
             this.panelSandbox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSandbox_PreviewKeyDown);
             // 
             // contextEditor
@@ -508,5 +517,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
         private System.Windows.Forms.FlowLayoutPanel panelEditor;
         private System.Windows.Forms.CheckBox chkCRT;
+        private System.Windows.Forms.ToolStripMenuItem toolStripPCGInverse;
     }
 }

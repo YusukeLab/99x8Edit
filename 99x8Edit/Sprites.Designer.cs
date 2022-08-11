@@ -54,6 +54,7 @@ namespace _99x8Edit
             this.toolStripSprPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSprDel = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSprReverse = new System.Windows.Forms.ToolStripMenuItem();
             this.panelSprites = new System.Windows.Forms.FlowLayoutPanel();
             this.panelEditor = new System.Windows.Forms.FlowLayoutPanel();
             this.contextEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -286,9 +287,10 @@ namespace _99x8Edit
             this.toolStripSprCopy,
             this.toolStripSprPaste,
             this.toolStripSeparator1,
-            this.toolStripSprDel});
+            this.toolStripSprDel,
+            this.toolStripSprReverse});
             this.contextSprites.Name = "contextPCGList";
-            this.contextSprites.Size = new System.Drawing.Size(176, 82);
+            this.contextSprites.Size = new System.Drawing.Size(176, 106);
             // 
             // toolStripSprCopy
             // 
@@ -315,6 +317,12 @@ namespace _99x8Edit
             this.toolStripSprDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.toolStripSprDel.Size = new System.Drawing.Size(175, 24);
             this.toolStripSprDel.Text = "Delete";
+            // 
+            // toolStripSprReverse
+            // 
+            this.toolStripSprReverse.Name = "toolStripSprReverse";
+            this.toolStripSprReverse.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSprReverse.Text = "Reverse";
             // 
             // panelSprites
             // 
@@ -469,5 +477,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
         private System.Windows.Forms.CheckBox chkCRT;
+        private System.Windows.Forms.ToolStripMenuItem toolStripSprReverse;
     }
 }

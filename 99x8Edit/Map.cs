@@ -61,6 +61,10 @@ namespace _99x8Edit
                 case Keys.Right:
                 case Keys.Up:
                 case Keys.Left:
+                case Keys.Down | Keys.Shift:
+                case Keys.Right | Keys.Shift:
+                case Keys.Up | Keys.Shift:
+                case Keys.Left | Keys.Shift:
                     break;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -204,7 +208,7 @@ namespace _99x8Edit
         }
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if(currentPCGY > 0)
@@ -281,7 +285,7 @@ namespace _99x8Edit
         }
         private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if (currentCellInPatternY > 0)
@@ -388,7 +392,7 @@ namespace _99x8Edit
         }
         private void panelMap_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            switch (e.KeyData)
             {
                 case Keys.Up:
                     if(currentMapY == 0)
