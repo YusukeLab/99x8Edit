@@ -26,6 +26,8 @@ namespace _99x8Edit
         private int selStartSandY = 0;
         private int currentLineX = 0;       // Selected line in editor(0-1)
         private int currentLineY = 0;       // Selected line in editor(0-15)
+        private int selStartLineX = 0;      // For multiple selection
+        private int selStartLineY = 0;
         String currentFile = "";
         public String CurrentFile
         {
@@ -134,7 +136,11 @@ namespace _99x8Edit
                     }
                 }
             }
-            g.DrawRectangle(new Pen(Color.Red), currentLineX * 128, currentLineY * 16, 127, 15);
+            g.DrawRectangle(new Pen(Color.Red),
+                            Math.Min(currentLineX, selStartLineX) * 128,
+                            Math.Min(currentLineY, selStartLineY) * 16,
+                            (Math.Abs(currentLineX - selStartLineX) + 1) * 128 - 1,
+                            (Math.Abs(currentLineY - selStartLineY) + 1) * 16 - 1);
             if(refresh) this.viewPCGEdit.Refresh();
         }
         private void UpdateCurrentColorView(bool refresh = true)
@@ -297,34 +303,72 @@ namespace _99x8Edit
                 this.RefreshAllViews();     // Everything changes
             }
         }
-        private void viewPCGEdit_MouseClick(object sender, MouseEventArgs e)
+        private void viewPCGEdit_MouseDown(object sender, MouseEventArgs e)
         {
             // PCG editor is clicked
             panelEditor.Focus();    // Key events are handled by parent panel
-            int clicked_line_x = e.X / 128;
-            int clicked_line_y = e.Y / 16;
-            if ((currentLineX != clicked_line_x) || (currentLineY != clicked_line_y))
+            if (e.Button == MouseButtons.Left)
             {
-                // Current selected line has changed
-                currentLineX = clicked_line_x;
-                currentLineY = clicked_line_y;
-                this.UpdatePCGEditView();               // Update editor view
-                this.UpdateCurrentColorView();          // Update view of current color
-            }
-            else
-            {
-                // Update PCG pattern
-                this.editCurrentPCG((e.X / 16) % 8, currentLineY % 8);
+                int clicked_line_x = e.X / 128;
+                int clicked_line_y = e.Y / 16;
+                if ((currentLineX != clicked_line_x) || (currentLineY != clicked_line_y))
+                {
+                    // Current selected line has changed
+                    currentLineX = selStartLineX = clicked_line_x;
+                    currentLineY = selStartLineY = clicked_line_y;
+                    this.UpdatePCGEditView();               // Update editor view
+                    this.UpdateCurrentColorView();          // Update view of current color
+                    viewPCGEdit.DoDragDrop(new DnDEditor(), DragDropEffects.Copy);
+                }
+                else
+                {
+                    // Update PCG pattern
+                    this.editCurrentPCG((e.X / 16) % 8, currentLineY % 8);
+                }
             }
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             switch (e.KeyData)
             {
+                case Keys.Up | Keys.Shift:
+                    if(currentLineY > 0)
+                    {
+                        currentLineY--;
+                        this.UpdatePCGEditView();               // Update editor view
+                        this.UpdateCurrentColorView();          // Update view of current color
+                    }
+                    break;
+                case Keys.Down | Keys.Shift:
+                    if (currentLineY < 15)
+                    {
+                        currentLineY++;
+                        this.UpdatePCGEditView();               // Update editor view
+                        this.UpdateCurrentColorView();          // Update view of current color
+                    }
+                    break;
+                case Keys.Left | Keys.Shift:
+                    if (currentLineX > 0)
+                    {
+                        currentLineX--;
+                        this.UpdatePCGEditView();               // Update editor view
+                        this.UpdateCurrentColorView();          // Update view of current color
+                    }
+                    break;
+                case Keys.Right | Keys.Shift:
+                    if (currentLineX < 1)
+                    {
+                        currentLineX++;
+                        this.UpdatePCGEditView();               // Update editor view
+                        this.UpdateCurrentColorView();          // Update view of current color
+                    }
+                    break;
                 case Keys.Up:
                     if (currentLineY > 0)
                     {
                         currentLineY--;
+                        selStartLineX = currentLineX;
+                        selStartLineY = currentLineY;
                         this.UpdatePCGEditView();               // Update editor view
                         this.UpdateCurrentColorView();          // Update view of current color
                     }
@@ -333,6 +377,8 @@ namespace _99x8Edit
                     if (currentLineX > 0)
                     {
                         currentLineX--;
+                        selStartLineX = currentLineX;
+                        selStartLineY = currentLineY;
                         this.UpdatePCGEditView();               // Update editor view
                         this.UpdateCurrentColorView();          // Update view of current color
                     }
@@ -341,6 +387,8 @@ namespace _99x8Edit
                     if (currentLineX < 1)
                     {
                         currentLineX++;
+                        selStartLineX = currentLineX;
+                        selStartLineY = currentLineY;
                         this.UpdatePCGEditView();               // Update editor view
                         this.UpdateCurrentColorView();          // Update view of current color
                     }
@@ -349,6 +397,8 @@ namespace _99x8Edit
                     if (currentLineY < 15)
                     {
                         currentLineY++;
+                        selStartLineX = currentLineX;
+                        selStartLineY = currentLineY;
                         this.UpdatePCGEditView();               // Update editor view
                         this.UpdateCurrentColorView();          // Update view of current color
                     }
@@ -425,29 +475,85 @@ namespace _99x8Edit
                     break;
             }
         }
+        private void panelEditor_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDEditor)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else e.Effect = DragDropEffects.None;
+        }
+        private void panelEditor_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDEditor)))
+            {
+                Point p = viewPCGEdit.PointToClient(Cursor.Position);
+                currentLineX = Math.Min(p.X / 128, 1);
+                currentLineY = Math.Min(p.Y / 16, 15);
+                this.UpdatePCGEditView();
+                this.UpdateCurrentColorView();
+            }
+        }
         private void contextEditor_copy(object sender, EventArgs e)
         {
-            int current_pcg = currentPCGY * 32 + currentPCGX;
-            int pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-            dataSource.CopyPCGLineToClip(pcg, currentLineY % 8);
+            ClipPCGLines clip = new ClipPCGLines();
+            int x = Math.Min(currentLineX, selStartLineX);
+            int y = Math.Min(currentLineY, selStartLineY);
+            int w = Math.Abs(currentLineX - selStartLineX) + 1;
+            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            for (int i = y; i < y + h; ++i)
+            {
+                List<byte> gens = new List<byte>();
+                List<byte> clrs = new List<byte>();
+                for (int j = x; j < x + w; ++j)
+                {
+                    int current_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg = (current_pcg + j + (i / 8) * 32) % 256;
+                    gens.Add(dataSource.GetPCGGenLine(pcg, i % 8));
+                    clrs.Add(dataSource.GetPCGClrLine(pcg, i % 8));
+                }
+                clip.gen.Add(gens);
+                clip.clr.Add(clrs);
+            }
+            ClipboardWrapper.SetData(clip);
         }
         private void contextEditor_paste(object sender, EventArgs e)
         {
-            int current_pcg = currentPCGY * 32 + currentPCGX;
-            int dst_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-            dataSource.PastePCGLineFromClip(dst_pcg, currentLineY % 8);
-            this.UpdatePCGEditView();   // PCG Editor view changes
-            this.UpdatePCGList();       // PCG list view changes also
-            this.UpdateSandbox();       // Update sandbox view
+            dynamic clip = ClipboardWrapper.GetData();
+            if (clip is ClipPCGLines)
+            {
+                MementoCaretaker.Instance.Push();
+                for (int i = 0; (i < clip.gen.Count) && (currentLineY + i < 16); ++i)
+                {
+                    List<byte> gens = clip.gen[i];
+                    List<byte> clrs = clip.clr[i];
+                    for (int j = 0; (j < gens.Count) && (currentLineX + j < 2); ++j)
+                    {
+                        int current_pcg = currentPCGY * 32 + currentPCGX;
+                        int pcg = (current_pcg + currentLineX + j + ((currentLineY + i) / 8) * 32) % 256;
+                        dataSource.SetPCGLine(pcg, (currentLineY + i) % 8, gens[j], clrs[j], false);
+                    }
+                }
+                this.RefreshAllViews();
+            }
         }
         private void contextEditor_delete(object sender, EventArgs e)
         {
-            int current_pcg = currentPCGY * 32 + currentPCGX;
-            int dst_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-            dataSource.ClearPCGLine(dst_pcg, currentLineY % 8);
-            this.UpdatePCGEditView();   // PCG Editor view changes
-            this.UpdatePCGList();       // PCG list view changes also
-            this.UpdateSandbox();       // Update sandbox view
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentLineX, selStartLineX);
+            int y = Math.Min(currentLineY, selStartLineY);
+            int w = Math.Abs(currentLineX - selStartLineX) + 1;
+            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            for (int i = y; i < y + h; ++i)
+            {
+                for (int j = x; j < x + w; ++j)
+                {
+                    int current_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg = (current_pcg + j + (i / 8) * 32) % 256;
+                    dataSource.ClearPCGLine(pcg, i % 8, false);
+                }
+            }
+            this.RefreshAllViews();
         }
         private void viewPCG_MouseDown(object sender, MouseEventArgs e)
         {
@@ -599,8 +705,6 @@ namespace _99x8Edit
             int y = Math.Min(currentPCGY, selStartPCGY);
             int w = Math.Abs(currentPCGX - selStartPCGX) + 1;
             int h = Math.Abs(currentPCGY - selStartPCGY) + 1;
-            List<List<Byte[]>> gen_all = new List<List<byte[]>>();
-            List<List<Byte[]>> clr_all = new List<List<byte[]>>();
             for (int i = y; i < y + h; ++i)
             {
                 List<byte[]> gen_row = new List<byte[]>();
@@ -610,11 +714,9 @@ namespace _99x8Edit
                     gen_row.Add(dataSource.GetPCGGen(i * 32 + j));
                     clr_row.Add(dataSource.GetPCGClr(i * 32 + j));
                 }
-                gen_all.Add(gen_row);
-                clr_all.Add(clr_row);
+                clip.pcgGen.Add(gen_row);
+                clip.pcgClr.Add(clr_row);
             }
-            clip.pcgGen = gen_all;
-            clip.pcgClr = clr_all;
             ClipboardWrapper.SetData(clip);
         }
         private void contextPCGList_paste(object sender, EventArgs e)
@@ -975,4 +1077,5 @@ namespace _99x8Edit
     public class DnDPCG { }
     public class DnDPCGSel { }
     public class DnDSandbox { }
+    public class DnDEditor { }
 }

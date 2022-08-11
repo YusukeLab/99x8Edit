@@ -25,17 +25,17 @@ namespace _99x8Edit
     {
     }
     [Serializable]
-    public class ClipPCGLine : ClipBase
+    public class ClipPCGLines : ClipBase
     {
-        public byte genData;
-        public byte clrData;
+        public List<List<byte>> gen = new List<List<byte>>();
+        public List<List<byte>> clr = new List<List<byte>>();
     }
     [Serializable]
     public class ClipPCG : ClipBase
     {
         public byte index;
-        public List<List<Byte[]>> pcgGen = new List<List<byte[]>>();
-        public List<List<Byte[]>> pcgClr = new List<List<byte[]>>();
+        public List<List<byte[]>> pcgGen = new List<List<byte[]>>();
+        public List<List<byte[]>> pcgClr = new List<List<byte[]>>();
     }
     [Serializable]
     public class ClipNametable : ClipBase

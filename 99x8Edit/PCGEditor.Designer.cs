@@ -100,7 +100,7 @@ namespace _99x8Edit
             this.viewPCGEdit.Size = new System.Drawing.Size(258, 258);
             this.viewPCGEdit.TabIndex = 1;
             this.viewPCGEdit.TabStop = false;
-            this.viewPCGEdit.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPCGEdit_MouseClick);
+            this.viewPCGEdit.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPCGEdit_MouseDown);
             // 
             // label2
             // 
@@ -411,12 +411,15 @@ namespace _99x8Edit
             // 
             // panelEditor
             // 
+            this.panelEditor.AllowDrop = true;
             this.panelEditor.ContextMenuStrip = this.contextEditor;
             this.panelEditor.Controls.Add(this.viewPCGEdit);
             this.panelEditor.Location = new System.Drawing.Point(14, 34);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(267, 264);
             this.panelEditor.TabIndex = 26;
+            this.panelEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragEnter);
+            this.panelEditor.DragOver += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragOver);
             this.panelEditor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelEditor_PreviewKeyDown);
             // 
             // chkCRT

@@ -228,32 +228,6 @@ namespace _99x8Edit
             }
             this.updatePCGBitmap(index);
         }
-        public void PastePCGFromClip(int index)
-        {
-            dynamic clip = ClipboardWrapper.GetData();
-            if (clip is ClipPCG)
-            {
-                MementoCaretaker.Instance.Push();
-                for (int i = 0; i < 8; ++i)
-                {
-                    ptnGen[index * 8 + i] = clip.genData[i];
-                    ptnClr[index * 8 + i] = clip.clrData[i];
-                }
-                this.updatePCGBitmap(index);
-            }
-            else if(clip is ClipOneChrInRom)
-            {
-                MementoCaretaker.Instance.Push();
-                for (int i = 0; i < 8; ++i)
-                {
-                    ptnGen[index * 8 + i] = clip.leftTop[i];                    // Left top
-                    ptnGen[((index + 32) % 256) * 8 + i] = clip.leftBottom[i];  // Left bottom
-                    ptnGen[((index + 1) % 256) * 8 + i] = clip.rightTop[i];     // Right top
-                    ptnGen[((index + 33) % 256) * 8 + i] = clip.rightBottom[i]; // Right bottom
-                }
-                this.updatePCGBitmap();
-            }
-        }
         public void ClearPCG(int index)
         {
             MementoCaretaker.Instance.Push();
@@ -264,27 +238,24 @@ namespace _99x8Edit
             }
             this.updatePCGBitmap(index);
         }
-        public void CopyPCGLineToClip(int index, int line)
+        public byte GetPCGGenLine(int index, int line)
         {
-            ClipPCGLine clip = new ClipPCGLine();
-            clip.genData = ptnGen[index * 8 + line];
-            clip.clrData = ptnClr[index * 8 + line];
-            ClipboardWrapper.SetData(clip);
+            return ptnGen[index * 8 + line];
         }
-        public void PastePCGLineFromClip(int index, int line)
+        public byte GetPCGClrLine(int index, int line)
         {
-            dynamic clip = ClipboardWrapper.GetData();
-            if (clip is ClipPCGLine)
-            {
-                MementoCaretaker.Instance.Push();
-                ptnGen[index * 8 + line] = clip.genData;
-                ptnClr[index * 8 + line] = clip.clrData;
-                this.updatePCGBitmap(index);
-            }
+            return ptnClr[index * 8 + line];
         }
-        public void ClearPCGLine(int index, int line)
+        public void SetPCGLine(int index, int line, byte gen, byte clr, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if (push) MementoCaretaker.Instance.Push();
+            ptnGen[index * 8 + line] = gen;
+            ptnClr[index * 8 + line] = clr;
+            this.updatePCGBitmap(index);
+        }
+        public void ClearPCGLine(int index, int line, bool push)
+        {
+            if(push) MementoCaretaker.Instance.Push();
             ptnGen[index * 8 + line] = 0;
             this.updatePCGBitmap(index);
         }
