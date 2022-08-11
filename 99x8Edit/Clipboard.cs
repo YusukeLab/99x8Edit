@@ -53,7 +53,7 @@ namespace _99x8Edit
     }
     public class ClipMapCell : ClipBase
     {
-        public int dat;
+        public List<List<int>> ptnID = new List<List<int>>();
     }
     public class Clip16x16Sprite : ClipBase
     {

@@ -25,6 +25,8 @@ namespace _99x8Edit
         private int currentMapOriginY = 0;      // Coordinate of left top corner 0-m
         private int currentMapX = 0;            // Selected map cell 0-15
         private int currentMapY = 0;            // Selected map cell 0-11
+        private int selStartMapX = 0;           // For multiple selection
+        private int selStartMapY = 0;
         //------------------------------------------------------------------------------
         // Initialize
         public Map(Machine dataSource)
@@ -76,8 +78,8 @@ namespace _99x8Edit
         private void RefreshAllViews()
         {
             this.UpdatePCGList();           // PCG view
-            this.RefreshMapPatterns();      // Map patterns
-            this.RefreshMap();              // Map
+            this.UpdateMapPatterns();      // Map patterns
+            this.UpdateMap();              // Map
         }
         private void UpdatePCGList(bool refresh = true)
         {
@@ -99,7 +101,7 @@ namespace _99x8Edit
             g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
             if (refresh) this.viewPCG.Refresh();
         }
-        private void RefreshMapPatterns(bool refresh = true)
+        private void UpdateMapPatterns(bool refresh = true)
         {
             Graphics g = Graphics.FromImage(bmpMapPatterns);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -129,7 +131,7 @@ namespace _99x8Edit
                 cy + currentCellInPatternY * 16 + (1 - currentCellInPatternY), 14, 14);
             if (refresh) this.viewPatterns.Refresh();
         }
-        private void RefreshMap(bool refresh = true)
+        private void UpdateMap(bool refresh = true)
         {
             Graphics g = Graphics.FromImage(bmpMap);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -147,7 +149,11 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMap);
             }
             // Selection
-            g.DrawRectangle(new Pen(Color.Red), currentMapX * 32, currentMapY * 32, 31, 31);
+            g.DrawRectangle(new Pen(Color.Red),
+                            Math.Min(currentMapX, selStartMapX) * 32,
+                            Math.Min(currentMapY, selStartMapY) * 32,
+                            (Math.Abs(currentMapX - selStartMapX) + 1) * 32 - 1,
+                            (Math.Abs(currentMapY - selStartMapY) + 1) * 32 - 1);
             if (refresh) this.viewMap.Refresh();
             // Map size may be changed by loading, undo, etc
             if ((currentMapOriginX + 16 > dataSource.MapWidth) || (currentMapOriginY + 12 > dataSource.MapHeight))
@@ -242,8 +248,8 @@ namespace _99x8Edit
                     dataSource.SetMapPattern(currentTilePatternY * 16 + currentTilePatternX,
                                              currentCellInPatternX * 2 + currentCellInPatternY / 2,
                                              currentPCGY * 32 + currentPCGX);
-                    this.RefreshMapPatterns();
-                    this.RefreshMap();
+                    this.UpdateMapPatterns();
+                    this.UpdateMap();
                     break;
             }
         }
@@ -256,7 +262,7 @@ namespace _99x8Edit
         {
             int index = currentTilePatternX + currentTilePatternY * 16;
             dataSource.PasteMapPatternFromClip(index);
-            this.RefreshMapPatterns();
+            this.UpdateMapPatterns();
         }
         private void viewPatterns_MouseDown(object sender, MouseEventArgs e)
         {
@@ -276,11 +282,11 @@ namespace _99x8Edit
                 currentTilePatternY = selected_ptn_y;
                 currentCellInPatternX = selected_cell_x;
                 currentCellInPatternY = selected_cell_y;
-                this.RefreshMapPatterns();
+                this.UpdateMapPatterns();
             }
             if (e.Button == MouseButtons.Left)
             {
-                viewPatterns.DoDragDrop(new DnDMapPattern(), DragDropEffects.Copy);
+                viewPatterns.DoDragDrop(new DnDPattern(), DragDropEffects.Copy);
             }
         }
         private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -291,48 +297,48 @@ namespace _99x8Edit
                     if (currentCellInPatternY > 0)
                     {
                         currentCellInPatternY--;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     else if(currentTilePatternY > 0)
                     {
                         currentTilePatternY--;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Left:
                     if (currentCellInPatternX > 0)
                     {
                         currentCellInPatternX--;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     else if (currentTilePatternX > 0)
                     {
                         currentTilePatternX--;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Right:
                     if (currentCellInPatternX == 0)
                     {
                         currentCellInPatternX++;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     else if (currentTilePatternX < 15)
                     {
                         currentTilePatternX++;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Down:
                     if (currentCellInPatternY == 0)
                     {
                         currentCellInPatternY++;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     else if (currentTilePatternY < 15)
                     {
                         currentTilePatternY++;
-                        this.RefreshMapPatterns();
+                        this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Enter:
@@ -342,26 +348,28 @@ namespace _99x8Edit
                     int prev_y = currentMapY;
                     currentMapX = (currentMapX + 1) % 16;
                     if (currentMapX == 0) currentMapY = (currentMapY + 1) % 12;
-                    this.RefreshMap();
+                    selStartMapX = currentMapX;
+                    selStartMapY = currentMapY;
+                    this.UpdateMap();
                     break;
             }
         }
         private void panelPatterns_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDMapPattern))) e.Effect = DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(typeof(DnDPattern))) e.Effect = DragDropEffects.Copy;
             else if (e.Data.GetDataPresent(typeof(DnDMapPCG))) e.Effect = DragDropEffects.Copy;
             else e.Effect = DragDropEffects.None;
         }
         private void panelPatterns_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDMapPattern)))
+            if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
                 Point p = viewPatterns.PointToClient(Cursor.Position);
                 if (p.X > viewPatterns.Width - 1) p.X = viewPatterns.Width - 1;
                 if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
                 dataSource.CopyMapPattern(currentTilePatternY * 16 + currentTilePatternX, (p.Y / 32) * 16 + (p.X / 32));
-                this.RefreshMapPatterns();
-                this.RefreshMap();
+                this.UpdateMapPatterns();
+                this.UpdateMap();
             }
             else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
             {
@@ -371,11 +379,11 @@ namespace _99x8Edit
                 int target_ptn = p.X / 32 + (p.Y / 32) * 16;
                 int target_cell = (p.X / 16) % 2 + ((p.Y / 16) % 2) * 2;
                 dataSource.SetMapPattern(target_ptn, target_cell, currentPCGY * 32 + currentPCGX);
-                this.RefreshMapPatterns(); 
-                this.RefreshMap();
+                this.UpdateMapPatterns(); 
+                this.UpdateMap();
             }
         }
-        private void viewMap_MouseClick(object sender, MouseEventArgs e)
+        private void viewMap_MouseDown(object sender, MouseEventArgs e)
         {
             // Selected map cell has changed
             panelMap.Focus();   // CTRL+C and others will be cathced at parent panel
@@ -383,24 +391,58 @@ namespace _99x8Edit
             int selected_y = e.Y / 32;
             int previous_x = currentMapX;
             int previous_y = currentMapY;
-            if((selected_x != previous_x) || (selected_y != previous_y))
+            if ((selected_x != previous_x) || (selected_y != previous_y))
             {
-                currentMapX = selected_x;
-                currentMapY = selected_y;
-                this.RefreshMap();
+                currentMapX = selStartMapX = selected_x;
+                currentMapY = selStartMapY = selected_y;
+                this.UpdateMap();
+            }
+            if (e.Button == MouseButtons.Left)
+            {
+                viewPCG.DoDragDrop(new DnDMap(), DragDropEffects.Copy);
             }
         }
         private void panelMap_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             switch (e.KeyData)
             {
+                case Keys.Up | Keys.Shift:
+                    if (currentMapY > 0)
+                    {
+                        currentMapY--;
+                        this.UpdateMap();
+                    }
+                    break;
+                case Keys.Down | Keys.Shift:
+                    if(currentMapY < 11)
+                    {
+                        currentMapY++;
+                        this.UpdateMap();
+                    }
+                    break;
+                case Keys.Left | Keys.Shift:
+                    if (currentMapX > 0)
+                    {
+                        currentMapX--;
+                        this.UpdateMap();
+                    }
+                    break;
+                case Keys.Right | Keys.Shift:
+                    if (currentMapX < 15)
+                    {
+                        currentMapX++;
+                        this.UpdateMap();
+                    }
+                    break;
                 case Keys.Up:
                     if(currentMapY == 0)
                     {
                         if (currentMapOriginY > 0) currentMapOriginY--;
                     }
                     else currentMapY--;
-                    this.RefreshMap();
+                    selStartMapX = currentMapX;
+                    selStartMapY = currentMapY;
+                    this.UpdateMap();
                     break;
                 case Keys.Left:
                     if(currentMapX == 0)
@@ -408,7 +450,9 @@ namespace _99x8Edit
                         if (currentMapOriginX > 0) currentMapOriginX--;
                     }
                     else currentMapX--;
-                    this.RefreshMap();
+                    selStartMapX = currentMapX;
+                    selStartMapY = currentMapY;
+                    this.UpdateMap();
                     break;
                 case Keys.Right:
                     if (currentMapX == 15)
@@ -416,7 +460,9 @@ namespace _99x8Edit
                         if (currentMapOriginX < dataSource.MapWidth - 16) currentMapOriginX++;
                     }
                     else currentMapX++;
-                    this.RefreshMap();
+                    selStartMapX = currentMapX;
+                    selStartMapY = currentMapY;
+                    this.UpdateMap();
                     break;
                 case Keys.Down:
                     if(currentMapY == 11)
@@ -424,56 +470,105 @@ namespace _99x8Edit
                         if (currentMapOriginY < dataSource.MapHeight - 12) currentMapOriginY++;
                     }
                     else currentMapY++;
-                    this.RefreshMap();
+                    selStartMapX = currentMapX;
+                    selStartMapY = currentMapY;
+                    this.UpdateMap();
                     break;
             }
         }
         private void contextMap_copy(object sender, EventArgs e)
         {
             ClipMapCell clip = new ClipMapCell();
-            clip.dat = dataSource.GetMapData(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY);
+            int x = Math.Min(currentMapX, selStartMapX);
+            int y = Math.Min(currentMapY, selStartMapY);
+            int w = Math.Abs(currentMapX - selStartMapX) + 1;
+            int h = Math.Abs(currentMapY - selStartMapY) + 1;
+            for(int i = y; i < y + h; ++i)
+            {
+                List<int> l = new List<int>();
+                for(int j = x; j < x + w; ++j)
+                {
+                    l.Add(dataSource.GetMapData(currentMapOriginX + j, currentMapOriginY + i));
+                }
+                clip.ptnID.Add(l);
+            }
             Clipboard.Instance.Clip = clip;
         }
         private void contextMap_paste(object sender, EventArgs e)
         {
             dynamic clip = Clipboard.Instance.Clip;
-            if(clip is ClipMapCell)
-            {
-                dataSource.SetMapData(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, clip.dat);
-                this.RefreshMap();
-            }
-            else if (clip is ClipOneMapPattern)
+            if (clip is ClipOneMapPattern)
             {
                 dataSource.SetMapData(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, clip.index);
-                this.RefreshMap();
+                this.UpdateMap();
+            }
+            else if (clip is ClipMapCell)
+            {
+                MementoCaretaker.Instance.Push();
+                for (int i = 0; (i < clip.ptnID.Count) && (currentMapY + i < 12); ++i)
+                {
+                    List<int> l = clip.ptnID[i];
+                    for (int j = 0; (j < l.Count) && (currentMapX + j < 16); ++j)
+                    {
+                        dataSource.SetMapData(currentMapX + j, currentMapY + i, l[j], false);
+                    }
+                }
+                this.UpdateMap();
             }
         }
         private void contextMap_del(object sender, EventArgs e)
         {
-            dataSource.SetMapData(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, 0);
-            this.RefreshMap();
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentMapX, selStartMapX);
+            int y = Math.Min(currentMapY, selStartMapY);
+            int w = Math.Abs(currentMapX - selStartMapX) + 1;
+            int h = Math.Abs(currentMapY - selStartMapY) + 1;
+            for (int i = y; (i < y + h) && (i < 12); ++i)
+            {
+                for (int j = x; (j < x + w) && (j < 16); ++j)
+                {
+                    dataSource.SetMapData(currentMapOriginX + j, currentMapOriginY + i, 0, false);
+                }
+            }
+            this.UpdateMap();
         }
         private void contextMap_paint(object sender, EventArgs e)
         {
             int selected_ptn_num = currentTilePatternX + currentTilePatternY * 16;
             MementoCaretaker.Instance.Push();   // For undo action
             this.paintMap(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, selected_ptn_num);
-            this.RefreshMap();
+            this.UpdateMap();
         }
         private void panelMap_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDMapPattern))) e.Effect = DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(typeof(DnDPattern)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else if (e.Data.GetDataPresent(typeof(DnDMap)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
             else e.Effect = DragDropEffects.None;
+        }
+        private void panelMap_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDMap)))
+            {
+                Point p = viewMap.PointToClient(Cursor.Position);
+                currentMapX = Math.Min(p.X / 32, 15);
+                currentMapY = Math.Min(p.Y / 32, 11);
+                this.UpdateMap();
+            }
         }
         private void panelMap_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDMapPattern)))
+            if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
                 Point p = viewMap.PointToClient(Cursor.Position);
-                if (p.X > viewMap.Width - 1) p.X = viewMap.Width - 1;
-                if (p.Y > viewMap.Height - 1) p.X = viewMap.Height - 1;
-                dataSource.SetMapData(p.X / 32, p.Y / 32, currentTilePatternY * 16 + currentTilePatternX);
-                this.RefreshMap();
+                dataSource.SetMapData(Math.Min(p.X / 32, 15), Math.Min(p.Y / 32, 11),
+                                      currentTilePatternY * 16 + currentTilePatternX);
+                this.UpdateMap();
             }
         }
         private void btnLeft_Click(object sender, EventArgs e)
@@ -489,7 +584,7 @@ namespace _99x8Edit
                 this.btnRight.Enabled = true;
             }
             this.txtMapX.Text = currentMapOriginX.ToString();
-            this.RefreshMap();
+            this.UpdateMap();
         }
         private void btnRight_Click(object sender, EventArgs e)
         {
@@ -504,7 +599,7 @@ namespace _99x8Edit
                 this.btnLeft.Enabled = true;
             }
             this.txtMapX.Text = currentMapOriginX.ToString();
-            this.RefreshMap();
+            this.UpdateMap();
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
@@ -519,7 +614,7 @@ namespace _99x8Edit
                 this.btnDown.Enabled = true;
             }
             this.txtMapY.Text = currentMapOriginY.ToString();
-            this.RefreshMap();
+            this.UpdateMap();
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
@@ -534,7 +629,7 @@ namespace _99x8Edit
                 this.btnUp.Enabled = true;
             }
             this.txtMapY.Text = currentMapOriginY.ToString();
-            this.RefreshMap();
+            this.UpdateMap();
         }
         private void btnMapSize_Click(object sender, EventArgs e)
         {
@@ -587,7 +682,8 @@ namespace _99x8Edit
         }
     }
     // For DnD actions
-    class DnDMapPattern{ }
+    class DnDPattern{ }
     class DnDMapPCG { }
+    class DnDMap { }
 }
 

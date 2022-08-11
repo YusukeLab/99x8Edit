@@ -16,12 +16,12 @@ namespace _99x8Edit
         private Bitmap bmpPCGEdit = new Bitmap(256, 256);    // PCG Editor view
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
-        private int currentPCGX = 0;
+        private int currentPCGX = 0;        // Selected PCG in PCG list
         private int currentPCGY = 0;
-        private int currentSandboxX = 0;
+        private int currentSandboxX = 0;    // Selected cell in sandbox
         private int currentSandboxY = 0;
-        private int sandSelStartX = 0;
-        private int sandSelStartY = 0;
+        private int selStartSandX = 0;      // For multiple selection
+        private int selStartSandY = 0;
         private int currentLineX = 0;       // Selected line in editor(0-1)
         private int currentLineY = 0;       // Selected line in editor(0-15)
         String currentFile = "";
@@ -201,9 +201,9 @@ namespace _99x8Edit
                 }
                 // Current selection
                 g.DrawRectangle(new Pen(Color.Red),
-                                Math.Min(currentSandboxX, sandSelStartX) * 16, Math.Min(currentSandboxY, sandSelStartY) * 16,
-                                (Math.Abs(currentSandboxX - sandSelStartX) + 1) * 16 - 1,
-                                (Math.Abs(currentSandboxY - sandSelStartY) + 1) * 16 - 1);
+                                Math.Min(currentSandboxX, selStartSandX) * 16, Math.Min(currentSandboxY, selStartSandY) * 16,
+                                (Math.Abs(currentSandboxX - selStartSandX) + 1) * 16 - 1,
+                                (Math.Abs(currentSandboxY - selStartSandY) + 1) * 16 - 1);
                 this.viewSandbox.Refresh();
             }
         }
@@ -557,8 +557,8 @@ namespace _99x8Edit
             if ((clicked_cell_x != currentSandboxX) || (clicked_cell_x != currentSandboxY))
             {
                 // Selected sandbox cell have changed
-                currentSandboxX = sandSelStartX = clicked_cell_x;
-                currentSandboxY = sandSelStartY = clicled_cell_y;
+                currentSandboxX = selStartSandX = clicked_cell_x;
+                currentSandboxY = selStartSandY = clicled_cell_y;
                 this.UpdateSandbox();
             }
             if (e.Button == MouseButtons.Left)
@@ -602,8 +602,8 @@ namespace _99x8Edit
                     if (currentSandboxY > 0)
                     {
                         currentSandboxY--;
-                        sandSelStartX = currentSandboxX;
-                        sandSelStartY = currentSandboxY;
+                        selStartSandX = currentSandboxX;
+                        selStartSandY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -611,8 +611,8 @@ namespace _99x8Edit
                     if (currentSandboxX > 0)
                     {
                         currentSandboxX--;
-                        sandSelStartX = currentSandboxX;
-                        sandSelStartY = currentSandboxY;
+                        selStartSandX = currentSandboxX;
+                        selStartSandY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -620,8 +620,8 @@ namespace _99x8Edit
                     if (currentSandboxX < 31)
                     {
                         currentSandboxX++;
-                        sandSelStartX = currentSandboxX;
-                        sandSelStartY = currentSandboxY;
+                        selStartSandX = currentSandboxX;
+                        selStartSandY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -629,8 +629,8 @@ namespace _99x8Edit
                     if (currentSandboxY < 23)
                     {
                         currentSandboxY++;
-                        sandSelStartX = currentSandboxX;
-                        sandSelStartY = currentSandboxY;
+                        selStartSandX = currentSandboxX;
+                        selStartSandY = currentSandboxY;
                         this.UpdateSandbox();
                     }
                     break;
@@ -645,10 +645,10 @@ namespace _99x8Edit
         private void contextSandbox_copy(object sender, EventArgs e)
         {
             ClipNametable clip = new ClipNametable();
-            int x = Math.Min(currentSandboxX, sandSelStartX);
-            int y = Math.Min(currentSandboxY, sandSelStartY);
-            int w = Math.Abs(currentSandboxX - sandSelStartX) + 1;
-            int h = Math.Abs(currentSandboxY - sandSelStartY) + 1;
+            int x = Math.Min(currentSandboxX, selStartSandX);
+            int y = Math.Min(currentSandboxY, selStartSandY);
+            int w = Math.Abs(currentSandboxX - selStartSandX) + 1;
+            int h = Math.Abs(currentSandboxY - selStartSandY) + 1;
             for(int i = y; i < y + h; ++i)
             {
                 List<int> l = new List<int>();
@@ -672,10 +672,10 @@ namespace _99x8Edit
             else if (clip is ClipNametable)
             {
                 MementoCaretaker.Instance.Push();
-                for(int i = 0; (i < clip.pcgID.Count) && (i + currentSandboxY < 24); ++i)
+                for(int i = 0; (i < clip.pcgID.Count) && (currentSandboxY + i < 24); ++i)
                 {
                     List<int> l = clip.pcgID[i];
-                    for(int j = 0; (j < l.Count) && (j + currentSandboxX < 32); ++j)
+                    for(int j = 0; (j < l.Count) && (currentSandboxX + j < 32); ++j)
                     {
                         dataSource.SetNameTable((currentSandboxY + i) * 32 + currentSandboxX + j, l[j], false);
                     }
@@ -686,10 +686,10 @@ namespace _99x8Edit
         private void contextSandbox_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentSandboxX, sandSelStartX);
-            int y = Math.Min(currentSandboxY, sandSelStartY);
-            int w = Math.Abs(currentSandboxX - sandSelStartX) + 1;
-            int h = Math.Abs(currentSandboxY - sandSelStartY) + 1;
+            int x = Math.Min(currentSandboxX, selStartSandX);
+            int y = Math.Min(currentSandboxY, selStartSandY);
+            int w = Math.Abs(currentSandboxX - selStartSandX) + 1;
+            int h = Math.Abs(currentSandboxY - selStartSandY) + 1;
             for(int i = y; (i < y + h) && (i < 24); ++i)
             {
                 for(int j = x; (j < x + w) && (j < 32); ++j)
@@ -852,10 +852,6 @@ namespace _99x8Edit
                     this.paintSandbox(x + 1, y, val);
         }
     }
-    public class DnDPCG
-    {
-    }
-    public class DnDSandbox
-    {
-    }
+    public class DnDPCG { }
+    public class DnDSandbox { }
 }

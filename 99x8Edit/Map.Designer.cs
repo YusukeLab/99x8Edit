@@ -117,7 +117,7 @@ namespace _99x8Edit
             this.viewMap.Size = new System.Drawing.Size(514, 386);
             this.viewMap.TabIndex = 28;
             this.viewMap.TabStop = false;
-            this.viewMap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewMap_MouseClick);
+            this.viewMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewMap_MouseDown);
             // 
             // label3
             // 
@@ -282,6 +282,7 @@ namespace _99x8Edit
             this.panelMap.TabIndex = 38;
             this.panelMap.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelMap_DragDrop);
             this.panelMap.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelMap_DragEnter);
+            this.panelMap.DragOver += new System.Windows.Forms.DragEventHandler(this.panelMap_DragOver);
             this.panelMap.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelMap_PreviewKeyDown);
             // 
             // btnMapSize
