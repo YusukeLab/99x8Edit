@@ -13,6 +13,7 @@ namespace _99x8Edit
     public partial class Sprites : Form
     {
         private Machine dataSource;
+        private MainWindow mainWin;
         private Bitmap bmpPalette = new Bitmap(256, 64);        // Palette view
         private Bitmap bmpSprites = new Bitmap(256, 256);       // Sprites view
         private Bitmap bmpSpriteEdit = new Bitmap(256, 256);    // Sprite edit view
@@ -38,10 +39,12 @@ namespace _99x8Edit
         private class DnDEditor { }
         //----------------------------------------------------------------------
         // Initialize
-        public Sprites(Machine dataSource)
+        public Sprites(Machine dataSource, MainWindow parent)
         {
-            this.dataSource = dataSource;
             InitializeComponent();
+            // Set corresponding data and owner window
+            this.dataSource = dataSource;
+            this.mainWin = parent;
             // Initialize controls
             this.viewPalette.Image = bmpPalette;
             this.viewSprites.Image = bmpSprites;
@@ -82,6 +85,24 @@ namespace _99x8Edit
                     return base.ProcessDialogKey(keyData);
             }
             return true;
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            Keys mod = keyData & Keys.Modifiers;
+            Keys code = keyData & Keys.KeyCode;
+            if (mod == Keys.Control)
+            {
+                switch (code)
+                {
+                    case Keys.Z:
+                        mainWin.Undo();
+                        return true;
+                    case Keys.Y:
+                        mainWin.Redo();
+                        return true;
+                }
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
         //------------------------------------------------------------------------------
         // Refreshing Views

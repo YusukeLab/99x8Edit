@@ -62,9 +62,9 @@ namespace _99x8Edit
             }
             comboExportType.SelectedIndex = 0;
             // Editors
-            PCGWin = new PCGEditor(dataSource);
-            mapWin = new Map(dataSource);
-            spriteWin = new Sprites(dataSource);
+            PCGWin = new PCGEditor(dataSource, this);
+            mapWin = new Map(dataSource, this);
+            spriteWin = new Sprites(dataSource, this);
             // Check drag and drop of files
             String[] args = System.Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -77,12 +77,32 @@ namespace _99x8Edit
             PCGWin.Show();
         }
         //----------------------------------------------------------------------
+        // For other forms and internal use
+        public void Undo()
+        {
+            // Undo
+            MementoCaretaker.Instance.Undo();
+            // Update UI
+            PCGWin.ChangeOccuredByHost();
+            mapWin.ChangeOccuredByHost();
+            spriteWin.ChangeOccuredByHost();
+        }
+        public void Redo()
+        {
+            // Redo
+            MementoCaretaker.Instance.Redo();
+            // Update UI
+            PCGWin.ChangeOccuredByHost();
+            mapWin.ChangeOccuredByHost();
+            spriteWin.ChangeOccuredByHost();
+        }
+        //----------------------------------------------------------------------
         // Controls
         private void btnPCGWin_Click(object sender, EventArgs e)
         {
             if (PCGWin.IsDisposed)
             {
-                PCGWin = new PCGEditor(dataSource);
+                PCGWin = new PCGEditor(dataSource, this);
             }
             if (PCGWin.Visible)
             {
@@ -98,7 +118,7 @@ namespace _99x8Edit
         {
             if (mapWin.IsDisposed)
             {
-                mapWin = new Map(dataSource);
+                mapWin = new Map(dataSource, this);
             }
             if (mapWin.Visible)
             {
@@ -114,7 +134,7 @@ namespace _99x8Edit
         {
             if (spriteWin.IsDisposed)
             {
-                spriteWin = new Sprites(dataSource);
+                spriteWin = new Sprites(dataSource, this);
             }
             if (spriteWin.Visible)
             {
@@ -262,21 +282,11 @@ namespace _99x8Edit
         }
         private void btnUndo_Click(object sender, EventArgs e)
         {
-            // Undo
-            MementoCaretaker.Instance.Undo();
-            // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
+            this.Undo();
         }
         private void btnRedo_Click(object sender, EventArgs e)
         {
-            // Redo
-            MementoCaretaker.Instance.Redo();
-            // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
+            this.Redo();
         }
         String peekPath = "";
         private void btnPeek_Click(object sender, EventArgs e)

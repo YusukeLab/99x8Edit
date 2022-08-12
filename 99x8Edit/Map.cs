@@ -9,6 +9,7 @@ namespace _99x8Edit
     public partial class Map : Form
     {
         Machine dataSource;
+        MainWindow mainWin;
         private Bitmap bmpPCGList = new Bitmap(512, 128);       // PCG list view
         private Bitmap bmpMapPatterns = new Bitmap(512, 512);   // Map pattern view
         private Bitmap bmpMap = new Bitmap(512, 384);           // Map view
@@ -33,11 +34,12 @@ namespace _99x8Edit
         private class DnDPtnSel { }
         //------------------------------------------------------------------------------
         // Initialize
-        public Map(Machine dataSource)
+        public Map(Machine dataSource, MainWindow parent)
         {
             InitializeComponent();
-            // Set corresponding data
+            // Set corresponding data and owner window
             this.dataSource = dataSource;
+            this.mainWin = parent;
             // Initialize controls
             this.viewPCG.Image = bmpPCGList;
             this.viewPatterns.Image = bmpMapPatterns;
@@ -80,6 +82,24 @@ namespace _99x8Edit
                     return base.ProcessDialogKey(keyData);
             }
             return true;
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            Keys mod = keyData & Keys.Modifiers;
+            Keys code = keyData & Keys.KeyCode;
+            if (mod == Keys.Control)
+            {
+                switch (code)
+                {
+                    case Keys.Z:
+                        mainWin.Undo();
+                        return true;
+                    case Keys.Y:
+                        mainWin.Redo();
+                        return true;
+                }
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
         //------------------------------------------------------------------------------
         // Refreshing Views

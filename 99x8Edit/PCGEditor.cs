@@ -10,6 +10,7 @@ namespace _99x8Edit
     public partial class PCGEditor : Form
     {
         Machine dataSource;
+        MainWindow mainWin;
         private Bitmap bmpPCGList = new Bitmap(512, 128);    // PCG list view
         private Bitmap bmpPalette = new Bitmap(256, 64);     // Palette view
         private Bitmap bmpSandbox = new Bitmap(512, 384);    // Sandbox view
@@ -42,33 +43,13 @@ namespace _99x8Edit
         private class DnDSandbox { }
         private class DnDEditor { }
         //------------------------------------------------------------------------------
-        // Override
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // prevent focus movement by the cursor
-                case Keys.Down:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Left:
-                case Keys.Down | Keys.Shift:
-                case Keys.Right | Keys.Shift:
-                case Keys.Up | Keys.Shift:
-                case Keys.Left | Keys.Shift:
-                    break;
-                default:
-                    return base.ProcessDialogKey(keyData);
-            }
-            return true;
-        }
-        //------------------------------------------------------------------------------
         // Initialize
-        public PCGEditor(Machine dataSource)
+        public PCGEditor(Machine dataSource, MainWindow parent)
         {
             InitializeComponent();
-            // Set corresponding data
+            // Set corresponding data and owner window
             this.dataSource = dataSource;
+            this.mainWin = parent;
             // Initialize controls
             this.viewPalette.Image = bmpPalette;
             this.viewPCG.Image = bmpPCGList;
@@ -97,6 +78,45 @@ namespace _99x8Edit
             toolStripEditorDel.Click += new EventHandler(contextEditor_delete);
             toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
+        }
+        //------------------------------------------------------------------------------
+        // Override
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                // prevent focus movement by the cursor
+                case Keys.Down:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Left:
+                case Keys.Down | Keys.Shift:
+                case Keys.Right | Keys.Shift:
+                case Keys.Up | Keys.Shift:
+                case Keys.Left | Keys.Shift:
+                    break;
+                default:
+                    return base.ProcessDialogKey(keyData);
+            }
+            return true;
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            Keys mod = keyData & Keys.Modifiers;
+            Keys code = keyData & Keys.KeyCode;
+            if (mod == Keys.Control)
+            {
+                switch (code)
+                {
+                    case Keys.Z:
+                        mainWin.Undo();
+                        return true;
+                    case Keys.Y:
+                        mainWin.Redo();
+                        return true;
+                }
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
         //------------------------------------------------------------------------------
         // Refreshing Views
