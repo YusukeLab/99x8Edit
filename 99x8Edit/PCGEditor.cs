@@ -84,13 +84,19 @@ namespace _99x8Edit
             toolStripPCGPaste.Click += new EventHandler(contextPCGList_paste);
             toolStripPCGDel.Click += new EventHandler(contextPCGList_delete);
             toolStripPCGInverse.Click += new EventHandler(contextPCGList_inverse);
+            toolStripPCGCopyDown.Click += new EventHandler(contextPCGList_copyDown);
+            toolStripPCGCopyRight.Click += new EventHandler(contextPCGList_copyRight);
             toolStripSandboxCopy.Click += new EventHandler(contextSandbox_copy);
             toolStripSandboxPaste.Click += new EventHandler(contextSandbox_paste);
             toolStripSandboxDel.Click += new EventHandler(contextSandbox_delete);
             toolStripSandboxPaint.Click += new EventHandler(contextSandbox_paint);
+            toolStripSandboxCopyDown.Click += new EventHandler(contextSandbox_copyDown);
+            toolStripSandboxCopyRight.Click += new EventHandler(contextSandbox_copyRight);
             toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
             toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
             toolStripEditorDel.Click += new EventHandler(contextEditor_delete);
+            toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
+            toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
         }
         //------------------------------------------------------------------------------
         // Refreshing Views
@@ -322,8 +328,18 @@ namespace _99x8Edit
                 if ((currentLineX != clicked_line_x) || (currentLineY != clicked_line_y))
                 {
                     // Current selected line has changed
-                    currentLineX = selStartLineX = clicked_line_x;
-                    currentLineY = selStartLineY = clicked_line_y;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Multiple selection
+                        currentLineX = clicked_line_x;
+                        currentLineY = clicked_line_y;
+                    }
+                    else
+                    {
+                        // New selection
+                        currentLineX = selStartLineX = clicked_line_x;
+                        currentLineY = selStartLineY = clicked_line_y;
+                    }
                     this.UpdatePCGEditView();               // Update editor view
                     this.UpdateCurrentColorView();          // Update view of current color
                     viewPCGEdit.DoDragDrop(new DnDEditor(), DragDropEffects.Copy);
@@ -511,17 +527,14 @@ namespace _99x8Edit
             int h = Math.Abs(currentLineY - selStartLineY) + 1;
             for (int i = y; i < y + h; ++i)
             {
-                List<byte> gens = new List<byte>();
-                List<byte> clrs = new List<byte>();
+                List<Machine.PCGLine> l = new List<Machine.PCGLine>();
                 for (int j = x; j < x + w; ++j)
                 {
-                    int current_pcg = currentPCGY * 32 + currentPCGX;
-                    int pcg = (current_pcg + j + (i / 8) * 32) % 256;
-                    gens.Add(dataSource.GetPCGGenLine(pcg, i % 8));
-                    clrs.Add(dataSource.GetPCGClrLine(pcg, i % 8));
+                    int lefttop_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg = (lefttop_pcg + j + (i / 8) * 32) % 256;
+                    l.Add(dataSource.GetPCGLine(pcg, i % 8));
                 }
-                clip.gen.Add(gens);
-                clip.clr.Add(clrs);
+                clip.lines.Add(l);
             }
             ClipboardWrapper.SetData(clip);
         }
@@ -531,15 +544,14 @@ namespace _99x8Edit
             if (clip is ClipPCGLines)
             {
                 MementoCaretaker.Instance.Push();
-                for (int i = 0; (i < clip.gen.Count) && (currentLineY + i < 16); ++i)
+                for (int i = 0; (i < clip.lines.Count) && (currentLineY + i < 16); ++i)
                 {
-                    List<byte> gens = clip.gen[i];
-                    List<byte> clrs = clip.clr[i];
-                    for (int j = 0; (j < gens.Count) && (currentLineX + j < 2); ++j)
+                    List<Machine.PCGLine> l = clip.lines[i];
+                    for (int j = 0; (j < l.Count) && (currentLineX + j < 2); ++j)
                     {
-                        int current_pcg = currentPCGY * 32 + currentPCGX;
-                        int pcg = (current_pcg + currentLineX + j + ((currentLineY + i) / 8) * 32) % 256;
-                        dataSource.SetPCGLine(pcg, (currentLineY + i) % 8, gens[j], clrs[j], false);
+                        int lefttop_pcg = currentPCGY * 32 + currentPCGX;
+                        int pcg = (lefttop_pcg + currentLineX + j + ((currentLineY + i) / 8) * 32) % 256;
+                        dataSource.SetPCGLine(pcg, (currentLineY + i) % 8, l[j], false);
                     }
                 }
                 this.RefreshAllViews();
@@ -556,9 +568,49 @@ namespace _99x8Edit
             {
                 for (int j = x; j < x + w; ++j)
                 {
-                    int current_pcg = currentPCGY * 32 + currentPCGX;
-                    int pcg = (current_pcg + j + (i / 8) * 32) % 256;
+                    int lefttop_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg = (lefttop_pcg + j + (i / 8) * 32) % 256;
                     dataSource.ClearPCGLine(pcg, i % 8, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
+        private void contextEditor_copyDown(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentLineX, selStartLineX);
+            int y = Math.Min(currentLineY, selStartLineY);
+            int w = Math.Abs(currentLineX - selStartLineX) + 1;
+            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            for (int i = y + 1; i < y + h; ++i)
+            {
+                for (int j = x; j < x + w; ++j)
+                {
+                    int lefttop_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg_src = (lefttop_pcg + (y / 8) * 32 + j) % 256;
+                    int pcg_dst = (lefttop_pcg + (i / 8) * 32 + j) % 256;
+                    Machine.PCGLine line = dataSource.GetPCGLine(pcg_src, y % 8);
+                    dataSource.SetPCGLine(pcg_dst, i % 8, line, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
+        private void contextEditor_copyRight(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentLineX, selStartLineX);
+            int y = Math.Min(currentLineY, selStartLineY);
+            int w = Math.Abs(currentLineX - selStartLineX) + 1;
+            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            for (int i = y; i < y + h; ++i)
+            {
+                for (int j = x + 1; j < x + w; ++j)
+                {
+                    int lefttop_pcg = currentPCGY * 32 + currentPCGX;
+                    int pcg_src = (lefttop_pcg + (i / 8) * 32 + x) % 256;
+                    int pcg_dst = (lefttop_pcg + (i / 8) * 32 + j) % 256;
+                    Machine.PCGLine line = dataSource.GetPCGLine(pcg_src, i % 8);
+                    dataSource.SetPCGLine(pcg_dst, i % 8, line, false);
                 }
             }
             this.RefreshAllViews();
@@ -575,8 +627,18 @@ namespace _99x8Edit
                 if ((clicked_pcg_x != currentPCGX) || (clicked_pcg_y != currentPCGY))
                 {
                     // Selected PCG has changed
-                    currentPCGX = selStartPCGX = clicked_pcg_x;
-                    currentPCGY = selStartPCGY = clicked_pcg_y;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Multiple selection
+                        currentPCGX = clicked_pcg_x;
+                        currentPCGY = clicked_pcg_y;
+                    }
+                    else
+                    {
+                        // New selection
+                        currentPCGX = selStartPCGX = clicked_pcg_x;
+                        currentPCGY = selStartPCGY = clicked_pcg_y;
+                    }
                     this.UpdatePCGList();
                     this.UpdatePCGEditView();
                     this.UpdateCurrentColorView();
@@ -777,6 +839,38 @@ namespace _99x8Edit
             dataSource.InversePCG(currentPCGY * 32 + currentPCGX, true);
             this.RefreshAllViews();
         }
+        private void contextPCGList_copyDown(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentPCGX, selStartPCGX);
+            int y = Math.Min(currentPCGY, selStartPCGY);
+            int w = Math.Abs(currentPCGX - selStartPCGX) + 1;
+            int h = Math.Abs(currentPCGY - selStartPCGY) + 1;
+            for (int i = y + 1; (i < y + h) && (i < 24); ++i)
+            {
+                for (int j = x; (j < x + w) && (j < 32); ++j)
+                {
+                    dataSource.CopyPCG(y * 32 + j, i * 32 + j, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
+        private void contextPCGList_copyRight(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentPCGX, selStartPCGX);
+            int y = Math.Min(currentPCGY, selStartPCGY);
+            int w = Math.Abs(currentPCGX - selStartPCGX) + 1;
+            int h = Math.Abs(currentPCGY - selStartPCGY) + 1;
+            for (int i = y; (i < y + h) && (i < 24); ++i)
+            {
+                for (int j = x + 1; (j < x + w) && (j < 32); ++j)
+                {
+                    dataSource.CopyPCG(i * 32 + x, i * 32 + j, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
         private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
         {
             panelSandbox.Focus();   // Need this to catch CTRL+C and others
@@ -788,9 +882,18 @@ namespace _99x8Edit
                 if (clicled_cell_y > 23) clicled_cell_y = 23;
                 if ((clicked_cell_x != currentSandboxX) || (clicked_cell_x != currentSandboxY))
                 {
-                    // Selected sandbox cell have changed
-                    currentSandboxX = selStartSandX = clicked_cell_x;
-                    currentSandboxY = selStartSandY = clicled_cell_y;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Multiple selection
+                        currentSandboxX = clicked_cell_x;
+                        currentSandboxY = clicled_cell_y;
+                    }
+                    else
+                    {
+                        // New selection
+                        currentSandboxX = selStartSandX = clicked_cell_x;
+                        currentSandboxY = selStartSandY = clicled_cell_y;
+                    }
                     this.UpdateSandbox();
                 }
                 viewPCG.DoDragDrop(new DnDSandbox(), DragDropEffects.Copy);
@@ -933,6 +1036,40 @@ namespace _99x8Edit
         {
             MementoCaretaker.Instance.Push();   // For undo action
             this.paintSandbox(currentSandboxX, currentSandboxY, currentPCGY * 32 + currentPCGX);
+            this.UpdateSandbox();
+        }
+        private void contextSandbox_copyDown(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentSandboxX, selStartSandX);
+            int y = Math.Min(currentSandboxY, selStartSandY);
+            int w = Math.Abs(currentSandboxX - selStartSandX) + 1;
+            int h = Math.Abs(currentSandboxY - selStartSandY) + 1;
+            for (int i = y + 1; (i < y + h) && (i < 24); ++i)
+            {
+                for (int j = x; (j < x + w) && (j < 32); ++j)
+                {
+                    int src = dataSource.GetNameTable(y * 32 + j);
+                    dataSource.SetNameTable(i * 32 + j, src, false);
+                }
+            }
+            this.UpdateSandbox();
+        }
+        private void contextSandbox_copyRight(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentSandboxX, selStartSandX);
+            int y = Math.Min(currentSandboxY, selStartSandY);
+            int w = Math.Abs(currentSandboxX - selStartSandX) + 1;
+            int h = Math.Abs(currentSandboxY - selStartSandY) + 1;
+            for (int i = y; (i < y + h) && (i < 24); ++i)
+            {
+                for (int j = x + 1; (j < x + w) && (j < 32); ++j)
+                {
+                    int src = dataSource.GetNameTable(i * 32 + x);
+                    dataSource.SetNameTable(i * 32 + j, src, false);
+                }
+            }
             this.UpdateSandbox();
         }
         private void panelSandbox_DragEnter(object sender, DragEventArgs e)

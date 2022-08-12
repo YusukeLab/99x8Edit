@@ -238,25 +238,31 @@ namespace _99x8Edit
             }
             this.updatePCGBitmap(index);
         }
-        public byte GetPCGGenLine(int index, int line)
+        [Serializable]
+        public class PCGLine
         {
-            return ptnGen[index * 8 + line];
+            public byte gen;
+            public byte clr;
         }
-        public byte GetPCGClrLine(int index, int line)
+        public PCGLine GetPCGLine(int index, int line)
         {
-            return ptnClr[index * 8 + line];
+            PCGLine ret = new PCGLine();
+            ret.gen = ptnGen[index * 8 + line];
+            ret.clr = ptnClr[index * 8 + line];
+            return ret;
         }
-        public void SetPCGLine(int index, int line, byte gen, byte clr, bool push)
+        public void SetPCGLine(int index, int line, PCGLine val, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
-            ptnGen[index * 8 + line] = gen;
-            ptnClr[index * 8 + line] = clr;
+            ptnGen[index * 8 + line] = val.gen;
+            ptnClr[index * 8 + line] = val.clr;
             this.updatePCGBitmap(index);
         }
         public void ClearPCGLine(int index, int line, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             ptnGen[index * 8 + line] = 0;
+            ptnClr[index * 8 + line] = 0xF0;
             this.updatePCGBitmap(index);
         }
         public void InversePCG(int index, bool push)

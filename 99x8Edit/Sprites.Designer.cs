@@ -52,6 +52,8 @@ namespace _99x8Edit
             this.contextSprites = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSprCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSprPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSprCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSprCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSprDel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSprReverse = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +65,8 @@ namespace _99x8Edit
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.chkCRT = new System.Windows.Forms.CheckBox();
+            this.toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -286,42 +290,58 @@ namespace _99x8Edit
             this.contextSprites.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripSprCopy,
             this.toolStripSprPaste,
+            this.toolStripSprCopyDown,
+            this.toolStripSprCopyRight,
             this.toolStripSeparator1,
             this.toolStripSprDel,
             this.toolStripSprReverse});
             this.contextSprites.Name = "contextPCGList";
-            this.contextSprites.Size = new System.Drawing.Size(176, 106);
+            this.contextSprites.Size = new System.Drawing.Size(209, 154);
             // 
             // toolStripSprCopy
             // 
             this.toolStripSprCopy.Name = "toolStripSprCopy";
             this.toolStripSprCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripSprCopy.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSprCopy.Size = new System.Drawing.Size(208, 24);
             this.toolStripSprCopy.Text = "Copy";
             // 
             // toolStripSprPaste
             // 
             this.toolStripSprPaste.Name = "toolStripSprPaste";
             this.toolStripSprPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripSprPaste.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSprPaste.Size = new System.Drawing.Size(208, 24);
             this.toolStripSprPaste.Text = "Paste";
+            // 
+            // toolStripSprCopyDown
+            // 
+            this.toolStripSprCopyDown.Name = "toolStripSprCopyDown";
+            this.toolStripSprCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.toolStripSprCopyDown.Size = new System.Drawing.Size(208, 24);
+            this.toolStripSprCopyDown.Text = "Copy Down";
+            // 
+            // toolStripSprCopyRight
+            // 
+            this.toolStripSprCopyRight.Name = "toolStripSprCopyRight";
+            this.toolStripSprCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.toolStripSprCopyRight.Size = new System.Drawing.Size(208, 24);
+            this.toolStripSprCopyRight.Text = "Copy Right";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
             // 
             // toolStripSprDel
             // 
             this.toolStripSprDel.Name = "toolStripSprDel";
             this.toolStripSprDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripSprDel.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSprDel.Size = new System.Drawing.Size(208, 24);
             this.toolStripSprDel.Text = "Delete";
             // 
             // toolStripSprReverse
             // 
             this.toolStripSprReverse.Name = "toolStripSprReverse";
-            this.toolStripSprReverse.Size = new System.Drawing.Size(175, 24);
+            this.toolStripSprReverse.Size = new System.Drawing.Size(208, 24);
             this.toolStripSprReverse.Text = "Reverse";
             // 
             // panelSprites
@@ -356,35 +376,37 @@ namespace _99x8Edit
             this.contextEditor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripEditorCopy,
             this.toolStripEditorPaste,
+            this.toolStripEditorCopyDown,
+            this.toolStripEditorCopyRight,
             this.toolStripSeparator2,
             this.toolStripEditorDel});
             this.contextEditor.Name = "contextPCGList";
-            this.contextEditor.Size = new System.Drawing.Size(176, 82);
+            this.contextEditor.Size = new System.Drawing.Size(209, 130);
             // 
             // toolStripEditorCopy
             // 
             this.toolStripEditorCopy.Name = "toolStripEditorCopy";
             this.toolStripEditorCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripEditorCopy.Size = new System.Drawing.Size(175, 24);
+            this.toolStripEditorCopy.Size = new System.Drawing.Size(208, 24);
             this.toolStripEditorCopy.Text = "Copy";
             // 
             // toolStripEditorPaste
             // 
             this.toolStripEditorPaste.Name = "toolStripEditorPaste";
             this.toolStripEditorPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripEditorPaste.Size = new System.Drawing.Size(175, 24);
+            this.toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
             this.toolStripEditorPaste.Text = "Paste";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
             // 
             // toolStripEditorDel
             // 
             this.toolStripEditorDel.Name = "toolStripEditorDel";
             this.toolStripEditorDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripEditorDel.Size = new System.Drawing.Size(175, 24);
+            this.toolStripEditorDel.Size = new System.Drawing.Size(208, 24);
             this.toolStripEditorDel.Text = "Delete";
             // 
             // chkCRT
@@ -398,6 +420,20 @@ namespace _99x8Edit
             this.chkCRT.Text = "CRT Filter";
             this.chkCRT.UseVisualStyleBackColor = true;
             this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
+            // 
+            // toolStripEditorCopyDown
+            // 
+            this.toolStripEditorCopyDown.Name = "toolStripEditorCopyDown";
+            this.toolStripEditorCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.toolStripEditorCopyDown.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorCopyDown.Text = "Copy Down";
+            // 
+            // toolStripEditorCopyRight
+            // 
+            this.toolStripEditorCopyRight.Name = "toolStripEditorCopyRight";
+            this.toolStripEditorCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.toolStripEditorCopyRight.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorCopyRight.Text = "Copy Right";
             // 
             // Sprites
             // 
@@ -484,5 +520,9 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
         private System.Windows.Forms.CheckBox chkCRT;
         private System.Windows.Forms.ToolStripMenuItem toolStripSprReverse;
+        private System.Windows.Forms.ToolStripMenuItem toolStripSprCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem toolStripSprCopyRight;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
     }
 }

@@ -46,9 +46,13 @@ namespace _99x8Edit
             this.contextPattern = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripPatternCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripPatternPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripPatternCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripPatternCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMap = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMapCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMapPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMapCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMapCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMapDel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMapPaint = new System.Windows.Forms.ToolStripMenuItem();
@@ -210,23 +214,39 @@ namespace _99x8Edit
             this.contextPattern.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextPattern.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripPatternCopy,
-            this.toolStripPatternPaste});
+            this.toolStripPatternPaste,
+            this.toolStripPatternCopyDown,
+            this.toolStripPatternCopyRight});
             this.contextPattern.Name = "contextPCGList";
-            this.contextPattern.Size = new System.Drawing.Size(165, 52);
+            this.contextPattern.Size = new System.Drawing.Size(209, 100);
             // 
             // toolStripPatternCopy
             // 
             this.toolStripPatternCopy.Name = "toolStripPatternCopy";
             this.toolStripPatternCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripPatternCopy.Size = new System.Drawing.Size(164, 24);
+            this.toolStripPatternCopy.Size = new System.Drawing.Size(208, 24);
             this.toolStripPatternCopy.Text = "Copy";
             // 
             // toolStripPatternPaste
             // 
             this.toolStripPatternPaste.Name = "toolStripPatternPaste";
             this.toolStripPatternPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripPatternPaste.Size = new System.Drawing.Size(164, 24);
+            this.toolStripPatternPaste.Size = new System.Drawing.Size(208, 24);
             this.toolStripPatternPaste.Text = "Paste";
+            // 
+            // toolStripPatternCopyDown
+            // 
+            this.toolStripPatternCopyDown.Name = "toolStripPatternCopyDown";
+            this.toolStripPatternCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.toolStripPatternCopyDown.Size = new System.Drawing.Size(208, 24);
+            this.toolStripPatternCopyDown.Text = "Copy Down";
+            // 
+            // toolStripPatternCopyRight
+            // 
+            this.toolStripPatternCopyRight.Name = "toolStripPatternCopyRight";
+            this.toolStripPatternCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.toolStripPatternCopyRight.Size = new System.Drawing.Size(208, 24);
+            this.toolStripPatternCopyRight.Text = "Copy Right";
             // 
             // contextMap
             // 
@@ -234,42 +254,58 @@ namespace _99x8Edit
             this.contextMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMapCopy,
             this.toolStripMapPaste,
+            this.toolStripMapCopyDown,
+            this.toolStripMapCopyRight,
             this.toolStripSeparator2,
             this.toolStripMapDel,
             this.toolStripMapPaint});
             this.contextMap.Name = "contextPCGList";
-            this.contextMap.Size = new System.Drawing.Size(176, 106);
+            this.contextMap.Size = new System.Drawing.Size(209, 154);
             // 
             // toolStripMapCopy
             // 
             this.toolStripMapCopy.Name = "toolStripMapCopy";
             this.toolStripMapCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripMapCopy.Size = new System.Drawing.Size(175, 24);
+            this.toolStripMapCopy.Size = new System.Drawing.Size(208, 24);
             this.toolStripMapCopy.Text = "Copy";
             // 
             // toolStripMapPaste
             // 
             this.toolStripMapPaste.Name = "toolStripMapPaste";
             this.toolStripMapPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripMapPaste.Size = new System.Drawing.Size(175, 24);
+            this.toolStripMapPaste.Size = new System.Drawing.Size(208, 24);
             this.toolStripMapPaste.Text = "Paste";
+            // 
+            // toolStripMapCopyDown
+            // 
+            this.toolStripMapCopyDown.Name = "toolStripMapCopyDown";
+            this.toolStripMapCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.toolStripMapCopyDown.Size = new System.Drawing.Size(208, 24);
+            this.toolStripMapCopyDown.Text = "Copy Down";
+            // 
+            // toolStripMapCopyRight
+            // 
+            this.toolStripMapCopyRight.Name = "toolStripMapCopyRight";
+            this.toolStripMapCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.toolStripMapCopyRight.Size = new System.Drawing.Size(208, 24);
+            this.toolStripMapCopyRight.Text = "Copy Right";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
             // 
             // toolStripMapDel
             // 
             this.toolStripMapDel.Name = "toolStripMapDel";
             this.toolStripMapDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripMapDel.Size = new System.Drawing.Size(175, 24);
+            this.toolStripMapDel.Size = new System.Drawing.Size(208, 24);
             this.toolStripMapDel.Text = "Delete";
             // 
             // toolStripMapPaint
             // 
             this.toolStripMapPaint.Name = "toolStripMapPaint";
-            this.toolStripMapPaint.Size = new System.Drawing.Size(175, 24);
+            this.toolStripMapPaint.Size = new System.Drawing.Size(208, 24);
             this.toolStripMapPaint.Text = "Paint";
             // 
             // panelMap
@@ -387,5 +423,9 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnMapSize;
         private System.Windows.Forms.FlowLayoutPanel panelPCG;
         private System.Windows.Forms.CheckBox chkCRT;
+        private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopyRight;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyRight;
     }
 }

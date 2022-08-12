@@ -51,10 +51,14 @@ namespace _99x8Edit
             // Context menu
             toolStripPatternCopy.Click += new EventHandler(contextPatterns_copy);
             toolStripPatternPaste.Click += new EventHandler(contextPatterns_paste);
+            toolStripPatternCopyDown.Click += new EventHandler(contextPatterns_copyDown);
+            toolStripPatternCopyRight.Click += new EventHandler(contextPatterns_copyRight);
             toolStripMapCopy.Click += new EventHandler(contextMap_copy);
             toolStripMapPaste.Click += new EventHandler(contextMap_paste);
             toolStripMapDel.Click += new EventHandler(contextMap_del);
             toolStripMapPaint.Click += new EventHandler(contextMap_paint);
+            toolStripMapCopyDown.Click += new EventHandler(contextMap_copyDown);
+            toolStripMapCopyRight.Click += new EventHandler(contextMap_copyRight);
         }
         //------------------------------------------------------------------------------
         // Override
@@ -301,6 +305,40 @@ namespace _99x8Edit
                 this.UpdateMap();
             }
         }
+        private void contextPatterns_copyDown(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentPtnX, selStartPtnX);
+            int y = Math.Min(currentPtnY, selStartPtnY);
+            int w = Math.Abs(currentPtnX - selStartPtnX) + 1;
+            int h = Math.Abs(currentPtnY - selStartPtnY) + 1;
+            for (int i = y + 1; i < y + h; ++i)
+            {
+                for (int j = x; j < x + w; ++j)
+                {
+                    byte[] src = dataSource.GetPattern(y * 16 + j);
+                    dataSource.SetPattern(i * 16 + j, src, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
+        private void contextPatterns_copyRight(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentPtnX, selStartPtnX);
+            int y = Math.Min(currentPtnY, selStartPtnY);
+            int w = Math.Abs(currentPtnX - selStartPtnX) + 1;
+            int h = Math.Abs(currentPtnY - selStartPtnY) + 1;
+            for (int i = y; i < y + h; ++i)
+            {
+                for (int j = x + 1; j < x + w; ++j)
+                {
+                    byte[] src = dataSource.GetPattern(i * 16 + x);
+                    dataSource.SetPattern(i * 16 + j, src, false);
+                }
+            }
+            this.RefreshAllViews();
+        }
         private void viewPatterns_MouseDown(object sender, MouseEventArgs e)
         {
             panelPatterns.Focus();  // Key events are handled by parent panel
@@ -320,8 +358,18 @@ namespace _99x8Edit
                 }
                 if (selected_pattern_num != current_pattern_num)
                 {
-                    currentPtnX = selStartPtnX = selected_ptn_x;
-                    currentPtnY = selStartPtnY = selected_ptn_y;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Multiple selection
+                        currentPtnX = selected_ptn_x;
+                        currentPtnY = selected_ptn_y;
+                    }
+                    else
+                    {
+                        // New selection
+                        currentPtnX = selStartPtnX = selected_ptn_x;
+                        currentPtnY = selStartPtnY = selected_ptn_y;
+                    }
                     this.UpdateMapPatterns();   // refresh before dragging
                     // Start multiple selections
                     viewPatterns.DoDragDrop(new DnDPtnSel(), DragDropEffects.Copy);
@@ -502,8 +550,18 @@ namespace _99x8Edit
                 int previous_y = currentMapY;
                 if ((selected_x != previous_x) || (selected_y != previous_y))
                 {
-                    currentMapX = selStartMapX = selected_x;
-                    currentMapY = selStartMapY = selected_y;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Multiple selection
+                        currentMapX = selected_x;
+                        currentMapY = selected_y;
+                    }
+                    else
+                    {
+                        // New selection
+                        currentMapX = selStartMapX = selected_x;
+                        currentMapY = selStartMapY = selected_y;
+                    }
                     this.UpdateMap();
                 }
                 viewPCG.DoDragDrop(new DnDMap(), DragDropEffects.Copy);
@@ -646,6 +704,40 @@ namespace _99x8Edit
             int selected_ptn_num = currentPtnX + currentPtnY * 16;
             MementoCaretaker.Instance.Push();   // For undo action
             this.paintMap(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, selected_ptn_num);
+            this.UpdateMap();
+        }
+        private void contextMap_copyDown(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentMapX, selStartMapX);
+            int y = Math.Min(currentMapY, selStartMapY);
+            int w = Math.Abs(currentMapX - selStartMapX) + 1;
+            int h = Math.Abs(currentMapY - selStartMapY) + 1;
+            for (int i = y + 1; (i < y + h) && (i < 12); ++i)
+            {
+                for (int j = x; (j < x + w) && (j < 16); ++j)
+                {
+                    int src = dataSource.GetMapData(currentMapOriginX + j, currentMapOriginY + y);
+                    dataSource.SetMapData(currentMapOriginX + j, currentMapOriginY + i, src, false);
+                }
+            }
+            this.UpdateMap();
+        }
+        private void contextMap_copyRight(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int x = Math.Min(currentMapX, selStartMapX);
+            int y = Math.Min(currentMapY, selStartMapY);
+            int w = Math.Abs(currentMapX - selStartMapX) + 1;
+            int h = Math.Abs(currentMapY - selStartMapY) + 1;
+            for (int i = y; (i < y + h) && (i < 12); ++i)
+            {
+                for (int j = x + 1; (j < x + w) && (j < 16); ++j)
+                {
+                    int src = dataSource.GetMapData(currentMapOriginX + x, currentMapOriginY + i);
+                    dataSource.SetMapData(currentMapOriginX + j, currentMapOriginY + i, src, false);
+                }
+            }
             this.UpdateMap();
         }
         private void panelMap_DragEnter(object sender, DragEventArgs e)

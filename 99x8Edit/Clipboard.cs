@@ -27,8 +27,7 @@ namespace _99x8Edit
     [Serializable]
     public class ClipPCGLines : ClipBase
     {
-        public List<List<byte>> gen = new List<List<byte>>();
-        public List<List<byte>> clr = new List<List<byte>>();
+        public List<List<Machine.PCGLine>> lines = new List<List<Machine.PCGLine>>();
     }
     [Serializable]
     public class ClipPCG : ClipBase
