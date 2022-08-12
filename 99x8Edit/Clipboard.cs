@@ -43,10 +43,9 @@ namespace _99x8Edit
         public List<List<int>> pcgID = new List<List<int>>();
     }
     [Serializable]
-    public class ClipOneMapPattern : ClipBase
+    public class ClipMapPtn : ClipBase
     {
-        public byte index;
-        public byte[] pattern = new byte[4];
+        public List<List<byte[]>> ptns = new List<List<byte[]>>();
     }
     [Serializable]
     public class ClipMapCell : ClipBase
@@ -54,24 +53,14 @@ namespace _99x8Edit
         public List<List<int>> ptnID = new List<List<int>>();
     }
     [Serializable]
-    public class Clip16x16Sprite : ClipBase
+    public class ClipSprite : ClipBase
     {
-        public byte[] genData = new byte[32];   // 16x16 sprite
-        public byte[] clr2Data = new byte[32];
-        public byte clr = 0;
-        public byte overlayed = 0;
-        public byte[] genData_ov = new byte[32];   // overlayed 16x16 sprite
-        public byte[] clr2Data_ov = new byte[32];
-        public byte clr_ov = 0;
+        public List<List<Machine.One16x16Sprite>> sprites = new List<List<Machine.One16x16Sprite>>();
     }
     [Serializable]
     public class ClipOneSpriteLine : ClipBase
     {
-        public byte genData = 0;
-        public byte clrData = 0;
-        public bool overlayed = false;
-        public byte genData2 = 0;
-        public byte clrData2 = 0;
+        public List<List<Machine.SpriteLine>> lines = new List<List<Machine.SpriteLine>>();
     }
     [Serializable]
     public class ClipOneChrInRom : ClipBase

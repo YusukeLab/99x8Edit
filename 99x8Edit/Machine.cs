@@ -124,17 +124,17 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Palette methods
-        public void SetPaletteToTMS9918()
+        public void SetPaletteToTMS9918(bool push)
         {
             // Set the windows color to palette based on TMS9918
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             isTMS9918 = true;
             this.updateAllViewItems();  // Update bitmaps
         }
-        public void SetPaletteToV9938()
+        public void SetPaletteToV9938(bool push)
         {
             // Set the windows color to palette based on internal palette data
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             isTMS9918 = false;
             this.updateAllViewItems();  // Update bitmaps
         }
@@ -144,9 +144,9 @@ namespace _99x8Edit
         {
             return isTMS9918;
         }
-        public void SetPalette(int colorCode, int R, int G, int B)
+        public void SetPalette(int colorCode, int R, int G, int B, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             // Update palette
             pltDat[colorCode * 2] = (byte)((R << 4) | B);
             pltDat[colorCode * 2 + 1] = (byte)(G);
@@ -172,9 +172,9 @@ namespace _99x8Edit
             int addr = pcg * 8 + line;
             return (ptnGen[addr] >> (7 - x)) & 1;
         }
-        public void SetPCGPixel(int pcg, int line, int x, int data)
+        public void SetPCGPixel(int pcg, int line, int x, int data, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             // Update PCG pattern
             int addr = pcg * 8 + line;
             int bitcol = 7 - x;
@@ -190,9 +190,9 @@ namespace _99x8Edit
         {
             return bmpOneChr[pcg];
         }
-        public void CopyPCG(int src, int dst)
+        public void CopyPCG(int src, int dst, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
                 ptnGen[dst * 8 + i] = ptnGen[src * 8 + i];
@@ -259,8 +259,9 @@ namespace _99x8Edit
             ptnGen[index * 8 + line] = 0;
             this.updatePCGBitmap(index);
         }
-        public void InversePCG(int index)
+        public void InversePCG(int index, bool push)
         {
+            if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 8; ++i)
             {
                 ptnGen[index * 8 + i] = (byte)(~ptnGen[index * 8 + i]);
@@ -273,7 +274,7 @@ namespace _99x8Edit
         {
             return nameTable[addr];
         }
-        public void SetNameTable(int addr, int data, bool push = true)
+        public void SetNameTable(int addr, int data, bool push)
         {
             if(push)
             {
@@ -293,11 +294,11 @@ namespace _99x8Edit
                 return ptnClr[addr] & 0x0F;
             }
         }
-        public void SetColorTable(int pcg, int line, int color_code, bool isForeGround)
+        public void SetColorTable(int pcg, int line, int color_code, bool isForeGround, bool push)
         {
             int addr = pcg * 8 + line;
             // Update color table
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             if (isForeGround)
             {
                 ptnClr[addr] &= 0x0F;
@@ -316,50 +317,45 @@ namespace _99x8Edit
         {
             return colorOf[color_code];
         }
-        public int GetMapPattern(int index, int no)
+        public int GetPCGInPattern(int index, int no)
         {
             return mapPattern[index * 4 + no];
         }
-        public void SetMapPattern(int index, int no, int value)
+        public void SetPCGInPattern(int index, int no, int value, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             mapPattern[index * 4 + no] = (byte)value;
         }
-        public void CopyMapPattern(int src, int dst)
+        public void CopyMapPattern(int src, int dst, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             mapPattern[dst * 4 + 0] = mapPattern[src * 4 + 0];
             mapPattern[dst * 4 + 1] = mapPattern[src * 4 + 1];
             mapPattern[dst * 4 + 2] = mapPattern[src * 4 + 2];
             mapPattern[dst * 4 + 3] = mapPattern[src * 4 + 3];
         }
-        public void CopyMapPatternToClip(int index)
+        public byte[] GetPattern(int index)
         {
-            ClipOneMapPattern clip = new ClipOneMapPattern();
-            clip.index = (byte)index;
-            clip.pattern[0] = mapPattern[index * 4 + 0];
-            clip.pattern[1] = mapPattern[index * 4 + 1];
-            clip.pattern[2] = mapPattern[index * 4 + 2];
-            clip.pattern[3] = mapPattern[index * 4 + 3];
-            ClipboardWrapper.SetData(clip);
+            byte[] ret = new byte[4];
+            ret[0] = mapPattern[index * 4 + 0];
+            ret[1] = mapPattern[index * 4 + 1];
+            ret[2] = mapPattern[index * 4 + 2];
+            ret[3] = mapPattern[index * 4 + 3];
+            return ret;
         }
-        public void PasteMapPatternFromClip(int index)
+        public void SetPattern(int index, byte[] val, bool push)
         {
-            dynamic clip = ClipboardWrapper.GetData();
-            if(clip is ClipOneMapPattern)
-            {
-                MementoCaretaker.Instance.Push();
-                mapPattern[index * 4 + 0] = clip.pattern[0];
-                mapPattern[index * 4 + 1] = clip.pattern[1];
-                mapPattern[index * 4 + 2] = clip.pattern[2];
-                mapPattern[index * 4 + 3] = clip.pattern[3];
-            }
+            if(push) MementoCaretaker.Instance.Push();
+            mapPattern[index * 4 + 0] = val[0];
+            mapPattern[index * 4 + 1] = val[1];
+            mapPattern[index * 4 + 2] = val[2];
+            mapPattern[index * 4 + 3] = val[3];
         }
         public int GetMapData(int x, int y)
         {
             return mapData[x, y];
         }
-        public void SetMapData(int x, int y, int value, bool push = true)
+        public void SetMapData(int x, int y, int value, bool push)
         {
             if(push)
             {
@@ -417,9 +413,9 @@ namespace _99x8Edit
         {
             return (spriteOverlay[indexBy16x16] != 0);
         }
-        public void SetSpriteOverlay(int indexBy16x16, bool value)
+        public void SetSpriteOverlay(int indexBy16x16, bool value, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             // Set overlay flag of the sprite
             spriteOverlay[indexBy16x16] = value ? (byte)1 : (byte)0;
             // Set sprite attributes
@@ -436,7 +432,7 @@ namespace _99x8Edit
                 return spriteClr2[index * 8 + line] & 0x0F;
             }
         }
-        public void SetSpriteColorCode(int index, int line, int value, bool push = true)
+        public void SetSpriteColorCode(int index, int line, int value, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
@@ -456,84 +452,59 @@ namespace _99x8Edit
             }
             this.updateSpriteBitmap();
         }
-        public void Copy16x16SpriteToClip(int index16x16)
+        [Serializable]
+        public class One16x16Sprite
+        {
+            public byte[] genData = new byte[32];   // 16x16 sprite
+            public byte[] clr2Data = new byte[32];
+            public byte clr = 0;
+            public byte overlay = 0;
+        }
+        public One16x16Sprite Get16x16Sprite(int index16x16)
         {
             int target8x8 = index16x16 * 4;
-            Clip16x16Sprite clip = new Clip16x16Sprite();
-            for(int i = 0; i < 32; ++i)
+            One16x16Sprite spr = new One16x16Sprite();
+            for (int i = 0; i < 32; ++i)
             {
-                clip.genData[i] = spriteGen[target8x8 * 8 + i];
-                clip.clr2Data[i] = spriteClr2[target8x8 * 8 + i];
+                spr.genData[i] = spriteGen[target8x8 * 8 + i];
+                spr.clr2Data[i] = spriteClr2[target8x8 * 8 + i];
             }
-            clip.clr = spriteClr1[target8x8];
-            if((clip.overlayed = spriteOverlay[index16x16]) != 0)
-            {
-                target8x8 = (target8x8 + 4) % 256;
-                for (int i = 0; i < 32; ++i)
-                {
-                    clip.genData_ov[i] = spriteGen[target8x8 * 8 + i];
-                    clip.clr2Data_ov[i] = spriteClr2[target8x8 * 8 + i];
-                }
-                clip.clr_ov = spriteClr1[target8x8];
-            }
-            ClipboardWrapper.SetData(clip);
+            spr.clr = spriteClr1[target8x8];
+            spr.overlay = spriteOverlay[index16x16];
+            return spr;
         }
-        public void Paste16x16SpriteFromClip(int index16x16)
+        public void Set16x16Sprite(int index16x16, One16x16Sprite spr, bool push)
         {
-            dynamic clip = ClipboardWrapper.GetData();
-            if (clip is Clip16x16Sprite)
+            if (push) MementoCaretaker.Instance.Push();
+            for(int i = 0; i < 4; ++i)
             {
-                MementoCaretaker.Instance.Push();
-                int left = (index16x16 + 1) % 64;
-                int overlayed = spriteOverlay[left];    // we have to keep the overlayed flag
-                for(int i = 0; i < 4; ++i)
+                int target8x8 = (index16x16 * 4 + i) % 256;
+                for (int j = 0; j < 8; ++j)
                 {
-                    int index8x8 = (index16x16 * 4) + i;
-                    spriteClr1[index8x8] = clip.clr;
-                    for (int j = 0; j < 8; ++j)
-                    {
-                        spriteGen[index8x8 * 8 + j] = clip.genData[i * 8 + j];
-                        spriteClr2[index8x8 * 8 + j] = (byte)((clip.clr2Data[i * 8 + j] & 0xF) | (overlayed << 5));
-                    }
-                    this.updateSpriteBitmap(index8x8);
+                    spriteGen[target8x8 * 8 + j] = spr.genData[i * 8 + j];
+                    spriteClr2[target8x8 * 8 + j] = spr.clr2Data[i * 8 + j];
                 }
-                if((spriteOverlay[index16x16] = clip.overlayed) != 0)
-                {
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        int index8x8 = (((index16x16 + 1) * 4) + i) % 256;
-                        spriteClr1[index8x8] = clip.clr_ov;
-                        for (int j = 0; j < 8; ++j)
-                        {
-                            spriteGen[index8x8 * 8 + j] = clip.genData_ov[i * 8 + j];
-                            spriteClr2[index8x8 * 8 + j] = (byte)((clip.clr2Data_ov[i * 8 + j] & 0xF) | (1 << 5));
-                        }
-                        this.updateSpriteBitmap(index8x8);
-                    }
-                    spriteOverlay[(index16x16 + 1) % 64] = 0;
-                }
+                spriteClr1[target8x8] = spr.clr;
+                this.updateSpriteBitmap(target8x8);
             }
-            else if(clip is ClipOneChrInRom)
-            {
-                MementoCaretaker.Instance.Push();
-                spriteOverlay[index16x16] = 0;
-                for(int i = 0; i < 8; ++i)
-                {
-                    spriteGen[index16x16 * 4 * 8 + 0 + i] = clip.leftTop[i];
-                    spriteGen[index16x16 * 4 * 8 + 8 + i] = clip.leftBottom[i];
-                    spriteGen[index16x16 * 4 * 8 + 16 + i] = clip.rightTop[i];
-                    spriteGen[index16x16 * 4 * 8 + 24 + i] = clip.rightTop[i];
-                }
-                this.updateSpriteBitmap();
-            }
+            spriteOverlay[index16x16] = spr.overlay;
         }
-        public void Clear16x16Sprite(int index16x16)
+        public void SetSpriteGen(int index8x8, byte[] gen, bool push)
         {
-            MementoCaretaker.Instance.Push();
-            int left = (index16x16 + 1) % 64;
+            if(push) MementoCaretaker.Instance.Push();
+            for (int i = 0; i < 8; ++i)
+            {
+                spriteGen[index8x8 * 8 + i] = gen[i];
+            }
+            this.updateSpriteBitmap();
+        }
+        public void Clear16x16Sprite(int index16x16, bool push)
+        {
+            if(push) MementoCaretaker.Instance.Push();
+            spriteOverlay[index16x16] = 0;
             for (int i = 0; i < 4; ++i)
             {
-                int dst = index16x16 * 4 + i;
+                int dst = (index16x16 * 4 + i) % 256;
                 spriteClr1[dst] = 0x0F;
                 for (int j = 0; j < 8; ++j)
                 {
@@ -549,9 +520,9 @@ namespace _99x8Edit
             int target = (target_dat >> (7 - x)) & 1;       // left side is LSB of data source
             return target;
         }
-        public void SetSpritePixel(int index, int line, int x, int val)
+        public void SetSpritePixel(int index, int line, int x, int val, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             // Update Sprite pattern
             int addr = index * 8 + line;
             int bitcol = 7 - x;
@@ -563,49 +534,53 @@ namespace _99x8Edit
             // Update Sprite bitmap
             this.updateSpriteBitmap(index);
         }
-        public void CopySpriteLineToClip(int index, int line)
+        [Serializable]
+        public class SpriteLine
         {
-            ClipOneSpriteLine clip = new ClipOneSpriteLine();
-            clip.genData = spriteGen[index * 8 + line];
-            clip.clrData = spriteClr2[index * 8 + line];
-            if (spriteOverlay[index / 4] != 0)
+            public byte genData = 0;
+            public byte clrData = 0;
+            public byte overlayed = 0;
+            public byte genDataOv = 0;
+            public byte clrDataOv = 0;
+        }
+        public SpriteLine GetSpriteLine(int index, int line)
+        {
+            SpriteLine ret = new SpriteLine();
+            ret.genData = spriteGen[index * 8 + line];
+            ret.clrData = spriteClr2[index * 8 + line];
+            if ((ret.overlayed = spriteOverlay[index / 4]) != 0)
             {
                 index = (index + 4) % 256;
-                clip.overlayed = true;
-                clip.genData2 = spriteGen[index * 8 + line];
-                clip.clrData2 = spriteClr2[index * 8 + line];
+                ret.genDataOv = spriteGen[index * 8 + line];
+                ret.clrDataOv = spriteClr2[index * 8 + line];
             }
-            ClipboardWrapper.SetData(clip);
+            return ret;
         }
-        public void PasteSpriteLineFromClip(int index, int line)
+        public void SetSpriteLine(int index, int line, SpriteLine val, bool push)
         {
-            dynamic clip = ClipboardWrapper.GetData();
-            if (clip is ClipOneSpriteLine)
+            if (push) MementoCaretaker.Instance.Push();
+            spriteGen[index * 8 + line] = val.genData;
+            spriteClr2[index * 8 + line] = val.clrData;
+            this.updateSpriteBitmap(index);
+            if (val.overlayed != 0)
             {
-                MementoCaretaker.Instance.Push();
-                spriteGen[index * 8 + line] = clip.genData;
-                spriteClr2[index * 8 + line] &= 0xF0;
-                spriteClr2[index * 8 + line] |= (byte)(clip.clrData & 0x0F);
-                if (clip.overlayed && (spriteOverlay[index / 4] != 0))
-                {
-                    index = (index + 4) % 256;
-                    spriteGen[index * 8 + line] = clip.genData2;
-                    spriteClr2[index * 8 + line] &= 0xF0;
-                    spriteClr2[index * 8 + line] |= (byte)(clip.clrData2 & 0x0F);
-                }
+                index = (index + 4) % 256;
+                spriteGen[index * 8 + line] = val.genDataOv;
+                spriteClr2[index * 8 + line] = val.clrDataOv;
                 this.updateSpriteBitmap(index);
             }
         }
-        public void ClearSpriteLine(int index, int line)
+        public void ClearSpriteLine(int index, int line, bool push)
         {
-            MementoCaretaker.Instance.Push();
+            if(push) MementoCaretaker.Instance.Push();
             spriteGen[index * 8 + line] = 0;
-            if(spriteOverlay[index / 4] != 0)
+            this.updateSpriteBitmap(index);
+            if (spriteOverlay[index / 4] != 0)
             {
                 index = (index + 4) % 256;
                 spriteGen[index * 8 + line] = 0;
+                this.updateSpriteBitmap(index);
             }
-            this.updateSpriteBitmap(index);
         }
         //--------------------------------------------------------------------
         // Internal methods

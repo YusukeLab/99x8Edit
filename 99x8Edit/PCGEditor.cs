@@ -36,6 +36,11 @@ namespace _99x8Edit
                 currentFile = value;
             }
         }
+        // For internal drag control
+        private class DnDPCG { }
+        private class DnDPCGSel { }
+        private class DnDSandbox { }
+        private class DnDEditor { }
         //------------------------------------------------------------------------------
         // Override
         protected override bool ProcessDialogKey(Keys keyData)
@@ -213,7 +218,8 @@ namespace _99x8Edit
                 }
                 // Current selection
                 g.DrawRectangle(new Pen(Color.Red),
-                                Math.Min(currentSandboxX, selStartSandX) * 16, Math.Min(currentSandboxY, selStartSandY) * 16,
+                                Math.Min(currentSandboxX, selStartSandX) * 16,
+                                Math.Min(currentSandboxY, selStartSandY) * 16,
                                 (Math.Abs(currentSandboxX - selStartSandX) + 1) * 16 - 1,
                                 (Math.Abs(currentSandboxY - selStartSandY) + 1) * 16 - 1);
                 this.viewSandbox.Refresh();
@@ -231,12 +237,12 @@ namespace _99x8Edit
             if (e.Button == MouseButtons.Left)
             {
                 // Foreground color has changed
-                dataSource.SetColorTable(current_target_pcg, currentLineY % 8, clicked_color_num, true);
+                dataSource.SetColorTable(current_target_pcg, currentLineY % 8, clicked_color_num, true, true);
             }
             else if (e.Button == MouseButtons.Right)
             {
                 // Background color has changed
-                dataSource.SetColorTable(current_target_pcg, currentLineY % 8, clicked_color_num, false);
+                dataSource.SetColorTable(current_target_pcg, currentLineY % 8, clicked_color_num, false, true);
             }
             this.RefreshAllViews();
         }
@@ -251,7 +257,8 @@ namespace _99x8Edit
                 PaletteEditor palette_win = new PaletteEditor(R, G, B);
                 if (palette_win.ShowDialog() == DialogResult.OK)
                 {
-                    dataSource.SetPalette(clicked_color_num, palette_win.R, palette_win.G, palette_win.B);
+                    dataSource.SetPalette(clicked_color_num,
+                                          palette_win.R, palette_win.G, palette_win.B, true);
                     this.RefreshAllViews();     // Everything changes
                 }
             }
@@ -268,13 +275,14 @@ namespace _99x8Edit
             // This should be callbacked from color selection window
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-            dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, true);
+            dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, true, true);
             this.RefreshAllViews();
             return 0;
         }
         private void viewColorR_Click(object sender, EventArgs e)
         {
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, viewColorR_ColorSelectionCallback);
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette,
+                                                              viewColorR_ColorSelectionCallback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
@@ -284,7 +292,7 @@ namespace _99x8Edit
             // This should be callbacked from color selection window
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
-            dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, false);
+            dataSource.SetColorTable(current_target_pcg, currentLineY % 8, val, false, true);
             this.RefreshAllViews();
             return 0;
         }
@@ -293,13 +301,13 @@ namespace _99x8Edit
             if (this.checkTMS.Checked && !dataSource.IsTMS9918())
             {
                 // Set windows color of each color code to TMS9918
-                dataSource.SetPaletteToTMS9918();
+                dataSource.SetPaletteToTMS9918(true);
                 this.RefreshAllViews();     // Everything changes
             }
             else if (!this.checkTMS.Checked && dataSource.IsTMS9918())
             {
                 // Set windows color of each color code to internal palette
-                dataSource.SetPaletteToV9938();
+                dataSource.SetPaletteToV9938(true);
                 this.RefreshAllViews();     // Everything changes
             }
         }
@@ -373,6 +381,16 @@ namespace _99x8Edit
                         this.UpdateCurrentColorView();          // Update view of current color
                     }
                     break;
+                case Keys.Down:
+                    if (currentLineY < 15)
+                    {
+                        currentLineY++;
+                        selStartLineX = currentLineX;
+                        selStartLineY = currentLineY;
+                        this.UpdatePCGEditView();               // Update editor view
+                        this.UpdateCurrentColorView();          // Update view of current color
+                    }
+                    break;
                 case Keys.Left:
                     if (currentLineX > 0)
                     {
@@ -387,16 +405,6 @@ namespace _99x8Edit
                     if (currentLineX < 1)
                     {
                         currentLineX++;
-                        selStartLineX = currentLineX;
-                        selStartLineY = currentLineY;
-                        this.UpdatePCGEditView();               // Update editor view
-                        this.UpdateCurrentColorView();          // Update view of current color
-                    }
-                    break;
-                case Keys.Down:
-                    if (currentLineY < 15)
-                    {
-                        currentLineY++;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
                         this.UpdatePCGEditView();               // Update editor view
@@ -448,28 +456,28 @@ namespace _99x8Edit
                         // Increment foreground color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
                         color = (color + 1) % 16;
-                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true);
+                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true, true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
                         color = (color + 15) % 16;
-                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true);
+                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, true, true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
                         color = (color + 1) % 16;
-                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, false);
+                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, false, true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
                         int color = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
                         color = (color + 15) % 16;
-                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, false);
+                        dataSource.SetColorTable(current_target_pcg, currentLineY % 8, color, false, true);
                     }
                     this.RefreshAllViews();
                     break;
@@ -620,6 +628,15 @@ namespace _99x8Edit
                         update = true;
                     }
                     break;
+                case Keys.Down:
+                    if (currentPCGY < 7)
+                    {
+                        currentPCGY++;
+                        selStartPCGX = currentPCGX;
+                        selStartPCGY = currentPCGY;
+                        update = true;
+                    }
+                    break;
                 case Keys.Left:
                     if (currentPCGX > 0)
                     {
@@ -638,18 +655,9 @@ namespace _99x8Edit
                         update = true;
                     }
                     break;
-                case Keys.Down:
-                    if (currentPCGY < 7)
-                    {
-                        currentPCGY++;
-                        selStartPCGX = currentPCGX;
-                        selStartPCGY = currentPCGY;
-                        update = true;
-                    }
-                    break;
                 case Keys.Enter:
                     dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX,
-                                            currentPCGY * 32 + currentPCGX);
+                                            currentPCGY * 32 + currentPCGX, true);
                     if (currentSandboxX < 31) currentSandboxX++;
                     this.UpdateSandbox();
                     break;
@@ -693,7 +701,7 @@ namespace _99x8Edit
                 if (p.X > viewPCG.Width - 1) p.X = viewPCG.Width - 1;
                 if (p.Y > viewPCG.Height - 1) p.X = viewPCG.Height - 1;
                 int target_cell = ((p.Y / 16) * 32 + p.X / 16) % 256;
-                dataSource.CopyPCG(currentPCGY * 32 + currentPCGX, target_cell);
+                dataSource.CopyPCG(currentPCGY * 32 + currentPCGX, target_cell, true);
                 this.RefreshAllViews();
             }
         }
@@ -766,7 +774,7 @@ namespace _99x8Edit
         }
         private void contextPCGList_inverse(object sender, EventArgs e)
         {
-            dataSource.InversePCG(currentPCGY * 32 + currentPCGX);
+            dataSource.InversePCG(currentPCGY * 32 + currentPCGX, true);
             this.RefreshAllViews();
         }
         private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
@@ -792,17 +800,10 @@ namespace _99x8Edit
         {
             switch (e.KeyData)
             {
-                case Keys.Right | Keys.Shift:
-                    if (currentSandboxX < 31)
+                case Keys.Up | Keys.Shift:
+                    if (currentSandboxY > 0)
                     {
-                        currentSandboxX++;
-                        this.UpdateSandbox();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (currentSandboxX > 0)
-                    {
-                        currentSandboxX--;
+                        currentSandboxY--;
                         this.UpdateSandbox();
                     }
                     break;
@@ -813,10 +814,17 @@ namespace _99x8Edit
                         this.UpdateSandbox();
                     }
                     break;
-                case Keys.Up | Keys.Shift:
-                    if (currentSandboxY > 0)
+                case Keys.Left | Keys.Shift:
+                    if (currentSandboxX > 0)
                     {
-                        currentSandboxY--;
+                        currentSandboxX--;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Right | Keys.Shift:
+                    if (currentSandboxX < 31)
+                    {
+                        currentSandboxX++;
                         this.UpdateSandbox();
                     }
                     break;
@@ -824,6 +832,15 @@ namespace _99x8Edit
                     if (currentSandboxY > 0)
                     {
                         currentSandboxY--;
+                        selStartSandX = currentSandboxX;
+                        selStartSandY = currentSandboxY;
+                        this.UpdateSandbox();
+                    }
+                    break;
+                case Keys.Down:
+                    if (currentSandboxY < 23)
+                    {
+                        currentSandboxY++;
                         selStartSandX = currentSandboxX;
                         selStartSandY = currentSandboxY;
                         this.UpdateSandbox();
@@ -847,18 +864,9 @@ namespace _99x8Edit
                         this.UpdateSandbox();
                     }
                     break;
-                case Keys.Down:
-                    if (currentSandboxY < 23)
-                    {
-                        currentSandboxY++;
-                        selStartSandX = currentSandboxX;
-                        selStartSandY = currentSandboxY;
-                        this.UpdateSandbox();
-                    }
-                    break;
                 case Keys.Enter:
                     dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX,
-                                            currentPCGY * 32 + currentPCGX);
+                                            currentPCGY * 32 + currentPCGX, true);
                     if (currentSandboxX < 31) ++currentSandboxX;
                     this.UpdateSandbox();
                     break;
@@ -888,7 +896,7 @@ namespace _99x8Edit
             if (clip is ClipPCG)
             {
                 int pcgIndex = clip.index;
-                dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, pcgIndex);
+                dataSource.SetNameTable(currentSandboxY * 32 + currentSandboxX, pcgIndex, true);
                 this.UpdateSandbox();
             }
             else if (clip is ClipNametable)
@@ -957,7 +965,7 @@ namespace _99x8Edit
                 if (p.X > viewSandbox.Width - 1) p.X = viewSandbox.Width - 1;
                 if (p.Y > viewSandbox.Height - 1) p.X = viewSandbox.Height - 1;
                 int target_cell = ((p.Y / 16) * 32 + p.X / 16) % 768;
-                dataSource.SetNameTable(target_cell, currentPCGY * 32 + currentPCGX);
+                dataSource.SetNameTable(target_cell, currentPCGY * 32 + currentPCGX, true);
                 this.UpdateSandbox();
             }
         }
@@ -1044,12 +1052,12 @@ namespace _99x8Edit
             int prev_pixel = dataSource.GetPCGPixel(current_target_pcg, y, x);
             if (prev_pixel == 0)
             {
-                dataSource.SetPCGPixel(current_target_pcg, y, x, 1);
+                dataSource.SetPCGPixel(current_target_pcg, y, x, 1, true);
 
             }
             else
             {
-                dataSource.SetPCGPixel(current_target_pcg, y, x, 0);
+                dataSource.SetPCGPixel(current_target_pcg, y, x, 0, true);
             }
             this.UpdatePCGEditView();   // PCG Editor view changes
             this.UpdatePCGList();       // PCG list view changes also
@@ -1074,8 +1082,4 @@ namespace _99x8Edit
                     this.paintSandbox(x + 1, y, val);
         }
     }
-    public class DnDPCG { }
-    public class DnDPCGSel { }
-    public class DnDSandbox { }
-    public class DnDEditor { }
 }

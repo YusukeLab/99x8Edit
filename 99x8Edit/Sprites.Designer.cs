@@ -135,7 +135,7 @@ namespace _99x8Edit
             this.viewSpriteEdit.Size = new System.Drawing.Size(258, 258);
             this.viewSpriteEdit.TabIndex = 20;
             this.viewSpriteEdit.TabStop = false;
-            this.viewSpriteEdit.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewSpriteEdit_MouseClick);
+            this.viewSpriteEdit.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewSpriteEdit_MouseDown);
             // 
             // label1
             // 
@@ -248,7 +248,7 @@ namespace _99x8Edit
             this.viewSprites.Size = new System.Drawing.Size(258, 258);
             this.viewSprites.TabIndex = 35;
             this.viewSprites.TabStop = false;
-            this.viewSprites.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewSprites_MouseClick);
+            this.viewSprites.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewSprites_MouseDown);
             // 
             // label7
             // 
@@ -326,22 +326,28 @@ namespace _99x8Edit
             // 
             // panelSprites
             // 
+            this.panelSprites.AllowDrop = true;
             this.panelSprites.ContextMenuStrip = this.contextSprites;
             this.panelSprites.Controls.Add(this.viewSprites);
             this.panelSprites.Location = new System.Drawing.Point(291, 32);
             this.panelSprites.Name = "panelSprites";
             this.panelSprites.Size = new System.Drawing.Size(272, 274);
             this.panelSprites.TabIndex = 39;
+            this.panelSprites.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelSprites_DragEnter);
+            this.panelSprites.DragOver += new System.Windows.Forms.DragEventHandler(this.panelSprites_DragOver);
             this.panelSprites.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSprites_PreviewKeyDown);
             // 
             // panelEditor
             // 
+            this.panelEditor.AllowDrop = true;
             this.panelEditor.ContextMenuStrip = this.contextEditor;
             this.panelEditor.Controls.Add(this.viewSpriteEdit);
             this.panelEditor.Location = new System.Drawing.Point(9, 32);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(276, 274);
             this.panelEditor.TabIndex = 40;
+            this.panelEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragEnter);
+            this.panelEditor.DragOver += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragOver);
             this.panelEditor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelEditor_PreviewKeyDown);
             // 
             // contextEditor

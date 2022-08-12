@@ -202,6 +202,7 @@ namespace _99x8Edit
             this.panelPatterns.TabIndex = 36;
             this.panelPatterns.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragDrop);
             this.panelPatterns.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragEnter);
+            this.panelPatterns.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragOver);
             this.panelPatterns.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPatterns_PreviewKeyDown);
             // 
             // contextPattern
