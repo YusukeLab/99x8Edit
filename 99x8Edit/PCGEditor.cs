@@ -827,14 +827,18 @@ namespace _99x8Edit
                 }
                 this.RefreshAllViews();
             }
-            else if(clip is ClipOneChrInRom)
+            else if(clip is ClipPeekedData)
             {
                 MementoCaretaker.Instance.Push();
-                int index = currentPCGY * 32 + currentPCGX;
-                dataSource.SetPCG(index, clip.leftTop, null, false);                     // Left top
-                dataSource.SetPCG((index + 32) % 256, clip.leftBottom, null, false);     // Left bottom
-                dataSource.SetPCG((index + 1) % 256, clip.rightTop, null, false);        // Right top
-                dataSource.SetPCG((index + 33) % 256, clip.rightBottom, null, false);    // Right top
+                for (int i = 0; (i < clip.peeked.Count) && (currentPCGY + i < 8); ++i)
+                {
+                    List<byte[]> row = clip.peeked[i];
+                    for (int j = 0; (j < row.Count) && (currentPCGX + j < 32); ++j)
+                    {
+                        dataSource.SetPCG((currentPCGY + i) * 32 + currentPCGX + j,
+                                          row[j], null, false);
+                    }
+                }
                 this.RefreshAllViews();
             }
         }

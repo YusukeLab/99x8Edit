@@ -72,12 +72,15 @@ namespace _99x8Edit
             // 
             // panelPeek
             // 
+            this.panelPeek.AllowDrop = true;
             this.panelPeek.ContextMenuStrip = this.contextPeek;
             this.panelPeek.Controls.Add(this.viewPeek);
             this.panelPeek.Location = new System.Drawing.Point(8, 65);
             this.panelPeek.Name = "panelPeek";
             this.panelPeek.Size = new System.Drawing.Size(540, 523);
             this.panelPeek.TabIndex = 2;
+            this.panelPeek.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPeek_DragEnter);
+            this.panelPeek.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPeek_DragOver);
             this.panelPeek.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPeek_PreviewKeyDown);
             // 
             // contextPeek

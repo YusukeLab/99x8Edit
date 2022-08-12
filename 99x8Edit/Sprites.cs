@@ -468,16 +468,26 @@ namespace _99x8Edit
                 }
                 this.RefreshAllViews();
             }
-            else if (clip is ClipOneChrInRom)
+            else if (clip is ClipPeekedData)
             {
                 MementoCaretaker.Instance.Push();
                 // Copied from peek window
-                int current8x8 = (currentSpriteY * 8 + currentSpriteX) * 4;
-                dataSource.SetSpriteOverlay(currentSpriteY * 8 + currentSpriteX, false, false);
-                dataSource.SetSpriteGen(current8x8 + 0, clip.leftTop, false);
-                dataSource.SetSpriteGen(current8x8 + 1, clip.leftBottom, false);
-                dataSource.SetSpriteGen(current8x8 + 2, clip.rightTop, false);
-                dataSource.SetSpriteGen(current8x8 + 3, clip.rightBottom, false);
+                for (int i = 0; (i < clip.peeked.Count / 2) && (currentSpriteY + i < 8); ++i)
+                {
+                    // One row in peek window is 8 dots
+                    List<byte[]> first_row = clip.peeked[i * 2 + 0];
+                    List<byte[]> second_row = clip.peeked[i * 2 + 1];
+                    for (int j = 0; (j < first_row.Count / 2) && (currentSpriteX + j < 8); ++j)
+                    {
+                        int index16x16 = (currentSpriteY + i) * 8 + (currentSpriteX + j);
+                        dataSource.SetSpriteOverlay(index16x16, false, false);
+                        int lefttop8x8 = index16x16 * 4;
+                        dataSource.SetSpriteGen(lefttop8x8 + 0, first_row[j * 2 + 0], false);
+                        dataSource.SetSpriteGen(lefttop8x8 + 1, second_row[j * 2 + 0], false);
+                        dataSource.SetSpriteGen(lefttop8x8 + 2, first_row[j * 2 + 1], false);
+                        dataSource.SetSpriteGen(lefttop8x8 + 3, second_row[j * 2 + 1], false);
+                    }
+                }
                 this.RefreshAllViews();
             }
         }

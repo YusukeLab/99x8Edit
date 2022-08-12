@@ -17,20 +17,24 @@ namespace _99x8Edit
         private Bitmap bmpPeek = new Bitmap(512, 512);
         private int currentCol = 0;
         private int currentRow = 0;
+        private int selStartCol = 0;
+        private int selStartRow = 0;
         enum PeekType
         {
             Linear = 0,
             Sprite,
         }
         private PeekType type = PeekType.Linear;
+        // For internal drag control
+        private class DnDPeek { }
         //----------------------------------------------------------------------
         // Initialize
         public Peek(String filename)
         {
             InitializeComponent();
             reader = new BinaryReader(new FileStream(filename, FileMode.Open));
-            this.Text = "Peek - " + Path.GetFileName(filename);
-            this.viewPeek.Image = bmpPeek;
+            Text = "Peek - " + Path.GetFileName(filename);
+            viewPeek.Image = bmpPeek;
             toolStripCopy.Click += new EventHandler(contextPeek_copy);
             RefreshAllViews();
         }
@@ -92,7 +96,11 @@ namespace _99x8Edit
                     }
                 }
             }
-            g.DrawRectangle(new Pen(Color.Red), currentCol * 16, currentRow * 16, 31, 31);
+            int x = Math.Min(currentCol, selStartCol);
+            int y = Math.Min(currentRow, selStartRow);
+            int w = Math.Abs(currentCol - selStartCol) + 2;
+            int h = Math.Abs(currentRow - selStartRow) + 2;
+            g.DrawRectangle(new Pen(Color.Red), x * 16, y * 16, w * 16 - 1, h * 16 - 1);
             viewPeek.Refresh();
         }
         private void UpdateAddr()
@@ -109,42 +117,60 @@ namespace _99x8Edit
         private void viewPeek_MouseDown(object sender, MouseEventArgs e)
         {
             panelPeek.Focus();  // Key events are handled by parent panel
-            currentCol = e.X / 16;
-            if (currentCol >= 31) currentCol = 30;
-            currentRow = e.Y / 16;
-            if (currentRow >= 31) currentRow = 31;
-            this.UpdatePeek();
+            if (e.Button == MouseButtons.Left)
+            {
+                int col = e.X / 16;
+                int row = e.Y / 16;
+                if((col != currentCol) || (row != currentRow))
+                {
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Limit multiple selections to 16x16 unit
+                        int col_sel = (col - selStartCol % 2) / 2 * 2 + (selStartCol % 2);
+                        int row_sel = (row - selStartRow % 2) / 2 * 2 + (selStartRow % 2);
+                        if ((col_sel <= 30) && (row_sel <= 30))
+                        {
+                            currentCol = col_sel;
+                            currentRow = row_sel;
+                        }
+                    }
+                    else
+                    {
+                        // New selection
+                        currentCol = selStartCol = Math.Min(e.X / 16, 30);
+                        currentRow = selStartRow = Math.Min(e.Y / 16, 30);
+                    }
+                    this.UpdatePeek();
+                    viewPeek.DoDragDrop(new DnDPeek(), DragDropEffects.Copy);
+                }
+            }
         }
         private void contextPeek_copy(object sender, EventArgs e)
         {
-            ClipOneChrInRom clip = new ClipOneChrInRom();
-            // Left top
-            int addr = this.colRowToAddr(currentCol, currentRow);
-            reader.BaseStream.Seek(addr, SeekOrigin.Begin);
-            for (int i = 0; i < 8; ++i)
+            ClipPeekedData clip = new ClipPeekedData();
+            // Copy selected sprites
+            int x = Math.Min(currentCol, selStartCol);
+            int y = Math.Min(currentRow, selStartRow);
+            int w = Math.Abs(currentCol - selStartCol) + 2;
+            int h = Math.Abs(currentRow - selStartRow) + 2;
+            for (int i = y; i < y + h; ++i)
             {
-                clip.leftTop[i] = reader.ReadByte();
-            }
-            // Left bottom
-            addr = this.colRowToAddr(currentCol, currentRow + 1);
-            reader.BaseStream.Seek(addr, SeekOrigin.Begin);
-            for (int i = 0; i < 8; ++i)
-            {
-                clip.leftBottom[i] = reader.ReadByte();
-            }
-            // Right top
-            addr = this.colRowToAddr(currentCol + 1, currentRow);
-            reader.BaseStream.Seek(addr, SeekOrigin.Begin);
-            for (int i = 0; i < 8; ++i)
-            {
-                clip.rightTop[i] = reader.ReadByte();
-            }
-            // Right bottom
-            addr = this.colRowToAddr(currentCol + 1, currentRow + 1);
-            reader.BaseStream.Seek(addr, SeekOrigin.Begin);
-            for (int i = 0; i < 8; ++i)
-            {
-                clip.rightBottom[i] = reader.ReadByte();
+                List<byte[]> l = new List<byte[]>();
+                for (int j = x; j < x + w; ++j)
+                {
+                    byte[] one_cell = new byte[8];
+                    int addr = this.colRowToAddr(j, i);
+                    if (addr <= reader.BaseStream.Length - 8)
+                    {
+                        reader.BaseStream.Seek(addr, SeekOrigin.Begin);
+                        for (int line = 0; line < 8; ++line)
+                        {
+                            one_cell[line] = reader.ReadByte();
+                        }
+                    }
+                    l.Add(one_cell);
+                }
+                clip.peeked.Add(l);
             }
             ClipboardWrapper.SetData(clip);
         }
@@ -152,10 +178,40 @@ namespace _99x8Edit
         {
             switch (e.KeyData)
             {
+                case Keys.Up | Keys.Shift:
+                    if (currentRow >= 2)
+                    {
+                        currentRow -= 2;
+                        this.UpdatePeek();
+                    }
+                    break;
+                case Keys.Down | Keys.Shift:
+                    if (currentRow <= 28)
+                    {
+                        currentRow += 2;
+                        this.UpdatePeek();
+                    }
+                    break;
+                case Keys.Left | Keys.Shift:
+                    if (currentCol >= 2)
+                    {
+                        currentCol -= 2;
+                        this.UpdatePeek();
+                    }
+                    break;
+                case Keys.Right | Keys.Shift:
+                    if (currentCol <= 28)
+                    {
+                        currentCol += 2;
+                        this.UpdatePeek();
+                    }
+                    break;
                 case Keys.Up:
                     if (currentRow > 0)
                     {
                         currentRow--;
+                        selStartCol = currentCol;
+                        selStartRow = currentRow;
                         this.UpdatePeek();
                     }
                     else if(seekAddr > 0)
@@ -165,10 +221,30 @@ namespace _99x8Edit
                         this.RefreshAllViews();
                     }
                     break;
+                case Keys.Down:
+                    if (currentRow < 30)
+                    {
+                        currentRow++;
+                        selStartCol = currentCol;
+                        selStartRow = currentRow;
+                        this.UpdatePeek();
+                    }
+                    else if (seekAddr + 8192 < reader.BaseStream.Length)
+                    {
+                        seekAddr += 32 * 8 * 2;
+                        if (seekAddr + 8192 >= reader.BaseStream.Length)
+                        {
+                            seekAddr = reader.BaseStream.Length - 8192;
+                        }
+                        this.RefreshAllViews();
+                    }
+                    break;
                 case Keys.Left:
                     if (currentCol > 0)
                     {
                         currentCol--;
+                        selStartCol = currentCol;
+                        selStartRow = currentRow;
                         this.UpdatePeek();
                     }
                     break;
@@ -176,25 +252,37 @@ namespace _99x8Edit
                     if (currentCol < 30)
                     {
                         currentCol++;
+                        selStartCol = currentCol;
+                        selStartRow = currentRow;
                         this.UpdatePeek();
                     }
                     break;
-                case Keys.Down:
-                    if (currentRow < 30)
-                    {
-                        currentRow++;
-                        this.UpdatePeek();
-                    }
-                    else if (seekAddr + 8192 < reader.BaseStream.Length)
-                    {
-                        seekAddr += 32 * 8 * 2;
-                        if(seekAddr + 8192 >= reader.BaseStream.Length)
-                        {
-                            seekAddr = reader.BaseStream.Length - 8192;
-                        }
-                        this.RefreshAllViews();
-                    }
-                    break;
+            }
+        }
+        private void panelPeek_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDPeek)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else e.Effect = DragDropEffects.None;
+        }
+        private void panelPeek_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DnDPeek)))
+            {
+                Point p = viewPeek.PointToClient(Cursor.Position);
+                // Limit multiple selections to 16x16 unit
+                int col = p.X / 16;
+                int row = p.Y / 16;
+                int col_sel = (col - selStartCol % 2) / 2 * 2 + (selStartCol % 2);
+                int row_sel = (row - selStartRow % 2) / 2 * 2 + (selStartRow % 2);
+                if ((col_sel <= 30) && (row_sel <= 30))
+                {
+                    currentCol = col_sel;
+                    currentRow = row_sel;
+                    this.RefreshAllViews();
+                }
             }
         }
         private void txtAddr_Leave(object sender, EventArgs e)

@@ -62,11 +62,8 @@ namespace _99x8Edit
         public List<List<Machine.SpriteLine>> lines = new List<List<Machine.SpriteLine>>();
     }
     [Serializable]
-    public class ClipOneChrInRom : ClipBase
+    public class ClipPeekedData : ClipBase
     {
-        public byte[] leftTop = new byte[8];
-        public byte[] leftBottom = new byte[8];
-        public byte[] rightTop = new byte[8];
-        public byte[] rightBottom = new byte[8];
+        public List<List<byte[]>> peeked = new List<List<byte[]>>();
     }
 }
