@@ -76,8 +76,8 @@ namespace _99x8Edit
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileLoadSprite = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -521,19 +521,19 @@ namespace _99x8Edit
             this.toolStripFileExport.Size = new System.Drawing.Size(266, 26);
             this.toolStripFileExport.Text = "Export Sprite(&E)";
             // 
-            // toolStripFileSaveSprite
-            // 
-            this.toolStripFileSaveSprite.Name = "toolStripFileSaveSprite";
-            this.toolStripFileSaveSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.toolStripFileSaveSprite.Size = new System.Drawing.Size(266, 26);
-            this.toolStripFileSaveSprite.Text = "Save Sprite Data(&S)";
-            // 
             // toolStripFileLoadSprite
             // 
             this.toolStripFileLoadSprite.Name = "toolStripFileLoadSprite";
             this.toolStripFileLoadSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
             this.toolStripFileLoadSprite.Size = new System.Drawing.Size(266, 26);
             this.toolStripFileLoadSprite.Text = "Load Sprite Data(&L)";
+            // 
+            // toolStripFileSaveSprite
+            // 
+            this.toolStripFileSaveSprite.Name = "toolStripFileSaveSprite";
+            this.toolStripFileSaveSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.toolStripFileSaveSprite.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileSaveSprite.Text = "Save Sprite Data(&S)";
             // 
             // Sprites
             // 

@@ -7,7 +7,12 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
-    public class Utility
+    internal static class Consts
+    {
+        internal static Color ColorSelectionFocused = Color.Red;
+        internal static Color ColorSelectionUnfocus = Color.DarkRed;
+    }
+    public static class Utility
     {
         internal static void DrawTransparent(Bitmap bmp)
         {

@@ -172,7 +172,9 @@ namespace _99x8Edit
                     }
                 }
             }
-            g.DrawRectangle(new Pen(Color.Red),
+            Color sel_color = panelEditor.Focused ? Consts.ColorSelectionFocused
+                                                  : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color),
                             Math.Min(currentLineX, selStartLineX) * 128,
                             Math.Min(currentLineY, selStartLineY) * 16,
                             (Math.Abs(currentLineX - selStartLineX) + 1) * 128 - 1,
@@ -221,7 +223,9 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
                 }
                 // Current selection
-                g.DrawRectangle(new Pen(Color.Red),
+                Color sel_color = panelPCG.Focused ? Consts.ColorSelectionFocused
+                                                   : Consts.ColorSelectionUnfocus;
+                g.DrawRectangle(new Pen(sel_color),
                                 Math.Min(currentPCGX, selStartPCGX) * 16,
                                 Math.Min(currentPCGY, selStartPCGY) * 16,
                                 (Math.Abs(currentPCGX - selStartPCGX) + 1) * 16 - 1,
@@ -248,7 +252,9 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
-                g.DrawRectangle(new Pen(Color.Red),
+                Color sel_color = panelSandbox.Focused ? Consts.ColorSelectionFocused
+                                                       : Consts.ColorSelectionUnfocus;
+                g.DrawRectangle(new Pen(sel_color),
                                 Math.Min(currentSandboxX, selStartSandX) * 16,
                                 Math.Min(currentSandboxY, selStartSandY) * 16,
                                 (Math.Abs(currentSandboxX - selStartSandX) + 1) * 16 - 1,

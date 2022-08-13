@@ -44,6 +44,7 @@ namespace _99x8Edit
     [Serializable]
     internal class ClipMapPtn : ClipBase
     {
+        internal int index;
         internal List<List<byte[]>> ptns = new List<List<byte[]>>();
     }
     [Serializable]

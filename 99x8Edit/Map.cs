@@ -140,7 +140,9 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
             }
             // Selection
-            g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
+            Color sel_color = panelPCG.Focused ? Consts.ColorSelectionFocused
+                                               : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color), currentPCGX * 16, currentPCGY * 16, 15, 15);
             if (refresh) viewPCG.Refresh();
         }
         private void UpdateMapPatterns(bool refresh = true)
@@ -165,7 +167,9 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMapPatterns);
             }
             // Selection
-            g.DrawRectangle(new Pen(Color.Red),
+            Color sel_color = panelPatterns.Focused ? Consts.ColorSelectionFocused
+                                                    : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color),
                             Math.Min(currentPtnX, selStartPtnX) * 32,
                             Math.Min(currentPtnY, selStartPtnY) * 32,
                             (Math.Abs(currentPtnX - selStartPtnX) + 1) * 32 - 1,
@@ -196,7 +200,9 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMap);
             }
             // Selection
-            g.DrawRectangle(new Pen(Color.Red),
+            Color sel_color = panelMap.Focused ? Consts.ColorSelectionFocused
+                                               : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color),
                             Math.Min(currentMapX, selStartMapX) * 32,
                             Math.Min(currentMapY, selStartMapY) * 32,
                             (Math.Abs(currentMapX - selStartMapX) + 1) * 32 - 1,
@@ -300,6 +306,7 @@ namespace _99x8Edit
         private void contextPatterns_copy(object sender, EventArgs e)
         {
             ClipMapPtn clip = new ClipMapPtn();
+            clip.index = currentPtnY * 16 + currentPtnX;
             int x = Math.Min(currentPtnX, selStartPtnX);
             int y = Math.Min(currentPtnY, selStartPtnY);
             int w = Math.Abs(currentPtnX - selStartPtnX) + 1;

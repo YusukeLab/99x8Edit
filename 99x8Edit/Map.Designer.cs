@@ -538,7 +538,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileImport;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveMap;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPCG;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadMap;
     }
 }

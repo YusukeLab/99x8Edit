@@ -18,6 +18,9 @@ namespace _99x8Edit
         private Bitmap bmpSprites = new Bitmap(256, 256);       // Sprites view
         private Bitmap bmpSpriteEdit = new Bitmap(256, 256);    // Sprite edit view
         private Bitmap bmpPreview = new Bitmap(32, 32);         // Edit preview
+        private Bitmap bmpColorL = new Bitmap(32, 32);
+        private Bitmap bmpColorR = new Bitmap(32, 32);
+        private Bitmap bmpColorOR = new Bitmap(32, 32);
         private int currentSpriteX = 0;     // 0-7
         private int currentSpriteY = 0;     // 0-7
         private int selStartSprX = 0;       // For multiple selection
@@ -47,6 +50,9 @@ namespace _99x8Edit
             viewSprites.Image = bmpSprites;
             viewSpriteEdit.Image = bmpSpriteEdit;
             viewPreview.Image = bmpPreview;
+            viewColorL.Image = bmpColorL;
+            viewColorR.Image = bmpColorR;
+            viewColorOR.Image = bmpColorOR;
             // Refresh all views
             this.RefreshAllViews();
             // Menu bar
@@ -177,7 +183,9 @@ namespace _99x8Edit
             int y = Math.Min(currentSpriteY, selStartSprY);
             int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
             int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
-            g.DrawRectangle(new Pen(Color.Red), x * 32, y * 32, w * 32 - 1, h * 32 - 1);
+            Color sel_color = panelSprites.Focused ? Consts.ColorSelectionFocused
+                                                   : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color), x * 32, y * 32, w * 32 - 1, h * 32 - 1);
             if (refresh) viewSprites.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh = true)
@@ -246,7 +254,9 @@ namespace _99x8Edit
             int sy = Math.Min(currentLineY, selStartLineY);
             int sw = Math.Abs(currentLineX - selStartLineX) + 1;
             int sh = Math.Abs(currentLineY - selStartLineY) + 1;
-            g.DrawRectangle(new Pen(Color.Red), sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1);
+            Color sel_color = panelEditor.Focused ? Consts.ColorSelectionFocused
+                                                  : Consts.ColorSelectionUnfocus;
+            g.DrawRectangle(new Pen(sel_color), sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1);
             // CRT Filter
             if (chkCRT.Checked)
             {
@@ -262,15 +272,16 @@ namespace _99x8Edit
             int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
             int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
             Color color_primary = dataSource.ColorCodeToWindowsColor(color_code_primary);
-            viewColorL.BackColor = color_primary;
-            if (refresh) viewColorL.Refresh();
+            Graphics gl = Graphics.FromImage(bmpColorL);
+            gl.FillRectangle(new SolidBrush(color_primary), 0, 0, 32, 32);
             // Check overlays
             if (dataSource.GetSpriteOverlay(sprite_num_16x16))
             {
                 int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
                 int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
                 Color color_secondary = dataSource.ColorCodeToWindowsColor(color_code_secondary);
-                viewColorR.BackColor = color_secondary;
+                Graphics gr = Graphics.FromImage(bmpColorR);
+                gr.FillRectangle(new SolidBrush(color_secondary), 0, 0, 32, 32);
                 viewColorR.Visible = true;
                 labelColorR.Visible = true;
                 if (dataSource.IsTMS9918)
@@ -284,7 +295,8 @@ namespace _99x8Edit
                     // Overlayed with or color(V9938)
                     int color_code_or = color_code_primary | color_code_secondary;
                     Color color_or = dataSource.ColorCodeToWindowsColor(color_code_or);
-                    viewColorOR.BackColor = color_or;
+                    Graphics go = Graphics.FromImage(bmpColorOR);
+                    go.FillRectangle(new SolidBrush(color_or), 0, 0, 32, 32);
                     viewColorOR.Visible = true;
                     labelColorOR.Visible = true;
                 }
@@ -296,6 +308,12 @@ namespace _99x8Edit
                 labelColorR.Visible = false;
                 viewColorOR.Visible = false;
                 labelColorOR.Visible = false;
+            }
+            if (refresh)
+            {
+                viewColorL.Refresh();
+                viewColorR.Refresh();
+                viewColorOR.Refresh();
             }
         }
         private void UpdateOverlayCheck(bool refresh = true)
