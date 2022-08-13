@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace _99x8Edit
 {
@@ -27,6 +28,11 @@ namespace _99x8Edit
         private int currentMapY = 0;        // Selected map cell 0-11
         private int selStartMapX = 0;       // For multiple selection
         private int selStartMapY = 0;
+        String currentFile = "";
+        public String CurrentFile
+        {
+            set { currentFile = value; }
+        }
         // For internal drag control
         private class DnDPattern { }
         private class DnDMapPCG { }
@@ -195,14 +201,8 @@ namespace _99x8Edit
                 txtMapY.Text = (currentMapOriginY = 0).ToString();
             }
             // Controls corresponding to map
-            if(currentMapOriginX.ToString() != txtMapX.Text)
-            {
-                txtMapX.Text = currentMapOriginX.ToString();
-            }
-            if (currentMapOriginY.ToString() != txtMapY.Text)
-            {
-                txtMapY.Text = currentMapOriginY.ToString();
-            }
+            txtMapX.Text = currentMapOriginX.ToString();
+            txtMapY.Text = currentMapOriginY.ToString();
             btnLeft.Enabled = ((currentMapOriginX > 0) && (dataSource.MapWidth > 16));
             btnRight.Enabled = (currentMapOriginX < dataSource.MapWidth - 16);
             btnUp.Enabled = ((currentMapOriginY > 0) && (dataSource.MapHeight > 12));
@@ -537,20 +537,17 @@ namespace _99x8Edit
         }
         private void panelPatterns_DragDrop(object sender, DragEventArgs e)
         {
+            Point p = viewPatterns.PointToClient(Cursor.Position);
+            if (p.X > viewPatterns.Width - 1) p.X = viewPatterns.Width - 1;
+            if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
-                Point p = viewPatterns.PointToClient(Cursor.Position);
-                if (p.X > viewPatterns.Width - 1) p.X = viewPatterns.Width - 1;
-                if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
                 dataSource.CopyMapPattern(currentPtnY * 16 + currentPtnX, (p.Y / 32) * 16 + (p.X / 32), true);
                 this.UpdateMapPatterns();
                 this.UpdateMap();
             }
             else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
             {
-                Point p = viewPatterns.PointToClient(Cursor.Position);
-                if (p.X > viewPatterns.Width - 1) p.X = viewPatterns.Width - 1;
-                if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
                 int target_ptn = p.X / 32 + (p.Y / 32) * 16;
                 int target_cell = (p.X / 16) % 2 + ((p.Y / 16) % 2) * 2;
                 dataSource.SetPCGInPattern(target_ptn, target_cell, currentPCGY * 32 + currentPCGX, true);
@@ -794,62 +791,22 @@ namespace _99x8Edit
         }
         private void btnLeft_Click(object sender, EventArgs e)
         {
-            currentMapOriginX -= 16;
-            if (currentMapOriginX <= 0)
-            {
-                currentMapOriginX = 0;
-                this.btnLeft.Enabled = false;
-            }
-            if(dataSource.MapWidth > 16)
-            {
-                this.btnRight.Enabled = true;
-            }
-            this.txtMapX.Text = currentMapOriginX.ToString();
+            currentMapOriginX = Math.Max(currentMapOriginX - 16, 0);
             this.UpdateMap();
         }
         private void btnRight_Click(object sender, EventArgs e)
         {
-            currentMapOriginX += 16;
-            if(currentMapOriginX + 16 > dataSource.MapWidth)
-            {
-                currentMapOriginX = dataSource.MapWidth - 16;
-                btnRight.Enabled = false;
-            }
-            if(dataSource.MapWidth > 16)
-            {
-                btnLeft.Enabled = true;
-            }
-            txtMapX.Text = currentMapOriginX.ToString();
+            currentMapOriginX = Math.Min(currentMapOriginX + 16, dataSource.MapWidth - 16);
             this.UpdateMap();
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
-            currentMapOriginY -= 12;
-            if (currentMapOriginY <= 0)
-            {
-                currentMapOriginY = 0;
-                btnUp.Enabled = false;
-            }
-            if (dataSource.MapHeight > 12)
-            {
-                btnDown.Enabled = true;
-            }
-            txtMapY.Text = currentMapOriginY.ToString();
+            currentMapOriginY = Math.Max(currentMapOriginY - 12, 0);
             this.UpdateMap();
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
-            currentMapOriginY += 12;
-            if (currentMapOriginY + 12 > dataSource.MapHeight)
-            {
-                currentMapOriginY = dataSource.MapHeight - 12;
-                btnDown.Enabled = false;
-            }
-            if (dataSource.MapHeight > 12)
-            {
-                btnUp.Enabled = true;
-            }
-            txtMapY.Text = currentMapOriginY.ToString();
+            currentMapOriginY = Math.Min(currentMapOriginY + 12, dataSource.MapHeight - 12);
             this.UpdateMap();
         }
         private void btnMapSize_Click(object sender, EventArgs e)
@@ -880,6 +837,27 @@ namespace _99x8Edit
         private void chkCRT_CheckedChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
+        }
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "Map File(*.map)|*.map",
+                                      "Save map settings",
+                                      dataSource.SaveMap,
+                                      true,
+                                      out _);
+        }
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                          "Map File(*.map)|*.map",
+                                          "Load map settings",
+                                          dataSource.LoadMap,
+                                          true,     // Push memento
+                                          out _))
+            {
+                this.RefreshAllViews();
+            }
         }
         //-------------------------------------------------------------------
         // Utility

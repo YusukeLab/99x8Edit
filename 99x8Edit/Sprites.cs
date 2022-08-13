@@ -29,10 +29,7 @@ namespace _99x8Edit
         String currentFile = "";
         public String CurrentFile
         {
-            set
-            {
-                currentFile = value;
-            }
+            set { currentFile = value; }
         }
         // For internal drag control
         private class DnDSprite { }
@@ -968,69 +965,49 @@ namespace _99x8Edit
         }
         private void btnSavePalette_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "PLT File(*.plt)|*.plt";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save palette";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                BinaryWriter br = new BinaryWriter(new FileStream(dlg.FileName, FileMode.Create));
-                try
-                {
-                    dataSource.SavePaletteSettings(br);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
-                }
-            }
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PLT File(*.plt)|*.plt",
+                                      "Save palette",
+                                      dataSource.SavePaletteSettings,
+                                      true,
+                                      out _);
         }
         private void btnOpenPalette_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                         "PLT File(*.plt)|*.plt",
+                                         "Load palette",
+                                         dataSource.LoadPaletteSettings,
+                                         true,     // Push memento
+                                         out _))
             {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "PLT File(*.plt)|*.plt";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Load palette";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
-                try
-                {
-                    dataSource.LoadPaletteSettings(br);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
-                }
                 this.RefreshAllViews();
             }
         }
         private void chkCRT_CheckedChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
+        }
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "Sprite File(*.spr)|*.spr",
+                                      "Save sprite settings",
+                                      dataSource.SaveSprites,
+                                      true,
+                                      out _);
+        }
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                          "Sprite File(*.spr)|*.spr",
+                                          "Load sprite settings",
+                                          dataSource.LoadSprites,
+                                          true,     // Push memento
+                                          out _))
+            {
+                this.RefreshAllViews();
+            }
         }
         //----------------------------------------------------------------------
         // Utility

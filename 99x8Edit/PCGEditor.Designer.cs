@@ -51,6 +51,8 @@ namespace _99x8Edit
             this.btnSavePalette = new System.Windows.Forms.Button();
             this.toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
             this.btnImport = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnOpen = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -285,13 +287,39 @@ namespace _99x8Edit
             this.btnImport.BackColor = System.Drawing.Color.White;
             this.btnImport.BackgroundImage = global::_99x8Edit.Properties.Resources.import;
             this.btnImport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnImport.Location = new System.Drawing.Point(778, 8);
+            this.btnImport.Location = new System.Drawing.Point(726, 7);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(32, 32);
             this.btnImport.TabIndex = 28;
             this.toolTipPCG.SetToolTip(this.btnImport, "Import");
             this.btnImport.UseVisualStyleBackColor = false;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackColor = System.Drawing.Color.White;
+            this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnSave.Location = new System.Drawing.Point(788, 7);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(32, 32);
+            this.btnSave.TabIndex = 30;
+            this.toolTipPCG.SetToolTip(this.btnSave, "Save PCG data");
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.BackColor = System.Drawing.Color.White;
+            this.btnOpen.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
+            this.btnOpen.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnOpen.Location = new System.Drawing.Point(757, 7);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(32, 32);
+            this.btnOpen.TabIndex = 29;
+            this.toolTipPCG.SetToolTip(this.btnOpen, "Load PCG data");
+            this.btnOpen.UseVisualStyleBackColor = false;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // label5
             // 
@@ -501,7 +529,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(666, 15);
+            this.chkCRT.Location = new System.Drawing.Point(621, 12);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 27;
@@ -513,6 +541,8 @@ namespace _99x8Edit
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 606);
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
@@ -605,5 +635,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
         private System.Windows.Forms.Button btnImport;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnOpen;
     }
 }

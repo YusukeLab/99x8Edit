@@ -132,55 +132,16 @@ namespace _99x8Edit
         // File IO
         internal void SaveAllSettings(BinaryWriter br)
         {
-            // PCG
-            br.Write(ptnGen);           // Pattern generator table
-            br.Write(ptnClr);           // Pattern color table
-            br.Write(nameTable);        // Name table
-            br.Write(pltDat);           // Palette
-            br.Write(isTMS9918);        // Based on TMS9918 or not
-            // Sprites
-            br.Write(spriteGen);        // Sprite patten generator table
-            br.Write(spriteClr1);       // Sprite color for mode1
-            br.Write(spriteClr2);       // Sprite color for mode2
-            br.Write(spriteOverlay);    // Sprite overlay flags
-            // Map
-            br.Write(mapPattern);       // Map pattern
-            br.Write((Int32)mapWidth);
-            br.Write((Int32)mapHeight);
-            for (int i = 0; i < mapHeight; ++i)
-            {
-                for (int j = 0; j < mapWidth; ++j)
-                {
-                    br.Write((byte)mapData[j, i]);
-                }
-            }
+            this.SavePCG(br);
+            this.SaveSprites(br);
+            this.SaveMap(br);
         }
         internal void LoadAllSettings(BinaryReader br)
         {
-            // PCG
-            br.Read(ptnGen);                // Pattern generator table
-            br.Read(ptnClr);                // Pattern color table
-            br.Read(nameTable);             // Name table
-            br.Read(pltDat);                // Palette
-            isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
-            // Sprites
-            br.Read(spriteGen);             // Sprite patten generator table
-            br.Read(spriteClr1);            // Sprite color for mode1
-            br.Read(spriteClr2);            // Sprite color for mode2
-            br.Read(spriteOverlay);         // Sprite overlay flags
-            // Map
-            br.Read(mapPattern);       // Map pattern
-            mapWidth = br.ReadInt32();
-            mapHeight = br.ReadInt32();
-            for (int i = 0; i < mapHeight; ++i)
-            {
-                for (int j = 0; j < mapWidth; ++j)
-                {
-                    mapData[j, i] = br.ReadByte();
-                }
-            }
-            // Update bitmaps
-            this.UpdateAllViewItems();
+            this.LoadPCG(br);
+            this.LoadSprites(br);
+            this.LoadMap(br);
+            // Bitmaps updated inside the methods above
         }
         //--------------------------------------------------------------------
         // Export methods
@@ -212,6 +173,8 @@ namespace _99x8Edit
                                   spriteGen, spriteClr1, spriteClr2, spriteOverlay);
             e.ExportSprites(type, path);
         }
+        //--------------------------------------------------------------------
+        // Load/Save indivisual settings
         internal void SavePaletteSettings(BinaryWriter br)
         {
             br.Write(pltDat);
@@ -231,6 +194,65 @@ namespace _99x8Edit
                 colorOf[i] = Color.FromArgb(R, G, B);
             }
             this.UpdateAllViewItems();
+        }
+        internal void SavePCG(BinaryWriter br)
+        {
+            br.Write(ptnGen);           // Pattern generator table
+            br.Write(ptnClr);           // Pattern color table
+            br.Write(nameTable);        // Name table
+            br.Write(pltDat);           // Palette
+            br.Write(isTMS9918);        // Based on TMS9918 or not
+        }
+        internal void LoadPCG(BinaryReader br)
+        {
+            br.Read(ptnGen);                // Pattern generator table
+            br.Read(ptnClr);                // Pattern color table
+            br.Read(nameTable);             // Name table
+            br.Read(pltDat);                // Palette
+            isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
+            this.UpdateColorsByPalette();
+            this.UpdatePCGBitmap();
+        }
+        internal void SaveSprites(BinaryWriter br)
+        {
+            br.Write(spriteGen);        // Sprite patten generator table
+            br.Write(spriteClr1);       // Sprite color for mode1
+            br.Write(spriteClr2);       // Sprite color for mode2
+            br.Write(spriteOverlay);    // Sprite overlay flags
+        }
+        internal void LoadSprites(BinaryReader br)
+        {
+            br.Read(spriteGen);             // Sprite patten generator table
+            br.Read(spriteClr1);            // Sprite color for mode1
+            br.Read(spriteClr2);            // Sprite color for mode2
+            br.Read(spriteOverlay);         // Sprite overlay flags
+            this.UpdateSpriteBitmap();
+        }
+        internal void SaveMap(BinaryWriter br)
+        {
+            br.Write(mapPattern);
+            br.Write((Int32)mapWidth);
+            br.Write((Int32)mapHeight);
+            for (int i = 0; i < mapHeight; ++i)
+            {
+                for (int j = 0; j < mapWidth; ++j)
+                {
+                    br.Write((byte)mapData[j, i]);
+                }
+            }
+        }
+        internal void LoadMap(BinaryReader br)
+        {
+            br.Read(mapPattern);
+            mapWidth = br.ReadInt32();
+            mapHeight = br.ReadInt32();
+            for (int i = 0; i < mapHeight; ++i)
+            {
+                for (int j = 0; j < mapWidth; ++j)
+                {
+                    mapData[j, i] = br.ReadByte();
+                }
+            }
         }
         //--------------------------------------------------------------------
         // Import
@@ -714,11 +736,11 @@ namespace _99x8Edit
         // Internal methods
         private void UpdateAllViewItems()
         {
-            this.UpdatePaletteView();
+            this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
             this.UpdateSpriteBitmap();
         }
-        private void UpdatePaletteView()
+        private void UpdateColorsByPalette()
         {
             if (isTMS9918)
             {

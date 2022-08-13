@@ -36,8 +36,8 @@ namespace _99x8Edit
             this.comboExportType = new System.Windows.Forms.ComboBox();
             this.toolTipMain = new System.Windows.Forms.ToolTip(this.components);
             this.btnMapWin = new System.Windows.Forms.Button();
-            this.btnLoadPCG = new System.Windows.Forms.Button();
-            this.btnSavePCG = new System.Windows.Forms.Button();
+            this.btnLoad = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.btnPCGExport = new System.Windows.Forms.Button();
             this.btnExportMap = new System.Windows.Forms.Button();
             this.btnPCGWin = new System.Windows.Forms.Button();
@@ -101,31 +101,31 @@ namespace _99x8Edit
             this.btnMapWin.UseVisualStyleBackColor = false;
             this.btnMapWin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnMapWin_MouseClick);
             // 
-            // btnLoadPCG
+            // btnLoad
             // 
-            this.btnLoadPCG.BackColor = System.Drawing.Color.White;
-            this.btnLoadPCG.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnLoadPCG.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnLoadPCG.Location = new System.Drawing.Point(8, 236);
-            this.btnLoadPCG.Name = "btnLoadPCG";
-            this.btnLoadPCG.Size = new System.Drawing.Size(48, 48);
-            this.btnLoadPCG.TabIndex = 8;
-            this.toolTipMain.SetToolTip(this.btnLoadPCG, "Open");
-            this.btnLoadPCG.UseVisualStyleBackColor = false;
-            this.btnLoadPCG.Click += new System.EventHandler(this.btnLoadPCG_Click);
+            this.btnLoad.BackColor = System.Drawing.Color.White;
+            this.btnLoad.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
+            this.btnLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnLoad.Location = new System.Drawing.Point(8, 236);
+            this.btnLoad.Name = "btnLoad";
+            this.btnLoad.Size = new System.Drawing.Size(48, 48);
+            this.btnLoad.TabIndex = 8;
+            this.toolTipMain.SetToolTip(this.btnLoad, "Open");
+            this.btnLoad.UseVisualStyleBackColor = false;
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
             // 
-            // btnSavePCG
+            // btnSave
             // 
-            this.btnSavePCG.BackColor = System.Drawing.Color.White;
-            this.btnSavePCG.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
-            this.btnSavePCG.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSavePCG.Location = new System.Drawing.Point(62, 236);
-            this.btnSavePCG.Name = "btnSavePCG";
-            this.btnSavePCG.Size = new System.Drawing.Size(48, 48);
-            this.btnSavePCG.TabIndex = 9;
-            this.toolTipMain.SetToolTip(this.btnSavePCG, "Save");
-            this.btnSavePCG.UseVisualStyleBackColor = false;
-            this.btnSavePCG.Click += new System.EventHandler(this.btnSavePCG_Click);
+            this.btnSave.BackColor = System.Drawing.Color.White;
+            this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnSave.Location = new System.Drawing.Point(62, 236);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(48, 48);
+            this.btnSave.TabIndex = 9;
+            this.toolTipMain.SetToolTip(this.btnSave, "Save");
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnPCGExport
             // 
@@ -246,9 +246,9 @@ namespace _99x8Edit
             this.Controls.Add(this.btnSpritesWin);
             this.Controls.Add(this.comboExportType);
             this.Controls.Add(this.btnPCGExport);
-            this.Controls.Add(this.btnSavePCG);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnMapWin);
-            this.Controls.Add(this.btnLoadPCG);
+            this.Controls.Add(this.btnLoad);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -267,8 +267,7 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnSpritesWin;
         private System.Windows.Forms.ToolTip toolTipMain;
         private System.Windows.Forms.Button btnMapWin;
-        private System.Windows.Forms.Button btnLoadPCG;
-        private System.Windows.Forms.Button btnSavePCG;
+        private System.Windows.Forms.Button btnLoad;
         private System.Windows.Forms.Button btnPCGExport;
         private System.Windows.Forms.Button btnExportMap;
         private System.Windows.Forms.Button btnPCGWin;
@@ -277,6 +276,7 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnPeek;
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Button btnSaveAs;
+        private System.Windows.Forms.Button btnSave;
     }
 }
 

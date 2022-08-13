@@ -32,10 +32,7 @@ namespace _99x8Edit
         String currentFile = "";
         public String CurrentFile
         {
-            set
-            {
-                currentFile = value;
-            }
+            set { currentFile = value; }
         }
         // For internal drag control
         private class DnDPCG { }
@@ -1129,68 +1126,6 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnSavePalette_Click(object sender, EventArgs e)
-        {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "PLT File(*.plt)|*.plt";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save palette";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                BinaryWriter br = new BinaryWriter(new FileStream(dlg.FileName, FileMode.Create));
-                try
-                {
-                    dataSource.SavePaletteSettings(br);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
-                }
-            }
-        }
-        private void btnOpenPalette_Click(object sender, EventArgs e)
-        {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "PLT File(*.plt)|*.plt";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Load palette";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
-                try
-                {
-                    dataSource.LoadPaletteSettings(br);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
-                }
-                this.RefreshAllViews();
-            }
-        }
         private void chkCRT_CheckedChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
@@ -1219,6 +1154,48 @@ namespace _99x8Edit
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                this.RefreshAllViews();
+            }
+        }
+        private void btnSavePalette_Click(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PLT File(*.plt)|*.plt",
+                                      "Save palette",
+                                      dataSource.SavePaletteSettings,
+                                      true,
+                                      out _);
+        }
+        private void btnOpenPalette_Click(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                         "PLT File(*.plt)|*.plt",
+                                         "Load palette",
+                                         dataSource.LoadPaletteSettings,
+                                         true,     // Push memento
+                                         out _))
+            {
+                this.RefreshAllViews();
+            }
+        }
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PCG File(*.pcg)|*.pcg",
+                                      "Save PCG settings",
+                                      dataSource.SavePCG,
+                                      true,
+                                      out _);
+        }
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                          "PCG File(*.pcg)|*.pcg",
+                                          "Load PCG settings",
+                                          dataSource.LoadPCG,
+                                          true,     // Push memento
+                                          out _))
+            {
                 this.RefreshAllViews();
             }
         }

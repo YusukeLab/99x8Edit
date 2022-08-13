@@ -21,6 +21,7 @@ namespace _99x8Edit
         private Peek peekWin;
         private About aboutWin;
         private String currentFile = @"";
+        private String peekPath = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -71,7 +72,27 @@ namespace _99x8Edit
             {
                 // See the last args since many files may have been dropped
                 String dnd_path = args[args.Length - 1];
-                this.LoadFile(dnd_path);
+                BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
+                try
+                {
+                    dataSource.LoadAllSettings(br);
+                    currentFile = dnd_path;
+                    PCGWin.CurrentFile = dnd_path;
+                    spriteWin.CurrentFile = dnd_path;
+                    mapWin.CurrentFile = dnd_path;
+                    PCGWin.ChangeOccuredByHost();
+                    mapWin.ChangeOccuredByHost();
+                    spriteWin.ChangeOccuredByHost();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    currentFile = "";
+                }
+                finally
+                {
+                    br.Close();
+                }
             }
             // Open PCG editor as default
             PCGWin.Show();
@@ -146,139 +167,80 @@ namespace _99x8Edit
                 spriteWin.BringToFront();
             }
         }
-        private void btnSavePCG_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
+            string saved_filename = "";
+            if (Utility.SaveDialogAndSave(currentFile,
+                                          "VDP File(*.vdp)|*.vdp",
+                                          "Save settings",
+                                          dataSource.SaveAllSettings,
+                                          false,    // overwrite
+                                          out saved_filename))
             {
-                String target = this.SaveDialog(dir);
-                if (target != null)
-                {
-                    this.SaveFile(target);      // Save and update current file
-                }
-            }
-            else
-            {
-                this.SaveFile(currentFile);
+                currentFile = saved_filename;
+                PCGWin.CurrentFile = saved_filename;
+                mapWin.CurrentFile = saved_filename;
+                spriteWin.CurrentFile = saved_filename;
             }
         }
         private void btnSaveAs_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
+            string saved_filename = "";
+            if (Utility.SaveDialogAndSave(currentFile,
+                                          "VDP File(*.vdp)|*.vdp",
+                                          "Save settings",
+                                          dataSource.SaveAllSettings,
+                                          true,     // save as
+                                          out saved_filename))
             {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            String target = this.SaveDialog(dir);
-            if (target != null)
-            {
-                this.SaveFile(target);
+                currentFile = saved_filename;
+                PCGWin.CurrentFile = saved_filename;
+                mapWin.CurrentFile = saved_filename;
+                spriteWin.CurrentFile = saved_filename;
             }
         }
-        private void btnLoadPCG_Click(object sender, EventArgs e)
+        private void btnLoad_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
+            String loaded_filename;
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                          "VDP File(*.vdp)|*.vdp",
+                                          "Load settings",
+                                          dataSource.LoadAllSettings,
+                                          false,       // Won't push memento
+                                          out loaded_filename))
             {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "VDP File(*.vdp)|*.vdp";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Load settings";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                this.LoadFile(dlg.FileName);
+                currentFile = loaded_filename;
+                PCGWin.CurrentFile = loaded_filename;
+                spriteWin.CurrentFile = loaded_filename;
+                mapWin.CurrentFile = loaded_filename;
+                // Update UI
+                PCGWin.ChangeOccuredByHost();
+                mapWin.ChangeOccuredByHost();
+                spriteWin.ChangeOccuredByHost();
+                // Clear mementos
+                MementoCaretaker.Instance.Clear();
             }
         }
         private void btnPCGExport_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            String ext = Export.TypeExt[comboExportType.SelectedIndex];
-            SaveFileDialog dlg = new SaveFileDialog();
-            String filter = ext + " files(*" + ext + ")|*" + ext;
-            dlg.FileName = "";
-            dlg.InitialDirectory = dir;
-            dlg.Filter = filter;
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save to";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    dataSource.ExportPCG((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            Utility.ExportDialogAndExport(currentFile,
+                                          "Export PCG data to",
+                                          (Export.Type)comboExportType.SelectedIndex,
+                                          dataSource.ExportPCG);
         }
         private void btnExportMap_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            String ext = Export.TypeExt[comboExportType.SelectedIndex];
-            SaveFileDialog dlg = new SaveFileDialog();
-            String filter = ext + " files(*" + ext + ")|*" + ext;
-            dlg.FileName = "";
-            dlg.InitialDirectory = dir;
-            dlg.Filter = filter;
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save to";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    dataSource.ExportMap((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            Utility.ExportDialogAndExport(currentFile,
+                                          "Export map data to",
+                                          (Export.Type)comboExportType.SelectedIndex,
+                                          dataSource.ExportMap);
         }
         private void btnExportSprites_Click(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            String ext = Export.TypeExt[comboExportType.SelectedIndex];
-            SaveFileDialog dlg = new SaveFileDialog();
-            String filter = ext + " files(*" + ext + ")|*" + ext;
-            dlg.FileName = "";
-            dlg.InitialDirectory = dir;
-            dlg.Filter = filter;
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save to";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    dataSource.ExportSprites((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            Utility.ExportDialogAndExport(currentFile,
+                                          "Export sprite data to",
+                                          (Export.Type)comboExportType.SelectedIndex,
+                                          dataSource.ExportSprites);
         }
         private void btnUndo_Click(object sender, EventArgs e)
         {
@@ -288,7 +250,6 @@ namespace _99x8Edit
         {
             this.Redo();
         }
-        String peekPath = "";
         private void btnPeek_Click(object sender, EventArgs e)
         {
             if (peekWin != null)
@@ -339,75 +300,6 @@ namespace _99x8Edit
             }
             aboutWin = new About();
             aboutWin.Show();
-        }
-        //----------------------------------------------------------------------
-        // Utilities
-        private void SaveFile(String path)
-        {
-            // Save and update current file path if OK
-            BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-            try
-            {
-                dataSource.SaveAllSettings(br);
-                currentFile = path;
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                currentFile = "";
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            finally
-            {
-                br.Close();
-            }
-        }
-        private String SaveDialog(String dir)
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.FileName = "";
-            dlg.InitialDirectory = dir;
-            dlg.Filter = "VDP File(*.vdp)|*.vdp";
-            dlg.FilterIndex = 1;
-            dlg.Title = "Save settings";
-            dlg.RestoreDirectory = true;
-            dlg.OverwritePrompt = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                return dlg.FileName;
-            }
-            return null;
-        }
-        private void LoadFile(String path)
-        {
-            BinaryReader br = new BinaryReader(new FileStream(path, FileMode.Open));
-            try
-            {
-                dataSource.LoadAllSettings(br);
-                currentFile = path;
-                PCGWin.CurrentFile = currentFile;
-                spriteWin.CurrentFile = currentFile;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                currentFile = "";
-                PCGWin.CurrentFile = "";
-                spriteWin.CurrentFile = "";
-            }
-            finally
-            {
-                br.Close();
-            }
-            // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
-            // Clear mementos
-            MementoCaretaker.Instance.Clear();
         }
     }
 }
