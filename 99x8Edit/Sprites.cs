@@ -49,6 +49,14 @@ namespace _99x8Edit
             viewPreview.Image = bmpPreview;
             // Refresh all views
             this.RefreshAllViews();
+            // Menu bar
+            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
+            toolStripFileSave.Click += new EventHandler(menu_fileSave);
+            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
+            toolStripFileImport.Click += new EventHandler(menu_fileImport);
+            toolStripFileExport.Click += new EventHandler(menu_fileExport);
+            toolStripFileLoadSprite.Click += new EventHandler(menu_fileLoadSprite);
+            toolStripFileSaveSprite.Click += new EventHandler(menu_fileSaveSprite);
             // context menu
             toolStripSprCopy.Click += new EventHandler(contextSprites_copy);
             toolStripSprPaste.Click += new EventHandler(contextSprites_paste);
@@ -988,16 +996,35 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnSave_Click(object sender, EventArgs e)
+        //---------------------------------------------------------------------
+        // Menu controls
+        private void menu_fileLoad(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(currentFile,
-                                      "Sprite File(*.spr)|*.spr",
-                                      "Save sprite settings",
-                                      dataSource.SaveSprites,
-                                      true,
-                                      out _);
+            mainWin.LoadProject(sender, e);
         }
-        private void btnOpen_Click(object sender, EventArgs e)
+        private void menu_fileSave(object sender, EventArgs e)
+        {
+            mainWin.SaveProject(sender, e);
+        }
+        private void menu_fileSaveAs(object sender, EventArgs e)
+        {
+            mainWin.SaveAsProject(sender, e);
+        }
+        private void menu_fileImport(object sender, EventArgs e)
+        {
+            if (Utility.ImportDialogAndImport(currentFile,
+                                              Import.SpriteTypeFilter,
+                                              "Select file to import",
+                                              dataSource.ImportSprite))
+            {
+                this.RefreshAllViews();
+            }
+        }
+        private void menu_fileExport(object sender, EventArgs e)
+        {
+            mainWin.ExportPCG(sender, e);
+        }
+        private void menu_fileLoadSprite(object sender, EventArgs e)
         {
             if (Utility.LoadDialogAndLoad(currentFile,
                                           "Sprite File(*.spr)|*.spr",
@@ -1009,32 +1036,14 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
-        private void btnImport_Click(object sender, EventArgs e)
+        private void menu_fileSaveSprite(object sender, EventArgs e)
         {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = Import.SpriteTypeFilter;
-            dlg.FilterIndex = 1;
-            dlg.Title = "Select file to import";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    MementoCaretaker.Instance.Push();
-                    dataSource.ImportSprite(dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                this.RefreshAllViews();
-            }
+            Utility.SaveDialogAndSave(currentFile,
+                                      "Sprite File(*.spr)|*.spr",
+                                      "Save sprite settings",
+                                      dataSource.SaveSprites,
+                                      true,
+                                      out _);
         }
         //----------------------------------------------------------------------
         // Utility

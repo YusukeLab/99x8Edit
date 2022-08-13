@@ -30,7 +30,7 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------
         // Methods
-        internal void ImportPCG(string filename, byte[] out_gen, byte[] out_clr)
+        internal void ImportPCG(string filename, int type, byte[] out_gen, byte[] out_clr)
         {
             string ext = Path.GetExtension(filename);
             if(ext == ".png")
@@ -42,7 +42,7 @@ namespace _99x8Edit
                 this.BINtoPCG(filename, out_gen, out_clr);
             }
         }
-        internal void ImportSprite(string filename, byte[] out_gen, byte[] out_clr)
+        internal void ImportSprite(string filename, int type, byte[] out_gen, byte[] out_clr)
         {
             string ext = Path.GetExtension(filename);
             if (ext == ".bin")

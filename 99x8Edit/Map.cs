@@ -56,6 +56,14 @@ namespace _99x8Edit
             btnDown.Enabled = (dataSource.MapHeight > 12);
             // Refresh all views
             this.RefreshAllViews();
+            // Menu bar
+            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
+            toolStripFileSave.Click += new EventHandler(menu_fileSave);
+            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
+            toolStripFileImport.Click += new EventHandler(menu_fileImport);
+            toolStripFileExport.Click += new EventHandler(menu_fileExport);
+            toolStripFileLoadMap.Click += new EventHandler(menu_fileLoadMap);
+            toolStripFileSaveMap.Click += new EventHandler(menu_fileSaveMap);
             // Context menu
             toolStripPatternCopy.Click += new EventHandler(contextPatterns_copy);
             toolStripPatternPaste.Click += new EventHandler(contextPatterns_paste);
@@ -838,16 +846,29 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnSave_Click(object sender, EventArgs e)
+        //---------------------------------------------------------------------
+        // Menu controls
+        private void menu_fileLoad(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(currentFile,
-                                      "Map File(*.map)|*.map",
-                                      "Save map settings",
-                                      dataSource.SaveMap,
-                                      true,
-                                      out _);
+            mainWin.LoadProject(sender, e);
         }
-        private void btnOpen_Click(object sender, EventArgs e)
+        private void menu_fileSave(object sender, EventArgs e)
+        {
+            mainWin.SaveProject(sender, e);
+        }
+        private void menu_fileSaveAs(object sender, EventArgs e)
+        {
+            mainWin.SaveAsProject(sender, e);
+        }
+        private void menu_fileImport(object sender, EventArgs e)
+        {
+            // Currently nothing
+        }
+        private void menu_fileExport(object sender, EventArgs e)
+        {
+            mainWin.ExportMap(sender, e);
+        }
+        private void menu_fileLoadMap(object sender, EventArgs e)
         {
             if (Utility.LoadDialogAndLoad(currentFile,
                                           "Map File(*.map)|*.map",
@@ -858,6 +879,15 @@ namespace _99x8Edit
             {
                 this.RefreshAllViews();
             }
+        }
+        private void menu_fileSaveMap(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "Map File(*.map)|*.map",
+                                      "Save map settings",
+                                      dataSource.SaveMap,
+                                      true,
+                                      out _);
         }
         //-------------------------------------------------------------------
         // Utility

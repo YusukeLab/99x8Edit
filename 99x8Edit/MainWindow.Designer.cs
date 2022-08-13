@@ -58,7 +58,7 @@ namespace _99x8Edit
             this.btnExportSprites.Text = "Export";
             this.toolTipMain.SetToolTip(this.btnExportSprites, "Export Sprites");
             this.btnExportSprites.UseVisualStyleBackColor = true;
-            this.btnExportSprites.Click += new System.EventHandler(this.btnExportSprites_Click);
+            this.btnExportSprites.Click += new System.EventHandler(this.ExportSprite);
             // 
             // btnSpritesWin
             // 
@@ -112,7 +112,7 @@ namespace _99x8Edit
             this.btnLoad.TabIndex = 8;
             this.toolTipMain.SetToolTip(this.btnLoad, "Open");
             this.btnLoad.UseVisualStyleBackColor = false;
-            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            this.btnLoad.Click += new System.EventHandler(this.LoadProject);
             // 
             // btnSave
             // 
@@ -125,7 +125,7 @@ namespace _99x8Edit
             this.btnSave.TabIndex = 9;
             this.toolTipMain.SetToolTip(this.btnSave, "Save");
             this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnSave.Click += new System.EventHandler(this.SaveProject);
             // 
             // btnPCGExport
             // 
@@ -137,7 +137,7 @@ namespace _99x8Edit
             this.btnPCGExport.Text = "Export";
             this.toolTipMain.SetToolTip(this.btnPCGExport, "Export PCG and Sandbox");
             this.btnPCGExport.UseVisualStyleBackColor = true;
-            this.btnPCGExport.Click += new System.EventHandler(this.btnPCGExport_Click);
+            this.btnPCGExport.Click += new System.EventHandler(this.ExportPCG);
             // 
             // btnExportMap
             // 
@@ -149,7 +149,7 @@ namespace _99x8Edit
             this.btnExportMap.Text = "Export";
             this.toolTipMain.SetToolTip(this.btnExportMap, "Export Map");
             this.btnExportMap.UseVisualStyleBackColor = true;
-            this.btnExportMap.Click += new System.EventHandler(this.btnExportMap_Click);
+            this.btnExportMap.Click += new System.EventHandler(this.ExportMap);
             // 
             // btnPCGWin
             // 
@@ -229,7 +229,7 @@ namespace _99x8Edit
             this.btnSaveAs.TabIndex = 23;
             this.toolTipMain.SetToolTip(this.btnSaveAs, "Save As");
             this.btnSaveAs.UseVisualStyleBackColor = false;
-            this.btnSaveAs.Click += new System.EventHandler(this.btnSaveAs_Click);
+            this.btnSaveAs.Click += new System.EventHandler(this.SaveAsProject);
             // 
             // MainWindow
             // 

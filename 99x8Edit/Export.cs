@@ -40,6 +40,13 @@ namespace _99x8Edit
             {".raw"},
             {".raw"},
         };
+        static public string Filter = "C header(*.h)|*.h|"
+                                    + "C header compressed(*.h)|*.h|"
+                                    + "ASM data(*.asm)|*.asm|"
+                                    + "ASM data compressed(*.asm)|*.asm|"
+                                    + "MSX BASIC(*.bin)|*.bin|"
+                                    + "Raw data(*.raw)|*.raw|"
+                                    + "Raw data compressed(*.raw)|*.raw";
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
         private byte[] ptnClr = new byte[256 * 8];    // Pattern color table
         private byte[] nameTable = new byte[768];     // Sandbox(Pattern name table)

@@ -256,19 +256,19 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Import
-        internal void ImportPCG(String filename)
+        internal void ImportPCG(String filename, int type)
         {
             Import i = new Import();
             i.Palette = colorOf;        // Import with current palette(temp)
-            i.ImportPCG(filename, ptnGen, ptnClr);
+            i.ImportPCG(filename, type, ptnGen, ptnClr);
             Array.Clear(nameTable, 0, 768);
             this.UpdateAllViewItems();
         }
-        internal void ImportSprite(String filename)
+        internal void ImportSprite(String filename, int type)
         {
             Import i = new Import();
             i.Palette = colorOf;        // Import with current palette(temp)
-            i.ImportSprite(filename, spriteGen, spriteClr2);
+            i.ImportSprite(filename, type, spriteGen, spriteClr2);
             Array.Fill<byte>(spriteClr1, 0x0F);
             Array.Clear(spriteOverlay, 0, 64);
             this.UpdateAllViewItems();

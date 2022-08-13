@@ -61,8 +61,16 @@ namespace _99x8Edit
             this.panelPCG = new System.Windows.Forms.FlowLayoutPanel();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.toolTipMap = new System.Windows.Forms.ToolTip(this.components);
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnOpen = new System.Windows.Forms.Button();
+            this.menuStripMain = new System.Windows.Forms.MenuStrip();
+            this.toolStripBarFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileLoad = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileLoadMap = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
@@ -71,6 +79,7 @@ namespace _99x8Edit
             this.contextMap.SuspendLayout();
             this.panelMap.SuspendLayout();
             this.panelPCG.SuspendLayout();
+            this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // viewPatterns
@@ -88,7 +97,7 @@ namespace _99x8Edit
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label7.Location = new System.Drawing.Point(577, 11);
+            this.label7.Location = new System.Drawing.Point(577, 39);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(90, 20);
             this.label7.TabIndex = 23;
@@ -109,7 +118,7 @@ namespace _99x8Edit
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label2.Location = new System.Drawing.Point(14, 13);
+            this.label2.Location = new System.Drawing.Point(14, 41);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 20);
             this.label2.TabIndex = 21;
@@ -130,7 +139,7 @@ namespace _99x8Edit
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label3.Location = new System.Drawing.Point(14, 185);
+            this.label3.Location = new System.Drawing.Point(14, 213);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 20);
             this.label3.TabIndex = 27;
@@ -140,7 +149,7 @@ namespace _99x8Edit
             // 
             this.txtMapX.Enabled = false;
             this.txtMapX.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtMapX.Location = new System.Drawing.Point(261, 180);
+            this.txtMapX.Location = new System.Drawing.Point(261, 208);
             this.txtMapX.Name = "txtMapX";
             this.txtMapX.Size = new System.Drawing.Size(41, 27);
             this.txtMapX.TabIndex = 29;
@@ -151,7 +160,7 @@ namespace _99x8Edit
             // 
             this.txtMapY.Enabled = false;
             this.txtMapY.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtMapY.Location = new System.Drawing.Point(529, 379);
+            this.txtMapY.Location = new System.Drawing.Point(529, 407);
             this.txtMapY.Name = "txtMapY";
             this.txtMapY.Size = new System.Drawing.Size(37, 27);
             this.txtMapY.TabIndex = 30;
@@ -160,7 +169,7 @@ namespace _99x8Edit
             // 
             // btnLeft
             // 
-            this.btnLeft.Location = new System.Drawing.Point(226, 179);
+            this.btnLeft.Location = new System.Drawing.Point(226, 207);
             this.btnLeft.Name = "btnLeft";
             this.btnLeft.Size = new System.Drawing.Size(29, 29);
             this.btnLeft.TabIndex = 31;
@@ -170,7 +179,7 @@ namespace _99x8Edit
             // 
             // btnRight
             // 
-            this.btnRight.Location = new System.Drawing.Point(307, 180);
+            this.btnRight.Location = new System.Drawing.Point(307, 208);
             this.btnRight.Name = "btnRight";
             this.btnRight.Size = new System.Drawing.Size(29, 29);
             this.btnRight.TabIndex = 32;
@@ -180,7 +189,7 @@ namespace _99x8Edit
             // 
             // btnUp
             // 
-            this.btnUp.Location = new System.Drawing.Point(533, 346);
+            this.btnUp.Location = new System.Drawing.Point(533, 374);
             this.btnUp.Name = "btnUp";
             this.btnUp.Size = new System.Drawing.Size(29, 29);
             this.btnUp.TabIndex = 33;
@@ -190,7 +199,7 @@ namespace _99x8Edit
             // 
             // btnDown
             // 
-            this.btnDown.Location = new System.Drawing.Point(533, 414);
+            this.btnDown.Location = new System.Drawing.Point(533, 442);
             this.btnDown.Name = "btnDown";
             this.btnDown.Size = new System.Drawing.Size(29, 29);
             this.btnDown.TabIndex = 34;
@@ -203,7 +212,7 @@ namespace _99x8Edit
             this.panelPatterns.AllowDrop = true;
             this.panelPatterns.ContextMenuStrip = this.contextPattern;
             this.panelPatterns.Controls.Add(this.viewPatterns);
-            this.panelPatterns.Location = new System.Drawing.Point(579, 37);
+            this.panelPatterns.Location = new System.Drawing.Point(579, 65);
             this.panelPatterns.Name = "panelPatterns";
             this.panelPatterns.Size = new System.Drawing.Size(524, 560);
             this.panelPatterns.TabIndex = 36;
@@ -316,7 +325,7 @@ namespace _99x8Edit
             this.panelMap.AllowDrop = true;
             this.panelMap.ContextMenuStrip = this.contextMap;
             this.panelMap.Controls.Add(this.viewMap);
-            this.panelMap.Location = new System.Drawing.Point(14, 211);
+            this.panelMap.Location = new System.Drawing.Point(14, 239);
             this.panelMap.Name = "panelMap";
             this.panelMap.Size = new System.Drawing.Size(519, 386);
             this.panelMap.TabIndex = 38;
@@ -328,7 +337,7 @@ namespace _99x8Edit
             // btnMapSize
             // 
             this.btnMapSize.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btnMapSize.Location = new System.Drawing.Point(465, 179);
+            this.btnMapSize.Location = new System.Drawing.Point(465, 207);
             this.btnMapSize.Name = "btnMapSize";
             this.btnMapSize.Size = new System.Drawing.Size(65, 29);
             this.btnMapSize.TabIndex = 39;
@@ -339,7 +348,7 @@ namespace _99x8Edit
             // panelPCG
             // 
             this.panelPCG.Controls.Add(this.viewPCG);
-            this.panelPCG.Location = new System.Drawing.Point(14, 36);
+            this.panelPCG.Location = new System.Drawing.Point(14, 64);
             this.panelPCG.Name = "panelPCG";
             this.panelPCG.Size = new System.Drawing.Size(532, 138);
             this.panelPCG.TabIndex = 40;
@@ -349,7 +358,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(919, 7);
+            this.chkCRT.Location = new System.Drawing.Point(996, 35);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 41;
@@ -361,36 +370,93 @@ namespace _99x8Edit
             // 
             this.toolTipMap.AutomaticDelay = 0;
             // 
-            // btnSave
+            // menuStripMain
             // 
-            this.btnSave.BackColor = System.Drawing.Color.White;
-            this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
-            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnSave.Location = new System.Drawing.Point(1050, 2);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(32, 32);
-            this.btnSave.TabIndex = 43;
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripBarFile});
+            this.menuStripMain.Location = new System.Drawing.Point(0, 0);
+            this.menuStripMain.Name = "menuStripMain";
+            this.menuStripMain.Size = new System.Drawing.Size(1102, 28);
+            this.menuStripMain.TabIndex = 44;
+            this.menuStripMain.Text = "menuStrip1";
             // 
-            // btnOpen
+            // toolStripBarFile
             // 
-            this.btnOpen.BackColor = System.Drawing.Color.White;
-            this.btnOpen.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnOpen.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnOpen.Location = new System.Drawing.Point(1019, 2);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(32, 32);
-            this.btnOpen.TabIndex = 42;
-            this.btnOpen.UseVisualStyleBackColor = false;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            this.toolStripBarFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripFileLoad,
+            this.toolStripFileSave,
+            this.toolStripFileSaveAs,
+            this.toolStripSeparator4,
+            this.toolStripFileImport,
+            this.toolStripFileExport,
+            this.toolStripFileLoadMap,
+            this.toolStripFileSaveMap});
+            this.toolStripBarFile.Name = "toolStripBarFile";
+            this.toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.toolStripBarFile.Size = new System.Drawing.Size(63, 24);
+            this.toolStripBarFile.Text = "File(&F)";
+            // 
+            // toolStripFileLoad
+            // 
+            this.toolStripFileLoad.Name = "toolStripFileLoad";
+            this.toolStripFileLoad.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.toolStripFileLoad.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileLoad.Text = "Open Project(&O)";
+            // 
+            // toolStripFileSave
+            // 
+            this.toolStripFileSave.Name = "toolStripFileSave";
+            this.toolStripFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.toolStripFileSave.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileSave.Text = "Save Project";
+            // 
+            // toolStripFileSaveAs
+            // 
+            this.toolStripFileSaveAs.Name = "toolStripFileSaveAs";
+            this.toolStripFileSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.toolStripFileSaveAs.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileSaveAs.Text = "Save Project As(&A)";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(258, 6);
+            // 
+            // toolStripFileImport
+            // 
+            this.toolStripFileImport.Enabled = false;
+            this.toolStripFileImport.Name = "toolStripFileImport";
+            this.toolStripFileImport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
+            this.toolStripFileImport.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileImport.Text = "Import Map(&I)";
+            // 
+            // toolStripFileExport
+            // 
+            this.toolStripFileExport.Name = "toolStripFileExport";
+            this.toolStripFileExport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.toolStripFileExport.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileExport.Text = "Export Map(&E)";
+            // 
+            // toolStripFileSaveMap
+            // 
+            this.toolStripFileSaveMap.Name = "toolStripFileSaveMap";
+            this.toolStripFileSaveMap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.toolStripFileSaveMap.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileSaveMap.Text = "Save Map Data(&S)";
+            // 
+            // toolStripFileLoadMap
+            // 
+            this.toolStripFileLoadMap.Name = "toolStripFileLoadMap";
+            this.toolStripFileLoadMap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.toolStripFileLoadMap.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileLoadMap.Text = "Load Map Data(&L)";
             // 
             // Map
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1102, 598);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnOpen);
+            this.ClientSize = new System.Drawing.Size(1102, 634);
+            this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.btnMapSize);
@@ -423,6 +489,8 @@ namespace _99x8Edit
             this.contextMap.ResumeLayout(false);
             this.panelMap.ResumeLayout(false);
             this.panelPCG.ResumeLayout(false);
+            this.menuStripMain.ResumeLayout(false);
+            this.menuStripMain.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -461,7 +529,16 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyRight;
         private System.Windows.Forms.ToolTip toolTipMap;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.MenuStrip menuStripMain;
+        private System.Windows.Forms.ToolStripMenuItem toolStripBarFile;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoad;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSave;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveAs;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileImport;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveMap;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPCG;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadMap;
     }
 }

@@ -57,6 +57,14 @@ namespace _99x8Edit
             checkTMS.Checked = this.dataSource.IsTMS9918;
             // Refresh all views
             this.RefreshAllViews();
+            // Menu bar
+            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
+            toolStripFileSave.Click += new EventHandler(menu_fileSave);
+            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
+            toolStripFileImport.Click += new EventHandler(menu_fileImport);
+            toolStripFileExport.Click += new EventHandler(menu_fileExport);
+            toolStripFileLoadPCG.Click += new EventHandler(menu_fileLoadPCG);
+            toolStripFileSavePCG.Click += new EventHandler(menu_fileSavePCG);
             // Context menu
             toolStripPCGCopy.Click += new EventHandler(contextPCGList_copy);
             toolStripPCGPaste.Click += new EventHandler(contextPCGList_paste);
@@ -1130,33 +1138,6 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnImport_Click(object sender, EventArgs e)
-        {
-            String dir = Path.GetDirectoryName(currentFile);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = dir;
-            dlg.Filter = Import.PCGTypeFilter;
-            dlg.FilterIndex = 1;
-            dlg.Title = "Select file to import";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    MementoCaretaker.Instance.Push();
-                    dataSource.ImportPCG(dlg.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                this.RefreshAllViews();
-            }
-        }
         private void btnSavePalette_Click(object sender, EventArgs e)
         {
             Utility.SaveDialogAndSave(currentFile,
@@ -1178,16 +1159,35 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
-        private void btnSave_Click(object sender, EventArgs e)
+        //---------------------------------------------------------------------
+        // Menu controls
+        private void menu_fileLoad(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(currentFile,
-                                      "PCG File(*.pcg)|*.pcg",
-                                      "Save PCG settings",
-                                      dataSource.SavePCG,
-                                      true,
-                                      out _);
+            mainWin.LoadProject(sender, e);
         }
-        private void btnOpen_Click(object sender, EventArgs e)
+        private void menu_fileSave(object sender, EventArgs e)
+        {
+            mainWin.SaveProject(sender, e);
+        }
+        private void menu_fileSaveAs(object sender, EventArgs e)
+        {
+            mainWin.SaveAsProject(sender, e);
+        }
+        private void menu_fileImport(object sender, EventArgs e)
+        {
+            if (Utility.ImportDialogAndImport(currentFile,
+                                              Import.PCGTypeFilter,
+                                              "Select file to import",
+                                              dataSource.ImportPCG))
+            {
+                this.RefreshAllViews();
+            }
+        }
+        private void menu_fileExport(object sender, EventArgs e)
+        {
+            mainWin.ExportPCG(sender, e);
+        }
+        private void menu_fileLoadPCG(object sender, EventArgs e)
         {
             if (Utility.LoadDialogAndLoad(currentFile,
                                           "PCG File(*.pcg)|*.pcg",
@@ -1198,6 +1198,15 @@ namespace _99x8Edit
             {
                 this.RefreshAllViews();
             }
+        }
+        private void menu_fileSavePCG(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PCG File(*.pcg)|*.pcg",
+                                      "Save PCG settings",
+                                      dataSource.SavePCG,
+                                      true,
+                                      out _);
         }
         //---------------------------------------------------------------------
         // Utility

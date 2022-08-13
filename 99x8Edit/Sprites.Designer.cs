@@ -68,9 +68,16 @@ namespace _99x8Edit
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.toolTipSprite = new System.Windows.Forms.ToolTip(this.components);
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnOpen = new System.Windows.Forms.Button();
-            this.btnImport = new System.Windows.Forms.Button();
+            this.menuStripMain = new System.Windows.Forms.MenuStrip();
+            this.toolStripBarFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileLoad = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileLoadSprite = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -82,13 +89,14 @@ namespace _99x8Edit
             this.panelSprites.SuspendLayout();
             this.panelEditor.SuspendLayout();
             this.contextEditor.SuspendLayout();
+            this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelColorR
             // 
             this.labelColorR.AutoSize = true;
             this.labelColorR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorR.Location = new System.Drawing.Point(48, 371);
+            this.labelColorR.Location = new System.Drawing.Point(48, 395);
             this.labelColorR.Name = "labelColorR";
             this.labelColorR.Size = new System.Drawing.Size(13, 15);
             this.labelColorR.TabIndex = 25;
@@ -98,7 +106,7 @@ namespace _99x8Edit
             // 
             this.labelColorL.AutoSize = true;
             this.labelColorL.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorL.Location = new System.Drawing.Point(20, 371);
+            this.labelColorL.Location = new System.Drawing.Point(20, 395);
             this.labelColorL.Name = "labelColorL";
             this.labelColorL.Size = new System.Drawing.Size(13, 15);
             this.labelColorL.TabIndex = 24;
@@ -107,7 +115,7 @@ namespace _99x8Edit
             // viewColorR
             // 
             this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorR.Location = new System.Drawing.Point(41, 338);
+            this.viewColorR.Location = new System.Drawing.Point(41, 362);
             this.viewColorR.Name = "viewColorR";
             this.viewColorR.Size = new System.Drawing.Size(32, 32);
             this.viewColorR.TabIndex = 23;
@@ -117,7 +125,7 @@ namespace _99x8Edit
             // viewColorL
             // 
             this.viewColorL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorL.Location = new System.Drawing.Point(10, 338);
+            this.viewColorL.Location = new System.Drawing.Point(10, 362);
             this.viewColorL.Name = "viewColorL";
             this.viewColorL.Size = new System.Drawing.Size(32, 32);
             this.viewColorL.TabIndex = 22;
@@ -128,7 +136,7 @@ namespace _99x8Edit
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label3.Location = new System.Drawing.Point(9, 311);
+            this.label3.Location = new System.Drawing.Point(9, 335);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 20);
             this.label3.TabIndex = 21;
@@ -149,7 +157,7 @@ namespace _99x8Edit
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label1.Location = new System.Drawing.Point(9, 14);
+            this.label1.Location = new System.Drawing.Point(9, 38);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 20);
             this.label1.TabIndex = 19;
@@ -159,7 +167,7 @@ namespace _99x8Edit
             // 
             this.labelColorOR.AutoSize = true;
             this.labelColorOR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorOR.Location = new System.Drawing.Point(79, 371);
+            this.labelColorOR.Location = new System.Drawing.Point(79, 395);
             this.labelColorOR.Name = "labelColorOR";
             this.labelColorOR.Size = new System.Drawing.Size(18, 15);
             this.labelColorOR.TabIndex = 27;
@@ -168,7 +176,7 @@ namespace _99x8Edit
             // viewColorOR
             // 
             this.viewColorOR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorOR.Location = new System.Drawing.Point(72, 338);
+            this.viewColorOR.Location = new System.Drawing.Point(72, 362);
             this.viewColorOR.Name = "viewColorOR";
             this.viewColorOR.Size = new System.Drawing.Size(32, 32);
             this.viewColorOR.TabIndex = 26;
@@ -178,7 +186,7 @@ namespace _99x8Edit
             // 
             this.checkOverlay.AutoSize = true;
             this.checkOverlay.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkOverlay.Location = new System.Drawing.Point(186, 14);
+            this.checkOverlay.Location = new System.Drawing.Point(186, 38);
             this.checkOverlay.Name = "checkOverlay";
             this.checkOverlay.Size = new System.Drawing.Size(79, 24);
             this.checkOverlay.TabIndex = 28;
@@ -192,7 +200,7 @@ namespace _99x8Edit
             this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
             this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnSavePalette.Enabled = false;
-            this.btnSavePalette.Location = new System.Drawing.Point(235, 405);
+            this.btnSavePalette.Location = new System.Drawing.Point(235, 429);
             this.btnSavePalette.Name = "btnSavePalette";
             this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
             this.btnSavePalette.TabIndex = 33;
@@ -206,7 +214,7 @@ namespace _99x8Edit
             this.checkTMS.Checked = true;
             this.checkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkTMS.Location = new System.Drawing.Point(105, 409);
+            this.checkTMS.Location = new System.Drawing.Point(105, 433);
             this.checkTMS.Name = "checkTMS";
             this.checkTMS.Size = new System.Drawing.Size(92, 24);
             this.checkTMS.TabIndex = 32;
@@ -220,7 +228,7 @@ namespace _99x8Edit
             this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(204, 405);
+            this.btnOpenPalette.Location = new System.Drawing.Point(204, 429);
             this.btnOpenPalette.Name = "btnOpenPalette";
             this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
             this.btnOpenPalette.TabIndex = 31;
@@ -231,7 +239,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(9, 439);
+            this.viewPalette.Location = new System.Drawing.Point(9, 463);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 30;
@@ -243,7 +251,7 @@ namespace _99x8Edit
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label4.Location = new System.Drawing.Point(9, 409);
+            this.label4.Location = new System.Drawing.Point(9, 433);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 20);
             this.label4.TabIndex = 29;
@@ -264,7 +272,7 @@ namespace _99x8Edit
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label7.Location = new System.Drawing.Point(291, 14);
+            this.label7.Location = new System.Drawing.Point(291, 38);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(54, 20);
             this.label7.TabIndex = 34;
@@ -274,7 +282,7 @@ namespace _99x8Edit
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label5.Location = new System.Drawing.Point(207, 311);
+            this.label5.Location = new System.Drawing.Point(207, 335);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(60, 20);
             this.label5.TabIndex = 36;
@@ -283,7 +291,7 @@ namespace _99x8Edit
             // viewPreview
             // 
             this.viewPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPreview.Location = new System.Drawing.Point(219, 338);
+            this.viewPreview.Location = new System.Drawing.Point(219, 362);
             this.viewPreview.Margin = new System.Windows.Forms.Padding(0);
             this.viewPreview.Name = "viewPreview";
             this.viewPreview.Size = new System.Drawing.Size(34, 34);
@@ -355,7 +363,7 @@ namespace _99x8Edit
             this.panelSprites.AllowDrop = true;
             this.panelSprites.ContextMenuStrip = this.contextSprites;
             this.panelSprites.Controls.Add(this.viewSprites);
-            this.panelSprites.Location = new System.Drawing.Point(291, 40);
+            this.panelSprites.Location = new System.Drawing.Point(291, 64);
             this.panelSprites.Name = "panelSprites";
             this.panelSprites.Size = new System.Drawing.Size(272, 274);
             this.panelSprites.TabIndex = 39;
@@ -368,7 +376,7 @@ namespace _99x8Edit
             this.panelEditor.AllowDrop = true;
             this.panelEditor.ContextMenuStrip = this.contextEditor;
             this.panelEditor.Controls.Add(this.viewSpriteEdit);
-            this.panelEditor.Location = new System.Drawing.Point(9, 40);
+            this.panelEditor.Location = new System.Drawing.Point(9, 64);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(276, 274);
             this.panelEditor.TabIndex = 40;
@@ -433,7 +441,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(364, 14);
+            this.chkCRT.Location = new System.Drawing.Point(455, 37);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 41;
@@ -445,49 +453,93 @@ namespace _99x8Edit
             // 
             this.toolTipSprite.AutomaticDelay = 0;
             // 
-            // btnSave
+            // menuStripMain
             // 
-            this.btnSave.BackColor = System.Drawing.Color.White;
-            this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
-            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnSave.Location = new System.Drawing.Point(518, 8);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(32, 32);
-            this.btnSave.TabIndex = 45;
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripBarFile});
+            this.menuStripMain.Location = new System.Drawing.Point(0, 0);
+            this.menuStripMain.Name = "menuStripMain";
+            this.menuStripMain.Size = new System.Drawing.Size(562, 28);
+            this.menuStripMain.TabIndex = 47;
+            this.menuStripMain.Text = "menuStrip1";
             // 
-            // btnOpen
+            // toolStripBarFile
             // 
-            this.btnOpen.BackColor = System.Drawing.Color.White;
-            this.btnOpen.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnOpen.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnOpen.Location = new System.Drawing.Point(487, 8);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(32, 32);
-            this.btnOpen.TabIndex = 44;
-            this.btnOpen.UseVisualStyleBackColor = false;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            this.toolStripBarFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripFileLoad,
+            this.toolStripFileSave,
+            this.toolStripFileSaveAs,
+            this.toolStripSeparator4,
+            this.toolStripFileImport,
+            this.toolStripFileExport,
+            this.toolStripFileLoadSprite,
+            this.toolStripFileSaveSprite});
+            this.toolStripBarFile.Name = "toolStripBarFile";
+            this.toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.toolStripBarFile.Size = new System.Drawing.Size(63, 24);
+            this.toolStripBarFile.Text = "File(&F)";
             // 
-            // btnImport
+            // toolStripFileLoad
             // 
-            this.btnImport.BackColor = System.Drawing.Color.White;
-            this.btnImport.BackgroundImage = global::_99x8Edit.Properties.Resources.import;
-            this.btnImport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnImport.Location = new System.Drawing.Point(456, 8);
-            this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(32, 32);
-            this.btnImport.TabIndex = 46;
-            this.btnImport.UseVisualStyleBackColor = false;
-            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            this.toolStripFileLoad.Name = "toolStripFileLoad";
+            this.toolStripFileLoad.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.toolStripFileLoad.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileLoad.Text = "Open Project(&O)";
+            // 
+            // toolStripFileSave
+            // 
+            this.toolStripFileSave.Name = "toolStripFileSave";
+            this.toolStripFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.toolStripFileSave.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileSave.Text = "Save Project";
+            // 
+            // toolStripFileSaveAs
+            // 
+            this.toolStripFileSaveAs.Name = "toolStripFileSaveAs";
+            this.toolStripFileSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.toolStripFileSaveAs.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileSaveAs.Text = "Save Project As(&A)";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(263, 6);
+            // 
+            // toolStripFileImport
+            // 
+            this.toolStripFileImport.Enabled = false;
+            this.toolStripFileImport.Name = "toolStripFileImport";
+            this.toolStripFileImport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
+            this.toolStripFileImport.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileImport.Text = "Import Sprite(&I)";
+            // 
+            // toolStripFileExport
+            // 
+            this.toolStripFileExport.Name = "toolStripFileExport";
+            this.toolStripFileExport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.toolStripFileExport.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileExport.Text = "Export Sprite(&E)";
+            // 
+            // toolStripFileSaveSprite
+            // 
+            this.toolStripFileSaveSprite.Name = "toolStripFileSaveSprite";
+            this.toolStripFileSaveSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.toolStripFileSaveSprite.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileSaveSprite.Text = "Save Sprite Data(&S)";
+            // 
+            // toolStripFileLoadSprite
+            // 
+            this.toolStripFileLoadSprite.Name = "toolStripFileLoadSprite";
+            this.toolStripFileLoadSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.toolStripFileLoadSprite.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileLoadSprite.Text = "Load Sprite Data(&L)";
             // 
             // Sprites
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(562, 515);
-            this.Controls.Add(this.btnImport);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnOpen);
+            this.ClientSize = new System.Drawing.Size(562, 542);
+            this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
             this.Controls.Add(this.panelSprites);
@@ -529,6 +581,8 @@ namespace _99x8Edit
             this.panelSprites.ResumeLayout(false);
             this.panelEditor.ResumeLayout(false);
             this.contextEditor.ResumeLayout(false);
+            this.menuStripMain.ResumeLayout(false);
+            this.menuStripMain.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -574,8 +628,15 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
         private System.Windows.Forms.ToolTip toolTipSprite;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnOpen;
-        private System.Windows.Forms.Button btnImport;
+        private System.Windows.Forms.MenuStrip menuStripMain;
+        private System.Windows.Forms.ToolStripMenuItem toolStripBarFile;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoad;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSave;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveAs;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileImport;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveSprite;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadSprite;
     }
 }

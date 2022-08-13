@@ -124,6 +124,37 @@ namespace _99x8Edit
             }
             return false;
         }
+        internal static bool ImportDialogAndImport(string current_file,
+                                                   string filter,
+                                                   string title,
+                                                   Action<string, int> exec_import)
+        {
+            String dir = Path.GetDirectoryName(current_file);
+            if (dir == null)
+            {
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = dir;
+            dlg.Filter = filter;
+            dlg.FilterIndex = 1;
+            dlg.Title = title;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    MementoCaretaker.Instance.Push();
+                    exec_import(dlg.FileName, dlg.FilterIndex - 1);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return false;
+        }
         internal static bool ExportDialogAndExport(string current_file,
                                                    string dialog_title,
                                                    Export.Type type,
@@ -139,8 +170,8 @@ namespace _99x8Edit
             String filter = ext + " files(*" + ext + ")|*" + ext;
             dlg.FileName = "";
             dlg.InitialDirectory = dir;
-            dlg.Filter = filter;
-            dlg.FilterIndex = 1;
+            dlg.Filter = Export.Filter;
+            dlg.FilterIndex = (int)type + 1;
             dlg.Title = dialog_title;
             dlg.RestoreDirectory = true;
             dlg.OverwritePrompt = true;
@@ -148,6 +179,7 @@ namespace _99x8Edit
             {
                 try
                 {
+                    type = (Export.Type)dlg.FilterIndex;
                     exec_save(type, dlg.FileName);
                     return true;
                 }

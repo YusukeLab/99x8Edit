@@ -167,8 +167,9 @@ namespace _99x8Edit
                 spriteWin.BringToFront();
             }
         }
-        private void btnSave_Click(object sender, EventArgs e)
+        internal void SaveProject(object sender, EventArgs e)
         {
+            // Called from button and child window
             string saved_filename = "";
             if (Utility.SaveDialogAndSave(currentFile,
                                           "VDP File(*.vdp)|*.vdp",
@@ -183,8 +184,9 @@ namespace _99x8Edit
                 spriteWin.CurrentFile = saved_filename;
             }
         }
-        private void btnSaveAs_Click(object sender, EventArgs e)
+        internal void SaveAsProject(object sender, EventArgs e)
         {
+            // Called from button and child window
             string saved_filename = "";
             if (Utility.SaveDialogAndSave(currentFile,
                                           "VDP File(*.vdp)|*.vdp",
@@ -199,8 +201,9 @@ namespace _99x8Edit
                 spriteWin.CurrentFile = saved_filename;
             }
         }
-        private void btnLoad_Click(object sender, EventArgs e)
+        internal void LoadProject(object sender, EventArgs e)
         {
+            // Called from button and child window
             String loaded_filename;
             if (Utility.LoadDialogAndLoad(currentFile,
                                           "VDP File(*.vdp)|*.vdp",
@@ -221,22 +224,25 @@ namespace _99x8Edit
                 MementoCaretaker.Instance.Clear();
             }
         }
-        private void btnPCGExport_Click(object sender, EventArgs e)
+        internal void ExportPCG(object sender, EventArgs e)
         {
+            // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export PCG data to",
                                           (Export.Type)comboExportType.SelectedIndex,
                                           dataSource.ExportPCG);
         }
-        private void btnExportMap_Click(object sender, EventArgs e)
+        internal void ExportMap(object sender, EventArgs e)
         {
+            // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export map data to",
                                           (Export.Type)comboExportType.SelectedIndex,
                                           dataSource.ExportMap);
         }
-        private void btnExportSprites_Click(object sender, EventArgs e)
+        internal void ExportSprite(object sender, EventArgs e)
         {
+            // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export sprite data to",
                                           (Export.Type)comboExportType.SelectedIndex,
