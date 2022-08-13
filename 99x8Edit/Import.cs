@@ -10,23 +10,9 @@ namespace _99x8Edit
     // Importing data
     public class Import
     {
-        // VRAMs and so on
-        internal byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
-        internal byte[] ptnClr = new byte[256 * 8];    // Pattern color table
-        internal byte[] nameTable = new byte[768];     // Sandbox(Pattern name table)
-        internal byte[] pltDat = { 0x00, 0x00, 0x00, 0x00, 0x11, 0x06, 0x33, 0x07,
-                                  0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
-                                  0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
-                                  0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
-        internal bool isTMS9918 = false;
-        internal byte[] mapPattern = new byte[256 * 4];  // One pattern mede by four characters
-        internal byte[,] mapData = new byte[64, 64];     // Map data[x, y](0..255)
-        internal Int32 mapWidth = 64;
-        internal Int32 mapHeight = 64;
-        internal byte[] spriteGen = new byte[256 * 8];   // Sprite pattern generator table
-        internal byte[] spriteClr1 = new byte[256];      // Sprite color(mode1)
-        internal byte[] spriteClr2 = new byte[256 * 8];  // Sprite color(mode2)
-        internal byte[] spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
+        // Import types
+        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin|PNG File(*.png)|*.png";
+        internal static string SpriteTypeFilter = "MSX BASIC(*.bin)|*.bin";
         // Palette
         private Color[] palette = new Color[16];         // Windows color corresponding to color code
 
@@ -44,17 +30,29 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------
         // Methods
-        internal void OpenPCG(string filename)
+        internal void ImportPCG(string filename, byte[] out_gen, byte[] out_clr)
         {
             string ext = Path.GetExtension(filename);
             if(ext == ".png")
             {
-                this.PNGtoPCG(filename);
+                this.PNGtoPCG(filename, out_gen, out_clr);
+            }
+            else if(ext == ".bin")
+            {
+                this.BINtoPCG(filename, out_gen, out_clr);
+            }
+        }
+        internal void ImportSprite(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            string ext = Path.GetExtension(filename);
+            if (ext == ".bin")
+            {
+                this.BINtoSprite(filename, out_gen, out_clr);
             }
         }
         //------------------------------------------------------------------------
         // Utility
-        private void PNGtoPCG(string filename)
+        private void PNGtoPCG(string filename, byte[] out_gen, byte[] out_clr)
         {
             Bitmap bmp = (Bitmap)Image.FromFile(filename);
             if(bmp == null)
@@ -85,7 +83,7 @@ namespace _99x8Edit
                         int max2_num = count.Max();
                         int max2_index = Array.IndexOf(count, max2_num);
                         // Color table of the line will be made of two frequent colors
-                        ptnClr[row * 256 + col * 8 + line] = (byte)((max1_index << 4) | max2_index);
+                        out_clr[row * 256 + col * 8 + line] = (byte)((max1_index << 4) | max2_index);
                         // Make pattern generator table
                         for(int x = 0; x < 8; ++x)
                         {
@@ -94,13 +92,102 @@ namespace _99x8Edit
                             if(code == max1_index)
                             {
                                 // Foreground color is near, so set the corresponding bit
-                                ptnGen[row * 256 + col * 8 + line] |= (byte)(1 << (7 - x));
+                                out_gen[row * 256 + col * 8 + line] |= (byte)(1 << (7 - x));
                             }
                             // Ignore nackground color since the corresponding value is 0
                         }
                     }
                 }
             }
+        }
+        private void BINtoPCG(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            try
+            {
+                // Read BSAVE header
+                byte header = br.ReadByte();
+                if(header != 0xFE)
+                {
+                    throw new Exception("No BSAVE header");
+                }
+                UInt16 bin_start_addr = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                // Read data
+                int gen_seek_addr = 0;
+                if(this.SeekBIN(0x0000, bin_start_addr, br, out gen_seek_addr))
+                {
+                    for (int ptr = 0; (ptr < 0x2000) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        out_gen[ptr] = br.ReadByte();
+                    }
+                }
+                int color_addr = 0;
+                if(this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
+                {
+                    for (int ptr = 0; (ptr < 0x2000) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        out_clr[ptr] = br.ReadByte();
+                    }
+                }
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private void BINtoSprite(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            try
+            {
+                // Read BSAVE header
+                byte header = br.ReadByte();
+                if (header != 0xFE)
+                {
+                    throw new Exception("No BSAVE header");
+                }
+                UInt16 bin_start_addr = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                // Read data
+                int gen_seek_addr = 0;
+                if (this.SeekBIN(0x3800, bin_start_addr, br, out gen_seek_addr))
+                {
+                    for (int ptr = 0; (ptr < 0x2000) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        out_gen[ptr] = br.ReadByte();
+                    }
+                }
+                // Is it possible to import colors?
+#if false
+                int color_addr = 0;
+                if (this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
+                {
+                    for (int ptr = 0; (ptr < 0x2000) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        out_clr[ptr] = br.ReadByte();
+                    }
+                }
+#endif
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private bool SeekBIN(int vram_addr, int bin_start_addr, BinaryReader br, out int seek_addr)
+        {
+            seek_addr = vram_addr - bin_start_addr;
+            seek_addr += 7;        // BSAVE header size
+            if ((seek_addr < 0) || (seek_addr >= br.BaseStream.Length))
+            {
+                seek_addr = -1;
+                return false;
+            }
+            br.BaseStream.Seek(seek_addr, SeekOrigin.Begin);
+            return true;
         }
         private int NearestColorCodeOf(Color c)
         {

@@ -1139,7 +1139,7 @@ namespace _99x8Edit
             }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
-            dlg.Filter = "PNG File(*.png)|*.png";
+            dlg.Filter = Import.PCGTypeFilter;
             dlg.FilterIndex = 1;
             dlg.Title = "Select file to import";
             dlg.RestoreDirectory = true;

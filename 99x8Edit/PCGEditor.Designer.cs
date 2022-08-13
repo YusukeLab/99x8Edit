@@ -264,7 +264,7 @@ namespace _99x8Edit
             // btnSavePalette
             // 
             this.btnSavePalette.BackColor = System.Drawing.Color.White;
-            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
+            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
             this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnSavePalette.Enabled = false;
             this.btnSavePalette.Location = new System.Drawing.Point(239, 493);

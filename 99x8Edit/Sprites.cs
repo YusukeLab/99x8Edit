@@ -1009,6 +1009,33 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            String dir = Path.GetDirectoryName(currentFile);
+            if (dir == null)
+            {
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = dir;
+            dlg.Filter = Import.SpriteTypeFilter;
+            dlg.FilterIndex = 1;
+            dlg.Title = "Select file to import";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    MementoCaretaker.Instance.Push();
+                    dataSource.ImportSprite(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                this.RefreshAllViews();
+            }
+        }
         //----------------------------------------------------------------------
         // Utility
 

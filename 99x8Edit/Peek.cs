@@ -290,7 +290,10 @@ namespace _99x8Edit
             // Address edited
             long input_addr = 0;
             long validated_addr = 0;
-            if(long.TryParse(txtAddr.Text, System.Globalization.NumberStyles.HexNumber, null, out input_addr))
+            if(long.TryParse(txtAddr.Text,
+                             System.Globalization.NumberStyles.HexNumber,
+                             null,
+                             out input_addr))
             {
                 if((input_addr > 0) && (input_addr < reader.BaseStream.Length))
                 {
@@ -303,24 +306,12 @@ namespace _99x8Edit
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
-            seekAddr -= 8192;
-            if(seekAddr < 0)
-            {
-                seekAddr = 0;
-            }
+            seekAddr = Math.Max(seekAddr - 8192, 0);
             this.RefreshAllViews();
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
-            seekAddr += 8192;
-            if(seekAddr >= reader.BaseStream.Length)
-            {
-                seekAddr = reader.BaseStream.Length - 8192;
-                if(seekAddr < 0)
-                {
-                    seekAddr = 0;
-                }
-            }
+            seekAddr = Math.Min(seekAddr + 8192, reader.BaseStream.Length - 8192);
             this.RefreshAllViews();
         }
         private void btnLinear_Click(object sender, EventArgs e)

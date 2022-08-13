@@ -282,7 +282,7 @@ namespace _99x8Edit
                     break;
                 case Keys.Enter:
                     dataSource.SetPCGInPattern(currentPtnY * 16 + currentPtnX,
-                                             currentCellInPtnX * 2 + currentCellInPtnY / 2,
+                                             currentCellInPtnX + currentCellInPtnY * 2,
                                              currentPCGY * 32 + currentPCGX, true);
                     this.UpdateMapPatterns();
                     this.UpdateMap();

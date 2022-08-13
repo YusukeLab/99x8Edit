@@ -70,6 +70,7 @@ namespace _99x8Edit
             this.toolTipSprite = new System.Windows.Forms.ToolTip(this.components);
             this.btnSave = new System.Windows.Forms.Button();
             this.btnOpen = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -87,7 +88,7 @@ namespace _99x8Edit
             // 
             this.labelColorR.AutoSize = true;
             this.labelColorR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorR.Location = new System.Drawing.Point(48, 363);
+            this.labelColorR.Location = new System.Drawing.Point(48, 371);
             this.labelColorR.Name = "labelColorR";
             this.labelColorR.Size = new System.Drawing.Size(13, 15);
             this.labelColorR.TabIndex = 25;
@@ -97,7 +98,7 @@ namespace _99x8Edit
             // 
             this.labelColorL.AutoSize = true;
             this.labelColorL.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorL.Location = new System.Drawing.Point(20, 363);
+            this.labelColorL.Location = new System.Drawing.Point(20, 371);
             this.labelColorL.Name = "labelColorL";
             this.labelColorL.Size = new System.Drawing.Size(13, 15);
             this.labelColorL.TabIndex = 24;
@@ -106,7 +107,7 @@ namespace _99x8Edit
             // viewColorR
             // 
             this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorR.Location = new System.Drawing.Point(41, 330);
+            this.viewColorR.Location = new System.Drawing.Point(41, 338);
             this.viewColorR.Name = "viewColorR";
             this.viewColorR.Size = new System.Drawing.Size(32, 32);
             this.viewColorR.TabIndex = 23;
@@ -116,7 +117,7 @@ namespace _99x8Edit
             // viewColorL
             // 
             this.viewColorL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorL.Location = new System.Drawing.Point(10, 330);
+            this.viewColorL.Location = new System.Drawing.Point(10, 338);
             this.viewColorL.Name = "viewColorL";
             this.viewColorL.Size = new System.Drawing.Size(32, 32);
             this.viewColorL.TabIndex = 22;
@@ -127,7 +128,7 @@ namespace _99x8Edit
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label3.Location = new System.Drawing.Point(9, 303);
+            this.label3.Location = new System.Drawing.Point(9, 311);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 20);
             this.label3.TabIndex = 21;
@@ -148,7 +149,7 @@ namespace _99x8Edit
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label1.Location = new System.Drawing.Point(9, 8);
+            this.label1.Location = new System.Drawing.Point(9, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 20);
             this.label1.TabIndex = 19;
@@ -158,7 +159,7 @@ namespace _99x8Edit
             // 
             this.labelColorOR.AutoSize = true;
             this.labelColorOR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorOR.Location = new System.Drawing.Point(79, 363);
+            this.labelColorOR.Location = new System.Drawing.Point(79, 371);
             this.labelColorOR.Name = "labelColorOR";
             this.labelColorOR.Size = new System.Drawing.Size(18, 15);
             this.labelColorOR.TabIndex = 27;
@@ -167,7 +168,7 @@ namespace _99x8Edit
             // viewColorOR
             // 
             this.viewColorOR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorOR.Location = new System.Drawing.Point(72, 330);
+            this.viewColorOR.Location = new System.Drawing.Point(72, 338);
             this.viewColorOR.Name = "viewColorOR";
             this.viewColorOR.Size = new System.Drawing.Size(32, 32);
             this.viewColorOR.TabIndex = 26;
@@ -177,7 +178,7 @@ namespace _99x8Edit
             // 
             this.checkOverlay.AutoSize = true;
             this.checkOverlay.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkOverlay.Location = new System.Drawing.Point(186, 6);
+            this.checkOverlay.Location = new System.Drawing.Point(186, 14);
             this.checkOverlay.Name = "checkOverlay";
             this.checkOverlay.Size = new System.Drawing.Size(79, 24);
             this.checkOverlay.TabIndex = 28;
@@ -188,10 +189,10 @@ namespace _99x8Edit
             // btnSavePalette
             // 
             this.btnSavePalette.BackColor = System.Drawing.Color.White;
-            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
+            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
             this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnSavePalette.Enabled = false;
-            this.btnSavePalette.Location = new System.Drawing.Point(235, 397);
+            this.btnSavePalette.Location = new System.Drawing.Point(235, 405);
             this.btnSavePalette.Name = "btnSavePalette";
             this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
             this.btnSavePalette.TabIndex = 33;
@@ -205,7 +206,7 @@ namespace _99x8Edit
             this.checkTMS.Checked = true;
             this.checkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkTMS.Location = new System.Drawing.Point(105, 401);
+            this.checkTMS.Location = new System.Drawing.Point(105, 409);
             this.checkTMS.Name = "checkTMS";
             this.checkTMS.Size = new System.Drawing.Size(92, 24);
             this.checkTMS.TabIndex = 32;
@@ -219,7 +220,7 @@ namespace _99x8Edit
             this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(204, 397);
+            this.btnOpenPalette.Location = new System.Drawing.Point(204, 405);
             this.btnOpenPalette.Name = "btnOpenPalette";
             this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
             this.btnOpenPalette.TabIndex = 31;
@@ -230,7 +231,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(9, 431);
+            this.viewPalette.Location = new System.Drawing.Point(9, 439);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 30;
@@ -242,7 +243,7 @@ namespace _99x8Edit
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label4.Location = new System.Drawing.Point(9, 401);
+            this.label4.Location = new System.Drawing.Point(9, 409);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 20);
             this.label4.TabIndex = 29;
@@ -263,7 +264,7 @@ namespace _99x8Edit
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label7.Location = new System.Drawing.Point(291, 6);
+            this.label7.Location = new System.Drawing.Point(291, 14);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(54, 20);
             this.label7.TabIndex = 34;
@@ -273,7 +274,7 @@ namespace _99x8Edit
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label5.Location = new System.Drawing.Point(207, 303);
+            this.label5.Location = new System.Drawing.Point(207, 311);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(60, 20);
             this.label5.TabIndex = 36;
@@ -282,7 +283,7 @@ namespace _99x8Edit
             // viewPreview
             // 
             this.viewPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPreview.Location = new System.Drawing.Point(219, 330);
+            this.viewPreview.Location = new System.Drawing.Point(219, 338);
             this.viewPreview.Margin = new System.Windows.Forms.Padding(0);
             this.viewPreview.Name = "viewPreview";
             this.viewPreview.Size = new System.Drawing.Size(34, 34);
@@ -354,7 +355,7 @@ namespace _99x8Edit
             this.panelSprites.AllowDrop = true;
             this.panelSprites.ContextMenuStrip = this.contextSprites;
             this.panelSprites.Controls.Add(this.viewSprites);
-            this.panelSprites.Location = new System.Drawing.Point(291, 32);
+            this.panelSprites.Location = new System.Drawing.Point(291, 40);
             this.panelSprites.Name = "panelSprites";
             this.panelSprites.Size = new System.Drawing.Size(272, 274);
             this.panelSprites.TabIndex = 39;
@@ -367,7 +368,7 @@ namespace _99x8Edit
             this.panelEditor.AllowDrop = true;
             this.panelEditor.ContextMenuStrip = this.contextEditor;
             this.panelEditor.Controls.Add(this.viewSpriteEdit);
-            this.panelEditor.Location = new System.Drawing.Point(9, 32);
+            this.panelEditor.Location = new System.Drawing.Point(9, 40);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(276, 274);
             this.panelEditor.TabIndex = 40;
@@ -432,7 +433,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(390, 6);
+            this.chkCRT.Location = new System.Drawing.Point(364, 14);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 41;
@@ -449,7 +450,7 @@ namespace _99x8Edit
             this.btnSave.BackColor = System.Drawing.Color.White;
             this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
             this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnSave.Location = new System.Drawing.Point(518, 0);
+            this.btnSave.Location = new System.Drawing.Point(518, 8);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(32, 32);
             this.btnSave.TabIndex = 45;
@@ -461,17 +462,30 @@ namespace _99x8Edit
             this.btnOpen.BackColor = System.Drawing.Color.White;
             this.btnOpen.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnOpen.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnOpen.Location = new System.Drawing.Point(487, 0);
+            this.btnOpen.Location = new System.Drawing.Point(487, 8);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(32, 32);
             this.btnOpen.TabIndex = 44;
             this.btnOpen.UseVisualStyleBackColor = false;
             this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
+            // btnImport
+            // 
+            this.btnImport.BackColor = System.Drawing.Color.White;
+            this.btnImport.BackgroundImage = global::_99x8Edit.Properties.Resources.import;
+            this.btnImport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnImport.Location = new System.Drawing.Point(456, 8);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(32, 32);
+            this.btnImport.TabIndex = 46;
+            this.btnImport.UseVisualStyleBackColor = false;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
             // Sprites
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(562, 515);
+            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.chkCRT);
@@ -562,5 +576,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolTip toolTipSprite;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.Button btnImport;
     }
 }

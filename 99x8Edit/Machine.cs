@@ -260,10 +260,17 @@ namespace _99x8Edit
         {
             Import i = new Import();
             i.Palette = colorOf;        // Import with current palette(temp)
-            i.OpenPCG(filename);
-            ptnGen = i.ptnGen.Clone() as byte[];
-            ptnClr = i.ptnClr.Clone() as byte[];
+            i.ImportPCG(filename, ptnGen, ptnClr);
             Array.Clear(nameTable, 0, 768);
+            this.UpdateAllViewItems();
+        }
+        internal void ImportSprite(String filename)
+        {
+            Import i = new Import();
+            i.Palette = colorOf;        // Import with current palette(temp)
+            i.ImportSprite(filename, spriteGen, spriteClr2);
+            Array.Fill<byte>(spriteClr1, 0x0F);
+            Array.Clear(spriteOverlay, 0, 64);
             this.UpdateAllViewItems();
         }
         //--------------------------------------------------------------------
@@ -290,7 +297,11 @@ namespace _99x8Edit
         }
         internal void SetPalette(int colorCode, int R, int G, int B, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            if (push) MementoCaretaker.Instance.Push();
+            colorCode = Math.Clamp(colorCode, 0, 15);
+            R = Math.Clamp(R, 0, 7);
+            G = Math.Clamp(G, 0, 7);
+            B = Math.Clamp(B, 0, 7);
             // Update palette
             pltDat[colorCode * 2] = (byte)((R << 4) | B);
             pltDat[colorCode * 2 + 1] = (byte)(G);
@@ -301,24 +312,33 @@ namespace _99x8Edit
         }
         internal int GetPaletteR(int colorCode)
         {
+            colorCode = Math.Clamp(colorCode, 0, 15);
             return pltDat[colorCode * 2] >> 4;
         }
         internal int GetPaletteG(int colorCode)
         {
+            colorCode = Math.Clamp(colorCode, 0, 15);
             return pltDat[colorCode * 2 + 1];
         }
         internal int GetPaletteB(int colorCode)
         {
+            colorCode = Math.Clamp(colorCode, 0, 15);
             return pltDat[colorCode * 2] & 0x0F;
         }
         internal int GetPCGPixel(int pcg, int line, int x)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            x = Math.Clamp(x, 0, 7);
             int addr = pcg * 8 + line;
             return (ptnGen[addr] >> (7 - x)) & 1;
         }
         internal void SetPCGPixel(int pcg, int line, int x, int data, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            x = Math.Clamp(x, 0, 7);
+            if (push) MementoCaretaker.Instance.Push();
             // Update PCG pattern
             int addr = pcg * 8 + line;
             int bitcol = 7 - x;
@@ -332,11 +352,14 @@ namespace _99x8Edit
         }
         internal Bitmap GetBitmapOfPCG(int pcg)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
             return bmpOneChr[pcg];
         }
         internal void CopyPCG(int src, int dst, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            src = Math.Clamp(src, 0, 255);
+            dst = Math.Clamp(dst, 0, 255);
+            if (push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
                 ptnGen[dst * 8 + i] = ptnGen[src * 8 + i];
@@ -344,43 +367,46 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(dst);
         }
-        internal byte[] GetPCGGen(int index)
+        internal byte[] GetPCGGen(int pcg)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
             byte[] ret = new byte[8];
             for (int i = 0; i < 8; ++i)
             {
-                ret[i] = ptnGen[index * 8 + i];
+                ret[i] = ptnGen[pcg * 8 + i];
             }
             return ret;
         }
-        internal byte[] GetPCGClr(int index)
+        internal byte[] GetPCGClr(int pcg)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
             byte[] ret = new byte[8];
             for (int i = 0; i < 8; ++i)
             {
-                ret[i] = ptnClr[index * 8 + i];
+                ret[i] = ptnClr[pcg * 8 + i];
             }
             return ret;
         }
-        internal void SetPCG(int index, byte[] gen, byte[] clr, bool push)
+        internal void SetPCG(int pcg, byte[] gen, byte[] clr, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            pcg = Math.Clamp(pcg, 0, 255);
             for (int i = 0; i < 8; ++i)
             {
-                if (gen != null)  ptnGen[index * 8 + i] = gen[i];
-                if (clr != null) ptnClr[index * 8 + i] = clr[i];
+                if (gen != null)  ptnGen[pcg * 8 + i] = gen[i];
+                if (clr != null) ptnClr[pcg * 8 + i] = clr[i];
             }
-            this.UpdatePCGBitmap(index);
+            this.UpdatePCGBitmap(pcg);
         }
-        internal void ClearPCG(int index)
+        internal void ClearPCG(int pcg)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
             MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
-                ptnGen[index * 8 + i] = 0;
-                ptnClr[index * 8 + i] = 0xF0;
+                ptnGen[pcg * 8 + i] = 0;
+                ptnClr[pcg * 8 + i] = 0xF0;
             }
-            this.UpdatePCGBitmap(index);
+            this.UpdatePCGBitmap(pcg);
         }
         [Serializable]
         internal class PCGLine
@@ -388,37 +414,44 @@ namespace _99x8Edit
             public byte gen;
             public byte clr;
         }
-        internal PCGLine GetPCGLine(int index, int line)
+        internal PCGLine GetPCGLine(int pcg, int line)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             PCGLine ret = new PCGLine();
-            ret.gen = ptnGen[index * 8 + line];
-            ret.clr = ptnClr[index * 8 + line];
+            ret.gen = ptnGen[pcg * 8 + line];
+            ret.clr = ptnClr[pcg * 8 + line];
             return ret;
         }
-        internal void SetPCGLine(int index, int line, PCGLine val, bool push)
+        internal void SetPCGLine(int pcg, int line, PCGLine val, bool push)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
-            ptnGen[index * 8 + line] = val.gen;
-            ptnClr[index * 8 + line] = val.clr;
-            this.UpdatePCGBitmap(index);
+            ptnGen[pcg * 8 + line] = val.gen;
+            ptnClr[pcg * 8 + line] = val.clr;
+            this.UpdatePCGBitmap(pcg);
         }
-        internal void ClearPCGLine(int index, int line, bool push)
+        internal void ClearPCGLine(int pcg, int line, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
-            ptnGen[index * 8 + line] = 0;
-            ptnClr[index * 8 + line] = 0xF0;
-            this.UpdatePCGBitmap(index);
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            if (push) MementoCaretaker.Instance.Push();
+            ptnGen[pcg * 8 + line] = 0;
+            ptnClr[pcg * 8 + line] = 0xF0;
+            this.UpdatePCGBitmap(pcg);
         }
-        internal void InversePCG(int index, bool push)
+        internal void InversePCG(int pcg, bool push)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
             if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 8; ++i)
             {
-                ptnGen[index * 8 + i] = (byte)(~ptnGen[index * 8 + i]);
-                byte color = ptnClr[index * 8 + i];
-                ptnClr[index * 8 + i] = (byte)((color >> 4) | ((color << 4) & 0xF0));
+                ptnGen[pcg * 8 + i] = (byte)(~ptnGen[pcg * 8 + i]);
+                byte color = ptnClr[pcg * 8 + i];
+                ptnClr[pcg * 8 + i] = (byte)((color >> 4) | ((color << 4) & 0xF0));
             }
-            this.UpdatePCGBitmap(index);
+            this.UpdatePCGBitmap(pcg);
         }
         internal int GetNameTable(int addr)
         {
@@ -426,7 +459,8 @@ namespace _99x8Edit
         }
         internal void SetNameTable(int addr, int data, bool push)
         {
-            if(push)
+            addr = Math.Clamp(addr, 0, 767);
+            if (push)
             {
                 MementoCaretaker.Instance.Push();
             }
@@ -434,6 +468,8 @@ namespace _99x8Edit
         }
         internal int GetColorTable(int pcg, int line, bool isForeGround)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             int addr = pcg * 8 + line;
             if (isForeGround)
             {
@@ -446,6 +482,9 @@ namespace _99x8Edit
         }
         internal void SetColorTable(int pcg, int line, int color_code, bool isForeGround, bool push)
         {
+            pcg = Math.Clamp(pcg, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            color_code = Math.Clamp(color_code, 0, 15);
             int addr = pcg * 8 + line;
             // Update color table
             if(push) MementoCaretaker.Instance.Push();
@@ -465,20 +504,28 @@ namespace _99x8Edit
         }
         internal Color ColorCodeToWindowsColor(int color_code)
         {
+            color_code = Math.Clamp(color_code, 0, 15);
             return colorOf[color_code];
         }
-        internal int GetPCGInPattern(int index, int no)
+        internal int GetPCGInPattern(int ptn, int index)
         {
-            return mapPattern[index * 4 + no];
+            ptn = Math.Clamp(ptn, 0, 255);
+            index = Math.Clamp(index, 0, 3);
+            return mapPattern[ptn * 4 + index];
         }
-        internal void SetPCGInPattern(int index, int no, int value, bool push)
+        internal void SetPCGInPattern(int ptn, int index, int pcg, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
-            mapPattern[index * 4 + no] = (byte)value;
+            ptn = Math.Clamp(ptn, 0, 255);
+            index = Math.Clamp(index, 0, 3);
+            pcg = Math.Clamp(pcg, 0, 255);
+            if (push) MementoCaretaker.Instance.Push();
+            mapPattern[ptn * 4 + index] = (byte)pcg;
         }
         internal void CopyMapPattern(int src, int dst, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            src = Math.Clamp(src, 0, 255);
+            dst = Math.Clamp(dst, 0, 255);
+            if (push) MementoCaretaker.Instance.Push();
             mapPattern[dst * 4 + 0] = mapPattern[src * 4 + 0];
             mapPattern[dst * 4 + 1] = mapPattern[src * 4 + 1];
             mapPattern[dst * 4 + 2] = mapPattern[src * 4 + 2];
@@ -486,6 +533,7 @@ namespace _99x8Edit
         }
         internal byte[] GetPattern(int index)
         {
+            index = Math.Clamp(index, 0, 255);
             byte[] ret = new byte[4];
             ret[0] = mapPattern[index * 4 + 0];
             ret[1] = mapPattern[index * 4 + 1];
@@ -495,7 +543,8 @@ namespace _99x8Edit
         }
         internal void SetPattern(int index, byte[] val, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index = Math.Clamp(index, 0, 255);
+            if (push) MementoCaretaker.Instance.Push();
             mapPattern[index * 4 + 0] = val[0];
             mapPattern[index * 4 + 1] = val[1];
             mapPattern[index * 4 + 2] = val[2];
@@ -503,15 +552,20 @@ namespace _99x8Edit
         }
         internal int GetMapData(int x, int y)
         {
+            x = Math.Clamp(x, 0, mapWidth - 1);
+            y = Math.Clamp(y, 0, mapHeight - 1);
             return mapData[x, y];
         }
-        internal void SetMapData(int x, int y, int value, bool push)
+        internal void SetMapData(int x, int y, int ptn, bool push)
         {
-            if(push)
+            x = Math.Clamp(x, 0, mapWidth - 1);
+            y = Math.Clamp(y, 0, mapHeight - 1);
+            ptn = Math.Clamp(ptn, 0, 255);
+            if (push)
             {
                 MementoCaretaker.Instance.Push();
             }
-            mapData[x, y] = (byte)value;
+            mapData[x, y] = (byte)ptn;
         }
         internal int MapWidth
         {
@@ -555,50 +609,58 @@ namespace _99x8Edit
                 mapHeight = value;
             }
         }
-        internal Bitmap GetBitmapOfSprite(int index)
+        internal Bitmap GetBitmapOfSprite(int index8x8)
         {
-            return bmpOneSprite[index];
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            return bmpOneSprite[index8x8];
         }
-        internal bool GetSpriteOverlay(int indexBy16x16)
+        internal bool GetSpriteOverlay(int index16x16)
         {
-            return (spriteOverlay[indexBy16x16] != 0);
+            index16x16 = Math.Clamp(index16x16, 0, 63);
+            return (spriteOverlay[index16x16] != 0);
         }
-        internal void SetSpriteOverlay(int indexBy16x16, bool value, bool push)
+        internal void SetSpriteOverlay(int index16x16, bool overlay, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index16x16 = Math.Clamp(index16x16, 0, 63);
+            if (push) MementoCaretaker.Instance.Push();
             // Set overlay flag of the sprite
-            spriteOverlay[indexBy16x16] = value ? (byte)1 : (byte)0;
+            spriteOverlay[index16x16] = overlay ? (byte)1 : (byte)0;
             // Set sprite attributes
-            int overlay_target_8x8 = (indexBy16x16 * 4 + 4) % 256;
+            int overlay_target_8x8 = (index16x16 * 4 + 4) % 256;
         }
-        internal int GetSpriteColorCode(int index, int line)
+        internal int GetSpriteColorCode(int index8x8, int line)
         {
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             if (isTMS9918)
             {
-                return spriteClr1[index];
+                return spriteClr1[index8x8];
             }
             else
             {
-                return spriteClr2[index * 8 + line] & 0x0F;
+                return spriteClr2[index8x8 * 8 + line] & 0x0F;
             }
         }
-        internal void SetSpriteColorCode(int index, int line, int value, bool push)
+        internal void SetSpriteColorCode(int index8x8, int line, int code, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            code = Math.Clamp(code, 0, 15);
+            if (push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
             {
-                spriteClr1[index] = (byte)value;
+                spriteClr1[index8x8] = (byte)code;
             }
             else
             {
                 // internal data have color for each 8x1 dots
-                int index_base = (index / 4) * 4;
-                int index_target_l = index_base + (index % 2);
-                int index_target_r= index_base + (index % 2) + 2;
+                int index_base = (index8x8 / 4) * 4;
+                int index_target_l = index_base + (index8x8 % 2);
+                int index_target_r= index_base + (index8x8 % 2) + 2;
                 spriteClr2[index_target_l * 8 + line] &= 0xF0;
-                spriteClr2[index_target_l * 8 + line] |= (byte)(value);
+                spriteClr2[index_target_l * 8 + line] |= (byte)(code);
                 spriteClr2[index_target_r * 8 + line] &= 0xF0;
-                spriteClr2[index_target_r * 8 + line] |= (byte)(value);
+                spriteClr2[index_target_r * 8 + line] |= (byte)(code);
             }
             this.UpdateSpriteBitmap();
         }
@@ -612,6 +674,7 @@ namespace _99x8Edit
         }
         internal One16x16Sprite Get16x16Sprite(int index16x16)
         {
+            index16x16 = Math.Clamp(index16x16, 0, 63);
             int target8x8 = index16x16 * 4;
             One16x16Sprite spr = new One16x16Sprite();
             for (int i = 0; i < 32; ++i)
@@ -625,6 +688,7 @@ namespace _99x8Edit
         }
         internal void Set16x16Sprite(int index16x16, One16x16Sprite spr, bool push)
         {
+            index16x16 = Math.Clamp(index16x16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 4; ++i)
             {
@@ -641,7 +705,8 @@ namespace _99x8Edit
         }
         internal void SetSpriteGen(int index8x8, byte[] gen, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            if (push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
                 spriteGen[index8x8 * 8 + i] = gen[i];
@@ -650,7 +715,8 @@ namespace _99x8Edit
         }
         internal void Clear16x16Sprite(int index16x16, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index16x16 = Math.Clamp(index16x16, 0, 63);
+            if (push) MementoCaretaker.Instance.Push();
             spriteOverlay[index16x16] = 0;
             for (int i = 0; i < 4; ++i)
             {
@@ -664,17 +730,22 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(dst);
             }
         }
-        internal int GetSpritePixel(int index, int line, int x)
+        internal int GetSpritePixel(int index8x8, int line, int x)
         {
-            int target_dat = spriteGen[index * 8 + line];
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            int target_dat = spriteGen[index8x8 * 8 + line];
             int target = (target_dat >> (7 - x)) & 1;       // left side is LSB of data source
             return target;
         }
-        internal void SetSpritePixel(int index, int line, int x, int val, bool push)
+        internal void SetSpritePixel(int index8x8, int line, int x, int val, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            x = Math.Clamp(x, 0, 7);
+            if (push) MementoCaretaker.Instance.Push();
             // Update Sprite pattern
-            int addr = index * 8 + line;
+            int addr = index8x8 * 8 + line;
             int bitcol = 7 - x;
             spriteGen[addr] &= (byte)(~(1 << bitcol));     // Set target bit to 0
             if (val != 0)
@@ -682,7 +753,7 @@ namespace _99x8Edit
                 spriteGen[addr] |= (byte)(1 << bitcol);    // Set target bit
             }
             // Update Sprite bitmap
-            this.UpdateSpriteBitmap(index);
+            this.UpdateSpriteBitmap(index8x8);
         }
         [Serializable]
         internal class SpriteLine
@@ -693,43 +764,49 @@ namespace _99x8Edit
             public byte genDataOv = 0;
             public byte clrDataOv = 0;
         }
-        internal SpriteLine GetSpriteLine(int index, int line)
+        internal SpriteLine GetSpriteLine(int index8x8, int line)
         {
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             SpriteLine ret = new SpriteLine();
-            ret.genData = spriteGen[index * 8 + line];
-            ret.clrData = spriteClr2[index * 8 + line];
-            if ((ret.overlayed = spriteOverlay[index / 4]) != 0)
+            ret.genData = spriteGen[index8x8 * 8 + line];
+            ret.clrData = spriteClr2[index8x8 * 8 + line];
+            if ((ret.overlayed = spriteOverlay[index8x8 / 4]) != 0)
             {
-                index = (index + 4) % 256;
-                ret.genDataOv = spriteGen[index * 8 + line];
-                ret.clrDataOv = spriteClr2[index * 8 + line];
+                index8x8 = (index8x8 + 4) % 256;
+                ret.genDataOv = spriteGen[index8x8 * 8 + line];
+                ret.clrDataOv = spriteClr2[index8x8 * 8 + line];
             }
             return ret;
         }
-        internal void SetSpriteLine(int index, int line, SpriteLine val, bool push)
+        internal void SetSpriteLine(int index8x8, int line, SpriteLine val, bool push)
         {
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
-            spriteGen[index * 8 + line] = val.genData;
-            spriteClr2[index * 8 + line] = val.clrData;
-            this.UpdateSpriteBitmap(index);
+            spriteGen[index8x8 * 8 + line] = val.genData;
+            spriteClr2[index8x8 * 8 + line] = val.clrData;
+            this.UpdateSpriteBitmap(index8x8);
             if (val.overlayed != 0)
             {
-                index = (index + 4) % 256;
-                spriteGen[index * 8 + line] = val.genDataOv;
-                spriteClr2[index * 8 + line] = val.clrDataOv;
-                this.UpdateSpriteBitmap(index);
+                index8x8 = (index8x8 + 4) % 256;
+                spriteGen[index8x8 * 8 + line] = val.genDataOv;
+                spriteClr2[index8x8 * 8 + line] = val.clrDataOv;
+                this.UpdateSpriteBitmap(index8x8);
             }
         }
-        internal void ClearSpriteLine(int index, int line, bool push)
+        internal void ClearSpriteLine(int index8x8, int line, bool push)
         {
-            if(push) MementoCaretaker.Instance.Push();
-            spriteGen[index * 8 + line] = 0;
-            this.UpdateSpriteBitmap(index);
-            if (spriteOverlay[index / 4] != 0)
+            index8x8 = Math.Clamp(index8x8, 0, 255);
+            line = Math.Clamp(line, 0, 7);
+            if (push) MementoCaretaker.Instance.Push();
+            spriteGen[index8x8 * 8 + line] = 0;
+            this.UpdateSpriteBitmap(index8x8);
+            if (spriteOverlay[index8x8 / 4] != 0)
             {
-                index = (index + 4) % 256;
-                spriteGen[index * 8 + line] = 0;
-                this.UpdateSpriteBitmap(index);
+                index8x8 = (index8x8 + 4) % 256;
+                spriteGen[index8x8 * 8 + line] = 0;
+                this.UpdateSpriteBitmap(index8x8);
             }
         }
         //--------------------------------------------------------------------
