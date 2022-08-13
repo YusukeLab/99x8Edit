@@ -56,7 +56,7 @@ namespace _99x8Edit
             // Undo/Redo            
             MementoCaretaker.Instance.Initialize(this, dataSource);
             // Export menu
-            foreach (String item in dataSource.exportTypeList)
+            foreach (String item in Export.TypeList)
             {
                 comboExportType.Items.Add(item);   // Code it since items may be expanded
             }
@@ -200,7 +200,7 @@ namespace _99x8Edit
             {
                 dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
-            String ext = dataSource.exportTypeExt[comboExportType.SelectedIndex];
+            String ext = Export.TypeExt[comboExportType.SelectedIndex];
             SaveFileDialog dlg = new SaveFileDialog();
             String filter = ext + " files(*" + ext + ")|*" + ext;
             dlg.FileName = "";
@@ -214,7 +214,7 @@ namespace _99x8Edit
             {
                 try
                 {
-                    dataSource.ExportPCG((Machine.ExportType)comboExportType.SelectedIndex, dlg.FileName);
+                    dataSource.ExportPCG((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -229,7 +229,7 @@ namespace _99x8Edit
             {
                 dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
-            String ext = dataSource.exportTypeExt[comboExportType.SelectedIndex];
+            String ext = Export.TypeExt[comboExportType.SelectedIndex];
             SaveFileDialog dlg = new SaveFileDialog();
             String filter = ext + " files(*" + ext + ")|*" + ext;
             dlg.FileName = "";
@@ -243,7 +243,7 @@ namespace _99x8Edit
             {
                 try
                 {
-                    dataSource.ExportMap((Machine.ExportType)comboExportType.SelectedIndex, dlg.FileName);
+                    dataSource.ExportMap((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -258,7 +258,7 @@ namespace _99x8Edit
             {
                 dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
-            String ext = dataSource.exportTypeExt[comboExportType.SelectedIndex];
+            String ext = Export.TypeExt[comboExportType.SelectedIndex];
             SaveFileDialog dlg = new SaveFileDialog();
             String filter = ext + " files(*" + ext + ")|*" + ext;
             dlg.FileName = "";
@@ -272,7 +272,7 @@ namespace _99x8Edit
             {
                 try
                 {
-                    dataSource.ExportSprites((Machine.ExportType)comboExportType.SelectedIndex, dlg.FileName);
+                    dataSource.ExportSprites((Export.Type)comboExportType.SelectedIndex, dlg.FileName);
                 }
                 catch (Exception ex)
                 {

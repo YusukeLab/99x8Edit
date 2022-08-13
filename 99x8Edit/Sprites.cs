@@ -113,9 +113,9 @@ namespace _99x8Edit
             this.UpdateSpriteEditView();    // Sprite edit view
             this.UpdateCurrentColorView();  // Current color
             this.UpdateOverlayCheck();
-            this.checkTMS.Checked = dataSource.IsTMS9918();
-            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918();
-            this.btnSavePalette.Enabled = !dataSource.IsTMS9918();
+            this.checkTMS.Checked = dataSource.IsTMS9918;
+            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
+            this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
         }
         private void UpdatePaletteView(bool refresh = true)
         {
@@ -210,7 +210,7 @@ namespace _99x8Edit
                                 if (ptn_over != 0)
                                 {
                                     // pixel of overlayed sprite exists, so get or of the color code
-                                    if (dataSource.IsTMS9918())
+                                    if (dataSource.IsTMS9918)
                                     {
                                         if (color_code == 0)
                                         {
@@ -268,7 +268,7 @@ namespace _99x8Edit
                 viewColorR.BackColor = color_secondary;
                 viewColorR.Visible = true;
                 labelColorR.Visible = true;
-                if (dataSource.IsTMS9918())
+                if (dataSource.IsTMS9918)
                 {
                     // Overlayed, but no OR color(TMS9918)
                     viewColorOR.Visible = false;
@@ -877,12 +877,12 @@ namespace _99x8Edit
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (checkTMS.Checked && !dataSource.IsTMS9918())
+            if (checkTMS.Checked && !dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to TMS9918
                 dataSource.SetPaletteToTMS9918(true);
             }
-            else if (!checkTMS.Checked && dataSource.IsTMS9918())
+            else if (!checkTMS.Checked && dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to internal palette
                 dataSource.SetPaletteToV9938(true);
@@ -1038,7 +1038,7 @@ namespace _99x8Edit
         private void SetSpriteColor(int target16x16, int val)
         {
             int target8x8 = target16x16 * 4;
-            if (dataSource.IsTMS9918())
+            if (dataSource.IsTMS9918)
             {
                 // Set color to four current sprites
                 MementoCaretaker.Instance.Push();
@@ -1072,7 +1072,7 @@ namespace _99x8Edit
             int target_stat = current_stat + 1;
             if (dataSource.GetSpriteOverlay(target_lefttop16x16))
             {
-                if (dataSource.IsTMS9918())
+                if (dataSource.IsTMS9918)
                 {
                     target_stat %= 3;       // Overlayed, no OR color
                 }

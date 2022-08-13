@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace _99x8Edit
 {
@@ -98,26 +99,10 @@ namespace _99x8Edit
                     if (chr_used[right] < 255) chr_used[right]++;
                 }
                 // Search unused value
-                int unused = -1;
-                for(int i = 0; i < 256; ++i)
-                {
-                    if(chr_used[i] == 0)
-                    {
-                        unused = i;
-                        break;
-                    }
-                }
+                int unused = Array.IndexOf(chr_used, 0);
                 // Search most frequent byte pairs
-                int bestcount = Threshold - 1;
-                int bestpair = 0;
-                foreach (KeyValuePair<int, int> kvp in pairs_count)
-                {
-                    if (kvp.Value > bestcount)
-                    {
-                        bestcount = kvp.Value;
-                        bestpair = kvp.Key;
-                    }
-                }
+                int bestcount = pairs_count.Values.Max();
+                int bestpair = pairs_count.FirstOrDefault(c => c.Value == bestcount).Key;
                 // If there are enough pairs and unused value, compress
                 if ((bestcount < Threshold) || (unused == -1))
                 {
@@ -133,7 +118,8 @@ namespace _99x8Edit
                 {
                     if(buffer_read_index < compressed_size - 1)
                     {
-                        if ((best_left == work_buffer[buffer_read_index]) && (best_right == work_buffer[buffer_read_index + 1]))
+                        if ((best_left == work_buffer[buffer_read_index])
+                         && (best_right == work_buffer[buffer_read_index + 1]))
                         {
                             work_buffer[buffer_write_index] = (byte)unused;
                             ++buffer_read_index;

@@ -50,6 +50,7 @@ namespace _99x8Edit
             this.checkTMS = new System.Windows.Forms.CheckBox();
             this.btnSavePalette = new System.Windows.Forms.Button();
             this.toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
+            this.btnImport = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -92,7 +93,7 @@ namespace _99x8Edit
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label1.Location = new System.Drawing.Point(13, 6);
+            this.label1.Location = new System.Drawing.Point(13, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 20);
             this.label1.TabIndex = 0;
@@ -113,7 +114,7 @@ namespace _99x8Edit
             this.label2.AutoSize = true;
             this.label2.ContextMenuStrip = this.contextPCGList;
             this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label2.Location = new System.Drawing.Point(301, 6);
+            this.label2.Location = new System.Drawing.Point(301, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 20);
             this.label2.TabIndex = 2;
@@ -183,7 +184,7 @@ namespace _99x8Edit
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label3.Location = new System.Drawing.Point(13, 301);
+            this.label3.Location = new System.Drawing.Point(13, 310);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 20);
             this.label3.TabIndex = 4;
@@ -192,7 +193,7 @@ namespace _99x8Edit
             // viewColorL
             // 
             this.viewColorL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorL.Location = new System.Drawing.Point(14, 328);
+            this.viewColorL.Location = new System.Drawing.Point(14, 337);
             this.viewColorL.Name = "viewColorL";
             this.viewColorL.Size = new System.Drawing.Size(32, 32);
             this.viewColorL.TabIndex = 5;
@@ -202,7 +203,7 @@ namespace _99x8Edit
             // viewColorR
             // 
             this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorR.Location = new System.Drawing.Point(45, 328);
+            this.viewColorR.Location = new System.Drawing.Point(45, 337);
             this.viewColorR.Name = "viewColorR";
             this.viewColorR.Size = new System.Drawing.Size(32, 32);
             this.viewColorR.TabIndex = 6;
@@ -213,7 +214,7 @@ namespace _99x8Edit
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label4.Location = new System.Drawing.Point(13, 489);
+            this.label4.Location = new System.Drawing.Point(13, 498);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 20);
             this.label4.TabIndex = 7;
@@ -222,7 +223,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(13, 519);
+            this.viewPalette.Location = new System.Drawing.Point(13, 528);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 8;
@@ -236,7 +237,7 @@ namespace _99x8Edit
             this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(208, 484);
+            this.btnOpenPalette.Location = new System.Drawing.Point(208, 493);
             this.btnOpenPalette.Name = "btnOpenPalette";
             this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
             this.btnOpenPalette.TabIndex = 14;
@@ -250,7 +251,7 @@ namespace _99x8Edit
             this.checkTMS.Checked = true;
             this.checkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkTMS.Location = new System.Drawing.Point(109, 489);
+            this.checkTMS.Location = new System.Drawing.Point(109, 498);
             this.checkTMS.Name = "checkTMS";
             this.checkTMS.Size = new System.Drawing.Size(92, 24);
             this.checkTMS.TabIndex = 15;
@@ -264,7 +265,7 @@ namespace _99x8Edit
             this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
             this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnSavePalette.Enabled = false;
-            this.btnSavePalette.Location = new System.Drawing.Point(239, 484);
+            this.btnSavePalette.Location = new System.Drawing.Point(239, 493);
             this.btnSavePalette.Name = "btnSavePalette";
             this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
             this.btnSavePalette.TabIndex = 16;
@@ -279,11 +280,24 @@ namespace _99x8Edit
             this.toolTipPCG.InitialDelay = 0;
             this.toolTipPCG.ReshowDelay = 0;
             // 
+            // btnImport
+            // 
+            this.btnImport.BackColor = System.Drawing.Color.White;
+            this.btnImport.BackgroundImage = global::_99x8Edit.Properties.Resources.import;
+            this.btnImport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnImport.Location = new System.Drawing.Point(778, 8);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(32, 32);
+            this.btnImport.TabIndex = 28;
+            this.toolTipPCG.SetToolTip(this.btnImport, "Import");
+            this.btnImport.UseVisualStyleBackColor = false;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label5.Location = new System.Drawing.Point(24, 361);
+            this.label5.Location = new System.Drawing.Point(24, 370);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 15);
             this.label5.TabIndex = 17;
@@ -293,7 +307,7 @@ namespace _99x8Edit
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label6.Location = new System.Drawing.Point(52, 361);
+            this.label6.Location = new System.Drawing.Point(52, 370);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(13, 15);
             this.label6.TabIndex = 18;
@@ -303,7 +317,7 @@ namespace _99x8Edit
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label7.Location = new System.Drawing.Point(301, 173);
+            this.label7.Location = new System.Drawing.Point(301, 182);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(67, 20);
             this.label7.TabIndex = 19;
@@ -324,7 +338,7 @@ namespace _99x8Edit
             this.panelPCG.AllowDrop = true;
             this.panelPCG.ContextMenuStrip = this.contextPCGList;
             this.panelPCG.Controls.Add(this.viewPCG);
-            this.panelPCG.Location = new System.Drawing.Point(301, 30);
+            this.panelPCG.Location = new System.Drawing.Point(301, 39);
             this.panelPCG.Name = "panelPCG";
             this.panelPCG.Size = new System.Drawing.Size(534, 130);
             this.panelPCG.TabIndex = 22;
@@ -408,7 +422,7 @@ namespace _99x8Edit
             this.panelSandbox.AllowDrop = true;
             this.panelSandbox.ContextMenuStrip = this.contextSandbox;
             this.panelSandbox.Controls.Add(this.viewSandbox);
-            this.panelSandbox.Location = new System.Drawing.Point(301, 199);
+            this.panelSandbox.Location = new System.Drawing.Point(301, 208);
             this.panelSandbox.Name = "panelSandbox";
             this.panelSandbox.Size = new System.Drawing.Size(534, 386);
             this.panelSandbox.TabIndex = 24;
@@ -475,7 +489,7 @@ namespace _99x8Edit
             this.panelEditor.AllowDrop = true;
             this.panelEditor.ContextMenuStrip = this.contextEditor;
             this.panelEditor.Controls.Add(this.viewPCGEdit);
-            this.panelEditor.Location = new System.Drawing.Point(14, 34);
+            this.panelEditor.Location = new System.Drawing.Point(14, 43);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(267, 264);
             this.panelEditor.TabIndex = 26;
@@ -487,7 +501,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(723, 5);
+            this.chkCRT.Location = new System.Drawing.Point(666, 15);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 27;
@@ -498,7 +512,8 @@ namespace _99x8Edit
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(839, 598);
+            this.ClientSize = new System.Drawing.Size(839, 606);
+            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
             this.Controls.Add(this.panelSandbox);
@@ -589,5 +604,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopyRight;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
+        private System.Windows.Forms.Button btnImport;
     }
 }

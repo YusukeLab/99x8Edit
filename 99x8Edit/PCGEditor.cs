@@ -57,7 +57,7 @@ namespace _99x8Edit
             viewPCGEdit.Image = bmpPCGEdit;
             viewColorL.Image = bmpColorL;
             viewColorR.Image = bmpColorR;
-            checkTMS.Checked = this.dataSource.IsTMS9918();
+            checkTMS.Checked = this.dataSource.IsTMS9918;
             // Refresh all views
             this.RefreshAllViews();
             // Context menu
@@ -127,9 +127,9 @@ namespace _99x8Edit
             this.UpdateSandbox();           // Sandbox view
             this.UpdatePCGEditView();       // PCG Editor
             this.UpdateCurrentColorView();  // Current color
-            this.checkTMS.Checked = dataSource.IsTMS9918();
-            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918();
-            this.btnSavePalette.Enabled = !dataSource.IsTMS9918();
+            this.checkTMS.Checked = dataSource.IsTMS9918;
+            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
+            this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
         }
         private void UpdatePaletteView(bool refresh = true)
         {
@@ -319,13 +319,13 @@ namespace _99x8Edit
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (checkTMS.Checked && !dataSource.IsTMS9918())
+            if (checkTMS.Checked && !dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to TMS9918
                 dataSource.SetPaletteToTMS9918(true);
                 this.RefreshAllViews();     // Everything changes
             }
-            else if (!checkTMS.Checked && dataSource.IsTMS9918())
+            else if (!checkTMS.Checked && dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to internal palette
                 dataSource.SetPaletteToV9938(true);
@@ -1195,6 +1195,33 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            String dir = Path.GetDirectoryName(currentFile);
+            if (dir == null)
+            {
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = dir;
+            dlg.Filter = "PNG File(*.png)|*.png";
+            dlg.FilterIndex = 1;
+            dlg.Title = "Select file to import";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    MementoCaretaker.Instance.Push();
+                    dataSource.ImportPCG(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                this.RefreshAllViews();
+            }
+        }
         //---------------------------------------------------------------------
         // Utility
         private void EditCurrentPCG(int x, int y)
@@ -1205,7 +1232,6 @@ namespace _99x8Edit
             if (prev_pixel == 0)
             {
                 dataSource.SetPCGPixel(current_target_pcg, y, x, 1, true);
-
             }
             else
             {

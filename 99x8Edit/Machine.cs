@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.IO;
 
 namespace _99x8Edit
 {
     // All VDP related data will be wrapped here
-    public partial class Machine
+    public class Machine
     {
         // Data, of PCG
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
@@ -20,8 +21,8 @@ namespace _99x8Edit
         // Data, of map
         private byte[] mapPattern = new byte[256 * 4];  // One pattern mede by four characters
         private byte[,] mapData = new byte[64, 64];     // Map data[x, y](0..255)
-        Int32 mapWidth = 64;
-        Int32 mapHeight = 64;
+        private Int32 mapWidth = 64;
+        private Int32 mapHeight = 64;
         // Data, of sprites
         private byte[] spriteGen = new byte[256 * 8];   // Sprite pattern generator table
         private byte[] spriteClr1 = new byte[256];      // Sprite color(mode1)
@@ -38,7 +39,12 @@ namespace _99x8Edit
                                       0x3aa241, 0xb766b5, 0xcccccc, 0xffffff };
         //--------------------------------------------------------------------
         // Initialize
-        public void Initialize()
+        public Machine()
+        {
+            // Do nothing at constructor and initialize at Initialize() if needed,
+            // since this class will be created on each action, e.g.undo/redo
+        }
+        internal void Initialize()
         {
             // Pattern generator, color, name table
             ptnGen = Properties.Resources.gentable;
@@ -87,7 +93,7 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // For Mementos
-        public Machine CreateCopy()
+        internal Machine CreateCopy()
         {
             Machine m = new Machine();
             m.ptnGen = ptnGen.Clone() as byte[];
@@ -105,7 +111,7 @@ namespace _99x8Edit
             m.spriteOverlay = spriteOverlay.Clone() as byte[];
             return m;
         }
-        public void SetAllData(Machine m)
+        internal void SetAllData(Machine m)
         {
             ptnGen = m.ptnGen.Clone() as byte[];
             ptnClr = m.ptnClr.Clone() as byte[];
@@ -122,16 +128,132 @@ namespace _99x8Edit
             spriteOverlay = m.spriteOverlay.Clone() as byte[];
             this.UpdateAllViewItems();  // Update bitmaps
         }
+        //------------------------------------------------------------------------
+        // File IO
+        internal void SaveAllSettings(BinaryWriter br)
+        {
+            // PCG
+            br.Write(ptnGen);           // Pattern generator table
+            br.Write(ptnClr);           // Pattern color table
+            br.Write(nameTable);        // Name table
+            br.Write(pltDat);           // Palette
+            br.Write(isTMS9918);        // Based on TMS9918 or not
+            // Sprites
+            br.Write(spriteGen);        // Sprite patten generator table
+            br.Write(spriteClr1);       // Sprite color for mode1
+            br.Write(spriteClr2);       // Sprite color for mode2
+            br.Write(spriteOverlay);    // Sprite overlay flags
+            // Map
+            br.Write(mapPattern);       // Map pattern
+            br.Write((Int32)mapWidth);
+            br.Write((Int32)mapHeight);
+            for (int i = 0; i < mapHeight; ++i)
+            {
+                for (int j = 0; j < mapWidth; ++j)
+                {
+                    br.Write((byte)mapData[j, i]);
+                }
+            }
+        }
+        internal void LoadAllSettings(BinaryReader br)
+        {
+            // PCG
+            br.Read(ptnGen);                // Pattern generator table
+            br.Read(ptnClr);                // Pattern color table
+            br.Read(nameTable);             // Name table
+            br.Read(pltDat);                // Palette
+            isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
+            // Sprites
+            br.Read(spriteGen);             // Sprite patten generator table
+            br.Read(spriteClr1);            // Sprite color for mode1
+            br.Read(spriteClr2);            // Sprite color for mode2
+            br.Read(spriteOverlay);         // Sprite overlay flags
+            // Map
+            br.Read(mapPattern);       // Map pattern
+            mapWidth = br.ReadInt32();
+            mapHeight = br.ReadInt32();
+            for (int i = 0; i < mapHeight; ++i)
+            {
+                for (int j = 0; j < mapWidth; ++j)
+                {
+                    mapData[j, i] = br.ReadByte();
+                }
+            }
+            // Update bitmaps
+            this.UpdateAllViewItems();
+        }
+        //--------------------------------------------------------------------
+        // Export methods
+        internal void ExportPCG(Export.Type type, String path)
+        {
+            Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
+                                  mapPattern, mapData, mapWidth, mapHeight,
+                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+            e.ExportPCG(type, path);
+        }
+        internal void ExportMap(Export.Type type, String path)
+        {
+            Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
+                                  mapPattern, mapData, mapWidth, mapHeight,
+                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+            e.ExportMap(type, path);
+        }
+        internal void ExportSprites(Export.Type type, String path)
+        {
+            // Set the CC flags of the sprite color
+            /*
+                We don't update the CC flags when editing, since it will be a quite mess
+                when there are copy, paste and other actions to overlayed sprite.
+                Anyway, we only need the CC flags for exporting, so we're going to update here.
+             */
+            this.SetSpriteCCFlags();
+            Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
+                                  mapPattern, mapData, mapWidth, mapHeight,
+                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+            e.ExportSprites(type, path);
+        }
+        internal void SavePaletteSettings(BinaryWriter br)
+        {
+            br.Write(pltDat);
+        }
+        internal void LoadPaletteSettings(BinaryReader br)
+        {
+            br.Read(pltDat);
+            for (int i = 0; i < 16; ++i)
+            {
+                // Set the windows color to palette based on internal palette data
+                int R = (pltDat[i * 2] >> 4);
+                int G = (pltDat[i * 2 + 1]);
+                int B = (pltDat[i * 2] & 0x0F);
+                R = (R * 255) / 7;
+                G = (G * 255) / 7;
+                B = (B * 255) / 7;
+                colorOf[i] = Color.FromArgb(R, G, B);
+            }
+            this.UpdateAllViewItems();
+        }
+        //--------------------------------------------------------------------
+        // Import
+        internal void ImportPCG(String filename)
+        {
+            Import i = new Import();
+            i.Palette = colorOf;        // Import with current palette(temp)
+            i.OpenPCG(filename);
+            ptnGen = i.ptnGen.Clone() as byte[];
+            ptnClr = i.ptnClr.Clone() as byte[];
+            Array.Clear(nameTable, 0, 768);
+            this.UpdateAllViewItems();
+        }
         //--------------------------------------------------------------------
         // Palette methods
-        public void SetPaletteToTMS9918(bool push)
+        internal void SetPaletteToTMS9918(bool push)
         {
             // Set the windows color to palette based on TMS9918
             if(push) MementoCaretaker.Instance.Push();
             isTMS9918 = true;
             this.UpdateAllViewItems();  // Update bitmaps
         }
-        public void SetPaletteToV9938(bool push)
+        internal void SetPaletteToV9938(bool push)
         {
             // Set the windows color to palette based on internal palette data
             if(push) MementoCaretaker.Instance.Push();
@@ -140,11 +262,11 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Properties
-        public bool IsTMS9918()
+        internal bool IsTMS9918
         {
-            return isTMS9918;
+            get { return isTMS9918; }
         }
-        public void SetPalette(int colorCode, int R, int G, int B, bool push)
+        internal void SetPalette(int colorCode, int R, int G, int B, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             // Update palette
@@ -155,24 +277,24 @@ namespace _99x8Edit
             // Update bitmaps
             this.UpdateAllViewItems();
         }
-        public int GetPaletteR(int colorCode)
+        internal int GetPaletteR(int colorCode)
         {
             return pltDat[colorCode * 2] >> 4;
         }
-        public int GetPaletteG(int colorCode)
+        internal int GetPaletteG(int colorCode)
         {
             return pltDat[colorCode * 2 + 1];
         }
-        public int GetPaletteB(int colorCode)
+        internal int GetPaletteB(int colorCode)
         {
             return pltDat[colorCode * 2] & 0x0F;
         }
-        public int GetPCGPixel(int pcg, int line, int x)
+        internal int GetPCGPixel(int pcg, int line, int x)
         {
             int addr = pcg * 8 + line;
             return (ptnGen[addr] >> (7 - x)) & 1;
         }
-        public void SetPCGPixel(int pcg, int line, int x, int data, bool push)
+        internal void SetPCGPixel(int pcg, int line, int x, int data, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             // Update PCG pattern
@@ -186,11 +308,11 @@ namespace _99x8Edit
             // Update PCG bitmap
             this.UpdatePCGBitmap(pcg);
         }
-        public Bitmap GetBitmapOfPCG(int pcg)
+        internal Bitmap GetBitmapOfPCG(int pcg)
         {
             return bmpOneChr[pcg];
         }
-        public void CopyPCG(int src, int dst, bool push)
+        internal void CopyPCG(int src, int dst, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
@@ -200,7 +322,7 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(dst);
         }
-        public byte[] GetPCGGen(int index)
+        internal byte[] GetPCGGen(int index)
         {
             byte[] ret = new byte[8];
             for (int i = 0; i < 8; ++i)
@@ -209,7 +331,7 @@ namespace _99x8Edit
             }
             return ret;
         }
-        public byte[] GetPCGClr(int index)
+        internal byte[] GetPCGClr(int index)
         {
             byte[] ret = new byte[8];
             for (int i = 0; i < 8; ++i)
@@ -218,7 +340,7 @@ namespace _99x8Edit
             }
             return ret;
         }
-        public void SetPCG(int index, byte[] gen, byte[] clr, bool push)
+        internal void SetPCG(int index, byte[] gen, byte[] clr, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
@@ -228,7 +350,7 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(index);
         }
-        public void ClearPCG(int index)
+        internal void ClearPCG(int index)
         {
             MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
@@ -239,33 +361,33 @@ namespace _99x8Edit
             this.UpdatePCGBitmap(index);
         }
         [Serializable]
-        public class PCGLine
+        internal class PCGLine
         {
             public byte gen;
             public byte clr;
         }
-        public PCGLine GetPCGLine(int index, int line)
+        internal PCGLine GetPCGLine(int index, int line)
         {
             PCGLine ret = new PCGLine();
             ret.gen = ptnGen[index * 8 + line];
             ret.clr = ptnClr[index * 8 + line];
             return ret;
         }
-        public void SetPCGLine(int index, int line, PCGLine val, bool push)
+        internal void SetPCGLine(int index, int line, PCGLine val, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
             ptnGen[index * 8 + line] = val.gen;
             ptnClr[index * 8 + line] = val.clr;
             this.UpdatePCGBitmap(index);
         }
-        public void ClearPCGLine(int index, int line, bool push)
+        internal void ClearPCGLine(int index, int line, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             ptnGen[index * 8 + line] = 0;
             ptnClr[index * 8 + line] = 0xF0;
             this.UpdatePCGBitmap(index);
         }
-        public void InversePCG(int index, bool push)
+        internal void InversePCG(int index, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 8; ++i)
@@ -276,11 +398,11 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(index);
         }
-        public int GetNameTable(int addr)
+        internal int GetNameTable(int addr)
         {
             return nameTable[addr];
         }
-        public void SetNameTable(int addr, int data, bool push)
+        internal void SetNameTable(int addr, int data, bool push)
         {
             if(push)
             {
@@ -288,7 +410,7 @@ namespace _99x8Edit
             }
             nameTable[addr] = (byte)data;
         }
-        public int GetColorTable(int pcg, int line, bool isForeGround)
+        internal int GetColorTable(int pcg, int line, bool isForeGround)
         {
             int addr = pcg * 8 + line;
             if (isForeGround)
@@ -300,7 +422,7 @@ namespace _99x8Edit
                 return ptnClr[addr] & 0x0F;
             }
         }
-        public void SetColorTable(int pcg, int line, int color_code, bool isForeGround, bool push)
+        internal void SetColorTable(int pcg, int line, int color_code, bool isForeGround, bool push)
         {
             int addr = pcg * 8 + line;
             // Update color table
@@ -319,20 +441,20 @@ namespace _99x8Edit
             // Update PCG bitmap
             this.UpdatePCGBitmap(addr / 8);
         }
-        public Color ColorCodeToWindowsColor(int color_code)
+        internal Color ColorCodeToWindowsColor(int color_code)
         {
             return colorOf[color_code];
         }
-        public int GetPCGInPattern(int index, int no)
+        internal int GetPCGInPattern(int index, int no)
         {
             return mapPattern[index * 4 + no];
         }
-        public void SetPCGInPattern(int index, int no, int value, bool push)
+        internal void SetPCGInPattern(int index, int no, int value, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             mapPattern[index * 4 + no] = (byte)value;
         }
-        public void CopyMapPattern(int src, int dst, bool push)
+        internal void CopyMapPattern(int src, int dst, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             mapPattern[dst * 4 + 0] = mapPattern[src * 4 + 0];
@@ -340,7 +462,7 @@ namespace _99x8Edit
             mapPattern[dst * 4 + 2] = mapPattern[src * 4 + 2];
             mapPattern[dst * 4 + 3] = mapPattern[src * 4 + 3];
         }
-        public byte[] GetPattern(int index)
+        internal byte[] GetPattern(int index)
         {
             byte[] ret = new byte[4];
             ret[0] = mapPattern[index * 4 + 0];
@@ -349,7 +471,7 @@ namespace _99x8Edit
             ret[3] = mapPattern[index * 4 + 3];
             return ret;
         }
-        public void SetPattern(int index, byte[] val, bool push)
+        internal void SetPattern(int index, byte[] val, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             mapPattern[index * 4 + 0] = val[0];
@@ -357,11 +479,11 @@ namespace _99x8Edit
             mapPattern[index * 4 + 2] = val[2];
             mapPattern[index * 4 + 3] = val[3];
         }
-        public int GetMapData(int x, int y)
+        internal int GetMapData(int x, int y)
         {
             return mapData[x, y];
         }
-        public void SetMapData(int x, int y, int value, bool push)
+        internal void SetMapData(int x, int y, int value, bool push)
         {
             if(push)
             {
@@ -369,7 +491,7 @@ namespace _99x8Edit
             }
             mapData[x, y] = (byte)value;
         }
-        public int MapWidth
+        internal int MapWidth
         {
             get
             {
@@ -390,7 +512,7 @@ namespace _99x8Edit
                 mapWidth = value;
             }
         }
-        public int MapHeight
+        internal int MapHeight
         {
             get
             {
@@ -411,15 +533,15 @@ namespace _99x8Edit
                 mapHeight = value;
             }
         }
-        public Bitmap GetBitmapOfSprite(int index)
+        internal Bitmap GetBitmapOfSprite(int index)
         {
             return bmpOneSprite[index];
         }
-        public bool GetSpriteOverlay(int indexBy16x16)
+        internal bool GetSpriteOverlay(int indexBy16x16)
         {
             return (spriteOverlay[indexBy16x16] != 0);
         }
-        public void SetSpriteOverlay(int indexBy16x16, bool value, bool push)
+        internal void SetSpriteOverlay(int indexBy16x16, bool value, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             // Set overlay flag of the sprite
@@ -427,7 +549,7 @@ namespace _99x8Edit
             // Set sprite attributes
             int overlay_target_8x8 = (indexBy16x16 * 4 + 4) % 256;
         }
-        public int GetSpriteColorCode(int index, int line)
+        internal int GetSpriteColorCode(int index, int line)
         {
             if (isTMS9918)
             {
@@ -438,7 +560,7 @@ namespace _99x8Edit
                 return spriteClr2[index * 8 + line] & 0x0F;
             }
         }
-        public void SetSpriteColorCode(int index, int line, int value, bool push)
+        internal void SetSpriteColorCode(int index, int line, int value, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
@@ -459,14 +581,14 @@ namespace _99x8Edit
             this.UpdateSpriteBitmap();
         }
         [Serializable]
-        public class One16x16Sprite
+        internal class One16x16Sprite
         {
             public byte[] genData = new byte[32];   // 16x16 sprite
             public byte[] clr2Data = new byte[32];
             public byte clr = 0;
             public byte overlay = 0;
         }
-        public One16x16Sprite Get16x16Sprite(int index16x16)
+        internal One16x16Sprite Get16x16Sprite(int index16x16)
         {
             int target8x8 = index16x16 * 4;
             One16x16Sprite spr = new One16x16Sprite();
@@ -479,7 +601,7 @@ namespace _99x8Edit
             spr.overlay = spriteOverlay[index16x16];
             return spr;
         }
-        public void Set16x16Sprite(int index16x16, One16x16Sprite spr, bool push)
+        internal void Set16x16Sprite(int index16x16, One16x16Sprite spr, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 4; ++i)
@@ -495,7 +617,7 @@ namespace _99x8Edit
             }
             spriteOverlay[index16x16] = spr.overlay;
         }
-        public void SetSpriteGen(int index8x8, byte[] gen, bool push)
+        internal void SetSpriteGen(int index8x8, byte[] gen, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
@@ -504,7 +626,7 @@ namespace _99x8Edit
             }
             this.UpdateSpriteBitmap();
         }
-        public void Clear16x16Sprite(int index16x16, bool push)
+        internal void Clear16x16Sprite(int index16x16, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             spriteOverlay[index16x16] = 0;
@@ -520,13 +642,13 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(dst);
             }
         }
-        public int GetSpritePixel(int index, int line, int x)
+        internal int GetSpritePixel(int index, int line, int x)
         {
             int target_dat = spriteGen[index * 8 + line];
             int target = (target_dat >> (7 - x)) & 1;       // left side is LSB of data source
             return target;
         }
-        public void SetSpritePixel(int index, int line, int x, int val, bool push)
+        internal void SetSpritePixel(int index, int line, int x, int val, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             // Update Sprite pattern
@@ -541,7 +663,7 @@ namespace _99x8Edit
             this.UpdateSpriteBitmap(index);
         }
         [Serializable]
-        public class SpriteLine
+        internal class SpriteLine
         {
             public byte genData = 0;
             public byte clrData = 0;
@@ -549,7 +671,7 @@ namespace _99x8Edit
             public byte genDataOv = 0;
             public byte clrDataOv = 0;
         }
-        public SpriteLine GetSpriteLine(int index, int line)
+        internal SpriteLine GetSpriteLine(int index, int line)
         {
             SpriteLine ret = new SpriteLine();
             ret.genData = spriteGen[index * 8 + line];
@@ -562,7 +684,7 @@ namespace _99x8Edit
             }
             return ret;
         }
-        public void SetSpriteLine(int index, int line, SpriteLine val, bool push)
+        internal void SetSpriteLine(int index, int line, SpriteLine val, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
             spriteGen[index * 8 + line] = val.genData;
@@ -576,7 +698,7 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(index);
             }
         }
-        public void ClearSpriteLine(int index, int line, bool push)
+        internal void ClearSpriteLine(int index, int line, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
             spriteGen[index * 8 + line] = 0;

@@ -5,32 +5,32 @@ using System.Text;
 namespace _99x8Edit
 {
     // Mementos for undo/redo actions
-    class Memento
+    internal class Memento
     {
         // [For editor] When other data sources are needed, add here
-        public Machine vdpData;
+        internal Machine vdpData;
     }
-    class MementoCaretaker
+    internal class MementoCaretaker
     {
         private static MementoCaretaker _singleInstance = new MementoCaretaker();
         private List<Memento> mementoList = new List<Memento>();
         private List<Memento> mementoRedo = new List<Memento>();
         private MainWindow UI = null;
         private Machine vdpData;
-        public static MementoCaretaker Instance
+        internal static MementoCaretaker Instance
         {
             get
             {
                 return _singleInstance;
             }
         }
-        public void Initialize(MainWindow ui, Machine vdp)
+        internal void Initialize(MainWindow ui, Machine vdp)
         {
             UI = ui;
             // [For editor] When other data sources are needed, add here
             vdpData = vdp;
         }
-        public void Push()
+        internal void Push()
         {
             if(vdpData == null)
             {
@@ -51,7 +51,7 @@ namespace _99x8Edit
             UI.UndoEnable = true;
             UI.RedoEnable = false;
         }
-        public void Undo()
+        internal void Undo()
         {
             if(mementoList.Count == 0)
             {
@@ -72,7 +72,7 @@ namespace _99x8Edit
             }
             UI.RedoEnable = true;
         }
-        public void Redo()
+        internal void Redo()
         {
             if(mementoRedo.Count == 0)
             {
@@ -97,14 +97,14 @@ namespace _99x8Edit
             }
             UI.UndoEnable = true;
         }
-        public void Clear()
+        internal void Clear()
         {
             mementoList.Clear();
             mementoRedo.Clear();
             UI.UndoEnable = false;
             UI.RedoEnable = false;
         }
-        // Internal utility
+        // Utility
         private Memento CreateCurrentMemento()
         {
             Memento current = new Memento();
