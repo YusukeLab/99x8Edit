@@ -34,20 +34,20 @@ namespace _99x8Edit
         private class DnDPtnSel { }
         //------------------------------------------------------------------------------
         // Initialize
-        public Map(Machine dataSource, MainWindow parent)
+        public Map(Machine src, MainWindow parent)
         {
             InitializeComponent();
             // Set corresponding data and owner window
-            this.dataSource = dataSource;
-            this.mainWin = parent;
+            dataSource = src;
+            mainWin = parent;
             // Initialize controls
-            this.viewPCG.Image = bmpPCGList;
-            this.viewPatterns.Image = bmpMapPatterns;
-            this.viewMap.Image = bmpMap;
-            this.btnLeft.Enabled = false;
-            this.btnRight.Enabled = (dataSource.MapWidth > 16);
-            this.btnUp.Enabled = false;
-            this.btnDown.Enabled = (dataSource.MapHeight > 12);
+            viewPCG.Image = bmpPCGList;
+            viewPatterns.Image = bmpMapPatterns;
+            viewMap.Image = bmpMap;
+            btnLeft.Enabled = false;
+            btnRight.Enabled = (dataSource.MapWidth > 16);
+            btnUp.Enabled = false;
+            btnDown.Enabled = (dataSource.MapHeight > 12);
             // Refresh all views
             this.RefreshAllViews();
             // Context menu
@@ -127,7 +127,7 @@ namespace _99x8Edit
             }
             // Selection
             g.DrawRectangle(new Pen(Color.Red), currentPCGX * 16, currentPCGY * 16, 15, 15);
-            if (refresh) this.viewPCG.Refresh();
+            if (refresh) viewPCG.Refresh();
         }
         private void UpdateMapPatterns(bool refresh = true)
         {
@@ -162,7 +162,7 @@ namespace _99x8Edit
             g.DrawRectangle(new Pen(Color.Yellow),
                 cx + currentCellInPtnX * 16 + (1 - currentCellInPtnX),
                 cy + currentCellInPtnY * 16 + (1 - currentCellInPtnY), 14, 14);
-            if (refresh) this.viewPatterns.Refresh();
+            if (refresh) viewPatterns.Refresh();
         }
         private void UpdateMap(bool refresh = true)
         {
@@ -187,7 +187,7 @@ namespace _99x8Edit
                             Math.Min(currentMapY, selStartMapY) * 32,
                             (Math.Abs(currentMapX - selStartMapX) + 1) * 32 - 1,
                             (Math.Abs(currentMapY - selStartMapY) + 1) * 32 - 1);
-            if (refresh) this.viewMap.Refresh();
+            if (refresh) viewMap.Refresh();
             // Map size may be changed by loading, undo, etc
             if ((currentMapOriginX + 16 > dataSource.MapWidth) || (currentMapOriginY + 12 > dataSource.MapHeight))
             {
@@ -723,7 +723,7 @@ namespace _99x8Edit
         {
             int selected_ptn_num = currentPtnX + currentPtnY * 16;
             MementoCaretaker.Instance.Push();   // For undo action
-            this.paintMap(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, selected_ptn_num);
+            this.PaintMap(currentMapOriginX + currentMapX, currentMapOriginY + currentMapY, selected_ptn_num);
             this.UpdateMap();
         }
         private void contextMap_copyDown(object sender, EventArgs e)
@@ -813,13 +813,13 @@ namespace _99x8Edit
             if(currentMapOriginX + 16 > dataSource.MapWidth)
             {
                 currentMapOriginX = dataSource.MapWidth - 16;
-                this.btnRight.Enabled = false;
+                btnRight.Enabled = false;
             }
             if(dataSource.MapWidth > 16)
             {
-                this.btnLeft.Enabled = true;
+                btnLeft.Enabled = true;
             }
-            this.txtMapX.Text = currentMapOriginX.ToString();
+            txtMapX.Text = currentMapOriginX.ToString();
             this.UpdateMap();
         }
         private void btnUp_Click(object sender, EventArgs e)
@@ -828,13 +828,13 @@ namespace _99x8Edit
             if (currentMapOriginY <= 0)
             {
                 currentMapOriginY = 0;
-                this.btnUp.Enabled = false;
+                btnUp.Enabled = false;
             }
             if (dataSource.MapHeight > 12)
             {
-                this.btnDown.Enabled = true;
+                btnDown.Enabled = true;
             }
-            this.txtMapY.Text = currentMapOriginY.ToString();
+            txtMapY.Text = currentMapOriginY.ToString();
             this.UpdateMap();
         }
         private void btnDown_Click(object sender, EventArgs e)
@@ -843,13 +843,13 @@ namespace _99x8Edit
             if (currentMapOriginY + 12 > dataSource.MapHeight)
             {
                 currentMapOriginY = dataSource.MapHeight - 12;
-                this.btnDown.Enabled = false;
+                btnDown.Enabled = false;
             }
             if (dataSource.MapHeight > 12)
             {
-                this.btnUp.Enabled = true;
+                btnUp.Enabled = true;
             }
-            this.txtMapY.Text = currentMapOriginY.ToString();
+            txtMapY.Text = currentMapOriginY.ToString();
             this.UpdateMap();
         }
         private void btnMapSize_Click(object sender, EventArgs e)
@@ -859,12 +859,12 @@ namespace _99x8Edit
             {
                 dataSource.MapWidth = dlg.MapWidth;
                 dataSource.MapHeight = dlg.MapHeight;
-                this.txtMapX.Text = (currentMapOriginX = 0).ToString();
-                this.txtMapY.Text = (currentMapOriginY = 0).ToString();
-                this.btnLeft.Enabled = false;
-                this.btnRight.Enabled = (dataSource.MapWidth > 16);
-                this.btnUp.Enabled = false;
-                this.btnDown.Enabled = (dataSource.MapHeight > 12);
+                txtMapX.Text = (currentMapOriginX = 0).ToString();
+                txtMapY.Text = (currentMapOriginY = 0).ToString();
+                btnLeft.Enabled = false;
+                btnRight.Enabled = (dataSource.MapWidth > 16);
+                btnUp.Enabled = false;
+                btnDown.Enabled = (dataSource.MapHeight > 12);
                 this.RefreshAllViews();     // Everything changes
             }
         }
@@ -883,23 +883,23 @@ namespace _99x8Edit
         }
         //-------------------------------------------------------------------
         // Utility
-        private void paintMap(int x, int y, int val)
+        private void PaintMap(int x, int y, int val)
         {
             int pattern_to_paint = dataSource.GetMapData(x, y);
             if (pattern_to_paint == val) return;
             dataSource.SetMapData(x, y, val, false);
             if (y > 0)
                 if (dataSource.GetMapData(x, y - 1) == pattern_to_paint)
-                    this.paintMap(x, y - 1, val);
+                    this.PaintMap(x, y - 1, val);
             if (y < dataSource.MapWidth - 1)
                 if (dataSource.GetMapData(x, y + 1) == pattern_to_paint)
-                    this.paintMap(x, y + 1, val);
+                    this.PaintMap(x, y + 1, val);
             if (x > 0)
                 if (dataSource.GetMapData(x - 1, y) == pattern_to_paint)
-                    this.paintMap(x - 1, y, val);
+                    this.PaintMap(x - 1, y, val);
             if (x < dataSource.MapHeight - 1)
                 if (dataSource.GetMapData(x + 1, y) == pattern_to_paint)
-                    this.paintMap(x + 1, y, val);
+                    this.PaintMap(x + 1, y, val);
         }
     }
 }

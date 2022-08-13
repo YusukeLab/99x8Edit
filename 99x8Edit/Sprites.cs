@@ -39,17 +39,17 @@ namespace _99x8Edit
         private class DnDEditor { }
         //----------------------------------------------------------------------
         // Initialize
-        public Sprites(Machine dataSource, MainWindow parent)
+        public Sprites(Machine src, MainWindow parent)
         {
             InitializeComponent();
             // Set corresponding data and owner window
-            this.dataSource = dataSource;
-            this.mainWin = parent;
+            dataSource = src;
+            mainWin = parent;
             // Initialize controls
-            this.viewPalette.Image = bmpPalette;
-            this.viewSprites.Image = bmpSprites;
-            this.viewSpriteEdit.Image = bmpSpriteEdit;
-            this.viewPreview.Image = bmpPreview;
+            viewPalette.Image = bmpPalette;
+            viewSprites.Image = bmpSprites;
+            viewSpriteEdit.Image = bmpSpriteEdit;
+            viewPreview.Image = bmpPreview;
             // Refresh all views
             this.RefreshAllViews();
             // context menu
@@ -127,7 +127,7 @@ namespace _99x8Edit
                 Color c = dataSource.ColorCodeToWindowsColor(i);
                 g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
             }
-            if (refresh) this.viewPalette.Refresh();
+            if (refresh) viewPalette.Refresh();
         }
         private void UpdateSpriteView(bool refresh = true)
         {
@@ -173,7 +173,7 @@ namespace _99x8Edit
             int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
             int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
             g.DrawRectangle(new Pen(Color.Red), x * 32, y * 32, w * 32 - 1, h * 32 - 1);
-            if (refresh) this.viewSprites.Refresh();
+            if (refresh) viewSprites.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh = true)
         {
@@ -247,8 +247,8 @@ namespace _99x8Edit
             {
                 Filter.Create(Filter.Type.CRT).Process(bmpPreview);
             }
-            if (refresh) this.viewSpriteEdit.Refresh();
-            if (refresh) this.viewPreview.Refresh();
+            if (refresh) viewSpriteEdit.Refresh();
+            if (refresh) viewPreview.Refresh();
         }
         void UpdateCurrentColorView(bool refresh = true)
         {
@@ -296,7 +296,7 @@ namespace _99x8Edit
         private void UpdateOverlayCheck(bool refresh = true)
         {
             int sprite_num16x16 = currentSpriteY * 8 + currentSpriteX;
-            checkOverlay.Checked = dataSource.GetSpriteOverlay(sprite_num16x16);
+            this.checkOverlay.Checked = dataSource.GetSpriteOverlay(sprite_num16x16);
             if (refresh) this.UpdateSpriteView();
         }
         //------------------------------------------------------------------------------
@@ -598,44 +598,45 @@ namespace _99x8Edit
                 else
                 {
                     // toggle the color of selected pixel
-                    this.editCurrentSprite((e.X / 16) % 8, currentLineY % 8);
+                    this.EditCurrentSprite((e.X / 16) % 8, currentLineY % 8);
                 }
             }
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            Action refresh = () =>
+            {
+                this.UpdateSpriteEditView();
+                this.UpdateCurrentColorView();
+            };
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
                     if (currentLineY > 0)
                     {
                         currentLineY--;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
                     if (currentLineY < 15)
                     {
                         currentLineY++;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
                     if (currentLineX > 0)
                     {
                         currentLineX--;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
                     if (currentLineX < 1)
                     {
                         currentLineX++;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Up:
@@ -644,8 +645,7 @@ namespace _99x8Edit
                         currentLineY--;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Down:
@@ -654,8 +654,7 @@ namespace _99x8Edit
                         currentLineY++;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Left:
@@ -664,8 +663,7 @@ namespace _99x8Edit
                         currentLineX--;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.Right:
@@ -674,41 +672,40 @@ namespace _99x8Edit
                         currentLineX++;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
-                        this.UpdateSpriteEditView();
-                        this.UpdateCurrentColorView();
+                        refresh();
                     }
                     break;
                 case Keys.D1:
                 case Keys.NumPad1:
-                    this.editCurrentSprite(0, currentLineY % 8);
+                    this.EditCurrentSprite(0, currentLineY % 8);
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
-                    this.editCurrentSprite(1, currentLineY % 8);
+                    this.EditCurrentSprite(1, currentLineY % 8);
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
-                    this.editCurrentSprite(2, currentLineY % 8);
+                    this.EditCurrentSprite(2, currentLineY % 8);
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
-                    this.editCurrentSprite(3, currentLineY % 8);
+                    this.EditCurrentSprite(3, currentLineY % 8);
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
-                    this.editCurrentSprite(4, currentLineY % 8);
+                    this.EditCurrentSprite(4, currentLineY % 8);
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
-                    this.editCurrentSprite(5, currentLineY % 8);
+                    this.EditCurrentSprite(5, currentLineY % 8);
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
-                    this.editCurrentSprite(6, currentLineY % 8);
+                    this.EditCurrentSprite(6, currentLineY % 8);
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
-                    this.editCurrentSprite(7, currentLineY % 8);
+                    this.EditCurrentSprite(7, currentLineY % 8);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:
@@ -728,7 +725,7 @@ namespace _99x8Edit
                             // Decrement color of the primary sprite
                             if (color_code_primary > 1) color_code_primary--;
                         }
-                        this.setSpriteColor(sprite_num_16x16, color_code_primary);
+                        this.SetSpriteColor(sprite_num_16x16, color_code_primary);
                         this.RefreshAllViews();
                     }
                     break;
@@ -751,7 +748,7 @@ namespace _99x8Edit
                             // Decrement color of the secondary sprite
                             if (color_code_secondary > 1) color_code_secondary--;
                         }
-                        this.setSpriteColor(sprite_num_8x8_secondary / 4, color_code_secondary);
+                        this.SetSpriteColor(sprite_num_8x8_secondary / 4, color_code_secondary);
                         this.RefreshAllViews();
                     }
                     break;
@@ -880,12 +877,12 @@ namespace _99x8Edit
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (this.checkTMS.Checked && !dataSource.IsTMS9918())
+            if (checkTMS.Checked && !dataSource.IsTMS9918())
             {
                 // Set windows color of each color code to TMS9918
                 dataSource.SetPaletteToTMS9918(true);
             }
-            else if (!this.checkTMS.Checked && dataSource.IsTMS9918())
+            else if (!checkTMS.Checked && dataSource.IsTMS9918())
             {
                 // Set windows color of each color code to internal palette
                 dataSource.SetPaletteToV9938(true);
@@ -894,31 +891,33 @@ namespace _99x8Edit
         }
         private void viewColorL_Click(object sender, EventArgs e)
         {
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, viewColorL_ColorSelectionCallback);
+            Action<int> callback = (x) =>
+            {
+                if (x != 0)
+                {
+                    int current_target16x16 = (currentSpriteY * 8 + currentSpriteX) % 64;
+                    this.SetSpriteColor(current_target16x16, x);
+                }
+            };
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
-        }
-        private int viewColorL_ColorSelectionCallback(int val)
-        {
-            if (val == 0) return 0;
-            int current_target16x16 = (currentSpriteY * 8 + currentSpriteX) % 64;
-            this.setSpriteColor(current_target16x16, val);
-            return 0;
         }
         private void viewColorR_Click(object sender, EventArgs e)
         {
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, viewColorR_ColorSelectionCallback);
+            Action<int> callback = (x) =>
+            {
+                if(x > 0)   // Don't select transparent
+                {
+                    int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
+                    this.SetSpriteColor(current_target16x16, x);
+                }
+            };
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
-        }
-        private int viewColorR_ColorSelectionCallback(int val)
-        {
-            if (val == 0) return 0;
-            int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
-            this.setSpriteColor(current_target16x16, val);
-            return 0;
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
@@ -933,13 +932,13 @@ namespace _99x8Edit
             }
             else if (e.Button == MouseButtons.Right)    // To overlayed sprite
             {
-                if (this.checkOverlay.Checked == true)
+                if (checkOverlay.Checked == true)
                 {
                     current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
                 }
                 else return;
             }
-            this.setSpriteColor(current_target16x16, clicked_color_num);
+            this.SetSpriteColor(current_target16x16, clicked_color_num);
         }
         private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -1036,7 +1035,7 @@ namespace _99x8Edit
         //----------------------------------------------------------------------
         // Utility
 
-        private void setSpriteColor(int target16x16, int val)
+        private void SetSpriteColor(int target16x16, int val)
         {
             int target8x8 = target16x16 * 4;
             if (dataSource.IsTMS9918())
@@ -1056,7 +1055,7 @@ namespace _99x8Edit
             }
             this.RefreshAllViews();     // Everything changes
         }
-        private void editCurrentSprite(int x, int y)
+        private void EditCurrentSprite(int x, int y)
         {
             int col = currentLineX;
             int row = currentLineY / 8;

@@ -71,7 +71,7 @@ namespace _99x8Edit
             {
                 // See the last args since many files may have been dropped
                 String dnd_path = args[args.Length - 1];
-                this.loadFile(dnd_path);
+                this.LoadFile(dnd_path);
             }
             // Open PCG editor as default
             PCGWin.Show();
@@ -151,15 +151,15 @@ namespace _99x8Edit
             String dir = Path.GetDirectoryName(currentFile);
             if (dir == null)
             {
-                String target = this.saveDialog(dir);
+                String target = this.SaveDialog(dir);
                 if (target != null)
                 {
-                    this.saveFile(target);      // Save and update current file
+                    this.SaveFile(target);      // Save and update current file
                 }
             }
             else
             {
-                this.saveFile(currentFile);
+                this.SaveFile(currentFile);
             }
         }
         private void btnSaveAs_Click(object sender, EventArgs e)
@@ -169,10 +169,10 @@ namespace _99x8Edit
             {
                 dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
-            String target = this.saveDialog(dir);
+            String target = this.SaveDialog(dir);
             if (target != null)
             {
-                this.saveFile(target);
+                this.SaveFile(target);
             }
         }
         private void btnLoadPCG_Click(object sender, EventArgs e)
@@ -190,7 +190,7 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                this.loadFile(dlg.FileName);
+                this.LoadFile(dlg.FileName);
             }
         }
         private void btnPCGExport_Click(object sender, EventArgs e)
@@ -342,7 +342,7 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utilities
-        private void saveFile(String path)
+        private void SaveFile(String path)
         {
             // Save and update current file path if OK
             BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
@@ -365,7 +365,7 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private String saveDialog(String dir)
+        private String SaveDialog(String dir)
         {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.FileName = "";
@@ -381,7 +381,7 @@ namespace _99x8Edit
             }
             return null;
         }
-        private void loadFile(String path)
+        private void LoadFile(String path)
         {
             BinaryReader br = new BinaryReader(new FileStream(path, FileMode.Open));
             try

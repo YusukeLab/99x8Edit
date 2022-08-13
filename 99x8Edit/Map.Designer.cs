@@ -60,6 +60,7 @@ namespace _99x8Edit
             this.btnMapSize = new System.Windows.Forms.Button();
             this.panelPCG = new System.Windows.Forms.FlowLayoutPanel();
             this.chkCRT = new System.Windows.Forms.CheckBox();
+            this.toolTipMap = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
@@ -354,6 +355,10 @@ namespace _99x8Edit
             this.chkCRT.UseVisualStyleBackColor = true;
             this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
             // 
+            // toolTipMap
+            // 
+            this.toolTipMap.AutomaticDelay = 0;
+            // 
             // Map
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -427,5 +432,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopyRight;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapCopyRight;
+        private System.Windows.Forms.ToolTip toolTipMap;
     }
 }

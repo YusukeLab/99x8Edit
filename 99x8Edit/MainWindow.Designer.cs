@@ -84,6 +84,10 @@ namespace _99x8Edit
             this.comboExportType.TabIndex = 7;
             this.toolTipMain.SetToolTip(this.comboExportType, "Export Type");
             // 
+            // toolTipMain
+            // 
+            this.toolTipMain.AutomaticDelay = 0;
+            // 
             // btnMapWin
             // 
             this.btnMapWin.BackColor = System.Drawing.Color.White;

@@ -84,8 +84,8 @@ namespace _99x8Edit
             {
                 // Address to col, row
                 byte dat = reader.ReadByte();
-                int chr_x = this.addressToCol(i);
-                int chr_y = this.addressToRow(i);                
+                int chr_x = this.AddressToCol(i);
+                int chr_y = this.AddressToRow(i);                
                 int pix_y = i % 8;      // y coorinate in row
                 for(int j = 0; j < 8; ++j)
                 {
@@ -159,7 +159,7 @@ namespace _99x8Edit
                 for (int j = x; j < x + w; ++j)
                 {
                     byte[] one_cell = new byte[8];
-                    int addr = this.colRowToAddr(j, i);
+                    int addr = this.ColRowToAddr(j, i);
                     if (addr <= reader.BaseStream.Length - 8)
                     {
                         reader.BaseStream.Seek(addr, SeekOrigin.Begin);
@@ -337,7 +337,7 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utilities
-        private int colRowToAddr(int col, int row)
+        private int ColRowToAddr(int col, int row)
         {
             if (type == PeekType.Linear)
             {
@@ -354,7 +354,7 @@ namespace _99x8Edit
                 return addr;
             }
         }
-        private int addressToCol(int addr)
+        private int AddressToCol(int addr)
         {
             if (type == PeekType.Linear)
             {
@@ -370,7 +370,7 @@ namespace _99x8Edit
                 return block_x * 2 + (addr / 16) % 2;
             }
         }
-        private int addressToRow(int addr)
+        private int AddressToRow(int addr)
         {
             if (type == PeekType.Linear)
             {

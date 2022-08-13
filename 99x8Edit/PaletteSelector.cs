@@ -11,12 +11,13 @@ namespace _99x8Edit
     // Color selection window
     public partial class PaletteSelector : Form
     {
-        private Func<int, int> functionColorSelected;
-        public PaletteSelector(Bitmap pict, Func<int, int>callback)
+        Action<int> colorSelected;
+        public PaletteSelector(Bitmap pict, Action<int> callback)
         {
             InitializeComponent();
             pictureBox.Image = pict;
-            functionColorSelected = callback;
+            colorSelected = callback;
+            //functionColorSelected = callback;
         }
         private void PaletteSelector_Deactivate(object sender, EventArgs e)
         {
@@ -25,7 +26,7 @@ namespace _99x8Edit
         private void pictureBox_Click(object sender, MouseEventArgs e)
         {
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-            functionColorSelected(clicked_color_num);   // Callback
+            colorSelected(clicked_color_num);
             this.Dispose();
         }
     }

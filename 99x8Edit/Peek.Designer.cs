@@ -39,6 +39,7 @@ namespace _99x8Edit
             this.txtAddr = new System.Windows.Forms.TextBox();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
+            this.toolTipPeek = new System.Windows.Forms.ToolTip(this.components);
             this.panelPeek.SuspendLayout();
             this.contextPeek.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewPeek)).BeginInit();
@@ -137,6 +138,10 @@ namespace _99x8Edit
             this.btnDown.UseVisualStyleBackColor = true;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
+            // toolTipPeek
+            // 
+            this.toolTipPeek.AutomaticDelay = 0;
+            // 
             // Peek
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -174,5 +179,6 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.ContextMenuStrip contextPeek;
         private System.Windows.Forms.ToolStripMenuItem toolStripCopy;
+        private System.Windows.Forms.ToolTip toolTipPeek;
     }
 }

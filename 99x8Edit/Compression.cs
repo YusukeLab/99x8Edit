@@ -27,12 +27,12 @@ namespace _99x8Edit
     public abstract class CompressionBase
     {
         // Compression
-        public abstract byte[] Compress(byte[] source); 
+        public abstract byte[] Encode(byte[] source); 
     }
     public class CompressRLE : CompressionBase
     {
         // Compression based on run length encoding
-        public override byte[] Compress(byte[] source)
+        public override byte[] Encode(byte[] source)
         {
             List<byte> outputData = new List<byte>();
             int current_data = -1;
@@ -71,7 +71,7 @@ namespace _99x8Edit
     public class CompressBPE : CompressionBase
     {
         // Compression based on byte pair encoding
-        public override byte[] Compress(byte[] source)
+        public override byte[] Encode(byte[] source)
         {
             const int Threshold = 3;                    // Quit when there are only 3 pairs
             // for output

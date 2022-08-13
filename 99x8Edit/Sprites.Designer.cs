@@ -62,11 +62,12 @@ namespace _99x8Edit
             this.contextEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripEditorCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditorPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.chkCRT = new System.Windows.Forms.CheckBox();
-            this.toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTipSprite = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -192,6 +193,7 @@ namespace _99x8Edit
             this.btnSavePalette.Name = "btnSavePalette";
             this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
             this.btnSavePalette.TabIndex = 33;
+            this.toolTipSprite.SetToolTip(this.btnSavePalette, "Save palettes");
             this.btnSavePalette.UseVisualStyleBackColor = false;
             this.btnSavePalette.Click += new System.EventHandler(this.btnSavePalette_Click);
             // 
@@ -219,6 +221,7 @@ namespace _99x8Edit
             this.btnOpenPalette.Name = "btnOpenPalette";
             this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
             this.btnOpenPalette.TabIndex = 31;
+            this.toolTipSprite.SetToolTip(this.btnOpenPalette, "Load palettes");
             this.btnOpenPalette.UseVisualStyleBackColor = false;
             this.btnOpenPalette.Click += new System.EventHandler(this.btnOpenPalette_Click);
             // 
@@ -397,6 +400,20 @@ namespace _99x8Edit
             this.toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
             this.toolStripEditorPaste.Text = "Paste";
             // 
+            // toolStripEditorCopyDown
+            // 
+            this.toolStripEditorCopyDown.Name = "toolStripEditorCopyDown";
+            this.toolStripEditorCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.toolStripEditorCopyDown.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorCopyDown.Text = "Copy Down";
+            // 
+            // toolStripEditorCopyRight
+            // 
+            this.toolStripEditorCopyRight.Name = "toolStripEditorCopyRight";
+            this.toolStripEditorCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.toolStripEditorCopyRight.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorCopyRight.Text = "Copy Right";
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -421,19 +438,9 @@ namespace _99x8Edit
             this.chkCRT.UseVisualStyleBackColor = true;
             this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
             // 
-            // toolStripEditorCopyDown
+            // toolTipSprite
             // 
-            this.toolStripEditorCopyDown.Name = "toolStripEditorCopyDown";
-            this.toolStripEditorCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.toolStripEditorCopyDown.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopyDown.Text = "Copy Down";
-            // 
-            // toolStripEditorCopyRight
-            // 
-            this.toolStripEditorCopyRight.Name = "toolStripEditorCopyRight";
-            this.toolStripEditorCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.toolStripEditorCopyRight.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopyRight.Text = "Copy Right";
+            this.toolTipSprite.AutomaticDelay = 0;
             // 
             // Sprites
             // 
@@ -524,5 +531,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripSprCopyRight;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
+        private System.Windows.Forms.ToolTip toolTipSprite;
     }
 }
