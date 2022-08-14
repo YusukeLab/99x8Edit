@@ -205,7 +205,7 @@ namespace _99x8Edit
             this.chkTMS.Checked = true;
             this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkTMS.Location = new System.Drawing.Point(179, 432);
+            this.chkTMS.Location = new System.Drawing.Point(179, 437);
             this.chkTMS.Name = "chkTMS";
             this.chkTMS.Size = new System.Drawing.Size(92, 24);
             this.chkTMS.TabIndex = 32;
@@ -228,7 +228,7 @@ namespace _99x8Edit
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label4.Location = new System.Drawing.Point(9, 433);
+            this.label4.Location = new System.Drawing.Point(10, 437);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 20);
             this.label4.TabIndex = 29;
@@ -418,7 +418,7 @@ namespace _99x8Edit
             // 
             this.chkCRT.AutoSize = true;
             this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(455, 37);
+            this.chkCRT.Location = new System.Drawing.Point(455, 38);
             this.chkCRT.Name = "chkCRT";
             this.chkCRT.Size = new System.Drawing.Size(94, 24);
             this.chkCRT.TabIndex = 41;

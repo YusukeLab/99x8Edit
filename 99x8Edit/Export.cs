@@ -60,9 +60,7 @@ namespace _99x8Edit
         private Int32 mapWidth = 64;
         private Int32 mapHeight = 64;
         private byte[] spriteGen = new byte[256 * 8];   // Sprite pattern generator table
-        private byte[] spriteClr1 = new byte[256];      // Sprite color(mode1)
-        private byte[] spriteClr2 = new byte[256 * 8];  // Sprite color(mode2)
-        private byte[] spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
+        private byte[] spriteClr = new byte[64 * 16];   // Sprite color(mode2)
         //------------------------------------------------------------------------
         // Initialize
         public Export(byte[] pcggen,
@@ -75,9 +73,7 @@ namespace _99x8Edit
                       Int32 mapw,
                       Int32 maph,
                       byte[] sprgen,
-                      byte[] sprclr,
-                      byte[] sprclr2,
-                      byte[] sprover)
+                      byte[] sprclr)
         {
             ptnGen = pcggen.Clone() as byte[];
             ptnClr = pcgclr.Clone() as byte[];
@@ -89,9 +85,7 @@ namespace _99x8Edit
             mapWidth = mapw;
             mapHeight = maph;
             spriteGen = sprgen.Clone() as byte[];
-            spriteClr1 = sprclr.Clone() as byte[];
-            spriteClr2 = sprclr2.Clone() as byte[];
-            spriteOverlay = sprover.Clone() as byte[];
+            spriteClr = sprclr.Clone() as byte[];
         }
         //------------------------------------------------------------------------
         // Methods
@@ -527,17 +521,16 @@ namespace _99x8Edit
                     sr.WriteLine("};");
                     if (!isTMS9918)
                     {
-                        byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
                         sr.WriteLine("// Sprite color table");
                         if (type == Type.CHeader)
                         {
                             sr.WriteLine("const unsigned char sprclr[] = {");
-                            str = ArrayToCHeaderString(sprite_clr16x16, false);
+                            str = ArrayToCHeaderString(spriteClr, false);
                         }
                         else
                         {
                             sr.WriteLine("const unsigned char sprclr_compressed[] = {");
-                            str = ArrayToCHeaderString(sprite_clr16x16, true);
+                            str = ArrayToCHeaderString(spriteClr, true);
                         }
                         sr.WriteLine(str);
                         sr.WriteLine("};");
@@ -576,18 +569,17 @@ namespace _99x8Edit
                     sr.WriteLine(str);
                     if (!isTMS9918)
                     {
-                        byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
                         sr.WriteLine("; Sprite color table");
                         str = "";
                         if (type == Type.ASMData)
                         {
                             sr.WriteLine("sprclr:");
-                            str = ArrayToASMString(sprite_clr16x16, false);
+                            str = ArrayToASMString(spriteClr, false);
                         }
                         else
                         {
                             sr.WriteLine("sprclr_compressed:");
-                            str = ArrayToASMString(sprite_clr16x16, true);
+                            str = ArrayToASMString(spriteClr, true);
                         }
                         sr.WriteLine(str);
                     }
@@ -634,8 +626,7 @@ namespace _99x8Edit
                     br.Write((byte)0x00);
                     br.Write((byte)0);          // Execution address
                     br.Write((byte)0);
-                    byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
-                    br.Write(sprite_clr16x16);
+                    br.Write(spriteClr);
                 }
                 catch (Exception ex)
                 {
@@ -664,16 +655,7 @@ namespace _99x8Edit
                 br = new BinaryWriter(new FileStream(path + "_color", FileMode.Create));
                 try
                 {
-                    byte[] sprite_clr16x16 = new byte[16 * 64];
-                    for (int i = 0; i < 64; ++i)
-                    {
-                        for (int j = 0; j < 16; ++j)
-                        {
-                            // 8x8 color table to 16x16 color table
-                            sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
-                        }
-                    }
-                    br.Write(sprite_clr16x16);
+                    br.Write(spriteClr);
                 }
                 catch (Exception ex)
                 {
@@ -703,16 +685,7 @@ namespace _99x8Edit
                 br = new BinaryWriter(new FileStream(path + "_color", FileMode.Create));
                 try
                 {
-                    byte[] sprite_clr16x16 = new byte[16 * 64];
-                    for (int i = 0; i < 64; ++i)
-                    {
-                        for (int j = 0; j < 16; ++j)
-                        {
-                            // 8x8 color table to 16x16 color table
-                            sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
-                        }
-                    }
-                    byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(sprite_clr16x16);
+                    byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(spriteClr);
                     br.Write(comp);
                 }
                 catch (Exception ex)
@@ -727,19 +700,6 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------
         // Utilities
-        private byte[] SpriteColorsBy16x16()
-        {
-            byte[] sprite_clr16x16 = new byte[16 * 64];
-            for (int i = 0; i < 64; ++i)
-            {
-                for (int j = 0; j < 16; ++j)
-                {
-                    // 8x8 color table to 16x16 color table
-                    sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
-                }
-            }
-            return sprite_clr16x16;
-        }
         private String ArrayToCHeaderString(byte[] src, bool compress)
         {
             String ret = "\t";

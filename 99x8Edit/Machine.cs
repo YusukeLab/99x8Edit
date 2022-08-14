@@ -12,7 +12,7 @@ namespace _99x8Edit
         // Data, of PCG
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
         private byte[] ptnClr = new byte[256 * 8];    // Pattern color table
-        private byte[] nameTable = new byte[768];     // Sandbox(Pattern name table)
+        private byte[] nameTable = new byte[768];     // Sandbox (Pattern name table)
         private byte[] pltDat = { 0x00, 0x00, 0x00, 0x00, 0x11, 0x06, 0x33, 0x07,
                                   0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
                                   0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
@@ -25,10 +25,12 @@ namespace _99x8Edit
         private Int32 mapHeight = 64;
         // Data, of sprites
         private byte[] spriteGen = new byte[256 * 8];   // Sprite pattern generator table
-        private byte[] spriteClr1 = new byte[256];      // Sprite color(mode1)
-            // Keeps color for each 8x8 sprites, but uses only top color of 4 sprites 
-        private byte[] spriteClr2 = new byte[256 * 8];  // Sprite color(mode2)
-            // Keeps color for each 8x8 sprites, but uses only left side of 4 sprites
+        private byte[] spriteClr16 = new byte[64];      // Sorute color (for mode 1)
+        private byte[] spriteClr = new byte[64 * 16];   // Sprite color (mode 2)
+
+        //        private byte[] spriteClr2 = new byte[256 * 8];  // Sprite color(mode2)
+        // Keeps color for each 8x8 sprites, but uses only left side of 4 sprites
+
         private byte[] spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
         // View
         private Bitmap[] bmpOneChr = new Bitmap[256];       // PCG
@@ -82,12 +84,16 @@ namespace _99x8Edit
                 for (int j = 0; j < 8; ++j)
                 {
                     spriteGen[i * 8 + j] = ptnGen[i * 8 + j];   // characters as default
-                    spriteClr2[i * 8 + j] = color_code;
                 }
-                spriteClr1[i] = color_code;
             }
             for (int i = 0; i < 64; ++i)
             {
+                byte color_code = (byte)(i % 8 + 8);
+                spriteClr16[i] = (byte)color_code;
+                for(int j = 0; j < 16; ++j)
+                {
+                    spriteClr[i * 16 + j] = (byte)color_code;
+                }
                 spriteOverlay[i] = 0;
             }
             // Create bitmaps
@@ -108,8 +114,8 @@ namespace _99x8Edit
             m.mapWidth = mapWidth;
             m.mapHeight = mapHeight;
             m.spriteGen = spriteGen.Clone() as byte[];
-            m.spriteClr1 = spriteClr1.Clone() as byte[];
-            m.spriteClr2 = spriteClr2.Clone() as byte[];
+            m.spriteClr16 = spriteClr16.Clone() as byte[];
+            m.spriteClr = spriteClr.Clone() as byte[];
             m.spriteOverlay = spriteOverlay.Clone() as byte[];
             return m;
         }
@@ -125,8 +131,8 @@ namespace _99x8Edit
             mapWidth = m.mapWidth;
             mapHeight = m.mapHeight;
             spriteGen = m.spriteGen.Clone() as byte[];
-            spriteClr1 = m.spriteClr1.Clone() as byte[];
-            spriteClr2 = m.spriteClr2.Clone() as byte[];
+            spriteClr16 = m.spriteClr16.Clone() as byte[];
+            spriteClr = m.spriteClr.Clone() as byte[];
             spriteOverlay = m.spriteOverlay.Clone() as byte[];
             this.UpdateAllViewItems();  // Update bitmaps
         }
@@ -151,14 +157,14 @@ namespace _99x8Edit
         {
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
-                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+                                  spriteGen, spriteClr);
             e.ExportPCG(type, path);
         }
         internal void ExportMap(Export.Type type, String path)
         {
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
-                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+                                  spriteGen, spriteClr);
             e.ExportMap(type, path);
         }
         internal void ExportSprites(Export.Type type, String path)
@@ -172,7 +178,7 @@ namespace _99x8Edit
             this.SetSpriteCCFlags();
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
-                                  spriteGen, spriteClr1, spriteClr2, spriteOverlay);
+                                  spriteGen, spriteClr);
             e.ExportSprites(type, path);
         }
         //--------------------------------------------------------------------
@@ -217,16 +223,47 @@ namespace _99x8Edit
         }
         internal void SaveSprites(BinaryWriter br)
         {
-            br.Write(spriteGen);        // Sprite patten generator table
-            br.Write(spriteClr1);       // Sprite color for mode1
-            br.Write(spriteClr2);       // Sprite color for mode2
+            br.Write(spriteGen);            // Sprite patten generator table
+            for (int i = 0; i < 64; ++i)    // Sprite color for mode1
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    // In project file data, we have colors for 256 sprites so convert
+                    br.Write(spriteClr16[i]);
+                }
+            }
+            // 64sprites*16line color to 256sprites*8line color
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    br.Write(spriteClr[i * 16 + j]);    // sprite 0, 1 in file
+                }
+                for (int j = 0; j < 16; ++j)
+                {
+                    br.Write(spriteClr[i * 16 + j]);    // sprite 2, 3 in file
+                }
+            }
             br.Write(spriteOverlay);    // Sprite overlay flags
         }
         internal void LoadSprites(BinaryReader br)
         {
             br.Read(spriteGen);             // Sprite patten generator table
-            br.Read(spriteClr1);            // Sprite color for mode1
-            br.Read(spriteClr2);            // Sprite color for mode2
+            for (int i = 0; i < 64; ++i)    // Sprite color for mode1
+            {
+                // In project file data, we have colors for 256 sprites so convert
+                spriteClr16[i] = br.ReadByte();
+                _ = br.ReadBytes(3);
+            }
+            // 256sprites*8line color = 64sprites*16line color
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    spriteClr[i * 16 + j] = br.ReadByte();  // sprite 0, 1 in file
+                }
+                _ = br.ReadBytes(16);                       // sprite 2, 3 in file
+            }
             br.Read(spriteOverlay);         // Sprite overlay flags
             this.UpdateSpriteBitmap();
         }
@@ -270,8 +307,8 @@ namespace _99x8Edit
         {
             Import i = new Import();
             i.Palette = colorOf;        // Import with current palette(temp)
-            i.ImportSprite(filename, type, spriteGen, spriteClr2);
-            Array.Fill<byte>(spriteClr1, 0x0F);
+            i.ImportSprite(filename, type, spriteGen, spriteClr);
+            Array.Fill<byte>(spriteClr16, 0x0F);
             //Array.Clear(spriteOverlay, 0, 64);
             this.UpdateAllViewItems();
         }
@@ -636,11 +673,12 @@ namespace _99x8Edit
             line = Math.Clamp(line, 0, 7);
             if (isTMS9918)
             {
-                return spriteClr1[index8x8];
+                return spriteClr16[index8x8 / 4];
             }
             else
             {
-                return spriteClr2[index8x8 * 8 + line] & 0x0F;
+                int addr = this.Index256ToSprClrAddr(index8x8);
+                return spriteClr[addr + line] & 0x0F;  // Mask CC Flags
             }
         }
         internal void SetSpriteColorCode(int index8x8, int line, int code, bool push)
@@ -651,18 +689,12 @@ namespace _99x8Edit
             if (push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
             {
-                spriteClr1[index8x8] = (byte)code;
+                spriteClr16[index8x8 / 4] = (byte)code;
             }
             else
             {
-                // internal data have color for each 8x1 dots
-                int index_base = (index8x8 / 4) * 4;
-                int index_target_l = index_base + (index8x8 % 2);
-                int index_target_r= index_base + (index8x8 % 2) + 2;
-                spriteClr2[index_target_l * 8 + line] &= 0xF0;
-                spriteClr2[index_target_l * 8 + line] |= (byte)(code);
-                spriteClr2[index_target_r * 8 + line] &= 0xF0;
-                spriteClr2[index_target_r * 8 + line] |= (byte)(code);
+                int addr = this.Index256ToSprClrAddr(index8x8);
+                spriteClr[addr + line] = (byte)code;
             }
             this.UpdateSpriteBitmap();
         }
@@ -670,7 +702,7 @@ namespace _99x8Edit
         internal class One16x16Sprite
         {
             public byte[] genData = new byte[32];   // 16x16 sprite
-            public byte[] clr2Data = new byte[32];
+            public byte[] clrData = new byte[16];
             public byte clr = 0;
             public byte overlay = 0;
         }
@@ -682,9 +714,12 @@ namespace _99x8Edit
             for (int i = 0; i < 32; ++i)
             {
                 spr.genData[i] = spriteGen[target8x8 * 8 + i];
-                spr.clr2Data[i] = spriteClr2[target8x8 * 8 + i];
             }
-            spr.clr = spriteClr1[target8x8];
+            for (int i = 0; i < 16; ++i)
+            {
+                spr.clrData[i] = spriteClr[index16x16 * 16 + i];
+            }
+            spr.clr = spriteClr16[index16x16];
             spr.overlay = spriteOverlay[index16x16];
             return spr;
         }
@@ -692,17 +727,24 @@ namespace _99x8Edit
         {
             index16x16 = Math.Clamp(index16x16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
-            for(int i = 0; i < 4; ++i)
+            for (int i = 0; i < 16; ++i)
+            {
+                spriteClr[index16x16 * 16 + i] = spr.clrData[i];
+            }
+            for (int i = 0; i < 4; ++i)
             {
                 int target8x8 = (index16x16 * 4 + i) % 256;
                 for (int j = 0; j < 8; ++j)
                 {
                     spriteGen[target8x8 * 8 + j] = spr.genData[i * 8 + j];
-                    spriteClr2[target8x8 * 8 + j] = spr.clr2Data[i * 8 + j];
                 }
-                spriteClr1[target8x8] = spr.clr;
                 this.UpdateSpriteBitmap(target8x8);
             }
+            for(int i = 0; i < 16; ++i)
+            {
+                spriteClr[index16x16 * 16 + i] = spr.clrData[i];
+            }
+            spriteClr16[index16x16] = spr.clr;
             spriteOverlay[index16x16] = spr.overlay;
         }
         internal void SetSpriteGen(int index8x8, byte[] gen, bool push)
@@ -720,14 +762,17 @@ namespace _99x8Edit
             index16x16 = Math.Clamp(index16x16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
             spriteOverlay[index16x16] = 0;
+            spriteClr16[index16x16] = 0x0F;
+            for (int i = 0; i < 16; ++i)
+            {
+                spriteClr[index16x16 * 16 + i] = 0x0F;
+            }
             for (int i = 0; i < 4; ++i)
             {
                 int dst = (index16x16 * 4 + i) % 256;
-                spriteClr1[dst] = 0x0F;
                 for (int j = 0; j < 8; ++j)
                 {
                     spriteGen[dst * 8 + j] = 0;
-                    spriteClr2[dst * 8 + j] = 0x0F;
                 }
                 this.UpdateSpriteBitmap(dst);
             }
@@ -772,12 +817,14 @@ namespace _99x8Edit
             line = Math.Clamp(line, 0, 7);
             SpriteLine ret = new SpriteLine();
             ret.genData = spriteGen[index8x8 * 8 + line];
-            ret.clrData = spriteClr2[index8x8 * 8 + line];
+            int addr = this.Index256ToSprClrAddr(index8x8);
+            ret.clrData = spriteClr[addr + line];
             if ((ret.overlayed = spriteOverlay[index8x8 / 4]) != 0)
             {
                 index8x8 = (index8x8 + 4) % 256;
                 ret.genDataOv = spriteGen[index8x8 * 8 + line];
-                ret.clrDataOv = spriteClr2[index8x8 * 8 + line];
+                int addr_ov = this.Index256ToSprClrAddr(index8x8);
+                ret.clrDataOv = spriteClr[addr_ov + line];
             }
             return ret;
         }
@@ -787,13 +834,15 @@ namespace _99x8Edit
             line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
             spriteGen[index8x8 * 8 + line] = val.genData;
-            spriteClr2[index8x8 * 8 + line] = val.clrData;
+            int addr = this.Index256ToSprClrAddr(index8x8);
+            spriteClr[addr + line] = val.clrData;
             this.UpdateSpriteBitmap(index8x8);
             if (val.overlayed != 0)
             {
                 index8x8 = (index8x8 + 4) % 256;
                 spriteGen[index8x8 * 8 + line] = val.genDataOv;
-                spriteClr2[index8x8 * 8 + line] = val.clrDataOv;
+                int addr_ov = this.Index256ToSprClrAddr(index8x8);
+                spriteClr[addr_ov + line] = val.clrDataOv;
                 this.UpdateSpriteBitmap(index8x8);
             }
         }
@@ -887,13 +936,14 @@ namespace _99x8Edit
         {
             // Sprite data had been changed, so remake coresponding bitmap
             bmpOneSprite[index] = new Bitmap(8, 8);
-            int color_code = spriteClr1[index];
+            int color_code = spriteClr16[index / 4];
+            int addr_color = Index256ToSprClrAddr(index);
             for (int i = 0; i < 8; ++i)          // Each line
             {
                 byte pattern_per_line = spriteGen[index * 8 + i];   // Pattern of the line
                 if (!isTMS9918)
                 {
-                    color_code = spriteClr2[index * 8 + i] & 0x0F;  // On V9938 the color is set to each line
+                    color_code = spriteClr[addr_color + i] & 0x0F;  // On V9938 the color is set to each line
                 }
                 Color Fore = colorOf[color_code];               // Color code to windows color
                 Color Back = Color.Transparent;
@@ -907,6 +957,12 @@ namespace _99x8Edit
                 }
             }
         }
+        private int Index256ToSprClrAddr(int index)
+        {
+            // 8x8 sprite index (0-255) to address in SprClr[]
+            int index16 = index / 4;
+            return index16 * 16 + (index % 2) * 8;
+        }
         private void SetSpriteCCFlags()
         {
             // Set the CC flags of sprite colors before making export data
@@ -914,16 +970,16 @@ namespace _99x8Edit
             {
                 if(spriteOverlay[i - 1] != 0)
                 {
-                    for(int j = 0; j < 32; ++j)
+                    for(int j = 0; j < 16; ++j)
                     {
-                        spriteClr2[i * 4 * 8 + j] |= 0x40;
+                        spriteClr[i * 16 + j] |= 0x40;
                     }
                 }
                 else
                 {
-                    for (int j = 0; j < 32; ++j)
+                    for (int j = 0; j < 16; ++j)
                     {
-                        spriteClr2[i * 4 * 8 + j] &= 0x0F;
+                        spriteClr[i * 16 + j] &= 0x0F;
                     }
                 }
             }
