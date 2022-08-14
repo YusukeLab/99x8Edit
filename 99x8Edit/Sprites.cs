@@ -70,6 +70,8 @@ namespace _99x8Edit
             toolStripFileExport.Click += new EventHandler(menu_fileExport);
             toolStripFileLoadSprite.Click += new EventHandler(menu_fileLoadSprite);
             toolStripFileSaveSprite.Click += new EventHandler(menu_fileSaveSprite);
+            toolStripFileLoadPal.Click += new EventHandler(menu_fileLoadPalette);
+            toolStripFileSavePal.Click += new EventHandler(menu_fileSavePalette);
             // context menu
             toolStripSprCopy.Click += new EventHandler(contextSprites_copy);
             toolStripSprPaste.Click += new EventHandler(contextSprites_paste);
@@ -142,8 +144,8 @@ namespace _99x8Edit
             this.UpdateCurrentColorView();  // Current color
             this.UpdateOverlayCheck();
             this.chkTMS.Checked = dataSource.IsTMS9918;
-            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
-            this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
+            this.toolStripFileLoadPal.Enabled = !dataSource.IsTMS9918;
+            this.toolStripFileSavePal.Enabled = !dataSource.IsTMS9918;
         }
         private void UpdatePaletteView(bool refresh = true)
         {
@@ -1034,10 +1036,11 @@ namespace _99x8Edit
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
-            panelPalette.Focus();
             // Palette view clicked
-            int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-            if (clicked_color_num == 0) return;
+            panelPalette.Focus();
+            int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
+            currentPalX = clicked_color_num % 8;
+            currentPalY = clicked_color_num / 8;
             // Update color table of current line
             int current_target16x16 = 0;
             if (e.Button == MouseButtons.Left)          // To current sprite
@@ -1109,27 +1112,6 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnSavePalette_Click(object sender, EventArgs e)
-        {
-            Utility.SaveDialogAndSave(currentFile,
-                                      "PLT File(*.plt)|*.plt",
-                                      "Save palette",
-                                      dataSource.SavePaletteSettings,
-                                      true,
-                                      out _);
-        }
-        private void btnOpenPalette_Click(object sender, EventArgs e)
-        {
-            if (Utility.LoadDialogAndLoad(currentFile,
-                                         "PLT File(*.plt)|*.plt",
-                                         "Load palette",
-                                         dataSource.LoadPaletteSettings,
-                                         true,     // Push memento
-                                         out _))
-            {
-                this.RefreshAllViews();
-            }
-        }
         private void chkCRT_CheckedChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
@@ -1180,6 +1162,27 @@ namespace _99x8Edit
                                       "Sprite File(*.spr)|*.spr",
                                       "Save sprite settings",
                                       dataSource.SaveSprites,
+                                      true,
+                                      out _);
+        }
+        private void menu_fileLoadPalette(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                         "PLT File(*.plt)|*.plt",
+                                         "Load palette",
+                                         dataSource.LoadPaletteSettings,
+                                         true,     // Push memento
+                                         out _))
+            {
+                this.RefreshAllViews();
+            }
+        }
+        private void menu_fileSavePalette(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PLT File(*.plt)|*.plt",
+                                      "Save palette",
+                                      dataSource.SavePaletteSettings,
                                       true,
                                       out _);
         }

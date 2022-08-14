@@ -40,9 +40,7 @@ namespace _99x8Edit
             this.labelColorOR = new System.Windows.Forms.Label();
             this.viewColorOR = new System.Windows.Forms.PictureBox();
             this.checkOverlay = new System.Windows.Forms.CheckBox();
-            this.btnSavePalette = new System.Windows.Forms.Button();
             this.chkTMS = new System.Windows.Forms.CheckBox();
-            this.btnOpenPalette = new System.Windows.Forms.Button();
             this.viewPalette = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.viewSprites = new System.Windows.Forms.PictureBox();
@@ -78,6 +76,9 @@ namespace _99x8Edit
             this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileLoadSprite = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
             this.panelColor = new System.Windows.Forms.Panel();
             this.panelPalette = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
@@ -198,47 +199,19 @@ namespace _99x8Edit
             this.checkOverlay.UseVisualStyleBackColor = true;
             this.checkOverlay.Click += new System.EventHandler(this.checkOverlay_Click);
             // 
-            // btnSavePalette
-            // 
-            this.btnSavePalette.BackColor = System.Drawing.Color.White;
-            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
-            this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnSavePalette.Enabled = false;
-            this.btnSavePalette.Location = new System.Drawing.Point(235, 429);
-            this.btnSavePalette.Name = "btnSavePalette";
-            this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
-            this.btnSavePalette.TabIndex = 33;
-            this.toolTipSprite.SetToolTip(this.btnSavePalette, "Save palettes");
-            this.btnSavePalette.UseVisualStyleBackColor = false;
-            this.btnSavePalette.Click += new System.EventHandler(this.btnSavePalette_Click);
-            // 
             // chkTMS
             // 
             this.chkTMS.AutoSize = true;
             this.chkTMS.Checked = true;
             this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkTMS.Location = new System.Drawing.Point(105, 433);
+            this.chkTMS.Location = new System.Drawing.Point(179, 432);
             this.chkTMS.Name = "chkTMS";
             this.chkTMS.Size = new System.Drawing.Size(92, 24);
             this.chkTMS.TabIndex = 32;
             this.chkTMS.Text = "TMS9918";
             this.chkTMS.UseVisualStyleBackColor = true;
             this.chkTMS.Click += new System.EventHandler(this.checkTMS_Click);
-            // 
-            // btnOpenPalette
-            // 
-            this.btnOpenPalette.BackColor = System.Drawing.Color.White;
-            this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(204, 429);
-            this.btnOpenPalette.Name = "btnOpenPalette";
-            this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
-            this.btnOpenPalette.TabIndex = 31;
-            this.toolTipSprite.SetToolTip(this.btnOpenPalette, "Load palettes");
-            this.btnOpenPalette.UseVisualStyleBackColor = false;
-            this.btnOpenPalette.Click += new System.EventHandler(this.btnOpenPalette_Click);
             // 
             // viewPalette
             // 
@@ -478,7 +451,10 @@ namespace _99x8Edit
             this.toolStripFileImport,
             this.toolStripFileExport,
             this.toolStripFileLoadSprite,
-            this.toolStripFileSaveSprite});
+            this.toolStripFileSaveSprite,
+            this.toolStripSeparator3,
+            this.toolStripFileLoadPal,
+            this.toolStripFileSavePal});
             this.toolStripBarFile.Name = "toolStripBarFile";
             this.toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
             this.toolStripBarFile.Size = new System.Drawing.Size(63, 24);
@@ -538,6 +514,23 @@ namespace _99x8Edit
             this.toolStripFileSaveSprite.Size = new System.Drawing.Size(266, 26);
             this.toolStripFileSaveSprite.Text = "Save Sprite Data(&S)";
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(263, 6);
+            // 
+            // toolStripFileLoadPal
+            // 
+            this.toolStripFileLoadPal.Name = "toolStripFileLoadPal";
+            this.toolStripFileLoadPal.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileLoadPal.Text = "Load Palette";
+            // 
+            // toolStripFileSavePal
+            // 
+            this.toolStripFileSavePal.Name = "toolStripFileSavePal";
+            this.toolStripFileSavePal.Size = new System.Drawing.Size(266, 26);
+            this.toolStripFileSavePal.Text = "Save Palette";
+            // 
             // panelColor
             // 
             this.panelColor.Controls.Add(this.viewColorL);
@@ -574,9 +567,7 @@ namespace _99x8Edit
             this.Controls.Add(this.viewPreview);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.btnSavePalette);
             this.Controls.Add(this.chkTMS);
-            this.Controls.Add(this.btnOpenPalette);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.checkOverlay);
             this.Controls.Add(this.label3);
@@ -623,9 +614,7 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox viewColorOR;
         private System.Windows.Forms.CheckBox checkOverlay;
-        private System.Windows.Forms.Button btnSavePalette;
         private System.Windows.Forms.CheckBox chkTMS;
-        private System.Windows.Forms.Button btnOpenPalette;
         private System.Windows.Forms.PictureBox viewPalette;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.PictureBox viewSprites;
@@ -664,5 +653,8 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadSprite;
         private System.Windows.Forms.Panel panelColor;
         private System.Windows.Forms.Panel panelPalette;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPal;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePal;
     }
 }

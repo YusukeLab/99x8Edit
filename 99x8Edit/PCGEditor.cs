@@ -72,6 +72,8 @@ namespace _99x8Edit
             toolStripFileExport.Click += new EventHandler(menu_fileExport);
             toolStripFileLoadPCG.Click += new EventHandler(menu_fileLoadPCG);
             toolStripFileSavePCG.Click += new EventHandler(menu_fileSavePCG);
+            toolStripFileLoadPal.Click += new EventHandler(menu_loadPalette);
+            toolStripFileSavePal.Click += new EventHandler(menu_savePalette);
             // Context menu
             toolStripPCGCopy.Click += new EventHandler(contextPCGList_copy);
             toolStripPCGPaste.Click += new EventHandler(contextPCGList_paste);
@@ -150,8 +152,8 @@ namespace _99x8Edit
             this.UpdatePCGEditView();       // PCG Editor
             this.UpdateCurrentColorView();  // Current color
             this.chkTMS.Checked = dataSource.IsTMS9918;
-            this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
-            this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
+            this.toolStripFileLoadPal.Enabled = !dataSource.IsTMS9918;
+            this.toolStripFileSavePal.Enabled = !dataSource.IsTMS9918;
         }
         private void UpdatePaletteView(bool refresh = true)
         {
@@ -1262,27 +1264,6 @@ namespace _99x8Edit
         {
             this.RefreshAllViews();
         }
-        private void btnSavePalette_Click(object sender, EventArgs e)
-        {
-            Utility.SaveDialogAndSave(currentFile,
-                                      "PLT File(*.plt)|*.plt",
-                                      "Save palette",
-                                      dataSource.SavePaletteSettings,
-                                      true,
-                                      out _);
-        }
-        private void btnOpenPalette_Click(object sender, EventArgs e)
-        {
-            if (Utility.LoadDialogAndLoad(currentFile,
-                                         "PLT File(*.plt)|*.plt",
-                                         "Load palette",
-                                         dataSource.LoadPaletteSettings,
-                                         true,     // Push memento
-                                         out _))
-            {
-                this.RefreshAllViews();
-            }
-        }
         //---------------------------------------------------------------------
         // Menu controls
         private void menu_fileLoad(object sender, EventArgs e)
@@ -1331,6 +1312,27 @@ namespace _99x8Edit
                                       dataSource.SavePCG,
                                       true,
                                       out _);
+        }
+        private void menu_savePalette(object sender, EventArgs e)
+        {
+            Utility.SaveDialogAndSave(currentFile,
+                                      "PLT File(*.plt)|*.plt",
+                                      "Save palette",
+                                      dataSource.SavePaletteSettings,
+                                      true,
+                                      out _);
+        }
+        private void menu_loadPalette(object sender, EventArgs e)
+        {
+            if (Utility.LoadDialogAndLoad(currentFile,
+                                         "PLT File(*.plt)|*.plt",
+                                         "Load palette",
+                                         dataSource.LoadPaletteSettings,
+                                         true,     // Push memento
+                                         out _))
+            {
+                this.RefreshAllViews();
+            }
         }
         //---------------------------------------------------------------------
         // Utility

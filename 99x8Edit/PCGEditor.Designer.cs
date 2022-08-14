@@ -44,9 +44,7 @@ namespace _99x8Edit
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.viewPalette = new System.Windows.Forms.PictureBox();
-            this.btnOpenPalette = new System.Windows.Forms.Button();
             this.chkTMS = new System.Windows.Forms.CheckBox();
-            this.btnSavePalette = new System.Windows.Forms.Button();
             this.toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -82,6 +80,9 @@ namespace _99x8Edit
             this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileLoadPCG = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSavePCG = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
             this.viewColorR = new System.Windows.Forms.PictureBox();
             this.viewColorL = new System.Windows.Forms.PictureBox();
             this.panelColor = new System.Windows.Forms.Panel();
@@ -225,49 +226,19 @@ namespace _99x8Edit
             this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
             this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
             // 
-            // btnOpenPalette
-            // 
-            this.btnOpenPalette.BackColor = System.Drawing.Color.White;
-            this.btnOpenPalette.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
-            this.btnOpenPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnOpenPalette.Enabled = false;
-            this.btnOpenPalette.Location = new System.Drawing.Point(208, 515);
-            this.btnOpenPalette.Name = "btnOpenPalette";
-            this.btnOpenPalette.Size = new System.Drawing.Size(32, 32);
-            this.btnOpenPalette.TabIndex = 14;
-            this.btnOpenPalette.TabStop = false;
-            this.toolTipPCG.SetToolTip(this.btnOpenPalette, "Load Palettes");
-            this.btnOpenPalette.UseVisualStyleBackColor = false;
-            this.btnOpenPalette.Click += new System.EventHandler(this.btnOpenPalette_Click);
-            // 
             // chkTMS
             // 
             this.chkTMS.AutoSize = true;
             this.chkTMS.Checked = true;
             this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkTMS.Location = new System.Drawing.Point(109, 520);
+            this.chkTMS.Location = new System.Drawing.Point(179, 520);
             this.chkTMS.Name = "chkTMS";
             this.chkTMS.Size = new System.Drawing.Size(92, 24);
             this.chkTMS.TabIndex = 15;
             this.chkTMS.Text = "TMS9918";
             this.chkTMS.UseVisualStyleBackColor = true;
             this.chkTMS.Click += new System.EventHandler(this.checkTMS_Click);
-            // 
-            // btnSavePalette
-            // 
-            this.btnSavePalette.BackColor = System.Drawing.Color.White;
-            this.btnSavePalette.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
-            this.btnSavePalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btnSavePalette.Enabled = false;
-            this.btnSavePalette.Location = new System.Drawing.Point(239, 515);
-            this.btnSavePalette.Name = "btnSavePalette";
-            this.btnSavePalette.Size = new System.Drawing.Size(32, 32);
-            this.btnSavePalette.TabIndex = 16;
-            this.btnSavePalette.TabStop = false;
-            this.toolTipPCG.SetToolTip(this.btnSavePalette, "Save Palettes");
-            this.btnSavePalette.UseVisualStyleBackColor = false;
-            this.btnSavePalette.Click += new System.EventHandler(this.btnSavePalette_Click);
             // 
             // toolTipPCG
             // 
@@ -514,7 +485,10 @@ namespace _99x8Edit
             this.toolStripFileImport,
             this.toolStripFileExport,
             this.toolStripFileLoadPCG,
-            this.toolStripFileSavePCG});
+            this.toolStripFileSavePCG,
+            this.toolStripSeparator5,
+            this.toolStripFileLoadPal,
+            this.toolStripFileSavePal});
             this.toolStripBarFile.Name = "toolStripBarFile";
             this.toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
             this.toolStripBarFile.Size = new System.Drawing.Size(63, 24);
@@ -574,6 +548,23 @@ namespace _99x8Edit
             this.toolStripFileSavePCG.Size = new System.Drawing.Size(261, 26);
             this.toolStripFileSavePCG.Text = "Save PCG Data(&S)";
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(258, 6);
+            // 
+            // toolStripFileLoadPal
+            // 
+            this.toolStripFileLoadPal.Name = "toolStripFileLoadPal";
+            this.toolStripFileLoadPal.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileLoadPal.Text = "Load Palette";
+            // 
+            // toolStripFileSavePal
+            // 
+            this.toolStripFileSavePal.Name = "toolStripFileSavePal";
+            this.toolStripFileSavePal.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileSavePal.Text = "Save Palette";
+            // 
             // viewColorR
             // 
             this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -628,9 +619,7 @@ namespace _99x8Edit
             this.Controls.Add(this.panelSandbox);
             this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.btnSavePalette);
             this.Controls.Add(this.chkTMS);
-            this.Controls.Add(this.btnOpenPalette);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -676,9 +665,7 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.PictureBox viewPalette;
-        private System.Windows.Forms.Button btnOpenPalette;
         private System.Windows.Forms.CheckBox chkTMS;
-        private System.Windows.Forms.Button btnSavePalette;
         private System.Windows.Forms.ToolTip toolTipPCG;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
@@ -726,5 +713,8 @@ namespace _99x8Edit
         private System.Windows.Forms.PictureBox viewColorL;
         private System.Windows.Forms.Panel panelColor;
         private System.Windows.Forms.Panel panelPalette;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPal;
+        private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePal;
     }
 }

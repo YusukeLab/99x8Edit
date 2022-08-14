@@ -13,9 +13,10 @@ namespace _99x8Edit
         // Import types
         internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin|"
                                              + "PNG File(*.png)|*.png";
-        internal static string SpriteTypeFilter = "MSX BASIC(*.bin)|*.bin|"
-                                             + "Raw pattern data(*.raw)|*.raw|"
-                                             + "Raw color data(*.raw)|*.raw";
+        internal static string SpriteTypeFilter = "MSX BASIC pattern data(*.bin)|*.bin|"
+                                                + "MSX BASIC color data(*.bin)|*.bin|" 
+                                                + "Raw pattern data(*.raw)|*.raw|"
+                                                + "Raw color data(*.raw)|*.raw";
         enum PCGType
         {
             MSXBASIC = 0,
@@ -24,6 +25,7 @@ namespace _99x8Edit
         enum SpriteType
         {
             MSXBASIC = 0,
+            MSXBASIC_Color,
             RawPattern,
             RawColor
         }
@@ -62,6 +64,9 @@ namespace _99x8Edit
             {
                 case SpriteType.MSXBASIC:
                     this.BINtoSprite(filename, out_gen, out_clr);
+                    break;
+                case SpriteType.MSXBASIC_Color:
+                    this.BINtoSpriteColor(filename, out_gen, out_clr);
                     break;
                 case SpriteType.RawPattern:
                     this.RawToSpriteGen(filename, out_gen, out_clr);
@@ -179,6 +184,40 @@ namespace _99x8Edit
                     for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                     {
                         out_gen[ptr] = br.ReadByte();
+                    }
+                }
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private void BINtoSpriteColor(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            try
+            {
+                // Read BSAVE header
+                byte header = br.ReadByte();
+                if (header != 0xFE)
+                {
+                    throw new Exception("No BSAVE header");
+                }
+                _ = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                _ = br.ReadUInt16();
+                // Read data
+                int gen_seek_addr = 0;
+                // Won't see start address since there's no specified address
+                if (this.SeekBIN(0, 0, br, out gen_seek_addr))
+                {
+                    for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        // Internal data has colors for each 8x8 sprites
+                        int index16x16 = ptr / 16;
+                        out_clr[index16x16 * 32 + (ptr % 16)]
+                            = out_clr[index16x16 * 32 + 16 + (ptr % 16)]
+                            = br.ReadByte();
                     }
                 }
             }
