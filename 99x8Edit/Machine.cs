@@ -309,9 +309,8 @@ namespace _99x8Edit
         {
             Import i = new Import();
             i.Palette = colorOf;        // Import with current palette(temp)
-            i.ImportSprite(filename, type, spriteGen, spriteClr);
+            i.ImportSprite(filename, type, spriteGen, spriteClr, spriteOverlay);
             Array.Fill<byte>(spriteClr16, 0x0F);
-            //Array.Clear(spriteOverlay, 0, 64);
             this.UpdateAllViewItems();
         }
         //--------------------------------------------------------------------

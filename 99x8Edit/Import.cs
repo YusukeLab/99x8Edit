@@ -58,21 +58,21 @@ namespace _99x8Edit
                     break;
             }
         }
-        internal void ImportSprite(string filename, int type, byte[] out_gen, byte[] out_clr)
+        internal void ImportSprite(string filename, int type, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
             switch ((SpriteType)type)
             {
                 case SpriteType.MSXBASIC:
-                    this.BINtoSprite(filename, out_gen, out_clr);
+                    this.BINtoSprite(filename, out_gen, out_clr, overlay);
                     break;
                 case SpriteType.MSXBASIC_Color:
-                    this.BINtoSpriteColor(filename, out_gen, out_clr);
+                    this.BINtoSpriteColor(filename, out_gen, out_clr, overlay);
                     break;
                 case SpriteType.RawPattern:
-                    this.RawToSpriteGen(filename, out_gen, out_clr);
+                    this.RawToSpriteGen(filename, out_gen, out_clr, overlay);
                     break;
                 case SpriteType.RawColor:
-                    this.RawToSpriteColor(filename, out_gen, out_clr);
+                    this.RawToSpriteColor(filename, out_gen, out_clr, overlay);
                     break;
             }
         }
@@ -163,7 +163,7 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private void BINtoSprite(string filename, byte[] out_gen, byte[] out_clr)
+        private void BINtoSprite(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
         {
             BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             try
@@ -192,7 +192,7 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private void BINtoSpriteColor(string filename, byte[] out_gen, byte[] out_clr)
+        private void BINtoSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
             BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             try
@@ -222,7 +222,7 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clr)
+        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
         {
             BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             try
@@ -237,14 +237,20 @@ namespace _99x8Edit
                 br.Close();
             }
         }
-        private void RawToSpriteColor(string filename, byte[] out_gen, byte[] out_clr)
+        private void RawToSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
             BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             try
             {
+                Array.Clear(overlay, 0, 64);
                 for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
                 {
                     out_clr[i] = br.ReadByte();
+                    if(((out_clr[i] & 0x40) != 0) && (i > 16))
+                    {
+                        // Overlayed
+                        overlay[i / 16 - 1] = 1;
+                    }
                 }
             }
             finally
