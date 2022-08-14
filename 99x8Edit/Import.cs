@@ -209,11 +209,17 @@ namespace _99x8Edit
                 // Read data
                 int gen_seek_addr = 0;
                 // Won't see start address since there's no specified address
+                Array.Clear(overlay, 0, 64);
                 if (this.SeekBIN(0, 0, br, out gen_seek_addr))
                 {
                     for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                     {
                         out_clr[ptr] = br.ReadByte();
+                        if (((out_clr[ptr] & 0x40) != 0) && (ptr > 16))
+                        {
+                            // Overlayed
+                            overlay[ptr / 16 - 1] = 1;
+                        }
                     }
                 }
             }
