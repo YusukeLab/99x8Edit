@@ -9,8 +9,19 @@ namespace _99x8Edit
 {
     public class Utility
     {
+        // Single simple objects
         public static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
                                        System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
+
+        // Utility functions
+        internal static void Rotate16(ref byte srcL, ref byte srcR)
+        {
+            byte c = (byte)(srcR & 1);
+            srcR >>= 1;
+            srcR |= (byte)((srcL & 1) << 7);
+            srcL >>= 1;
+            srcL |= (byte)(c << 7);
+        }
         internal static void DrawSelection(Graphics g, int x, int y, int w, int h, bool focused)
         {
             g.DrawRectangle(Pens.Green, x, y, w, h);

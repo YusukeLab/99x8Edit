@@ -656,52 +656,52 @@ namespace _99x8Edit
                 mapHeight = value;
             }
         }
-        internal Bitmap GetBitmapOfSprite(int index8x8)
+        internal Bitmap GetBitmapOfSprite(int index8)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
-            return bmpOneSprite[index8x8];
+            index8 = Math.Clamp(index8, 0, 255);
+            return bmpOneSprite[index8];
         }
-        internal bool GetSpriteOverlay(int index16x16)
+        internal bool GetSpriteOverlay(int index16)
         {
-            index16x16 = Math.Clamp(index16x16, 0, 63);
-            return (spriteOverlay[index16x16] != 0);
+            index16 = Math.Clamp(index16, 0, 63);
+            return (spriteOverlay[index16] != 0);
         }
-        internal void SetSpriteOverlay(int index16x16, bool overlay, bool push)
+        internal void SetSpriteOverlay(int index16, bool overlay, bool push)
         {
-            index16x16 = Math.Clamp(index16x16, 0, 63);
+            index16 = Math.Clamp(index16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
             // Set overlay flag of the sprite
-            spriteOverlay[index16x16] = overlay ? (byte)1 : (byte)0;
+            spriteOverlay[index16] = overlay ? (byte)1 : (byte)0;
             // Set sprite attributes
-            int overlay_target_8x8 = (index16x16 * 4 + 4) % 256;
+            int overlay_target_8x8 = (index16 * 4 + 4) % 256;
         }
-        internal int GetSpriteColorCode(int index8x8, int line)
+        internal int GetSpriteColorCode(int index8, int line)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             if (isTMS9918)
             {
-                return spriteClr16[index8x8 / 4];
+                return spriteClr16[index8 / 4];
             }
             else
             {
-                int addr = this.Index256ToSprClrAddr(index8x8);
+                int addr = this.Index256ToSprClrAddr(index8);
                 return spriteClr[addr + line] & 0x0F;  // Mask CC Flags
             }
         }
-        internal void SetSpriteColorCode(int index8x8, int line, int code, bool push)
+        internal void SetSpriteColorCode(int index8, int line, int code, bool push)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             code = Math.Clamp(code, 0, 15);
             if (push) MementoCaretaker.Instance.Push();
             if (isTMS9918)
             {
-                spriteClr16[index8x8 / 4] = (byte)code;
+                spriteClr16[index8 / 4] = (byte)code;
             }
             else
             {
-                int addr = this.Index256ToSprClrAddr(index8x8);
+                int addr = this.Index256ToSprClrAddr(index8);
                 spriteClr[addr + line] = (byte)code;
             }
             this.UpdateSpriteBitmap();
@@ -714,70 +714,70 @@ namespace _99x8Edit
             public byte clr = 0;
             public byte overlay = 0;
         }
-        internal One16x16Sprite Get16x16Sprite(int index16x16)
+        internal One16x16Sprite Get16x16Sprite(int index16)
         {
-            index16x16 = Math.Clamp(index16x16, 0, 63);
-            int target8x8 = index16x16 * 4;
+            index16 = Math.Clamp(index16, 0, 63);
+            int target8 = index16 * 4;
             One16x16Sprite spr = new One16x16Sprite();
             for (int i = 0; i < 32; ++i)
             {
-                spr.genData[i] = spriteGen[target8x8 * 8 + i];
+                spr.genData[i] = spriteGen[target8 * 8 + i];
             }
             for (int i = 0; i < 16; ++i)
             {
-                spr.clrData[i] = spriteClr[index16x16 * 16 + i];
+                spr.clrData[i] = spriteClr[index16 * 16 + i];
             }
-            spr.clr = spriteClr16[index16x16];
-            spr.overlay = spriteOverlay[index16x16];
+            spr.clr = spriteClr16[index16];
+            spr.overlay = spriteOverlay[index16];
             return spr;
         }
-        internal void Set16x16Sprite(int index16x16, One16x16Sprite spr, bool push)
+        internal void Set16x16Sprite(int index16, One16x16Sprite spr, bool push)
         {
-            index16x16 = Math.Clamp(index16x16, 0, 63);
+            index16 = Math.Clamp(index16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 16; ++i)
             {
-                spriteClr[index16x16 * 16 + i] = spr.clrData[i];
+                spriteClr[index16 * 16 + i] = spr.clrData[i];
             }
             for (int i = 0; i < 4; ++i)
             {
-                int target8x8 = (index16x16 * 4 + i) % 256;
+                int target8 = (index16 * 4 + i) % 256;
                 for (int j = 0; j < 8; ++j)
                 {
-                    spriteGen[target8x8 * 8 + j] = spr.genData[i * 8 + j];
+                    spriteGen[target8 * 8 + j] = spr.genData[i * 8 + j];
                 }
-                this.UpdateSpriteBitmap(target8x8);
+                this.UpdateSpriteBitmap(target8);
             }
             for(int i = 0; i < 16; ++i)
             {
-                spriteClr[index16x16 * 16 + i] = spr.clrData[i];
+                spriteClr[index16 * 16 + i] = spr.clrData[i];
             }
-            spriteClr16[index16x16] = spr.clr;
-            spriteOverlay[index16x16] = spr.overlay;
+            spriteClr16[index16] = spr.clr;
+            spriteOverlay[index16] = spr.overlay;
         }
-        internal void SetSpriteGen(int index8x8, byte[] gen, bool push)
+        internal void SetSpriteGen(int index8, byte[] gen, bool push)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             if (push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
-                spriteGen[index8x8 * 8 + i] = gen[i];
+                spriteGen[index8 * 8 + i] = gen[i];
             }
             this.UpdateSpriteBitmap();
         }
-        internal void Clear16x16Sprite(int index16x16, bool push)
+        internal void Clear16x16Sprite(int index16, bool push)
         {
-            index16x16 = Math.Clamp(index16x16, 0, 63);
+            index16 = Math.Clamp(index16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();
-            spriteOverlay[index16x16] = 0;
-            spriteClr16[index16x16] = 0x0F;
+            spriteOverlay[index16] = 0;
+            spriteClr16[index16] = 0x0F;
             for (int i = 0; i < 16; ++i)
             {
-                spriteClr[index16x16 * 16 + i] = 0x0F;
+                spriteClr[index16 * 16 + i] = 0x0F;
             }
             for (int i = 0; i < 4; ++i)
             {
-                int dst = (index16x16 * 4 + i) % 256;
+                int dst = (index16 * 4 + i) % 256;
                 for (int j = 0; j < 8; ++j)
                 {
                     spriteGen[dst * 8 + j] = 0;
@@ -785,22 +785,22 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(dst);
             }
         }
-        internal int GetSpritePixel(int index8x8, int line, int x)
+        internal int GetSpritePixel(int index8, int line, int x)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
-            int target_dat = spriteGen[index8x8 * 8 + line];
+            int target_dat = spriteGen[index8 * 8 + line];
             int target = (target_dat >> (7 - x)) & 1;       // left side is LSB of data source
             return target;
         }
-        internal void SetSpritePixel(int index8x8, int line, int x, int val, bool push)
+        internal void SetSpritePixel(int index8, int line, int x, int val, bool push)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             x = Math.Clamp(x, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
             // Update Sprite pattern
-            int addr = index8x8 * 8 + line;
+            int addr = index8 * 8 + line;
             int bitcol = 7 - x;
             spriteGen[addr] &= (byte)(~(1 << bitcol));     // Set target bit to 0
             if (val != 0)
@@ -808,7 +808,7 @@ namespace _99x8Edit
                 spriteGen[addr] |= (byte)(1 << bitcol);    // Set target bit
             }
             // Update Sprite bitmap
-            this.UpdateSpriteBitmap(index8x8);
+            this.UpdateSpriteBitmap(index8);
         }
         [Serializable]
         internal class SpriteLine
@@ -819,54 +819,109 @@ namespace _99x8Edit
             public byte genDataOv = 0;
             public byte clrDataOv = 0;
         }
-        internal SpriteLine GetSpriteLine(int index8x8, int line)
+        internal SpriteLine GetSpriteLine(int index8, int line)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             SpriteLine ret = new SpriteLine();
-            ret.genData = spriteGen[index8x8 * 8 + line];
-            int addr = this.Index256ToSprClrAddr(index8x8);
+            ret.genData = spriteGen[index8 * 8 + line];
+            int addr = this.Index256ToSprClrAddr(index8);
             ret.clrData = spriteClr[addr + line];
-            if ((ret.overlayed = spriteOverlay[index8x8 / 4]) != 0)
+            if ((ret.overlayed = spriteOverlay[index8 / 4]) != 0)
             {
-                index8x8 = (index8x8 + 4) % 256;
-                ret.genDataOv = spriteGen[index8x8 * 8 + line];
-                int addr_ov = this.Index256ToSprClrAddr(index8x8);
+                index8 = (index8 + 4) % 256;
+                ret.genDataOv = spriteGen[index8 * 8 + line];
+                int addr_ov = this.Index256ToSprClrAddr(index8);
                 ret.clrDataOv = spriteClr[addr_ov + line];
             }
             return ret;
         }
-        internal void SetSpriteLine(int index8x8, int line, SpriteLine val, bool push)
+        internal void SetSpriteLine(int index8, int line, SpriteLine val, bool push)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
-            spriteGen[index8x8 * 8 + line] = val.genData;
-            int addr = this.Index256ToSprClrAddr(index8x8);
+            spriteGen[index8 * 8 + line] = val.genData;
+            int addr = this.Index256ToSprClrAddr(index8);
             spriteClr[addr + line] = val.clrData;
-            this.UpdateSpriteBitmap(index8x8);
+            this.UpdateSpriteBitmap(index8);
             if (val.overlayed != 0)
             {
-                index8x8 = (index8x8 + 4) % 256;
-                spriteGen[index8x8 * 8 + line] = val.genDataOv;
-                int addr_ov = this.Index256ToSprClrAddr(index8x8);
+                index8 = (index8 + 4) % 256;
+                spriteGen[index8 * 8 + line] = val.genDataOv;
+                int addr_ov = this.Index256ToSprClrAddr(index8);
                 spriteClr[addr_ov + line] = val.clrDataOv;
-                this.UpdateSpriteBitmap(index8x8);
+                this.UpdateSpriteBitmap(index8);
             }
         }
-        internal void ClearSpriteLine(int index8x8, int line, bool push)
+        internal void ClearSpriteLine(int index8, int line, bool push)
         {
-            index8x8 = Math.Clamp(index8x8, 0, 255);
+            index8 = Math.Clamp(index8, 0, 255);
             line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
-            spriteGen[index8x8 * 8 + line] = 0;
-            this.UpdateSpriteBitmap(index8x8);
-            if (spriteOverlay[index8x8 / 4] != 0)
+            spriteGen[index8 * 8 + line] = 0;
+            this.UpdateSpriteBitmap(index8);
+            if (spriteOverlay[index8 / 4] != 0)
             {
-                index8x8 = (index8x8 + 4) % 256;
-                spriteGen[index8x8 * 8 + line] = 0;
-                this.UpdateSpriteBitmap(index8x8);
+                index8 = (index8 + 4) % 256;
+                spriteGen[index8 * 8 + line] = 0;
+                this.UpdateSpriteBitmap(index8);
             }
+        }
+        internal void RotateSprite(int index16, int ver, int hor, bool push)
+        {
+            index16 = Math.Clamp(index16, 0, 63);
+            ver = Math.Clamp(ver, -15, 15);
+            hor = Math.Clamp(hor, -15, 15);
+            Action right_shift = () =>
+            {
+                // Right shift one 16x16 sprite
+                for(int i = 0; i < 16; ++i)
+                {
+                    Utility.Rotate16(ref spriteGen[index16 * 32 + 0 + i],
+                                     ref spriteGen[index16 * 32 + 16 + i]);
+                }
+            };
+            Action down_shift = () =>
+            {
+                // Down shift one 16x16 sprite
+                byte carry_gen_l = spriteGen[index16 * 32 + 15];
+                byte carry_gen_r = spriteGen[index16 * 32 + 31];
+                byte carry_clr = spriteClr[index16 * 16 + 15];
+                for (int i = 15; i >= 1; --i)
+                {
+                    spriteGen[index16 * 32 + i] = spriteGen[index16 * 32 + i - 1];
+                    spriteGen[index16 * 32 + i + 16] = spriteGen[index16 * 32 + i - 1 + 16];
+                    spriteClr[index16 * 16 + i] = spriteClr[index16 * 16 + i - 1];
+                }
+                spriteGen[index16 * 32] = carry_gen_l;
+                spriteGen[index16 * 32 + 16] = carry_gen_r;
+                spriteClr[index16 * 16] = carry_clr;
+            };
+            if (push) MementoCaretaker.Instance.Push();
+            if (ver < 0) { ver = ver + 16; }    // Left shift to right shift
+            if (hor < 0) { hor = hor + 16; }    // Up shift to down shift
+            for(int cnt = 0; cnt < ver; ++cnt)
+            {
+                right_shift();
+            }
+            for (int cnt = 0; cnt < hor; ++cnt)
+            {
+                down_shift();
+            }
+            if (spriteOverlay[index16] != 0)
+            {
+                index16 = (index16 + 1) % 64;
+                for (int cnt = 0; cnt < ver; ++cnt)
+                {
+                    right_shift();
+                }
+                for (int cnt = 0; cnt < hor; ++cnt)
+                {
+                    down_shift();
+                }
+            }
+            this.UpdateSpriteBitmap();
         }
         //--------------------------------------------------------------------
         // Internal methods

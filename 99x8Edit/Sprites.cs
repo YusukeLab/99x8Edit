@@ -84,6 +84,10 @@ namespace _99x8Edit
             toolStripEditorDel.Click += new EventHandler(contextEditor_del);
             toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
+            toolStripRotateUp.Click += new EventHandler(contextEditor_rotate);
+            toolStripRotateDown.Click += new EventHandler(contextEditor_rotate);
+            toolStripRotateLeft.Click += new EventHandler(contextEditor_rotate);
+            toolStripRotateRight.Click += new EventHandler(contextEditor_rotate);
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -663,6 +667,7 @@ namespace _99x8Edit
             };
             switch (e.KeyData)
             {
+                // Multiple selection
                 case Keys.Up | Keys.Shift:
                     if (currentLineY > 0)
                     {
@@ -691,6 +696,7 @@ namespace _99x8Edit
                         refresh();
                     }
                     break;
+                // Moving current selection
                 case Keys.Up:
                     if (currentLineY > 0)
                     {
@@ -739,10 +745,12 @@ namespace _99x8Edit
                         refresh();
                     }
                     break;
+                // Editing
                 case Keys.Space:
                     // toggle the color of selected pixel
                     this.EditCurrentSprite(currentDot, currentLineY % 8);
                     break;
+                // Changing colors
                 case Keys.D1:
                 case Keys.NumPad1:
                     this.EditCurrentSprite(0, currentLineY % 8);
@@ -942,6 +950,29 @@ namespace _99x8Edit
             }
             this.UpdateSpriteEditView();
             this.UpdateSpriteView();
+        }
+        private void contextEditor_rotate(object sender, EventArgs e)
+        {
+            if (sender == toolStripRotateUp)
+            {
+                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 0, -1, true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateDown)
+            {
+                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 0, 1, true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateLeft)
+            {
+                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, -1, 0, true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateRight)
+            {
+                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 1, 0, true);
+                this.RefreshAllViews();
+            }
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
