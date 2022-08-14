@@ -210,14 +210,14 @@ namespace _99x8Edit
             this.btnSavePalette.UseVisualStyleBackColor = false;
             this.btnSavePalette.Click += new System.EventHandler(this.btnSavePalette_Click);
             // 
-            // checkTMS
+            // chkTMS
             // 
             this.chkTMS.AutoSize = true;
             this.chkTMS.Checked = true;
             this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.chkTMS.Location = new System.Drawing.Point(105, 433);
-            this.chkTMS.Name = "checkTMS";
+            this.chkTMS.Name = "chkTMS";
             this.chkTMS.Size = new System.Drawing.Size(92, 24);
             this.chkTMS.TabIndex = 32;
             this.chkTMS.Text = "TMS9918";
@@ -404,14 +404,14 @@ namespace _99x8Edit
             this.toolStripEditorCopy.Name = "toolStripEditorCopy";
             this.toolStripEditorCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.toolStripEditorCopy.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopy.Text = "Copy";
+            this.toolStripEditorCopy.Text = "Copy Line";
             // 
             // toolStripEditorPaste
             // 
             this.toolStripEditorPaste.Name = "toolStripEditorPaste";
             this.toolStripEditorPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorPaste.Text = "Paste";
+            this.toolStripEditorPaste.Text = "Paste Line";
             // 
             // toolStripEditorCopyDown
             // 
@@ -510,7 +510,6 @@ namespace _99x8Edit
             // 
             // toolStripFileImport
             // 
-            this.toolStripFileImport.Enabled = false;
             this.toolStripFileImport.Name = "toolStripFileImport";
             this.toolStripFileImport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
             this.toolStripFileImport.Size = new System.Drawing.Size(266, 26);

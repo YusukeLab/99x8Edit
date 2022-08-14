@@ -527,15 +527,7 @@ namespace _99x8Edit
                     sr.WriteLine("};");
                     if (!isTMS9918)
                     {
-                        byte[] sprite_clr16x16 = new byte[16 * 64];
-                        for (int i = 0; i < 64; ++i)
-                        {
-                            for (int j = 0; j < 16; ++j)
-                            {
-                                // 8x8 color table to 16x16 color table
-                                sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
-                            }
-                        }
+                        byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
                         sr.WriteLine("// Sprite color table");
                         if (type == Type.CHeader)
                         {
@@ -584,15 +576,7 @@ namespace _99x8Edit
                     sr.WriteLine(str);
                     if (!isTMS9918)
                     {
-                        byte[] sprite_clr16x16 = new byte[16 * 64];
-                        for (int i = 0; i < 64; ++i)
-                        {
-                            for (int j = 0; j < 16; ++j)
-                            {
-                                // 8x8 color table to 16x16 color table
-                                sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
-                            }
-                        }
+                        byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
                         sr.WriteLine("; Sprite color table");
                         str = "";
                         if (type == Type.ASMData)
@@ -721,6 +705,19 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------
         // Utilities
+        private byte[] SpriteColorsBy16x16()
+        {
+            byte[] sprite_clr16x16 = new byte[16 * 64];
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    // 8x8 color table to 16x16 color table
+                    sprite_clr16x16[i * 16 + j] = spriteClr2[i * 32 + j];
+                }
+            }
+            return sprite_clr16x16;
+        }
         private String ArrayToCHeaderString(byte[] src, bool compress)
         {
             String ret = "\t";

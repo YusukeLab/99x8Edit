@@ -26,7 +26,9 @@ namespace _99x8Edit
         // Data, of sprites
         private byte[] spriteGen = new byte[256 * 8];   // Sprite pattern generator table
         private byte[] spriteClr1 = new byte[256];      // Sprite color(mode1)
+            // Keeps color for each 8x8 sprites, but uses only top color of 4 sprites 
         private byte[] spriteClr2 = new byte[256 * 8];  // Sprite color(mode2)
+            // Keeps color for each 8x8 sprites, but uses only left side of 4 sprites
         private byte[] spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
         // View
         private Bitmap[] bmpOneChr = new Bitmap[256];       // PCG

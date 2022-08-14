@@ -30,6 +30,7 @@ namespace _99x8Edit
         private int currentLineY = 0;       // Selected line in editor(0-15)
         private int selStartLineX = 0;      // For multiple selection
         private int selStartLineY = 0;
+        private int currentDot = 0;         // Selected dot in line(0-7)
         private int currentColor = 0;       // Currently elected color, default or overlayed or OR
         String currentFile = "";
         public String CurrentFile
@@ -271,6 +272,12 @@ namespace _99x8Edit
             Color sel_color = panelEditor.Focused ? Consts.ColorSelectionFocused
                                                   : Consts.ColorSelectionUnfocus;
             g.DrawRectangle(new Pen(sel_color), sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1);
+            if(panelEditor.Focused)
+            {
+                // One dot can be selected when focused
+                g.DrawRectangle(new Pen(Consts.ColorCurrentDot),
+                                sx * 128 + currentDot * 16, sy * 16, 14, 14);
+            }
             // CRT Filter
             if (chkCRT.Checked)
             {
@@ -707,22 +714,38 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Left:
-                    if (currentLineX > 0)
+                    if ((currentDot == 0) && (currentLineX > 0))
                     {
                         currentLineX--;
+                        currentDot = 7;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
+                        refresh();
+                    }
+                    else if (currentDot > 0)
+                    {
+                        currentDot--;
                         refresh();
                     }
                     break;
                 case Keys.Right:
-                    if (currentLineX < 1)
+                    if ((currentDot == 7) && (currentLineX < 1))
                     {
                         currentLineX++;
+                        currentDot = 0;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
                         refresh();
                     }
+                    else if (currentDot < 7)
+                    {
+                        currentDot++;
+                        refresh();
+                    }
+                    break;
+                case Keys.Space:
+                    // toggle the color of selected pixel
+                    this.EditCurrentSprite(currentDot, currentLineY % 8);
                     break;
                 case Keys.D1:
                 case Keys.NumPad1:

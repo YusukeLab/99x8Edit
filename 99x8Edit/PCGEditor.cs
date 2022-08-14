@@ -30,6 +30,7 @@ namespace _99x8Edit
         private int currentLineY = 0;       // Selected line in editor(0-15)
         private int selStartLineX = 0;      // For multiple selection
         private int selStartLineY = 0;
+        private int currentDot = 0;
         private int currentColor = 0;       // Currently elected color, foreground or background
         String currentFile = "";
         public String CurrentFile
@@ -193,7 +194,14 @@ namespace _99x8Edit
                             Math.Min(currentLineY, selStartLineY) * 16,
                             (Math.Abs(currentLineX - selStartLineX) + 1) * 128 - 1,
                             (Math.Abs(currentLineY - selStartLineY) + 1) * 16 - 1);
-            if(refresh) viewPCGEdit.Refresh();
+            if (panelEditor.Focused)
+            {
+                // One dot can be selected when focused
+                g.DrawRectangle(new Pen(Consts.ColorCurrentDot),
+                                Math.Min(currentLineX, selStartLineX) * 128 + currentDot * 16,
+                                Math.Min(currentLineY, selStartLineY) * 16, 14, 14);
+            }
+            if (refresh) viewPCGEdit.Refresh();
         }
         private void UpdateCurrentColorView(bool refresh = true)
         {
@@ -498,22 +506,38 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Left:
-                    if (currentLineX > 0)
+                    if ((currentDot == 0) && (currentLineX > 0))
                     {
                         currentLineX--;
+                        currentDot = 7;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
+                        refresh();
+                    }
+                    else if (currentDot > 0)
+                    {
+                        currentDot--;
                         refresh();
                     }
                     break;
                 case Keys.Right:
-                    if (currentLineX < 1)
+                    if ((currentDot == 7) && (currentLineX < 1))
                     {
                         currentLineX++;
+                        currentDot = 0;
                         selStartLineX = currentLineX;
                         selStartLineY = currentLineY;
                         refresh();
                     }
+                    else if (currentDot < 7)
+                    {
+                        currentDot++;
+                        refresh();
+                    }
+                    break;
+                case Keys.Space:
+                    // toggle the color of selected pixel
+                    this.EditCurrentPCG(currentDot, currentLineY % 8);
                     break;
                 case Keys.D1:
                 case Keys.NumPad1:

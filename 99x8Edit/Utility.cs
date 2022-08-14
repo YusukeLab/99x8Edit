@@ -11,6 +11,7 @@ namespace _99x8Edit
     {
         internal static Color ColorSelectionFocused = Color.Red;
         internal static Color ColorSelectionUnfocus = Color.DarkRed;
+        internal static Color ColorCurrentDot = Color.Yellow;
     }
     public static class Utility
     {
@@ -184,7 +185,7 @@ namespace _99x8Edit
             {
                 try
                 {
-                    type = (Export.Type)dlg.FilterIndex;
+                    type = (Export.Type)dlg.FilterIndex - 1;
                     exec_save(type, dlg.FileName);
                     return true;
                 }

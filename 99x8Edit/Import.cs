@@ -11,8 +11,22 @@ namespace _99x8Edit
     public class Import
     {
         // Import types
-        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin|PNG File(*.png)|*.png";
-        internal static string SpriteTypeFilter = "MSX BASIC(*.bin)|*.bin";
+        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin|"
+                                             + "PNG File(*.png)|*.png";
+        internal static string SpriteTypeFilter = "MSX BASIC(*.bin)|*.bin|"
+                                             + "Raw pattern data(*.raw)|*.raw|"
+                                             + "Raw color data(*.raw)|*.raw";
+        enum PCGType
+        {
+            MSXBASIC = 0,
+            PNG
+        };
+        enum SpriteType
+        {
+            MSXBASIC = 0,
+            RawPattern,
+            RawColor
+        }
         // Palette
         private Color[] palette = new Color[16];         // Windows color corresponding to color code
 
@@ -32,22 +46,29 @@ namespace _99x8Edit
         // Methods
         internal void ImportPCG(string filename, int type, byte[] out_gen, byte[] out_clr)
         {
-            string ext = Path.GetExtension(filename);
-            if(ext == ".png")
+            switch((PCGType)type)
             {
-                this.PNGtoPCG(filename, out_gen, out_clr);
-            }
-            else if(ext == ".bin")
-            {
-                this.BINtoPCG(filename, out_gen, out_clr);
+                case PCGType.MSXBASIC:
+                    this.PNGtoPCG(filename, out_gen, out_clr);
+                    break;
+                case PCGType.PNG:
+                    this.BINtoPCG(filename, out_gen, out_clr);
+                    break;
             }
         }
         internal void ImportSprite(string filename, int type, byte[] out_gen, byte[] out_clr)
         {
-            string ext = Path.GetExtension(filename);
-            if (ext == ".bin")
+            switch ((SpriteType)type)
             {
-                this.BINtoSprite(filename, out_gen, out_clr);
+                case SpriteType.MSXBASIC:
+                    this.BINtoSprite(filename, out_gen, out_clr);
+                    break;
+                case SpriteType.RawPattern:
+                    this.RawToSpriteGen(filename, out_gen, out_clr);
+                    break;
+                case SpriteType.RawColor:
+                    this.RawToSpriteColor(filename, out_gen, out_clr);
+                    break;
             }
         }
         //------------------------------------------------------------------------
@@ -118,7 +139,7 @@ namespace _99x8Edit
                 int gen_seek_addr = 0;
                 if(this.SeekBIN(0x0000, bin_start_addr, br, out gen_seek_addr))
                 {
-                    for (int ptr = 0; (ptr < 0x2000) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                     {
                         out_gen[ptr] = br.ReadByte();
                     }
@@ -126,7 +147,7 @@ namespace _99x8Edit
                 int color_addr = 0;
                 if(this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
                 {
-                    for (int ptr = 0; (ptr < 0x2000) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
+                    for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
                     {
                         out_clr[ptr] = br.ReadByte();
                     }
@@ -155,22 +176,42 @@ namespace _99x8Edit
                 int gen_seek_addr = 0;
                 if (this.SeekBIN(0x3800, bin_start_addr, br, out gen_seek_addr))
                 {
-                    for (int ptr = 0; (ptr < 0x2000) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                     {
                         out_gen[ptr] = br.ReadByte();
                     }
                 }
-                // Is it possible to import colors?
-#if false
-                int color_addr = 0;
-                if (this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            try
+            {
+                for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
                 {
-                    for (int ptr = 0; (ptr < 0x2000) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
-                    {
-                        out_clr[ptr] = br.ReadByte();
-                    }
+                    out_gen[i] = br.ReadByte();
                 }
-#endif
+            }
+            finally
+            {
+                br.Close();
+            }
+        }
+        private void RawToSpriteColor(string filename, byte[] out_gen, byte[] out_clr)
+        {
+            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            try
+            {
+                for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
+                {
+                    int index16x16 = i / 16;
+                    out_clr[index16x16 * 32 + (i % 16)] = out_clr[index16x16 * 32 + 16 + (i % 16)] = br.ReadByte();
+                }
             }
             finally
             {

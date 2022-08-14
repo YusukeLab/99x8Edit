@@ -430,14 +430,14 @@ namespace _99x8Edit
             this.toolStripEditorCopy.Name = "toolStripEditorCopy";
             this.toolStripEditorCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.toolStripEditorCopy.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopy.Text = "Copy";
+            this.toolStripEditorCopy.Text = "Copy Line";
             // 
             // toolStripEditorPaste
             // 
             this.toolStripEditorPaste.Name = "toolStripEditorPaste";
             this.toolStripEditorPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorPaste.Text = "Paste";
+            this.toolStripEditorPaste.Text = "Paste Line";
             // 
             // toolStripEditorCopyDown
             // 
