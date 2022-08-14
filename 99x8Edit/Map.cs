@@ -9,8 +9,9 @@ namespace _99x8Edit
     // Map editor window
     public partial class Map : Form
     {
-        Machine dataSource;
-        MainWindow mainWin;
+        private readonly Machine dataSource;
+        private readonly MainWindow mainWin;
+        private readonly List<Control> tabOrder = new List<Control>();
         private Bitmap bmpPCGList = new Bitmap(512, 128);       // PCG list view
         private Bitmap bmpMapPatterns = new Bitmap(512, 512);   // Map pattern view
         private Bitmap bmpMap = new Bitmap(512, 384);           // Map view
@@ -46,6 +47,8 @@ namespace _99x8Edit
             // Set corresponding data and owner window
             dataSource = src;
             mainWin = parent;
+            // Tab order
+            tabOrder.AddRange(new Control[] { panelPCG, panelPatterns, panelMap });
             // Initialize controls
             viewPCG.Image = bmpPCGList;
             viewPatterns.Image = bmpMapPatterns;
@@ -114,6 +117,16 @@ namespace _99x8Edit
                 }
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+        protected override bool ProcessTabKey(bool forward)
+        {
+            Control prev = this.ActiveControl;
+            int index = tabOrder.IndexOf(prev);
+            index += forward ? 1 : tabOrder.Count - 1;
+            index %= tabOrder.Count;
+            this.ActiveControl = tabOrder[index];
+            this.RefreshAllViews();
+            return true;
         }
         //------------------------------------------------------------------------------
         // Refreshing Views

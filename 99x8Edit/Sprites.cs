@@ -12,8 +12,9 @@ namespace _99x8Edit
     // Sprite editor window
     public partial class Sprites : Form
     {
-        private Machine dataSource;
-        private MainWindow mainWin;
+        private readonly Machine dataSource;
+        private readonly MainWindow mainWin;
+        private readonly List<Control> tabOrder = new List<Control>();
         private Bitmap bmpPalette = new Bitmap(256, 64);        // Palette view
         private Bitmap bmpSprites = new Bitmap(256, 256);       // Sprites view
         private Bitmap bmpSpriteEdit = new Bitmap(256, 256);    // Sprite edit view
@@ -29,6 +30,7 @@ namespace _99x8Edit
         private int currentLineY = 0;       // Selected line in editor(0-15)
         private int selStartLineX = 0;      // For multiple selection
         private int selStartLineY = 0;
+        private int currentColor = 0;       // Currently elected color, default or overlayed or OR
         String currentFile = "";
         public String CurrentFile
         {
@@ -45,6 +47,8 @@ namespace _99x8Edit
             // Set corresponding data and owner window
             dataSource = src;
             mainWin = parent;
+            // Tab order
+            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelSprites });
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewSprites.Image = bmpSprites;
@@ -115,6 +119,16 @@ namespace _99x8Edit
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+        protected override bool ProcessTabKey(bool forward)
+        {
+            Control prev = this.ActiveControl;
+            int index = tabOrder.IndexOf(prev);
+            index += forward ? 1 : tabOrder.Count - 1;
+            index %= tabOrder.Count;
+            this.ActiveControl = tabOrder[index];
+            this.RefreshAllViews();
+            return true;
+        }
         //------------------------------------------------------------------------------
         // Refreshing Views
         private void RefreshAllViews()
@@ -124,7 +138,7 @@ namespace _99x8Edit
             this.UpdateSpriteEditView();    // Sprite edit view
             this.UpdateCurrentColorView();  // Current color
             this.UpdateOverlayCheck();
-            this.checkTMS.Checked = dataSource.IsTMS9918;
+            this.chkTMS.Checked = dataSource.IsTMS9918;
             this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
             this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
         }
@@ -267,12 +281,16 @@ namespace _99x8Edit
         }
         void UpdateCurrentColorView(bool refresh = true)
         {
+            Color sel_color = panelColor.Focused ? Consts.ColorSelectionFocused
+                                                 : Consts.ColorSelectionUnfocus;
+            Graphics gl = Graphics.FromImage(bmpColorL);
+            Graphics gr = Graphics.FromImage(bmpColorR);
+            Graphics go = Graphics.FromImage(bmpColorOR);
             // Update current color of primary sprite
             int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
             int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
             int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
             Color color_primary = dataSource.ColorCodeToWindowsColor(color_code_primary);
-            Graphics gl = Graphics.FromImage(bmpColorL);
             gl.FillRectangle(new SolidBrush(color_primary), 0, 0, 32, 32);
             // Check overlays
             if (dataSource.GetSpriteOverlay(sprite_num_16x16))
@@ -280,7 +298,6 @@ namespace _99x8Edit
                 int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
                 int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
                 Color color_secondary = dataSource.ColorCodeToWindowsColor(color_code_secondary);
-                Graphics gr = Graphics.FromImage(bmpColorR);
                 gr.FillRectangle(new SolidBrush(color_secondary), 0, 0, 32, 32);
                 viewColorR.Visible = true;
                 labelColorR.Visible = true;
@@ -295,7 +312,6 @@ namespace _99x8Edit
                     // Overlayed with or color(V9938)
                     int color_code_or = color_code_primary | color_code_secondary;
                     Color color_or = dataSource.ColorCodeToWindowsColor(color_code_or);
-                    Graphics go = Graphics.FromImage(bmpColorOR);
                     go.FillRectangle(new SolidBrush(color_or), 0, 0, 32, 32);
                     viewColorOR.Visible = true;
                     labelColorOR.Visible = true;
@@ -308,6 +324,16 @@ namespace _99x8Edit
                 labelColorR.Visible = false;
                 viewColorOR.Visible = false;
                 labelColorOR.Visible = false;
+            }
+            // Current selection
+            if (!viewColorR.Visible && currentColor > 0) currentColor = 0;
+            if (currentColor == 0)
+            {
+                gl.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+            }
+            else if (currentColor == 1)
+            {
+                gr.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
             }
             if (refresh)
             {
@@ -900,12 +926,12 @@ namespace _99x8Edit
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (checkTMS.Checked && !dataSource.IsTMS9918)
+            if (chkTMS.Checked && !dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to TMS9918
                 dataSource.SetPaletteToTMS9918(true);
             }
-            else if (!checkTMS.Checked && dataSource.IsTMS9918)
+            else if (!chkTMS.Checked && dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to internal palette
                 dataSource.SetPaletteToV9938(true);
@@ -914,33 +940,78 @@ namespace _99x8Edit
         }
         private void viewColorL_Click(object sender, EventArgs e)
         {
+            // Update selection and controls
+            panelColor.Focus();
+            currentColor = 0;
+            this.UpdateCurrentColorView();
+            // Set color to target
+            int current_target16x16 = currentSpriteY * 8 + currentSpriteX;
+            int sprite_num_8x8 = current_target16x16 * 4 + currentLineX * 2 + currentLineY / 8;
+            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
             Action<int> callback = (x) =>
             {
                 if (x != 0)
                 {
-                    int current_target16x16 = (currentSpriteY * 8 + currentSpriteX) % 64;
                     this.SetSpriteColor(current_target16x16, x);
                 }
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
         }
         private void viewColorR_Click(object sender, EventArgs e)
         {
+            // Update selection and controls
+            panelColor.Focus();
+            currentColor = 1;
+            this.UpdateCurrentColorView();
+            // Set color to target
+            int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
+            int sprite_num_8x8 = current_target16x16 * 4 + currentLineX * 2 + currentLineY / 8;
+            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+
             Action<int> callback = (x) =>
             {
                 if(x > 0)   // Don't select transparent
                 {
-                    int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
                     this.SetSpriteColor(current_target16x16, x);
                 }
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
+        }
+        private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Left:
+                    if (currentColor > 0)
+                    {
+                        currentColor--;
+                        this.UpdateCurrentColorView();
+                    }
+                    break;
+                case Keys.Right:
+                    if (currentColor < 1 && viewColorR.Visible)
+                    {
+                        currentColor++;
+                        this.UpdateCurrentColorView();
+                    }
+                    break;
+                case Keys.Space:
+                    if (currentColor == 0)
+                    {
+                        this.viewColorL_Click(null, null);
+                    }
+                    else if (currentColor == 1)
+                    {
+                        this.viewColorR_Click(null, null);
+                    }
+                    break;
+            }
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
@@ -965,7 +1036,7 @@ namespace _99x8Edit
         }
         private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (!checkTMS.Checked)
+            if (!chkTMS.Checked)
             {
                 int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
                 int R = dataSource.GetPaletteR(clicked_color_num);

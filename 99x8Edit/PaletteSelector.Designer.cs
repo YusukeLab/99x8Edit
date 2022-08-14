@@ -29,35 +29,36 @@ namespace _99x8Edit
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            this.viewPlt = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.viewPlt)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox
             // 
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(256, 64);
-            this.pictureBox.TabIndex = 0;
-            this.pictureBox.TabStop = false;
-            this.pictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Click);
+            this.viewPlt.Location = new System.Drawing.Point(0, 0);
+            this.viewPlt.Name = "pictureBox";
+            this.viewPlt.Size = new System.Drawing.Size(256, 64);
+            this.viewPlt.TabIndex = 0;
+            this.viewPlt.TabStop = false;
+            this.viewPlt.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Click);
             // 
             // PaletteSelector
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(256, 64);
-            this.Controls.Add(this.pictureBox);
+            this.Controls.Add(this.viewPlt);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteSelector";
             this.Text = "PaletteSelector";
             this.Deactivate += new System.EventHandler(this.PaletteSelector_Deactivate);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PaletteSelector_PreviewKeyDown);
+            ((System.ComponentModel.ISupportInitialize)(this.viewPlt)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.PictureBox viewPlt;
     }
 }

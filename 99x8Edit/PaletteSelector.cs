@@ -12,12 +12,19 @@ namespace _99x8Edit
     public partial class PaletteSelector : Form
     {
         Action<int> colorSelected;
-        public PaletteSelector(Bitmap pict, Action<int> callback)
+        Bitmap bmpOrg;
+        Bitmap bmpCur;
+        int currentX;
+        int currentY;
+        public PaletteSelector(Bitmap pict, int previous, Action<int> callback)
         {
             InitializeComponent();
-            pictureBox.Image = pict;
+            bmpOrg = pict;
+            viewPlt.Image = bmpCur = (Bitmap)bmpOrg.Clone();
+            currentX = previous % 8;
+            currentY = previous / 8;
             colorSelected = callback;
-            //functionColorSelected = callback;
+            this.UpdateView();
         }
         private void PaletteSelector_Deactivate(object sender, EventArgs e)
         {
@@ -28,6 +35,38 @@ namespace _99x8Edit
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
             colorSelected(clicked_color_num);
             this.Dispose();
+        }
+        private void PaletteSelector_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Up:
+                    currentY = Math.Max(currentY - 1, 0);
+                    break;
+                case Keys.Down:
+                    currentY = Math.Min(currentY + 1, 1);
+                    break;
+                case Keys.Left:
+                    currentX = Math.Max(currentX - 1, 0);
+                    break;
+                case Keys.Right:
+                    currentX = Math.Min(currentX + 1, 7);
+                    break;
+                case Keys.Space:
+                    colorSelected(currentY * 8 + currentX);
+                    this.Dispose();
+                    break;
+            }
+            this.UpdateView();
+        }
+        private void UpdateView()
+        {
+            Graphics g = Graphics.FromImage(bmpCur);
+            g.DrawImage(bmpOrg, 0, 0, viewPlt.Width, viewPlt.Height);
+            int x = currentX * 32;
+            int y = currentY * 32;
+            g.DrawRectangle(new Pen(Consts.ColorSelectionFocused), x, y, 31, 31);
+            viewPlt.Refresh();
         }
     }
 }

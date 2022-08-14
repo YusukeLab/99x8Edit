@@ -9,8 +9,9 @@ namespace _99x8Edit
     // PCG editor window
     public partial class PCGEditor : Form
     {
-        Machine dataSource;
-        MainWindow mainWin;
+        private readonly Machine dataSource;
+        private readonly MainWindow mainWin;
+        private readonly List<Control> tabOrder = new List<Control>();
         private Bitmap bmpPCGList = new Bitmap(512, 128);    // PCG list view
         private Bitmap bmpPalette = new Bitmap(256, 64);     // Palette view
         private Bitmap bmpSandbox = new Bitmap(512, 384);    // Sandbox view
@@ -29,6 +30,7 @@ namespace _99x8Edit
         private int currentLineY = 0;       // Selected line in editor(0-15)
         private int selStartLineX = 0;      // For multiple selection
         private int selStartLineY = 0;
+        private int currentColor = 0;       // Currently elected color, foreground or background
         String currentFile = "";
         public String CurrentFile
         {
@@ -47,6 +49,8 @@ namespace _99x8Edit
             // Set corresponding data and owner window
             dataSource = src;
             mainWin = parent;
+            // Tab order
+            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPCG, panelSandbox });
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewPCG.Image = bmpPCGList;
@@ -54,7 +58,7 @@ namespace _99x8Edit
             viewPCGEdit.Image = bmpPCGEdit;
             viewColorL.Image = bmpColorL;
             viewColorR.Image = bmpColorR;
-            checkTMS.Checked = this.dataSource.IsTMS9918;
+            chkTMS.Checked = this.dataSource.IsTMS9918;
             // Refresh all views
             this.RefreshAllViews();
             // Menu bar
@@ -123,6 +127,16 @@ namespace _99x8Edit
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+        protected override bool ProcessTabKey(bool forward)
+        {
+            Control prev = this.ActiveControl;
+            int index = tabOrder.IndexOf(prev);
+            index += forward ? 1 : tabOrder.Count - 1;
+            index %= tabOrder.Count;
+            this.ActiveControl = tabOrder[index];
+            this.RefreshAllViews();
+            return true;
+        }
         //------------------------------------------------------------------------------
         // Refreshing Views
         private void RefreshAllViews()
@@ -132,7 +146,7 @@ namespace _99x8Edit
             this.UpdateSandbox();           // Sandbox view
             this.UpdatePCGEditView();       // PCG Editor
             this.UpdateCurrentColorView();  // Current color
-            this.checkTMS.Checked = dataSource.IsTMS9918;
+            this.chkTMS.Checked = dataSource.IsTMS9918;
             this.btnOpenPalette.Enabled = !dataSource.IsTMS9918;
             this.btnSavePalette.Enabled = !dataSource.IsTMS9918;
         }
@@ -184,6 +198,10 @@ namespace _99x8Edit
         private void UpdateCurrentColorView(bool refresh = true)
         {
             // Update current color
+            Graphics gl = Graphics.FromImage(bmpColorL);
+            Graphics gr = Graphics.FromImage(bmpColorR);
+            Color sel_color = panelColor.Focused ? Consts.ColorSelectionFocused
+                                                 : Consts.ColorSelectionUnfocus;
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             int color_code_l = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
@@ -191,19 +209,28 @@ namespace _99x8Edit
             Utility.DrawTransparent(bmpColorL);
             if(color_code_l > 0)
             {
-                Graphics g = Graphics.FromImage(bmpColorL);
                 Color c = dataSource.ColorCodeToWindowsColor(color_code_l);
-                g.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
+                gl.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
+            }
+            if (currentColor == 0)
+            {
+                gl.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
             }
             Utility.DrawTransparent(bmpColorR);
             if (color_code_r > 0)
             {
-                Graphics g = Graphics.FromImage(bmpColorR);
                 Color c = dataSource.ColorCodeToWindowsColor(color_code_r);
-                g.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
+                gr.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
             }
-            if (refresh) viewColorL.Refresh();
-            if(refresh) viewColorR.Refresh();
+            if (currentColor == 1)
+            {
+                gr.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+            }
+            if (refresh)
+            {
+                viewColorL.Refresh();
+                viewColorR.Refresh();
+            }
         }
         private void UpdatePCGList(bool refresh = true)
         {
@@ -285,7 +312,7 @@ namespace _99x8Edit
         }
         private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (!checkTMS.Checked)
+            if (!chkTMS.Checked)
             {
                 int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
                 int R = dataSource.GetPaletteR(clicked_color_num);
@@ -302,41 +329,79 @@ namespace _99x8Edit
         }
         private void viewColorL_Click(object sender, EventArgs e)
         {
+            panelColor.Focus();
+            currentColor = 0;
+            this.UpdateCurrentColorView();
+            int current_pcg = currentPCGY * 32 + currentPCGX;
+            int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             Action<int> callback = (x) =>
             {
-                int current_pcg = currentPCGY * 32 + currentPCGX;
-                int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
                 dataSource.SetColorTable(current_target_pcg, currentLineY % 8, x, true, true);
                 this.RefreshAllViews();
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
+            int color_code_l = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_l, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
         }
         private void viewColorR_Click(object sender, EventArgs e)
         {
+            panelColor.Focus();
+            currentColor = 1;
+            this.UpdateCurrentColorView();
+            int current_pcg = currentPCGY * 32 + currentPCGX;
+            int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             Action<int> callback = (x) =>
             {
-                int current_pcg = currentPCGY * 32 + currentPCGX;
-                int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
                 dataSource.SetColorTable(current_target_pcg, currentLineY % 8, x, false, true);
                 this.RefreshAllViews();
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, callback);
+            int color_code_r = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, false);
+            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_r, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
         }
+        private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Left:
+                    if (currentColor > 0)
+                    {
+                        currentColor--;
+                        this.UpdateCurrentColorView();
+                    }
+                    break;
+                case Keys.Right:
+                    if (currentColor < 1)
+                    {
+                        currentColor++;
+                        this.UpdateCurrentColorView();
+                    }
+                    break;
+                case Keys.Space:
+                    if (currentColor == 0)
+                    {
+                        this.viewColorL_Click(null, null);
+                    }
+                    else if (currentColor == 1)
+                    {
+                        this.viewColorR_Click(null, null);
+                    }
+                    break;
+            }
+        }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (checkTMS.Checked && !dataSource.IsTMS9918)
+            if (chkTMS.Checked && !dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to TMS9918
                 dataSource.SetPaletteToTMS9918(true);
                 this.RefreshAllViews();     // Everything changes
             }
-            else if (!checkTMS.Checked && dataSource.IsTMS9918)
+            else if (!chkTMS.Checked && dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to internal palette
                 dataSource.SetPaletteToV9938(true);

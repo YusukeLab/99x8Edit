@@ -41,7 +41,7 @@ namespace _99x8Edit
             this.viewColorOR = new System.Windows.Forms.PictureBox();
             this.checkOverlay = new System.Windows.Forms.CheckBox();
             this.btnSavePalette = new System.Windows.Forms.Button();
-            this.checkTMS = new System.Windows.Forms.CheckBox();
+            this.chkTMS = new System.Windows.Forms.CheckBox();
             this.btnOpenPalette = new System.Windows.Forms.Button();
             this.viewPalette = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -78,6 +78,7 @@ namespace _99x8Edit
             this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileLoadSprite = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
+            this.panelColor = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -90,13 +91,14 @@ namespace _99x8Edit
             this.panelEditor.SuspendLayout();
             this.contextEditor.SuspendLayout();
             this.menuStripMain.SuspendLayout();
+            this.panelColor.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelColorR
             // 
             this.labelColorR.AutoSize = true;
             this.labelColorR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorR.Location = new System.Drawing.Point(48, 395);
+            this.labelColorR.Location = new System.Drawing.Point(38, 33);
             this.labelColorR.Name = "labelColorR";
             this.labelColorR.Size = new System.Drawing.Size(13, 15);
             this.labelColorR.TabIndex = 25;
@@ -106,7 +108,7 @@ namespace _99x8Edit
             // 
             this.labelColorL.AutoSize = true;
             this.labelColorL.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorL.Location = new System.Drawing.Point(20, 395);
+            this.labelColorL.Location = new System.Drawing.Point(10, 33);
             this.labelColorL.Name = "labelColorL";
             this.labelColorL.Size = new System.Drawing.Size(13, 15);
             this.labelColorL.TabIndex = 24;
@@ -115,7 +117,7 @@ namespace _99x8Edit
             // viewColorR
             // 
             this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorR.Location = new System.Drawing.Point(41, 362);
+            this.viewColorR.Location = new System.Drawing.Point(31, 0);
             this.viewColorR.Name = "viewColorR";
             this.viewColorR.Size = new System.Drawing.Size(32, 32);
             this.viewColorR.TabIndex = 23;
@@ -125,7 +127,7 @@ namespace _99x8Edit
             // viewColorL
             // 
             this.viewColorL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorL.Location = new System.Drawing.Point(10, 362);
+            this.viewColorL.Location = new System.Drawing.Point(0, 0);
             this.viewColorL.Name = "viewColorL";
             this.viewColorL.Size = new System.Drawing.Size(32, 32);
             this.viewColorL.TabIndex = 22;
@@ -167,7 +169,7 @@ namespace _99x8Edit
             // 
             this.labelColorOR.AutoSize = true;
             this.labelColorOR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorOR.Location = new System.Drawing.Point(79, 395);
+            this.labelColorOR.Location = new System.Drawing.Point(69, 33);
             this.labelColorOR.Name = "labelColorOR";
             this.labelColorOR.Size = new System.Drawing.Size(18, 15);
             this.labelColorOR.TabIndex = 27;
@@ -176,7 +178,7 @@ namespace _99x8Edit
             // viewColorOR
             // 
             this.viewColorOR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorOR.Location = new System.Drawing.Point(72, 362);
+            this.viewColorOR.Location = new System.Drawing.Point(62, 0);
             this.viewColorOR.Name = "viewColorOR";
             this.viewColorOR.Size = new System.Drawing.Size(32, 32);
             this.viewColorOR.TabIndex = 26;
@@ -210,17 +212,17 @@ namespace _99x8Edit
             // 
             // checkTMS
             // 
-            this.checkTMS.AutoSize = true;
-            this.checkTMS.Checked = true;
-            this.checkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.checkTMS.Location = new System.Drawing.Point(105, 433);
-            this.checkTMS.Name = "checkTMS";
-            this.checkTMS.Size = new System.Drawing.Size(92, 24);
-            this.checkTMS.TabIndex = 32;
-            this.checkTMS.Text = "TMS9918";
-            this.checkTMS.UseVisualStyleBackColor = true;
-            this.checkTMS.Click += new System.EventHandler(this.checkTMS_Click);
+            this.chkTMS.AutoSize = true;
+            this.chkTMS.Checked = true;
+            this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.chkTMS.Location = new System.Drawing.Point(105, 433);
+            this.chkTMS.Name = "checkTMS";
+            this.chkTMS.Size = new System.Drawing.Size(92, 24);
+            this.chkTMS.TabIndex = 32;
+            this.chkTMS.Text = "TMS9918";
+            this.chkTMS.UseVisualStyleBackColor = true;
+            this.chkTMS.Click += new System.EventHandler(this.checkTMS_Click);
             // 
             // btnOpenPalette
             // 
@@ -535,10 +537,25 @@ namespace _99x8Edit
             this.toolStripFileSaveSprite.Size = new System.Drawing.Size(266, 26);
             this.toolStripFileSaveSprite.Text = "Save Sprite Data(&S)";
             // 
+            // panelColor
+            // 
+            this.panelColor.Controls.Add(this.viewColorL);
+            this.panelColor.Controls.Add(this.viewColorR);
+            this.panelColor.Controls.Add(this.labelColorL);
+            this.panelColor.Controls.Add(this.labelColorR);
+            this.panelColor.Controls.Add(this.viewColorOR);
+            this.panelColor.Controls.Add(this.labelColorOR);
+            this.panelColor.Location = new System.Drawing.Point(12, 358);
+            this.panelColor.Name = "panelColor";
+            this.panelColor.Size = new System.Drawing.Size(102, 51);
+            this.panelColor.TabIndex = 48;
+            this.panelColor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelColor_PreviewKeyDown);
+            // 
             // Sprites
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(562, 542);
+            this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
@@ -547,17 +564,11 @@ namespace _99x8Edit
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.btnSavePalette);
-            this.Controls.Add(this.checkTMS);
+            this.Controls.Add(this.chkTMS);
             this.Controls.Add(this.btnOpenPalette);
             this.Controls.Add(this.viewPalette);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.checkOverlay);
-            this.Controls.Add(this.labelColorOR);
-            this.Controls.Add(this.viewColorOR);
-            this.Controls.Add(this.labelColorR);
-            this.Controls.Add(this.labelColorL);
-            this.Controls.Add(this.viewColorR);
-            this.Controls.Add(this.viewColorL);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label1);
             this.DoubleBuffered = true;
@@ -583,6 +594,8 @@ namespace _99x8Edit
             this.contextEditor.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
+            this.panelColor.ResumeLayout(false);
+            this.panelColor.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -600,7 +613,7 @@ namespace _99x8Edit
         private System.Windows.Forms.PictureBox viewColorOR;
         private System.Windows.Forms.CheckBox checkOverlay;
         private System.Windows.Forms.Button btnSavePalette;
-        private System.Windows.Forms.CheckBox checkTMS;
+        private System.Windows.Forms.CheckBox chkTMS;
         private System.Windows.Forms.Button btnOpenPalette;
         private System.Windows.Forms.PictureBox viewPalette;
         private System.Windows.Forms.Label label4;
@@ -638,5 +651,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveSprite;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadSprite;
+        private System.Windows.Forms.Panel panelColor;
     }
 }
