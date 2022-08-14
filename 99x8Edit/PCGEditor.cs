@@ -162,7 +162,7 @@ namespace _99x8Edit
             Graphics g = Graphics.FromImage(bmpPalette);
             for (int i = 1; i < 16; ++i)
             {
-                Color c = dataSource.ColorCodeToWindowsColor(i);
+                Color c = dataSource.ColorOf(i);
                 g.FillRectangle(new SolidBrush(c), (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
             // Current selection
@@ -186,7 +186,7 @@ namespace _99x8Edit
                         int code = dataSource.GetColorTable(target_pcg, j, (p != 0));
                         if(code != 0)
                         {
-                            Color c = dataSource.ColorCodeToWindowsColor(code);
+                            Color c = dataSource.ColorOf(code);
                             g.FillRectangle(new SolidBrush(Color.Gray), (i % 2) * 128 + k * 16, (i / 2) * 128 + j * 16, 16, 16);
                             g.FillRectangle(new SolidBrush(c), (i % 2) * 128 + k * 16, (i / 2) * 128 + j * 16, 15, 15);
                         }
@@ -217,7 +217,7 @@ namespace _99x8Edit
             Utility.DrawTransparent(bmpColorL);
             if(color_code_l > 0)
             {
-                Color c = dataSource.ColorCodeToWindowsColor(color_code_l);
+                Color c = dataSource.ColorOf(color_code_l);
                 gl.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
             }
             if (currentColor == 0)
@@ -227,7 +227,7 @@ namespace _99x8Edit
             Utility.DrawTransparent(bmpColorR);
             if (color_code_r > 0)
             {
-                Color c = dataSource.ColorCodeToWindowsColor(color_code_r);
+                Color c = dataSource.ColorOf(color_code_r);
                 gr.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
             }
             if (currentColor == 1)

@@ -100,7 +100,7 @@ namespace _99x8Edit
             int y = Math.Min(currentRow, selStartRow);
             int w = Math.Abs(currentCol - selStartCol) + 2;
             int h = Math.Abs(currentRow - selStartRow) + 2;
-            g.DrawRectangle(new Pen(Color.Red), x * 16, y * 16, w * 16 - 1, h * 16 - 1);
+            g.DrawRectangle(Pens.Red, x * 16, y * 16, w * 16 - 1, h * 16 - 1);
             viewPeek.Refresh();
         }
         private void UpdateAddr()

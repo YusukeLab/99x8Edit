@@ -22,18 +22,18 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private Bitmap bmpColorOR = new Bitmap(32, 32);
-        private int currentSpriteX = 0;     // 0-7
-        private int currentSpriteY = 0;     // 0-7
-        private int selStartSprX = 0;       // For multiple selection
-        private int selStartSprY = 0;
-        private int currentLineX = 0;       // Selected line in editor(0-1)
-        private int currentLineY = 0;       // Selected line in editor(0-15)
-        private int selStartLineX = 0;      // For multiple selection
-        private int selStartLineY = 0;
-        private int currentDot = 0;         // Selected dot in line(0-7)
-        private int currentColor = 0;       // Currently elected color, default or overlayed or OR
-        private int currentPalX = 0;        // Selection in palette
-        private int currentPalY = 0;
+        private int currentSpriteX;     // 0-7
+        private int currentSpriteY;     // 0-7
+        private int selStartSprX;       // For multiple selection
+        private int selStartSprY;
+        private int currentLineX;       // Selected line in editor(0-1)
+        private int currentLineY;       // Selected line in editor(0-15)
+        private int selStartLineX;      // For multiple selection
+        private int selStartLineY;
+        private int currentDot;         // Selected dot in line(0-7)
+        private int currentColor;       // Currently elected color, default or overlayed or OR
+        private int currentPalX;        // Selection in palette
+        private int currentPalY;
         String currentFile = "";
         public String CurrentFile
         {
@@ -127,11 +127,10 @@ namespace _99x8Edit
         protected override bool ProcessTabKey(bool forward)
         {
             Control prev = this.ActiveControl;
-            int index = tabOrder.IndexOf(prev);
-            index += forward ? 1 : tabOrder.Count - 1;
+            int index = tabOrder.IndexOf(prev) + (forward ? 1 : tabOrder.Count - 1);
             index %= tabOrder.Count;
             this.ActiveControl = tabOrder[index];
-            this.RefreshAllViews();
+            this.RefreshAllViews();     // Current focused selection will be hilighted
             return true;
         }
         //------------------------------------------------------------------------------
@@ -154,8 +153,8 @@ namespace _99x8Edit
             Graphics g = Graphics.FromImage(bmpPalette);
             for (int i = 1; i < 16; ++i)
             {
-                Color c = dataSource.ColorCodeToWindowsColor(i);
-                g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
+                Brush b = dataSource.BrushOf(i);
+                g.FillRectangle(b, (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
             Utility.DrawSelection(g, currentPalX * 32, currentPalY * 32, 31, 31, panelPalette.Focused);
             if (refresh) viewPalette.Refresh();
@@ -164,7 +163,7 @@ namespace _99x8Edit
         {
             Graphics g = Graphics.FromImage(bmpSprites);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpSprites.Width, bmpSprites.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, bmpSprites.Width, bmpSprites.Height);
             for (int i = 0; i < 8; ++i)
             {
                 for (int j = 0; j < 8; ++j)
@@ -196,7 +195,7 @@ namespace _99x8Edit
                 int index_r_16x16 = (index_of_16x16 + 1) % 64;
                 int xr = index_r_16x16 % 8;
                 int yr = index_r_16x16 / 8;
-                g.DrawRectangle(new Pen(Color.Gray) { DashStyle= System.Drawing.Drawing2D.DashStyle.Dash}, xr * 32, yr * 32, 31, 31);
+                g.DrawRectangle(Utility.DashedGray, xr * 32, yr * 32, 31, 31);
             }
             // Selection
             int x = Math.Min(currentSpriteX, selStartSprX);
@@ -258,10 +257,10 @@ namespace _99x8Edit
                             }
                             if (color_code != 0)
                             {
-                                g.FillRectangle(new SolidBrush(Color.Gray), x * 128 + k * 16, y * 128 + j * 16, 16, 16);
-                                Color c = dataSource.ColorCodeToWindowsColor(color_code);
-                                g.FillRectangle(new SolidBrush(c), x * 128 + k * 16, y * 128 + j * 16, 15, 15);
-                                preview.FillRectangle(new SolidBrush(c), x * 16 + k * 2, y * 16 + j * 2, 2, 2);
+                                g.FillRectangle(Brushes.Gray, x * 128 + k * 16, y * 128 + j * 16, 16, 16);
+                                Brush b = dataSource.BrushOf(color_code);
+                                g.FillRectangle(b, x * 128 + k * 16, y * 128 + j * 16, 15, 15);
+                                preview.FillRectangle(b, x * 16 + k * 2, y * 16 + j * 2, 2, 2);
                             }
                         }
                     }
@@ -294,15 +293,15 @@ namespace _99x8Edit
             int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
             int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
             int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
-            Color color_primary = dataSource.ColorCodeToWindowsColor(color_code_primary);
-            gl.FillRectangle(new SolidBrush(color_primary), 0, 0, 32, 32);
+            Brush color_primary = dataSource.BrushOf(color_code_primary);
+            gl.FillRectangle(color_primary, 0, 0, 32, 32);
             // Check overlays
             if (dataSource.GetSpriteOverlay(sprite_num_16x16))
             {
                 int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
                 int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
-                Color color_secondary = dataSource.ColorCodeToWindowsColor(color_code_secondary);
-                gr.FillRectangle(new SolidBrush(color_secondary), 0, 0, 32, 32);
+                Brush color_secondary = dataSource.BrushOf(color_code_secondary);
+                gr.FillRectangle(color_secondary, 0, 0, 32, 32);
                 viewColorR.Visible = true;
                 labelColorR.Visible = true;
                 if (dataSource.IsTMS9918)
@@ -315,8 +314,8 @@ namespace _99x8Edit
                 {
                     // Overlayed with or color(V9938)
                     int color_code_or = color_code_primary | color_code_secondary;
-                    Color color_or = dataSource.ColorCodeToWindowsColor(color_code_or);
-                    go.FillRectangle(new SolidBrush(color_or), 0, 0, 32, 32);
+                    Brush color_or = dataSource.BrushOf(color_code_or);
+                    go.FillRectangle(color_or, 0, 0, 32, 32);
                     viewColorOR.Visible = true;
                     labelColorOR.Visible = true;
                 }

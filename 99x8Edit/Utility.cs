@@ -7,23 +7,25 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
-    public static class Utility
+    public class Utility
     {
+        public static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
+                                       System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
         internal static void DrawSelection(Graphics g, int x, int y, int w, int h, bool focused)
         {
-            Color c2 = focused ? Color.Green : Color.DarkGreen;
-            g.DrawRectangle(new Pen(Color.Green), x, y, w, h);
-            g.DrawRectangle(new Pen(Color.Green), x + 1, y + 1, w - 2, h - 2);
+            g.DrawRectangle(Pens.Green, x, y, w, h);
+            g.DrawRectangle(Pens.Green, x + 1, y + 1, w - 2, h - 2);
             // Draw dot on bottom right
             if (focused)
             {
-                g.FillRectangle(new SolidBrush(Color.White), x + w - 4, y + h - 4, 4, 4);
-                g.FillRectangle(new SolidBrush(c2), x + w - 3, y + h - 3, 3, 3);
+                g.FillRectangle(Brushes.White, x + w - 4, y + h - 4, 4, 4);
+                Brush b = focused ? Brushes.Green : Brushes.DarkGreen;
+                g.FillRectangle(b, x + w - 3, y + h - 3, 3, 3);
             }
         }
         internal static void DrawSubSelection(Graphics g, int x, int y, int w, int h)
         {
-            g.DrawRectangle(new Pen(Color.Yellow), x, y, w, h);
+            g.DrawRectangle(Pens.Yellow, x, y, w, h);
         }
         internal static void DrawTransparent(Bitmap bmp)
         {
@@ -32,10 +34,10 @@ namespace _99x8Edit
             {
                 for (int x = 0; x < bmp.Width / 16; ++x)
                 {
-                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16, y * 16, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16 + 8, y * 16, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.Gray), x * 16, y * 16 + 8, 8, 8);
-                    g.FillRectangle(new SolidBrush(Color.DarkGray), x * 16 + 8, y * 16 + 8, 8, 8);
+                    g.FillRectangle(Brushes.DarkGray, x * 16, y * 16, 8, 8);
+                    g.FillRectangle(Brushes.Gray, x * 16 + 8, y * 16, 8, 8);
+                    g.FillRectangle(Brushes.Gray, x * 16, y * 16 + 8, 8, 8);
+                    g.FillRectangle(Brushes.DarkGray, x * 16 + 8, y * 16 + 8, 8, 8);
                 }
             }
         }

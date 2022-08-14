@@ -33,7 +33,8 @@ namespace _99x8Edit
         public override void Process(Bitmap src)
         {
             // Lock the bitmap and see in the array
-            BitmapData bd = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadWrite, src.PixelFormat);
+            BitmapData bd = src.LockBits(new Rectangle(0, 0, src.Width, src.Height),
+                                         ImageLockMode.ReadWrite, src.PixelFormat);
             int stride = Math.Abs(bd.Stride);
             int ch_num = Bitmap.GetPixelFormatSize(src.PixelFormat) / 8;
             // Create byte arrays of source and destination

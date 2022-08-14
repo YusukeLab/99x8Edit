@@ -33,7 +33,7 @@ namespace _99x8Edit
         private void pictureBox_Click(object sender, MouseEventArgs e)
         {
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-            colorSelected(clicked_color_num);
+            colorSelected?.Invoke(clicked_color_num);
             this.Dispose();
         }
         private void PaletteSelector_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)

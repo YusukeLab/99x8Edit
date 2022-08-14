@@ -5,11 +5,13 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace _99x8Edit
 {
     public partial class PaletteOrColors : Form
     {
+        // List the OR color pairs of V9938
         private const int colWidth = 128;
         private const int colMax = 5;
         private const int rowHeight = 38;
@@ -73,26 +75,26 @@ namespace _99x8Edit
                 int y = row * rowHeight + 8;
                 // Draw left color
                 int left_color_code = kvp.Key >> 4;
-                Color left = dataSource.ColorCodeToWindowsColor(left_color_code);
-                g.FillRectangle(new SolidBrush(left), x, y, 23, 23);
-                g.DrawString(left_color_code.ToString(), f, new SolidBrush(Color.White), x + 0, y + 0);
-                g.DrawString(left_color_code.ToString(), f, new SolidBrush(Color.Black), x + 1, y + 1);
-                g.DrawString("+", f, new SolidBrush(Color.Black), x + 24, y);
+                Brush left = dataSource.BrushOf(left_color_code);
+                g.FillRectangle(left, x, y, 23, 23);
+                g.DrawString(left_color_code.ToString(), f, Brushes.White, x + 0, y + 0);
+                g.DrawString(left_color_code.ToString(), f, Brushes.Black, x + 1, y + 1);
+                g.DrawString("+", f, Brushes.Black, x + 24, y);
                 // Draw right color
                 x += 40;
                 int right_color_code = kvp.Key & 0x0F;
-                Color right = dataSource.ColorCodeToWindowsColor(right_color_code);
-                g.FillRectangle(new SolidBrush(right), x, y, 23, 23);
-                g.DrawString(right_color_code.ToString(), f, new SolidBrush(Color.White), x + 0, y + 0);
-                g.DrawString(right_color_code.ToString(), f, new SolidBrush(Color.Black), x + 1, y + 1);
-                g.DrawString("=", f, new SolidBrush(Color.Black), x + 24, y);
+                Brush right = dataSource.BrushOf(right_color_code);
+                g.FillRectangle(right, x, y, 23, 23);
+                g.DrawString(right_color_code.ToString(), f, Brushes.White, x + 0, y + 0);
+                g.DrawString(right_color_code.ToString(), f, Brushes.Black, x + 1, y + 1);
+                g.DrawString("=", f, Brushes.Black, x + 24, y);
                 // Draw OR color
                 x += 40;
                 int or_color_code = kvp.Value;
-                Color cor = dataSource.ColorCodeToWindowsColor(or_color_code);
-                g.FillRectangle(new SolidBrush(cor), x, y, 23, 23);
-                g.DrawString(or_color_code.ToString(), f, new SolidBrush(Color.White), x + 0, y + 0);
-                g.DrawString(or_color_code.ToString(), f, new SolidBrush(Color.Black), x + 1, y + 1);
+                Brush cor = dataSource.BrushOf(or_color_code);
+                g.FillRectangle(cor, x, y, 23, 23);
+                g.DrawString(or_color_code.ToString(), f, Brushes.White, x + 0, y + 0);
+                g.DrawString(or_color_code.ToString(), f, Brushes.Black, x + 1, y + 1);
                 // To next col
                 if (++col == colMax)
                 {
@@ -109,32 +111,26 @@ namespace _99x8Edit
             Graphics g = Graphics.FromImage(bmpPalette);
             for (int i = 1; i < 16; ++i)
             {
-                Color c = dataSource.ColorCodeToWindowsColor(i);
-                g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
+                Brush b = dataSource.BrushOf(i);
+                g.FillRectangle(b, (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
             int x = currentFilter % 8 * 32;
             int y = currentFilter / 8 * 32;
-            Utility.DrawSelection(g, (currentFilter % 8) * 32, (currentFilter / 8) * 32, 31, 31, true);
+            Utility.DrawSelection(g, x, y, 31, 31, true);
             viewPalette.Refresh();
         }
         private void viewPalette_MouseMove(object sender, MouseEventArgs e)
         {
+            // Filter the elements with the hovered color
             int color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
             if(color_num != currentFilter)
             {
-                filteredDict = new Dictionary<int, int>(orgDict);
-                if((currentFilter = color_num) != 0)
-                {
-                    foreach (KeyValuePair<int, int> kvp in filteredDict)
-                    {
-                        if (((kvp.Key >> 4) != currentFilter)
-                            && ((kvp.Key & 0x0F) != currentFilter)
-                            && (kvp.Value != currentFilter))
-                        {
-                            filteredDict.Remove(kvp.Key);
-                        }
-                    }
-                }
+                currentFilter = color_num;
+                filteredDict = orgDict.Where(p => (p.Value == currentFilter)
+                                            || ((p.Key >> 4) == currentFilter)
+                                            || ((p.Key & 0x0F) == currentFilter)
+                                            || currentFilter == 0)
+                                      .ToDictionary(p => p.Key, p => p.Value);
                 this.UpdatePaletteView();
                 this.UpdateColorList();
             }

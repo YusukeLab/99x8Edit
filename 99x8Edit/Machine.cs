@@ -36,6 +36,7 @@ namespace _99x8Edit
         private Bitmap[] bmpOneChr = new Bitmap[256];       // PCG
         private Bitmap[] bmpOneSprite = new Bitmap[256];    // Sprite
         private Color[] colorOf = new Color[16];            // Windows color corresponding to color code
+        private Brush[] brushOf = new Brush[16];
         // Consts(For TMS9918 view, we need higher resolution than RGB8)
         private int[] palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
                                       0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
@@ -200,6 +201,7 @@ namespace _99x8Edit
                 G = (G * 255) / 7;
                 B = (B * 255) / 7;
                 colorOf[i] = Color.FromArgb(R, G, B);
+                brushOf[i] = new SolidBrush(colorOf[i]);
             }
             this.UpdateAllViewItems();
         }
@@ -330,6 +332,16 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Properties
+        internal Color ColorOf(int color_code)
+        {
+            color_code = Math.Clamp(color_code, 0, 15);
+            return colorOf[color_code];
+        }
+        internal Brush BrushOf(int color_code)
+        {
+            color_code = Math.Clamp(color_code, 0, 15);
+            return brushOf[color_code];
+        }
         internal bool IsTMS9918
         {
             get { return isTMS9918; }
@@ -345,7 +357,9 @@ namespace _99x8Edit
             pltDat[colorCode * 2] = (byte)((R << 4) | B);
             pltDat[colorCode * 2 + 1] = (byte)(G);
             // Update windows color corresponding to the color code
-            colorOf[colorCode] = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
+            Color c = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
+            colorOf[colorCode] = c;
+            brushOf[colorCode] = new SolidBrush(c);
             // Update bitmaps
             this.UpdateAllViewItems();
         }
@@ -540,11 +554,6 @@ namespace _99x8Edit
             }
             // Update PCG bitmap
             this.UpdatePCGBitmap(addr / 8);
-        }
-        internal Color ColorCodeToWindowsColor(int color_code)
-        {
-            color_code = Math.Clamp(color_code, 0, 15);
-            return colorOf[color_code];
         }
         internal int GetPCGInPattern(int ptn, int index)
         {
@@ -877,7 +886,12 @@ namespace _99x8Edit
                     int R = palette9918[i] >> 16;
                     int G = (palette9918[i] & 0xffff) >> 8;
                     int B = palette9918[i] & 0xff;
-                    colorOf[i] = Color.FromArgb(R, G, B);
+                    Color c = Color.FromArgb(R, G, B);
+                    if(c != colorOf[i])
+                    {
+                        colorOf[i] = Color.FromArgb(R, G, B);
+                        brushOf[i] = new SolidBrush(c);
+                    }
                 }
             }
             else
@@ -890,7 +904,12 @@ namespace _99x8Edit
                     R = (R * 255) / 7;
                     G = (G * 255) / 7;
                     B = (B * 255) / 7;
-                    colorOf[i] = Color.FromArgb(R, G, B);
+                    Color c = Color.FromArgb(R, G, B);
+                    if (c != colorOf[i])
+                    {
+                        colorOf[i] = Color.FromArgb(R, G, B);
+                        brushOf[i] = new SolidBrush(c);
+                    }
                 }
             }
         }

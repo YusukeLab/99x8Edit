@@ -26,24 +26,15 @@ namespace _99x8Edit
         }
         public int R
         {
-            get
-            {
-                return trackBarR.Value;
-            }
+            get { return trackBarR.Value; }
         }
         public int G
         {
-            get
-            {
-                return trackBarG.Value;
-            }
+            get { return trackBarG.Value; }
         }
         public int B
         {
-            get
-            {
-                return trackBarB.Value;
-            }
+            get { return trackBarB.Value; }
         }
         protected override bool ProcessDialogKey(Keys keyData)
         {
@@ -117,14 +108,13 @@ namespace _99x8Edit
             textBoxB.Text = trackBarB.Value.ToString();
             this.UpdateColor();
         }
-
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Dispose();
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
-            paletteEdited();
+            paletteEdited?.Invoke();
             this.Dispose();
         }
     }

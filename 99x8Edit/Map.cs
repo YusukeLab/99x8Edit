@@ -187,9 +187,9 @@ namespace _99x8Edit
             // Selection, cell in one pattern
             int cx = currentPtnX * 32;
             int cy = currentPtnY * 32;
-            g.DrawRectangle(new Pen(Color.Yellow),
-                cx + currentCellInPtnX * 16 + (1 - currentCellInPtnX),
-                cy + currentCellInPtnY * 16 + (1 - currentCellInPtnY), 14, 14);
+            g.DrawRectangle(Pens.Yellow,
+                            cx + currentCellInPtnX * 16 + (1 - currentCellInPtnX),
+                            cy + currentCellInPtnY * 16 + (1 - currentCellInPtnY), 14, 14);
             if (refresh) viewPatterns.Refresh();
         }
         private void UpdateMap(bool refresh = true)
