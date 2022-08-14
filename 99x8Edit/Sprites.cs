@@ -975,10 +975,10 @@ namespace _99x8Edit
                     this.SetSpriteColor(current_target16x16, x);
                 }
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code, callback);
-            palette_win.StartPosition = FormStartPosition.Manual;
-            palette_win.Location = Cursor.Position;
-            palette_win.Show();
+            PaletteSelector win = new PaletteSelector(bmpPalette, color_code, callback);
+            win.StartPosition = FormStartPosition.Manual;
+            win.Location = Cursor.Position;
+            win.Show();
         }
         private void viewColorR_Click(object sender, EventArgs e)
         {
@@ -998,10 +998,15 @@ namespace _99x8Edit
                     this.SetSpriteColor(current_target16x16, x);
                 }
             };
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code, callback);
-            palette_win.StartPosition = FormStartPosition.Manual;
-            palette_win.Location = Cursor.Position;
-            palette_win.Show();
+            PaletteSelector win = new PaletteSelector(bmpPalette, color_code, callback);
+            win.StartPosition = FormStartPosition.Manual;
+            win.Location = Cursor.Position;
+            win.Show();
+        }
+        private void viewColorOR_Click(object sender, EventArgs e)
+        {
+            PaletteOrColors win = new PaletteOrColors(dataSource);
+            win.Show();
         }
         private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {

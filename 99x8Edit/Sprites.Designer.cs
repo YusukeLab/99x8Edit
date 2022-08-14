@@ -186,6 +186,7 @@ namespace _99x8Edit
             this.viewColorOR.Size = new System.Drawing.Size(32, 32);
             this.viewColorOR.TabIndex = 26;
             this.viewColorOR.TabStop = false;
+            this.viewColorOR.Click += new System.EventHandler(this.viewColorOR_Click);
             // 
             // checkOverlay
             // 
