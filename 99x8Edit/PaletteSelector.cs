@@ -53,7 +53,11 @@ namespace _99x8Edit
                     currentX = Math.Min(currentX + 1, 7);
                     break;
                 case Keys.Space:
+                case Keys.Enter:
                     colorSelected(currentY * 8 + currentX);
+                    this.Dispose();
+                    break;
+                case Keys.Escape:
                     this.Dispose();
                     break;
             }
@@ -65,7 +69,7 @@ namespace _99x8Edit
             g.DrawImage(bmpOrg, 0, 0, viewPlt.Width, viewPlt.Height);
             int x = currentX * 32;
             int y = currentY * 32;
-            g.DrawRectangle(new Pen(Consts.ColorSelectionFocused), x, y, 31, 31);
+            Utility.DrawSelection(g, x, y, 31, 31, true);
             viewPlt.Refresh();
         }
     }

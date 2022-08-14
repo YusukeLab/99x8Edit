@@ -11,7 +11,8 @@ namespace _99x8Edit
     // RGB888 Palette editor window
     public partial class PaletteEditor : Form
     {
-        public PaletteEditor(int R, int G, int B)
+        Action paletteEdited;
+        public PaletteEditor(int R, int G, int B, Action callback)
         {
             InitializeComponent();
             textBoxR.Text = R.ToString();
@@ -20,6 +21,7 @@ namespace _99x8Edit
             trackBarR.Value = R;
             trackBarG.Value = G;
             trackBarB.Value = B;
+            paletteEdited = callback;
             this.UpdateColor();
         }
         public int R
@@ -42,6 +44,22 @@ namespace _99x8Edit
             {
                 return trackBarB.Value;
             }
+        }
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Escape:
+                    this.Dispose();
+                    break;
+                default:
+                    return base.ProcessDialogKey(keyData);
+            }
+            return true;
+        }
+        private void PaletteEditor_Deactivate(object sender, EventArgs e)
+        {
+            this.Dispose();
         }
         private void UpdateColor()
         {
@@ -98,6 +116,16 @@ namespace _99x8Edit
         {
             textBoxB.Text = trackBarB.Value.ToString();
             this.UpdateColor();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
+        }
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            paletteEdited();
+            this.Dispose();
         }
     }
 }

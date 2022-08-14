@@ -7,14 +7,24 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
-    internal static class Consts
-    {
-        internal static Color ColorSelectionFocused = Color.Red;
-        internal static Color ColorSelectionUnfocus = Color.DarkRed;
-        internal static Color ColorCurrentDot = Color.Yellow;
-    }
     public static class Utility
     {
+        internal static void DrawSelection(Graphics g, int x, int y, int w, int h, bool focused)
+        {
+            Color c2 = focused ? Color.Green : Color.DarkGreen;
+            g.DrawRectangle(new Pen(Color.Green), x, y, w, h);
+            g.DrawRectangle(new Pen(Color.Green), x + 1, y + 1, w - 2, h - 2);
+            // Draw dot on bottom right
+            if (focused)
+            {
+                g.FillRectangle(new SolidBrush(Color.White), x + w - 4, y + h - 4, 4, 4);
+                g.FillRectangle(new SolidBrush(c2), x + w - 3, y + h - 3, 3, 3);
+            }
+        }
+        internal static void DrawSubSelection(Graphics g, int x, int y, int w, int h)
+        {
+            g.DrawRectangle(new Pen(Color.Yellow), x, y, w, h);
+        }
         internal static void DrawTransparent(Bitmap bmp)
         {
             Graphics g = Graphics.FromImage(bmp);

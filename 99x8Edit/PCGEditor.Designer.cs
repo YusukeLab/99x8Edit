@@ -85,6 +85,7 @@ namespace _99x8Edit
             this.viewColorR = new System.Windows.Forms.PictureBox();
             this.viewColorL = new System.Windows.Forms.PictureBox();
             this.panelColor = new System.Windows.Forms.Panel();
+            this.panelPalette = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).BeginInit();
             this.contextPCGList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).BeginInit();
@@ -99,6 +100,7 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             this.panelColor.SuspendLayout();
+            this.panelPalette.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -215,7 +217,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(13, 550);
+            this.viewPalette.Location = new System.Drawing.Point(0, 0);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 8;
@@ -605,10 +607,20 @@ namespace _99x8Edit
             this.panelColor.TabStop = true;
             this.panelColor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelColor_PreviewKeyDown);
             // 
+            // panelPalette
+            // 
+            this.panelPalette.Controls.Add(this.viewPalette);
+            this.panelPalette.Location = new System.Drawing.Point(13, 550);
+            this.panelPalette.Name = "panelPalette";
+            this.panelPalette.Size = new System.Drawing.Size(268, 73);
+            this.panelPalette.TabIndex = 32;
+            this.panelPalette.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPalette_PreviewKeyDown);
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 642);
+            this.Controls.Add(this.panelPalette);
             this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
@@ -619,7 +631,6 @@ namespace _99x8Edit
             this.Controls.Add(this.btnSavePalette);
             this.Controls.Add(this.chkTMS);
             this.Controls.Add(this.btnOpenPalette);
-            this.Controls.Add(this.viewPalette);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -651,6 +662,7 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).EndInit();
             this.panelColor.ResumeLayout(false);
             this.panelColor.PerformLayout();
+            this.panelPalette.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -713,5 +725,6 @@ namespace _99x8Edit
         private System.Windows.Forms.PictureBox viewColorR;
         private System.Windows.Forms.PictureBox viewColorL;
         private System.Windows.Forms.Panel panelColor;
+        private System.Windows.Forms.Panel panelPalette;
     }
 }

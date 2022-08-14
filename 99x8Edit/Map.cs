@@ -153,9 +153,7 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
             }
             // Selection
-            Color sel_color = panelPCG.Focused ? Consts.ColorSelectionFocused
-                                               : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color), currentPCGX * 16, currentPCGY * 16, 15, 15);
+            Utility.DrawSelection(g, currentPCGX * 16, currentPCGY * 16, 15, 15, panelPCG.Focused);
             if (refresh) viewPCG.Refresh();
         }
         private void UpdateMapPatterns(bool refresh = true)
@@ -180,13 +178,12 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMapPatterns);
             }
             // Selection
-            Color sel_color = panelPatterns.Focused ? Consts.ColorSelectionFocused
-                                                    : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color),
-                            Math.Min(currentPtnX, selStartPtnX) * 32,
-                            Math.Min(currentPtnY, selStartPtnY) * 32,
-                            (Math.Abs(currentPtnX - selStartPtnX) + 1) * 32 - 1,
-                            (Math.Abs(currentPtnY - selStartPtnY) + 1) * 32 - 1);
+            Utility.DrawSelection(g,
+                                  Math.Min(currentPtnX, selStartPtnX) * 32,
+                                  Math.Min(currentPtnY, selStartPtnY) * 32,
+                                  (Math.Abs(currentPtnX - selStartPtnX) + 1) * 32 - 1,
+                                  (Math.Abs(currentPtnY - selStartPtnY) + 1) * 32 - 1,
+                                  panelPatterns.Focused);
             // Selection, cell in one pattern
             int cx = currentPtnX * 32;
             int cy = currentPtnY * 32;
@@ -213,13 +210,12 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMap);
             }
             // Selection
-            Color sel_color = panelMap.Focused ? Consts.ColorSelectionFocused
-                                               : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color),
-                            Math.Min(currentMapX, selStartMapX) * 32,
-                            Math.Min(currentMapY, selStartMapY) * 32,
-                            (Math.Abs(currentMapX - selStartMapX) + 1) * 32 - 1,
-                            (Math.Abs(currentMapY - selStartMapY) + 1) * 32 - 1);
+            Utility.DrawSelection(g,
+                                  Math.Min(currentMapX, selStartMapX) * 32,
+                                  Math.Min(currentMapY, selStartMapY) * 32,
+                                  (Math.Abs(currentMapX - selStartMapX) + 1) * 32 - 1,
+                                  (Math.Abs(currentMapY - selStartMapY) + 1) * 32 - 1,
+                                  panelMap.Focused);
             if (refresh) viewMap.Refresh();
             // Map size may be changed by loading, undo, etc
             if ((currentMapOriginX + 16 > dataSource.MapWidth) || (currentMapOriginY + 12 > dataSource.MapHeight))

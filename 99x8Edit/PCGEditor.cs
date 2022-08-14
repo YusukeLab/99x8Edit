@@ -32,6 +32,8 @@ namespace _99x8Edit
         private int selStartLineY = 0;
         private int currentDot = 0;
         private int currentColor = 0;       // Currently elected color, foreground or background
+        private int currentPalX = 0;        // Selection in palette
+        private int currentPalY = 0;
         String currentFile = "";
         public String CurrentFile
         {
@@ -51,7 +53,7 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order
-            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPCG, panelSandbox });
+            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPalette, panelPCG, panelSandbox });
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewPCG.Image = bmpPCGList;
@@ -159,8 +161,10 @@ namespace _99x8Edit
             for (int i = 1; i < 16; ++i)
             {
                 Color c = dataSource.ColorCodeToWindowsColor(i);
-                g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
+                g.FillRectangle(new SolidBrush(c), (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
+            // Current selection
+            Utility.DrawSelection(g, currentPalX * 32, currentPalY * 32, 31, 31, panelPalette.Focused);
             if(refresh) this.viewPalette.Refresh();
         }
         private void UpdatePCGEditView(bool refresh = true)
@@ -187,19 +191,15 @@ namespace _99x8Edit
                     }
                 }
             }
-            Color sel_color = panelEditor.Focused ? Consts.ColorSelectionFocused
-                                                  : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color),
-                            Math.Min(currentLineX, selStartLineX) * 128,
-                            Math.Min(currentLineY, selStartLineY) * 16,
-                            (Math.Abs(currentLineX - selStartLineX) + 1) * 128 - 1,
-                            (Math.Abs(currentLineY - selStartLineY) + 1) * 16 - 1);
+            int sx = Math.Min(currentLineX, selStartLineX) * 128;
+            int sy = Math.Min(currentLineY, selStartLineY) * 16;
+            int sw = (Math.Abs(currentLineX - selStartLineX) + 1) * 128 - 1;
+            int sh = (Math.Abs(currentLineY - selStartLineY) + 1) * 16 - 1;
+            Utility.DrawSelection(g, sx, sy, sw, sh, panelEditor.Focused);
             if (panelEditor.Focused)
             {
                 // One dot can be selected when focused
-                g.DrawRectangle(new Pen(Consts.ColorCurrentDot),
-                                Math.Min(currentLineX, selStartLineX) * 128 + currentDot * 16,
-                                Math.Min(currentLineY, selStartLineY) * 16, 14, 14);
+                Utility.DrawSubSelection(g, sx + currentDot * 16, sy, 14, 14);
             }
             if (refresh) viewPCGEdit.Refresh();
         }
@@ -208,8 +208,6 @@ namespace _99x8Edit
             // Update current color
             Graphics gl = Graphics.FromImage(bmpColorL);
             Graphics gr = Graphics.FromImage(bmpColorR);
-            Color sel_color = panelColor.Focused ? Consts.ColorSelectionFocused
-                                                 : Consts.ColorSelectionUnfocus;
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
             int color_code_l = dataSource.GetColorTable(current_target_pcg, currentLineY % 8, true);
@@ -222,7 +220,7 @@ namespace _99x8Edit
             }
             if (currentColor == 0)
             {
-                gl.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+                Utility.DrawSelection(gl, 0, 0, 29, 29, panelColor.Focused);
             }
             Utility.DrawTransparent(bmpColorR);
             if (color_code_r > 0)
@@ -232,7 +230,7 @@ namespace _99x8Edit
             }
             if (currentColor == 1)
             {
-                gr.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+                Utility.DrawSelection(gr, 0, 0, 29, 29, panelColor.Focused);
             }
             if (refresh)
             {
@@ -258,13 +256,12 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
                 }
                 // Current selection
-                Color sel_color = panelPCG.Focused ? Consts.ColorSelectionFocused
-                                                   : Consts.ColorSelectionUnfocus;
-                g.DrawRectangle(new Pen(sel_color),
-                                Math.Min(currentPCGX, selStartPCGX) * 16,
-                                Math.Min(currentPCGY, selStartPCGY) * 16,
-                                (Math.Abs(currentPCGX - selStartPCGX) + 1) * 16 - 1,
-                                (Math.Abs(currentPCGY - selStartPCGY) + 1) * 16 - 1);
+                Utility.DrawSelection(g,
+                                      Math.Min(currentPCGX, selStartPCGX) * 16,
+                                      Math.Min(currentPCGY, selStartPCGY) * 16,
+                                      (Math.Abs(currentPCGX - selStartPCGX) + 1) * 16 - 1,
+                                      (Math.Abs(currentPCGY - selStartPCGY) + 1) * 16 - 1,
+                                      panelPCG.Focused);
                 viewPCG.Refresh();
             }
         }
@@ -287,13 +284,12 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
-                Color sel_color = panelSandbox.Focused ? Consts.ColorSelectionFocused
-                                                       : Consts.ColorSelectionUnfocus;
-                g.DrawRectangle(new Pen(sel_color),
-                                Math.Min(currentSandboxX, selStartSandX) * 16,
-                                Math.Min(currentSandboxY, selStartSandY) * 16,
-                                (Math.Abs(currentSandboxX - selStartSandX) + 1) * 16 - 1,
-                                (Math.Abs(currentSandboxY - selStartSandY) + 1) * 16 - 1);
+                Utility.DrawSelection(g,
+                                      Math.Min(currentSandboxX, selStartSandX) * 16,
+                                      Math.Min(currentSandboxY, selStartSandY) * 16,
+                                      (Math.Abs(currentSandboxX - selStartSandX) + 1) * 16 - 1,
+                                      (Math.Abs(currentSandboxY - selStartSandY) + 1) * 16 - 1,
+                                      panelSandbox.Focused);
                 viewSandbox.Refresh();
             }
         }
@@ -302,7 +298,10 @@ namespace _99x8Edit
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
             // Palette view clicked
-            int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
+            panelPalette.Focus();      // Key events to parent panel
+            int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
+            currentPalX = clicked_color_num % 8;
+            currentPalY = clicked_color_num / 8;
             // Update color table of current line
             int current_pcg = currentPCGY * 32 + currentPCGX;
             int current_target_pcg = (current_pcg + currentLineX + (currentLineY / 8) * 32) % 256;
@@ -323,16 +322,45 @@ namespace _99x8Edit
             if (!chkTMS.Checked)
             {
                 int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-                int R = dataSource.GetPaletteR(clicked_color_num);
-                int G = dataSource.GetPaletteG(clicked_color_num);
-                int B = dataSource.GetPaletteB(clicked_color_num);
-                PaletteEditor palette_win = new PaletteEditor(R, G, B);
-                if (palette_win.ShowDialog() == DialogResult.OK)
-                {
-                    dataSource.SetPalette(clicked_color_num,
-                                          palette_win.R, palette_win.G, palette_win.B, true);
-                    this.RefreshAllViews();     // Everything changes
-                }
+                this.EditPalette(clicked_color_num);
+            }
+        }
+        private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    if (currentPalY > 0)
+                    {
+                        currentPalY--;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Down:
+                    if (currentPalY < 1)
+                    {
+                        currentPalY++;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Left:
+                    if (currentPalX > 0)
+                    {
+                        currentPalX--;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Right:
+                    if (currentPalX < 7)
+                    {
+                        currentPalX++;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Space:
+                case Keys.Enter:
+                    this.EditPalette(currentPalY * 8 + currentPalX);
+                    break;
             }
         }
         private void viewColorL_Click(object sender, EventArgs e)
@@ -390,6 +418,7 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Space:
+                case Keys.Enter:
                     if (currentColor == 0)
                     {
                         this.viewColorL_Click(null, null);
@@ -1321,6 +1350,23 @@ namespace _99x8Edit
             this.UpdatePCGEditView();   // PCG Editor view changes
             this.UpdatePCGList();       // PCG list view changes also
             this.UpdateSandbox();       // Update sandbox view
+        }
+        private void EditPalette(int index)
+        {
+            int R = dataSource.GetPaletteR(index);
+            int G = dataSource.GetPaletteG(index);
+            int B = dataSource.GetPaletteB(index);
+            PaletteEditor palette_win = null ;
+            Action callback = () =>
+            {
+                dataSource.SetPalette(index,
+                                      palette_win.R, palette_win.G, palette_win.B, true);
+                this.RefreshAllViews();     // Everything changes
+            };
+            palette_win = new PaletteEditor(R, G, B, callback);
+            palette_win.StartPosition = FormStartPosition.Manual;
+            palette_win.Location = Cursor.Position;
+            palette_win.Show();
         }
         private void PaintSandbox(int x, int y, int val)
         {

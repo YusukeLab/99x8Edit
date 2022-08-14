@@ -79,6 +79,7 @@ namespace _99x8Edit
             this.toolStripFileLoadSprite = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSaveSprite = new System.Windows.Forms.ToolStripMenuItem();
             this.panelColor = new System.Windows.Forms.Panel();
+            this.panelPalette = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewSpriteEdit)).BeginInit();
@@ -92,6 +93,7 @@ namespace _99x8Edit
             this.contextEditor.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.panelColor.SuspendLayout();
+            this.panelPalette.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelColorR
@@ -241,7 +243,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(9, 463);
+            this.viewPalette.Location = new System.Drawing.Point(0, 0);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 30;
@@ -550,10 +552,20 @@ namespace _99x8Edit
             this.panelColor.TabIndex = 48;
             this.panelColor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelColor_PreviewKeyDown);
             // 
+            // panelPalette
+            // 
+            this.panelPalette.Controls.Add(this.viewPalette);
+            this.panelPalette.Location = new System.Drawing.Point(13, 463);
+            this.panelPalette.Name = "panelPalette";
+            this.panelPalette.Size = new System.Drawing.Size(272, 75);
+            this.panelPalette.TabIndex = 49;
+            this.panelPalette.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPalette_PreviewKeyDown);
+            // 
             // Sprites
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(562, 542);
+            this.Controls.Add(this.panelPalette);
             this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
@@ -565,7 +577,6 @@ namespace _99x8Edit
             this.Controls.Add(this.btnSavePalette);
             this.Controls.Add(this.chkTMS);
             this.Controls.Add(this.btnOpenPalette);
-            this.Controls.Add(this.viewPalette);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.checkOverlay);
             this.Controls.Add(this.label3);
@@ -595,6 +606,7 @@ namespace _99x8Edit
             this.menuStripMain.PerformLayout();
             this.panelColor.ResumeLayout(false);
             this.panelColor.PerformLayout();
+            this.panelPalette.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -651,5 +663,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveSprite;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadSprite;
         private System.Windows.Forms.Panel panelColor;
+        private System.Windows.Forms.Panel panelPalette;
     }
 }

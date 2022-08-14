@@ -623,6 +623,28 @@ namespace _99x8Edit
                 {
                     br.Close();
                 }
+                br = new BinaryWriter(new FileStream(path + "_color", FileMode.Create));
+                try
+                {
+                    // Color table can't be registered to VRAM, so start address will be 0
+                    br.Write((byte)0xFE);       // BSAVE/BLOAD header
+                    br.Write((byte)0x00);       // Start address is 0x0000
+                    br.Write((byte)0x00);
+                    br.Write((byte)0x04);       // End address is 0x0400
+                    br.Write((byte)0x00);
+                    br.Write((byte)0);          // Execution address
+                    br.Write((byte)0);
+                    byte[] sprite_clr16x16 = this.SpriteColorsBy16x16();
+                    br.Write(sprite_clr16x16);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    br.Close();
+                }
             }
             else if (type == Type.Raw)
             {

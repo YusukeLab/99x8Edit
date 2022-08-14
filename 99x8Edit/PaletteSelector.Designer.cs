@@ -33,10 +33,10 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewPlt)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox
+            // viewPlt
             // 
             this.viewPlt.Location = new System.Drawing.Point(0, 0);
-            this.viewPlt.Name = "pictureBox";
+            this.viewPlt.Name = "viewPlt";
             this.viewPlt.Size = new System.Drawing.Size(256, 64);
             this.viewPlt.TabIndex = 0;
             this.viewPlt.TabStop = false;
@@ -49,6 +49,7 @@ namespace _99x8Edit
             this.Controls.Add(this.viewPlt);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteSelector";
+            this.ShowInTaskbar = false;
             this.Text = "PaletteSelector";
             this.Deactivate += new System.EventHandler(this.PaletteSelector_Deactivate);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PaletteSelector_PreviewKeyDown);

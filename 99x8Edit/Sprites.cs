@@ -32,6 +32,8 @@ namespace _99x8Edit
         private int selStartLineY = 0;
         private int currentDot = 0;         // Selected dot in line(0-7)
         private int currentColor = 0;       // Currently elected color, default or overlayed or OR
+        private int currentPalX = 0;        // Selection in palette
+        private int currentPalY = 0;
         String currentFile = "";
         public String CurrentFile
         {
@@ -49,7 +51,7 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order
-            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelSprites });
+            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPalette, panelSprites });
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewSprites.Image = bmpSprites;
@@ -153,6 +155,7 @@ namespace _99x8Edit
                 Color c = dataSource.ColorCodeToWindowsColor(i);
                 g.FillRectangle(new SolidBrush(c), new Rectangle((i % 8) * 32, (i / 8) * 32, 32, 32));
             }
+            Utility.DrawSelection(g, currentPalX * 32, currentPalY * 32, 31, 31, panelPalette.Focused);
             if (refresh) viewPalette.Refresh();
         }
         private void UpdateSpriteView(bool refresh = true)
@@ -191,16 +194,14 @@ namespace _99x8Edit
                 int index_r_16x16 = (index_of_16x16 + 1) % 64;
                 int xr = index_r_16x16 % 8;
                 int yr = index_r_16x16 / 8;
-                g.DrawRectangle(new Pen(Color.Gray), xr * 32, yr * 32, 31, 31);
+                g.DrawRectangle(new Pen(Color.Gray) { DashStyle= System.Drawing.Drawing2D.DashStyle.Dash}, xr * 32, yr * 32, 31, 31);
             }
             // Selection
             int x = Math.Min(currentSpriteX, selStartSprX);
             int y = Math.Min(currentSpriteY, selStartSprY);
             int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
             int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
-            Color sel_color = panelSprites.Focused ? Consts.ColorSelectionFocused
-                                                   : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color), x * 32, y * 32, w * 32 - 1, h * 32 - 1);
+            Utility.DrawSelection(g, x * 32, y * 32, w * 32 - 1, h * 32 - 1, panelSprites.Focused);
             if (refresh) viewSprites.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh = true)
@@ -269,14 +270,10 @@ namespace _99x8Edit
             int sy = Math.Min(currentLineY, selStartLineY);
             int sw = Math.Abs(currentLineX - selStartLineX) + 1;
             int sh = Math.Abs(currentLineY - selStartLineY) + 1;
-            Color sel_color = panelEditor.Focused ? Consts.ColorSelectionFocused
-                                                  : Consts.ColorSelectionUnfocus;
-            g.DrawRectangle(new Pen(sel_color), sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1);
-            if(panelEditor.Focused)
+            Utility.DrawSelection(g, sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1, panelEditor.Focused);
+            if (panelEditor.Focused)
             {
-                // One dot can be selected when focused
-                g.DrawRectangle(new Pen(Consts.ColorCurrentDot),
-                                sx * 128 + currentDot * 16, sy * 16, 14, 14);
+                Utility.DrawSubSelection(g, sx * 128 + currentDot * 16, sy * 16, 14, 14);
             }
             // CRT Filter
             if (chkCRT.Checked)
@@ -288,8 +285,6 @@ namespace _99x8Edit
         }
         void UpdateCurrentColorView(bool refresh = true)
         {
-            Color sel_color = panelColor.Focused ? Consts.ColorSelectionFocused
-                                                 : Consts.ColorSelectionUnfocus;
             Graphics gl = Graphics.FromImage(bmpColorL);
             Graphics gr = Graphics.FromImage(bmpColorR);
             Graphics go = Graphics.FromImage(bmpColorOR);
@@ -336,11 +331,11 @@ namespace _99x8Edit
             if (!viewColorR.Visible && currentColor > 0) currentColor = 0;
             if (currentColor == 0)
             {
-                gl.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+                Utility.DrawSelection(gl, 0, 0, 29, 29, panelColor.Focused);
             }
             else if (currentColor == 1)
             {
-                gr.DrawRectangle(new Pen(sel_color), 0, 0, 29, 29);
+                Utility.DrawSelection(gr, 0, 0, 29, 29, panelColor.Focused);
             }
             if (refresh)
             {
@@ -1025,6 +1020,7 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Space:
+                case Keys.Enter:
                     if (currentColor == 0)
                     {
                         this.viewColorL_Click(null, null);
@@ -1038,6 +1034,7 @@ namespace _99x8Edit
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
+            panelPalette.Focus();
             // Palette view clicked
             int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
             if (clicked_color_num == 0) return;
@@ -1062,16 +1059,45 @@ namespace _99x8Edit
             if (!chkTMS.Checked)
             {
                 int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-                int R = dataSource.GetPaletteR(clicked_color_num);
-                int G = dataSource.GetPaletteG(clicked_color_num);
-                int B = dataSource.GetPaletteB(clicked_color_num);
-                PaletteEditor palette_win = new PaletteEditor(R, G, B);
-                if (palette_win.ShowDialog() == DialogResult.OK)
-                {
-                    dataSource.SetPalette(clicked_color_num, palette_win.R,
-                                          palette_win.G, palette_win.B, true);
-                    this.RefreshAllViews();     // Everything changes
-                }
+                this.EditPalette(clicked_color_num);
+            }
+        }
+        private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    if (currentPalY > 0)
+                    {
+                        currentPalY--;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Down:
+                    if (currentPalY < 1)
+                    {
+                        currentPalY++;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Left:
+                    if (currentPalX > 0)
+                    {
+                        currentPalX--;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Right:
+                    if (currentPalX < 7)
+                    {
+                        currentPalX++;
+                    }
+                    this.UpdatePaletteView();
+                    break;
+                case Keys.Space:
+                case Keys.Enter:
+                    this.EditPalette(currentPalY * 8 + currentPalX);
+                    break;
             }
         }
         private void Sprites_Activated(object sender, EventArgs e)
@@ -1134,7 +1160,7 @@ namespace _99x8Edit
         }
         private void menu_fileExport(object sender, EventArgs e)
         {
-            mainWin.ExportPCG(sender, e);
+            mainWin.ExportSprite(sender, e);
         }
         private void menu_fileLoadSprite(object sender, EventArgs e)
         {
@@ -1159,7 +1185,23 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utility
-
+        private void EditPalette(int index)
+        {
+            int R = dataSource.GetPaletteR(index);
+            int G = dataSource.GetPaletteG(index);
+            int B = dataSource.GetPaletteB(index);
+            PaletteEditor palette_win = null;
+            Action callback = () =>
+            {
+                dataSource.SetPalette(index,
+                                      palette_win.R, palette_win.G, palette_win.B, true);
+                this.RefreshAllViews();     // Everything changes
+            };
+            palette_win = new PaletteEditor(R, G, B, callback);
+            palette_win.StartPosition = FormStartPosition.Manual;
+            palette_win.Location = Cursor.Position;
+            palette_win.Show();
+        }
         private void SetSpriteColor(int target16x16, int val)
         {
             int target8x8 = target16x16 * 4;

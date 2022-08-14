@@ -209,8 +209,11 @@ namespace _99x8Edit
             {
                 for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
                 {
+                    // Internal data has colors for each 8x8 sprites
                     int index16x16 = i / 16;
-                    out_clr[index16x16 * 32 + (i % 16)] = out_clr[index16x16 * 32 + 16 + (i % 16)] = br.ReadByte();
+                    out_clr[index16x16 * 32 + (i % 16)]
+                        = out_clr[index16x16 * 32 + 16 + (i % 16)]
+                        = br.ReadByte();
                 }
             }
             finally
