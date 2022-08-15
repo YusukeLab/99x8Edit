@@ -14,15 +14,14 @@ namespace _99x8Edit
         Action<int> colorSelected;
         Bitmap bmpOrg;
         Bitmap bmpCur;
-        int currentX;
-        int currentY;
+        Point current;
         public PaletteSelector(Bitmap pict, int previous, Action<int> callback)
         {
             InitializeComponent();
             bmpOrg = pict;
             viewPlt.Image = bmpCur = (Bitmap)bmpOrg.Clone();
-            currentX = previous % 8;
-            currentY = previous / 8;
+            current.X = previous % 8;
+            current.Y = previous / 8;
             colorSelected = callback;
             this.UpdateView();
         }
@@ -41,20 +40,20 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up:
-                    currentY = Math.Max(currentY - 1, 0);
+                    current.Y = Math.Max(current.Y - 1, 0);
                     break;
                 case Keys.Down:
-                    currentY = Math.Min(currentY + 1, 1);
+                    current.Y = Math.Min(current.Y + 1, 1);
                     break;
                 case Keys.Left:
-                    currentX = Math.Max(currentX - 1, 0);
+                    current.X = Math.Max(current.X - 1, 0);
                     break;
                 case Keys.Right:
-                    currentX = Math.Min(currentX + 1, 7);
+                    current.X = Math.Min(current.X + 1, 7);
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    colorSelected(currentY * 8 + currentX);
+                    colorSelected(current.Y * 8 + current.X);
                     this.Dispose();
                     break;
                 case Keys.Escape:
@@ -67,8 +66,8 @@ namespace _99x8Edit
         {
             Graphics g = Graphics.FromImage(bmpCur);
             g.DrawImage(bmpOrg, 0, 0, viewPlt.Width, viewPlt.Height);
-            int x = currentX * 32;
-            int y = currentY * 32;
+            int x = current.X * 32;
+            int y = current.Y * 32;
             Utility.DrawSelection(g, x, y, 31, 31, true);
             viewPlt.Refresh();
         }

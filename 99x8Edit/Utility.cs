@@ -9,11 +9,13 @@ namespace _99x8Edit
 {
     public class Utility
     {
-        // Single simple objects
         public static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
                                        System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
 
+        //--------------------------------------------------------------------
         // Utility functions
+        //--------------------------------------------------------------------
+        // Misc
         internal static void Rotate16(ref byte srcL, ref byte srcR)
         {
             byte c = (byte)(srcR & 1);
@@ -21,6 +23,24 @@ namespace _99x8Edit
             srcR |= (byte)((srcL & 1) << 7);
             srcL >>= 1;
             srcL |= (byte)(c << 7);
+        }
+        internal static Rectangle Point2Rect(Point p1, Point p2)
+        {
+            return new Rectangle(Math.Min(p1.X, p2.X),
+                                 Math.Min(p1.Y, p2.Y),
+                                 Math.Abs(p1.X - p2.X) + 1,
+                                 Math.Abs(p1.Y - p2.Y) + 1);
+        }
+        //--------------------------------------------------------------------
+        // User interface
+        internal static void DrawSelection(Graphics g, Point p1, Point p2, int mag_x, int mag_y, bool focused)
+        {
+            Rectangle r = Point2Rect(p1, p2);
+            int x = Math.Min(p1.X, p2.X) * mag_x;
+            int y = Math.Min(p1.Y, p2.Y) * mag_y;
+            int w = (Math.Abs(p1.X - p2.X) + 1) * mag_x - 1;
+            int h = (Math.Abs(p1.Y - p2.Y) + 1) * mag_y - 1;
+            DrawSelection(g, x, y, w, h, focused);
         }
         internal static void DrawSelection(Graphics g, int x, int y, int w, int h, bool focused)
         {
@@ -52,6 +72,8 @@ namespace _99x8Edit
                 }
             }
         }
+        //--------------------------------------------------------------------
+        // File
         internal static bool SaveDialogAndSave(string current_file,
                                                string dialog_filter,
                                                string dialog_title,

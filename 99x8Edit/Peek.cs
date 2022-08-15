@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
 namespace _99x8Edit
 {
@@ -15,10 +12,8 @@ namespace _99x8Edit
         private BinaryReader reader = null;
         private long seekAddr = 0;
         private Bitmap bmpPeek = new Bitmap(512, 512);
-        private int currentCol = 0;
-        private int currentRow = 0;
-        private int selStartCol = 0;
-        private int selStartRow = 0;
+        private Point current;
+        private Point selStart;
         enum PeekType
         {
             Linear = 0,
@@ -96,10 +91,10 @@ namespace _99x8Edit
                     }
                 }
             }
-            int x = Math.Min(currentCol, selStartCol);
-            int y = Math.Min(currentRow, selStartRow);
-            int w = Math.Abs(currentCol - selStartCol) + 2;
-            int h = Math.Abs(currentRow - selStartRow) + 2;
+            int x = Math.Min(current.X, selStart.X);
+            int y = Math.Min(current.Y, selStart.Y);
+            int w = Math.Abs(current.X - selStart.X) + 2;
+            int h = Math.Abs(current.Y - selStart.Y) + 2;
             g.DrawRectangle(Pens.Red, x * 16, y * 16, w * 16 - 1, h * 16 - 1);
             viewPeek.Refresh();
         }
@@ -121,24 +116,24 @@ namespace _99x8Edit
             {
                 int col = e.X / 16;
                 int row = e.Y / 16;
-                if((col != currentCol) || (row != currentRow))
+                if((col != current.X) || (row != current.Y))
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Limit multiple selections to 16x16 unit
-                        int col_sel = (col - selStartCol % 2) / 2 * 2 + (selStartCol % 2);
-                        int row_sel = (row - selStartRow % 2) / 2 * 2 + (selStartRow % 2);
+                        int col_sel = (col - selStart.X % 2) / 2 * 2 + (selStart.X % 2);
+                        int row_sel = (row - selStart.Y % 2) / 2 * 2 + (selStart.Y % 2);
                         if ((col_sel <= 30) && (row_sel <= 30))
                         {
-                            currentCol = col_sel;
-                            currentRow = row_sel;
+                            current.X = col_sel;
+                            current.Y = row_sel;
                         }
                     }
                     else
                     {
                         // New selection
-                        currentCol = selStartCol = Math.Min(e.X / 16, 30);
-                        currentRow = selStartRow = Math.Min(e.Y / 16, 30);
+                        current.X = selStart.X = Math.Min(e.X / 16, 30);
+                        current.Y = selStart.Y = Math.Min(e.Y / 16, 30);
                     }
                     this.UpdatePeek();
                     viewPeek.DoDragDrop(new DnDPeek(), DragDropEffects.Copy);
@@ -149,10 +144,10 @@ namespace _99x8Edit
         {
             ClipPeekedData clip = new ClipPeekedData();
             // Copy selected sprites
-            int x = Math.Min(currentCol, selStartCol);
-            int y = Math.Min(currentRow, selStartRow);
-            int w = Math.Abs(currentCol - selStartCol) + 2;
-            int h = Math.Abs(currentRow - selStartRow) + 2;
+            int x = Math.Min(current.X, selStart.X);
+            int y = Math.Min(current.Y, selStart.Y);
+            int w = Math.Abs(current.X - selStart.X) + 2;
+            int h = Math.Abs(current.Y - selStart.Y) + 2;
             for (int i = y; i < y + h; ++i)
             {
                 List<byte[]> l = new List<byte[]>();
@@ -179,39 +174,39 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (currentRow >= 2)
+                    if (current.Y >= 2)
                     {
-                        currentRow -= 2;
+                        current.Y -= 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (currentRow <= 28)
+                    if (current.Y <= 28)
                     {
-                        currentRow += 2;
+                        current.Y += 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (currentCol >= 2)
+                    if (current.X >= 2)
                     {
-                        currentCol -= 2;
+                        current.X -= 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (currentCol <= 28)
+                    if (current.X <= 28)
                     {
-                        currentCol += 2;
+                        current.X += 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Up:
-                    if (currentRow > 0)
+                    if (current.Y > 0)
                     {
-                        currentRow--;
-                        selStartCol = currentCol;
-                        selStartRow = currentRow;
+                        current.Y--;
+                        selStart.X = current.X;
+                        selStart.Y = current.Y;
                         this.UpdatePeek();
                     }
                     else if(seekAddr > 0)
@@ -222,11 +217,11 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Down:
-                    if (currentRow < 30)
+                    if (current.Y < 30)
                     {
-                        currentRow++;
-                        selStartCol = currentCol;
-                        selStartRow = currentRow;
+                        current.Y++;
+                        selStart.X = current.X;
+                        selStart.Y = current.Y;
                         this.UpdatePeek();
                     }
                     else if (seekAddr + 8192 < reader.BaseStream.Length)
@@ -240,20 +235,20 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Left:
-                    if (currentCol > 0)
+                    if (current.X > 0)
                     {
-                        currentCol--;
-                        selStartCol = currentCol;
-                        selStartRow = currentRow;
+                        current.X--;
+                        selStart.X = current.X;
+                        selStart.Y = current.Y;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Right:
-                    if (currentCol < 30)
+                    if (current.X < 30)
                     {
-                        currentCol++;
-                        selStartCol = currentCol;
-                        selStartRow = currentRow;
+                        current.X++;
+                        selStart.X = current.X;
+                        selStart.Y = current.Y;
                         this.UpdatePeek();
                     }
                     break;
@@ -275,12 +270,12 @@ namespace _99x8Edit
                 // Limit multiple selections to 16x16 unit
                 int col = p.X / 16;
                 int row = p.Y / 16;
-                int col_sel = (col - selStartCol % 2) / 2 * 2 + (selStartCol % 2);
-                int row_sel = (row - selStartRow % 2) / 2 * 2 + (selStartRow % 2);
+                int col_sel = (col - selStart.X % 2) / 2 * 2 + (selStart.X % 2);
+                int row_sel = (row - selStart.Y % 2) / 2 * 2 + (selStart.Y % 2);
                 if ((col_sel <= 30) && (row_sel <= 30))
                 {
-                    currentCol = col_sel;
-                    currentRow = row_sel;
+                    current.X = col_sel;
+                    current.Y = row_sel;
                     this.RefreshAllViews();
                 }
             }

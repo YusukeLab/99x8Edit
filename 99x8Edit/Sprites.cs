@@ -22,18 +22,13 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private Bitmap bmpColorOR = new Bitmap(32, 32);
-        private int currentSpriteX;     // 0-7
-        private int currentSpriteY;     // 0-7
-        private int selStartSprX;       // For multiple selection
-        private int selStartSprY;
-        private int currentLineX;       // Selected line in editor(0-1)
-        private int currentLineY;       // Selected line in editor(0-15)
-        private int selStartLineX;      // For multiple selection
-        private int selStartLineY;
+        private Point curSpr;           // Selected sprite
+        private Point selStartSpr;      // For multiple selection
+        private Point curLine;          // Selected line in editor
+        private Point selStartLine;     // For multiple selection
         private int currentDot;         // Selected dot in line(0-7)
-        private int currentColor;       // Currently elected color, default or overlayed or OR
-        private int currentPalX;        // Selection in palette
-        private int currentPalY;
+        private int currentColor;       // Currently elected color, 0=left, 1=right
+        private Point curPal;           // Selection in palette
         String currentFile = "";
         public String CurrentFile
         {
@@ -144,7 +139,7 @@ namespace _99x8Edit
                 Brush b = dataSource.BrushOf(i);
                 g.FillRectangle(b, (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
-            Utility.DrawSelection(g, currentPalX * 32, currentPalY * 32, 31, 31, panelPalette.Focused);
+            Utility.DrawSelection(g, curPal.X * 32, curPal.Y * 32, 31, 31, panelPalette.Focused);
             if (refresh) viewPalette.Refresh();
         }
         private void UpdateSpriteView(bool refresh = true)
@@ -176,7 +171,7 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpSprites);
             }
             // Selection overlay
-            int index_of_16x16 = currentSpriteX + currentSpriteY * 8;
+            int index_of_16x16 = curSpr.X + curSpr.Y * 8;
             if (dataSource.GetSpriteOverlay(index_of_16x16))
             {
                 // Overlayed sprite, right side
@@ -186,10 +181,10 @@ namespace _99x8Edit
                 g.DrawRectangle(Utility.DashedGray, xr * 32, yr * 32, 31, 31);
             }
             // Selection
-            int x = Math.Min(currentSpriteX, selStartSprX);
-            int y = Math.Min(currentSpriteY, selStartSprY);
-            int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
-            int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
+            int x = Math.Min(curSpr.X, selStartSpr.X);
+            int y = Math.Min(curSpr.Y, selStartSpr.Y);
+            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
+            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
             Utility.DrawSelection(g, x * 32, y * 32, w * 32 - 1, h * 32 - 1, panelSprites.Focused);
             if (refresh) viewSprites.Refresh();
         }
@@ -199,7 +194,7 @@ namespace _99x8Edit
             Utility.DrawTransparent(bmpPreview);
             Graphics g = Graphics.FromImage(bmpSpriteEdit);
             Graphics preview = Graphics.FromImage(bmpPreview);
-            int index_of_16x16 = currentSpriteX + currentSpriteY * 8;
+            int index_of_16x16 = curSpr.X + curSpr.Y * 8;
             bool overlayed = dataSource.GetSpriteOverlay(index_of_16x16);
             // Four sprites are in one 16x16 sprite
             for (int x = 0; x < 2; ++x)
@@ -255,10 +250,10 @@ namespace _99x8Edit
                 }
             }
             // Draw selection rectangle
-            int sx = Math.Min(currentLineX, selStartLineX);
-            int sy = Math.Min(currentLineY, selStartLineY);
-            int sw = Math.Abs(currentLineX - selStartLineX) + 1;
-            int sh = Math.Abs(currentLineY - selStartLineY) + 1;
+            int sx = Math.Min(curLine.X, selStartLine.X);
+            int sy = Math.Min(curLine.Y, selStartLine.Y);
+            int sw = Math.Abs(curLine.X - selStartLine.X) + 1;
+            int sh = Math.Abs(curLine.Y - selStartLine.Y) + 1;
             Utility.DrawSelection(g, sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1, panelEditor.Focused);
             if (panelEditor.Focused)
             {
@@ -278,16 +273,16 @@ namespace _99x8Edit
             Graphics gr = Graphics.FromImage(bmpColorR);
             Graphics go = Graphics.FromImage(bmpColorOR);
             // Update current color of primary sprite
-            int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
-            int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
-            int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+            int sprite_num_16x16 = curSpr.Y * 8 + curSpr.X;
+            int sprite_num_8x8 = sprite_num_16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
+            int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, curLine.Y % 8);
             Brush color_primary = dataSource.BrushOf(color_code_primary);
             gl.FillRectangle(color_primary, 0, 0, 32, 32);
             // Check overlays
             if (dataSource.GetSpriteOverlay(sprite_num_16x16))
             {
                 int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
-                int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
+                int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, curLine.Y % 8);
                 Brush color_secondary = dataSource.BrushOf(color_code_secondary);
                 gr.FillRectangle(color_secondary, 0, 0, 32, 32);
                 viewColorR.Visible = true;
@@ -335,7 +330,7 @@ namespace _99x8Edit
         }
         private void UpdateOverlayCheck(bool refresh = true)
         {
-            int sprite_num16x16 = currentSpriteY * 8 + currentSpriteX;
+            int sprite_num16x16 = curSpr.Y * 8 + curSpr.X;
             this.checkOverlay.Checked = dataSource.GetSpriteOverlay(sprite_num16x16);
             if (refresh) this.UpdateSpriteView();
         }
@@ -343,7 +338,7 @@ namespace _99x8Edit
         // Controls
         private void checkOverlay_Click(object sender, EventArgs e)
         {
-            int current_index = currentSpriteY * 8 + currentSpriteX;
+            int current_index = curSpr.Y * 8 + curSpr.X;
             int overlay_index = (current_index + 1) % 64;
             if (checkOverlay.Checked)
             {
@@ -362,20 +357,20 @@ namespace _99x8Edit
             {
                 int x = Math.Min(e.X / 32, 7);
                 int y = Math.Min(e.Y / 32, 7);
-                if ((x != currentSpriteX) || (y != currentSpriteY))
+                if ((x != curSpr.X) || (y != curSpr.Y))
                 {
                     // Sprite selected
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Multiple selection
-                        currentSpriteX = x;
-                        currentSpriteY = y;
+                        curSpr.X = x;
+                        curSpr.Y = y;
                     }
                     else
                     {
                         // New selection
-                        currentSpriteX = selStartSprX = x;
-                        currentSpriteY = selStartSprY = y;
+                        curSpr.X = selStartSpr.X = x;
+                        curSpr.Y = selStartSpr.Y = y;
                     }
                     this.RefreshAllViews();
                     viewSprites.DoDragDrop(new DnDSprite(), DragDropEffects.Copy);
@@ -387,66 +382,66 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (currentSpriteY > 0)
+                    if (curSpr.Y > 0)
                     {
-                        currentSpriteY--;
+                        curSpr.Y--;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (currentSpriteY < 7)
+                    if (curSpr.Y < 7)
                     {
-                        currentSpriteY++;
+                        curSpr.Y++;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (currentSpriteX > 0)
+                    if (curSpr.X > 0)
                     {
-                        currentSpriteX--;
+                        curSpr.X--;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (currentSpriteX < 7)
+                    if (curSpr.X < 7)
                     {
-                        currentSpriteX++;
+                        curSpr.X++;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Up:
-                    if (currentSpriteY > 0)
+                    if (curSpr.Y > 0)
                     {
-                        currentSpriteY--;
-                        selStartSprX = currentSpriteX;
-                        selStartSprY = currentSpriteY;
+                        curSpr.Y--;
+                        selStartSpr.X = curSpr.X;
+                        selStartSpr.Y = curSpr.Y;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Down:
-                    if (currentSpriteY < 7)
+                    if (curSpr.Y < 7)
                     {
-                        currentSpriteY++;
-                        selStartSprX = currentSpriteX;
-                        selStartSprY = currentSpriteY;
+                        curSpr.Y++;
+                        selStartSpr.X = curSpr.X;
+                        selStartSpr.Y = curSpr.Y;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Left:
-                    if (currentSpriteX > 0)
+                    if (curSpr.X > 0)
                     {
-                        currentSpriteX--;
-                        selStartSprX = currentSpriteX;
-                        selStartSprY = currentSpriteY;
+                        curSpr.X--;
+                        selStartSpr.X = curSpr.X;
+                        selStartSpr.Y = curSpr.Y;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Right:
-                    if (currentSpriteX < 7)
+                    if (curSpr.X < 7)
                     {
-                        currentSpriteX++;
-                        selStartSprX = currentSpriteX;
-                        selStartSprY = currentSpriteY;
+                        curSpr.X++;
+                        selStartSpr.X = curSpr.X;
+                        selStartSpr.Y = curSpr.Y;
                         this.RefreshAllViews();
                     }
                     break;
@@ -466,8 +461,8 @@ namespace _99x8Edit
             if (e.Data.GetDataPresent(typeof(DnDSprite)))
             {
                 Point p = viewSprites.PointToClient(Cursor.Position);
-                currentSpriteX = Math.Min(p.X / 32, 7);
-                currentSpriteY = Math.Min(p.Y / 32, 7);
+                curSpr.X = Math.Min(p.X / 32, 7);
+                curSpr.Y = Math.Min(p.Y / 32, 7);
                 this.RefreshAllViews();
             }
         }
@@ -475,10 +470,10 @@ namespace _99x8Edit
         {
             ClipSprite clip = new ClipSprite();
             // Copy selected sprites
-            int x = Math.Min(currentSpriteX, selStartSprX);
-            int y = Math.Min(currentSpriteY, selStartSprY);
-            int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
-            int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
+            int x = Math.Min(curSpr.X, selStartSpr.X);
+            int y = Math.Min(curSpr.Y, selStartSpr.Y);
+            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
+            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 List<Machine.One16x16Sprite> l = new List<Machine.One16x16Sprite>();
@@ -497,12 +492,12 @@ namespace _99x8Edit
             {
                 MementoCaretaker.Instance.Push();
                 // Paste multiple sprites
-                for (int i = 0; (i < clip.sprites.Count) && (currentSpriteY + i < 8); ++i)
+                for (int i = 0; (i < clip.sprites.Count) && (curSpr.Y + i < 8); ++i)
                 {
                     List<Machine.One16x16Sprite> l = clip.sprites[i];
-                    for (int j = 0; (j < l.Count) && (currentSpriteX + j < 8); ++j)
+                    for (int j = 0; (j < l.Count) && (curSpr.X + j < 8); ++j)
                     {
-                        int index16x16 = (currentSpriteY + i) * 8 + (currentSpriteX + j);
+                        int index16x16 = (curSpr.Y + i) * 8 + (curSpr.X + j);
                         dataSource.Set16x16Sprite(index16x16, l[j], false);
                     }
                 }
@@ -512,14 +507,14 @@ namespace _99x8Edit
             {
                 MementoCaretaker.Instance.Push();
                 // Copied from peek window
-                for (int i = 0; (i < clip.peeked.Count / 2) && (currentSpriteY + i < 8); ++i)
+                for (int i = 0; (i < clip.peeked.Count / 2) && (curSpr.Y + i < 8); ++i)
                 {
                     // One row in peek window is 8 dots
                     List<byte[]> first_row = clip.peeked[i * 2 + 0];
                     List<byte[]> second_row = clip.peeked[i * 2 + 1];
-                    for (int j = 0; (j < first_row.Count / 2) && (currentSpriteX + j < 8); ++j)
+                    for (int j = 0; (j < first_row.Count / 2) && (curSpr.X + j < 8); ++j)
                     {
-                        int index16x16 = (currentSpriteY + i) * 8 + (currentSpriteX + j);
+                        int index16x16 = (curSpr.Y + i) * 8 + (curSpr.X + j);
                         dataSource.SetSpriteOverlay(index16x16, false, false);
                         int lefttop8x8 = index16x16 * 4;
                         dataSource.SetSpriteGen(lefttop8x8 + 0, first_row[j * 2 + 0], false);
@@ -534,10 +529,10 @@ namespace _99x8Edit
         private void contextSprites_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentSpriteX, selStartSprX);
-            int y = Math.Min(currentSpriteY, selStartSprY);
-            int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
-            int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
+            int x = Math.Min(curSpr.X, selStartSpr.X);
+            int y = Math.Min(curSpr.Y, selStartSpr.Y);
+            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
+            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 for (int j = x; j < x + w; ++j)
@@ -549,7 +544,7 @@ namespace _99x8Edit
         }
         private void contextSprites_reverse(object sender, EventArgs e)
         {
-            int current = currentSpriteY * 8 + currentSpriteX;
+            int current = curSpr.Y * 8 + curSpr.X;
             int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
             for (int i = 0; i < loop_cnt; ++i)
             {
@@ -577,10 +572,10 @@ namespace _99x8Edit
         private void contextSprites_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentSpriteX, selStartSprX);
-            int y = Math.Min(currentSpriteY, selStartSprY);
-            int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
-            int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
+            int x = Math.Min(curSpr.X, selStartSpr.X);
+            int y = Math.Min(curSpr.Y, selStartSpr.Y);
+            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
+            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
             for (int i = y + 1; i < y + h; ++i)
             {
                 for (int j = x; j < x + w; ++j)
@@ -594,10 +589,10 @@ namespace _99x8Edit
         private void contextSprites_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentSpriteX, selStartSprX);
-            int y = Math.Min(currentSpriteY, selStartSprY);
-            int w = Math.Abs(currentSpriteX - selStartSprX) + 1;
-            int h = Math.Abs(currentSpriteY - selStartSprY) + 1;
+            int x = Math.Min(curSpr.X, selStartSpr.X);
+            int y = Math.Min(curSpr.Y, selStartSpr.Y);
+            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
+            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 for (int j = x + 1; j < x + w; ++j)
@@ -616,19 +611,19 @@ namespace _99x8Edit
                 int clicked_x = e.X / 128;
                 int clicled_y = e.Y / 16;
                 // selected line had changed
-                if ((currentLineX != clicked_x) || (currentLineY != clicled_y))
+                if ((curLine.X != clicked_x) || (curLine.Y != clicled_y))
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Multiple selection
-                        currentLineX = clicked_x;
-                        currentLineY = clicled_y;
+                        curLine.X = clicked_x;
+                        curLine.Y = clicled_y;
                     }
                     else
                     {
                         // New selection
-                        currentLineX = selStartLineX = clicked_x;
-                        currentLineY = selStartLineY = clicled_y;
+                        curLine.X = selStartLine.X = clicked_x;
+                        curLine.Y = selStartLine.Y = clicled_y;
                     }
                     this.UpdateSpriteEditView();
                     this.UpdateCurrentColorView();
@@ -638,7 +633,7 @@ namespace _99x8Edit
                 else
                 {
                     // toggle the color of selected pixel
-                    this.EditCurrentSprite((e.X / 16) % 8, currentLineY % 8);
+                    this.EditCurrentSprite((e.X / 16) % 8, curLine.Y % 8);
                 }
             }
         }
@@ -653,59 +648,59 @@ namespace _99x8Edit
             {
                 // Multiple selection
                 case Keys.Up | Keys.Shift:
-                    if (currentLineY > 0)
+                    if (curLine.Y > 0)
                     {
-                        currentLineY--;
+                        curLine.Y--;
                         refresh();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (currentLineY < 15)
+                    if (curLine.Y < 15)
                     {
-                        currentLineY++;
+                        curLine.Y++;
                         refresh();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (currentLineX > 0)
+                    if (curLine.X > 0)
                     {
-                        currentLineX--;
+                        curLine.X--;
                         refresh();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (currentLineX < 1)
+                    if (curLine.X < 1)
                     {
-                        currentLineX++;
+                        curLine.X++;
                         refresh();
                     }
                     break;
                 // Moving current selection
                 case Keys.Up:
-                    if (currentLineY > 0)
+                    if (curLine.Y > 0)
                     {
-                        currentLineY--;
-                        selStartLineX = currentLineX;
-                        selStartLineY = currentLineY;
+                        curLine.Y--;
+                        selStartLine.X = curLine.X;
+                        selStartLine.Y = curLine.Y;
                         refresh();
                     }
                     break;
                 case Keys.Down:
-                    if (currentLineY < 15)
+                    if (curLine.Y < 15)
                     {
-                        currentLineY++;
-                        selStartLineX = currentLineX;
-                        selStartLineY = currentLineY;
+                        curLine.Y++;
+                        selStartLine.X = curLine.X;
+                        selStartLine.Y = curLine.Y;
                         refresh();
                     }
                     break;
                 case Keys.Left:
-                    if ((currentDot == 0) && (currentLineX > 0))
+                    if ((currentDot == 0) && (curLine.X > 0))
                     {
-                        currentLineX--;
+                        curLine.X--;
                         currentDot = 7;
-                        selStartLineX = currentLineX;
-                        selStartLineY = currentLineY;
+                        selStartLine.X = curLine.X;
+                        selStartLine.Y = curLine.Y;
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -715,12 +710,12 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Right:
-                    if ((currentDot == 7) && (currentLineX < 1))
+                    if ((currentDot == 7) && (curLine.X < 1))
                     {
-                        currentLineX++;
+                        curLine.X++;
                         currentDot = 0;
-                        selStartLineX = currentLineX;
-                        selStartLineY = currentLineY;
+                        selStartLine.X = curLine.X;
+                        selStartLine.Y = curLine.Y;
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -732,49 +727,49 @@ namespace _99x8Edit
                 // Editing
                 case Keys.Space:
                     // toggle the color of selected pixel
-                    this.EditCurrentSprite(currentDot, currentLineY % 8);
+                    this.EditCurrentSprite(currentDot, curLine.Y % 8);
                     break;
                 // Changing colors
                 case Keys.D1:
                 case Keys.NumPad1:
-                    this.EditCurrentSprite(0, currentLineY % 8);
+                    this.EditCurrentSprite(0, curLine.Y % 8);
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
-                    this.EditCurrentSprite(1, currentLineY % 8);
+                    this.EditCurrentSprite(1, curLine.Y % 8);
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
-                    this.EditCurrentSprite(2, currentLineY % 8);
+                    this.EditCurrentSprite(2, curLine.Y % 8);
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
-                    this.EditCurrentSprite(3, currentLineY % 8);
+                    this.EditCurrentSprite(3, curLine.Y % 8);
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
-                    this.EditCurrentSprite(4, currentLineY % 8);
+                    this.EditCurrentSprite(4, curLine.Y % 8);
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
-                    this.EditCurrentSprite(5, currentLineY % 8);
+                    this.EditCurrentSprite(5, curLine.Y % 8);
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
-                    this.EditCurrentSprite(6, currentLineY % 8);
+                    this.EditCurrentSprite(6, curLine.Y % 8);
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
-                    this.EditCurrentSprite(7, currentLineY % 8);
+                    this.EditCurrentSprite(7, curLine.Y % 8);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:
                 case Keys.OemMinus:
                 case Keys.Subtract:
                     {
-                        int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
-                        int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
-                        int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+                        int sprite_num_16x16 = curSpr.Y * 8 + curSpr.X;
+                        int sprite_num_8x8 = sprite_num_16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
+                        int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, curLine.Y % 8);
                         if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                         {
                             // Increment color of the primary sprite
@@ -792,12 +787,12 @@ namespace _99x8Edit
                 case Keys.OemCloseBrackets:
                 case Keys.OemOpenBrackets:
                     // Check overlays
-                    if (dataSource.GetSpriteOverlay(currentSpriteY * 8 + currentSpriteX))
+                    if (dataSource.GetSpriteOverlay(curSpr.Y * 8 + curSpr.X))
                     {
-                        int sprite_num_16x16 = currentSpriteY * 8 + currentSpriteX;
-                        int sprite_num_8x8 = sprite_num_16x16 * 4 + currentLineX * 2 + currentLineY / 8;
+                        int sprite_num_16x16 = curSpr.Y * 8 + curSpr.X;
+                        int sprite_num_8x8 = sprite_num_16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
                         int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
-                        int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, currentLineY % 8);
+                        int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, curLine.Y % 8);
                         if (e.KeyData == Keys.OemCloseBrackets)
                         {
                             // Increment color of the secondary sprite
@@ -828,8 +823,8 @@ namespace _99x8Edit
             if (e.Data.GetDataPresent(typeof(DnDEditor)))
             {
                 Point p = viewSpriteEdit.PointToClient(Cursor.Position);
-                currentLineX = Math.Min(p.X / 128, 1);
-                currentLineY = Math.Min(p.Y / 16, 15);
+                curLine.X = Math.Min(p.X / 128, 1);
+                curLine.Y = Math.Min(p.Y / 16, 15);
                 this.UpdateSpriteEditView();
                 this.UpdateCurrentColorView();
             }
@@ -837,16 +832,16 @@ namespace _99x8Edit
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipOneSpriteLine clip = new ClipOneSpriteLine();
-            int x = Math.Min(currentLineX, selStartLineX);
-            int y = Math.Min(currentLineY, selStartLineY);
-            int w = Math.Abs(currentLineX - selStartLineX) + 1;
-            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            int x = Math.Min(curLine.X, selStartLine.X);
+            int y = Math.Min(curLine.Y, selStartLine.Y);
+            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
+            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 List<Machine.SpriteLine> l = new List<Machine.SpriteLine>();
                 for (int j = x; j < x + w; ++j)
                 {
-                    int lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
+                    int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int target8x8 = lefttop16x16 * 4 + j * 2 + i / 8;
                     l.Add(dataSource.GetSpriteLine(target8x8, i % 8));
                 }
@@ -860,14 +855,14 @@ namespace _99x8Edit
             if (clip is ClipOneSpriteLine)
             {
                 MementoCaretaker.Instance.Push();
-                for (int i = 0; (i < clip.lines.Count) && (currentLineY + i < 16); ++i)
+                for (int i = 0; (i < clip.lines.Count) && (curLine.Y + i < 16); ++i)
                 {
                     List<Machine.SpriteLine> l = clip.lines[i];
-                    for (int j = 0; (j < l.Count) && (currentLineX + j < 2); ++j)
+                    for (int j = 0; (j < l.Count) && (curLine.X + j < 2); ++j)
                     {
-                        int lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
-                        int target8x8 = lefttop16x16 * 4 + (currentLineX + j) * 2 + ((currentLineY + i) / 8);
-                        dataSource.SetSpriteLine(target8x8, (i + currentLineY) % 8, l[j], false);
+                        int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
+                        int target8x8 = lefttop16x16 * 4 + (curLine.X + j) * 2 + ((curLine.Y + i) / 8);
+                        dataSource.SetSpriteLine(target8x8, (i + curLine.Y) % 8, l[j], false);
                     }
                 }
                 this.UpdateSpriteEditView();
@@ -877,15 +872,15 @@ namespace _99x8Edit
         private void contextEditor_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentLineX, selStartLineX);
-            int y = Math.Min(currentLineY, selStartLineY);
-            int w = Math.Abs(currentLineX - selStartLineX) + 1;
-            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            int x = Math.Min(curLine.X, selStartLine.X);
+            int y = Math.Min(curLine.Y, selStartLine.Y);
+            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
+            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 for (int j = x; j < x + w; ++j)
                 {
-                    int lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
+                    int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int target8x8 = lefttop16x16 * 4 + j * 2 + i / 8;
                     dataSource.ClearSpriteLine(target8x8, i % 8, false);
                 }
@@ -896,15 +891,15 @@ namespace _99x8Edit
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentLineX, selStartLineX);
-            int y = Math.Min(currentLineY, selStartLineY);
-            int w = Math.Abs(currentLineX - selStartLineX) + 1;
-            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            int x = Math.Min(curLine.X, selStartLine.X);
+            int y = Math.Min(curLine.Y, selStartLine.Y);
+            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
+            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
             for (int i = y + 1; i < y + h; ++i)
             {
                 for (int j = x; j < x + w; ++j)
                 {
-                    int lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
+                    int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int src = lefttop16x16 * 4 + (j * 2) + (y / 8);
                     Machine.SpriteLine line = dataSource.GetSpriteLine(src, y % 8);
                     int dst = lefttop16x16 * 4 + (j * 2) + (i / 8);
@@ -917,15 +912,15 @@ namespace _99x8Edit
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(currentLineX, selStartLineX);
-            int y = Math.Min(currentLineY, selStartLineY);
-            int w = Math.Abs(currentLineX - selStartLineX) + 1;
-            int h = Math.Abs(currentLineY - selStartLineY) + 1;
+            int x = Math.Min(curLine.X, selStartLine.X);
+            int y = Math.Min(curLine.Y, selStartLine.Y);
+            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
+            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
             for (int i = y; i < y + h; ++i)
             {
                 for (int j = x + 1; j < x + w; ++j)
                 {
-                    int lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
+                    int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int src = lefttop16x16 * 4 + (x * 2) + (i / 8);
                     Machine.SpriteLine line = dataSource.GetSpriteLine(src, i % 8);
                     int dst = lefttop16x16 * 4 + (j * 2) + (i / 8);
@@ -939,22 +934,22 @@ namespace _99x8Edit
         {
             if (sender == toolStripRotateUp)
             {
-                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 0, -1, true);
+                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 0, -1, true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateDown)
             {
-                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 0, 1, true);
+                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 0, 1, true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateLeft)
             {
-                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, -1, 0, true);
+                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, -1, 0, true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateRight)
             {
-                dataSource.RotateSprite(currentSpriteY * 8 + currentSpriteX, 1, 0, true);
+                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 1, 0, true);
                 this.RefreshAllViews();
             }
         }
@@ -979,9 +974,9 @@ namespace _99x8Edit
             currentColor = 0;
             this.UpdateCurrentColorView();
             // Set color to target
-            int current_target16x16 = currentSpriteY * 8 + currentSpriteX;
-            int sprite_num_8x8 = current_target16x16 * 4 + currentLineX * 2 + currentLineY / 8;
-            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+            int current_target16x16 = curSpr.Y * 8 + curSpr.X;
+            int sprite_num_8x8 = current_target16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
+            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, curLine.Y % 8);
             Action<int> callback = (x) =>
             {
                 if (x != 0)
@@ -1001,9 +996,9 @@ namespace _99x8Edit
             currentColor = 1;
             this.UpdateCurrentColorView();
             // Set color to target
-            int current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
-            int sprite_num_8x8 = current_target16x16 * 4 + currentLineX * 2 + currentLineY / 8;
-            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, currentLineY % 8);
+            int current_target16x16 = (curSpr.Y * 8 + curSpr.X + 1) % 64;
+            int sprite_num_8x8 = current_target16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
+            int color_code = dataSource.GetSpriteColorCode(sprite_num_8x8, curLine.Y % 8);
 
             Action<int> callback = (x) =>
             {
@@ -1058,19 +1053,19 @@ namespace _99x8Edit
             // Palette view clicked
             panelPalette.Focus();
             int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
-            currentPalX = clicked_color_num % 8;
-            currentPalY = clicked_color_num / 8;
+            curPal.X = clicked_color_num % 8;
+            curPal.Y = clicked_color_num / 8;
             // Update color table of current line
             int current_target16x16 = 0;
             if (e.Button == MouseButtons.Left)          // To current sprite
             {
-                current_target16x16 = (currentSpriteY * 8 + currentSpriteX) % 64;
+                current_target16x16 = (curSpr.Y * 8 + curSpr.X) % 64;
             }
             else if (e.Button == MouseButtons.Right)    // To overlayed sprite
             {
                 if (checkOverlay.Checked == true)
                 {
-                    current_target16x16 = (currentSpriteY * 8 + currentSpriteX + 1) % 64;
+                    current_target16x16 = (curSpr.Y * 8 + curSpr.X + 1) % 64;
                 }
                 else return;
             }
@@ -1089,36 +1084,36 @@ namespace _99x8Edit
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    if (currentPalY > 0)
+                    if (curPal.Y > 0)
                     {
-                        currentPalY--;
+                        curPal.Y--;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Down:
-                    if (currentPalY < 1)
+                    if (curPal.Y < 1)
                     {
-                        currentPalY++;
+                        curPal.Y++;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Left:
-                    if (currentPalX > 0)
+                    if (curPal.X > 0)
                     {
-                        currentPalX--;
+                        curPal.X--;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Right:
-                    if (currentPalX < 7)
+                    if (curPal.X < 7)
                     {
-                        currentPalX++;
+                        curPal.X++;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    this.EditPalette(currentPalY * 8 + currentPalX);
+                    this.EditPalette(curPal.Y * 8 + curPal.X);
                     break;
             }
         }
@@ -1247,16 +1242,16 @@ namespace _99x8Edit
             else
             {
                 // Set color to current line of current sprite
-                target8x8 = target8x8 + currentLineX * 2 + currentLineY / 8;
-                dataSource.SetSpriteColorCode(target8x8, currentLineY % 8, val, true);
+                target8x8 = target8x8 + curLine.X * 2 + curLine.Y / 8;
+                dataSource.SetSpriteColorCode(target8x8, curLine.Y % 8, val, true);
             }
             this.RefreshAllViews();     // Everything changes
         }
         private void EditCurrentSprite(int x, int y)
         {
-            int col = currentLineX;
-            int row = currentLineY / 8;
-            int target_lefttop16x16 = currentSpriteY * 8 + currentSpriteX;
+            int col = curLine.X;
+            int row = curLine.Y / 8;
+            int target_lefttop16x16 = curSpr.Y * 8 + curSpr.X;
             int target_sprite8x8 = target_lefttop16x16 * 4 + col * 2 + row;
             int target_prev_pixel = dataSource.GetSpritePixel(target_sprite8x8, y, x);
             // check pixel of second sprite
