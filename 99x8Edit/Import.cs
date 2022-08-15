@@ -51,10 +51,10 @@ namespace _99x8Edit
             switch((PCGType)type)
             {
                 case PCGType.MSXBASIC:
-                    this.PNGtoPCG(filename, out_gen, out_clr);
+                    this.BINtoPCG(filename, out_gen, out_clr);
                     break;
                 case PCGType.PNG:
-                    this.BINtoPCG(filename, out_gen, out_clr);
+                    this.PNGtoPCG(filename, out_gen, out_clr);
                     break;
             }
         }
@@ -128,140 +128,105 @@ namespace _99x8Edit
         }
         private void BINtoPCG(string filename, byte[] out_gen, byte[] out_clr)
         {
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            try
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            // Read BSAVE header
+            byte header = br.ReadByte();
+            if(header != 0xFE)
             {
-                // Read BSAVE header
-                byte header = br.ReadByte();
-                if(header != 0xFE)
+                throw new Exception("No BSAVE header");
+            }
+            UInt16 bin_start_addr = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            // Read data
+            int gen_seek_addr = 0;
+            if(this.SeekBIN(0x0000, bin_start_addr, br, out gen_seek_addr))
+            {
+                for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
-                    throw new Exception("No BSAVE header");
-                }
-                UInt16 bin_start_addr = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                // Read data
-                int gen_seek_addr = 0;
-                if(this.SeekBIN(0x0000, bin_start_addr, br, out gen_seek_addr))
-                {
-                    for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
-                    {
-                        out_gen[ptr] = br.ReadByte();
-                    }
-                }
-                int color_addr = 0;
-                if(this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
-                {
-                    for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
-                    {
-                        out_clr[ptr] = br.ReadByte();
-                    }
+                    out_gen[ptr] = br.ReadByte();
                 }
             }
-            finally
+            int color_addr = 0;
+            if(this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
             {
-                br.Close();
+                for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
+                {
+                    out_clr[ptr] = br.ReadByte();
+                }
             }
         }
         private void BINtoSprite(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
         {
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            try
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            // Read BSAVE header
+            byte header = br.ReadByte();
+            if (header != 0xFE)
             {
-                // Read BSAVE header
-                byte header = br.ReadByte();
-                if (header != 0xFE)
-                {
-                    throw new Exception("No BSAVE header");
-                }
-                UInt16 bin_start_addr = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                // Read data
-                int gen_seek_addr = 0;
-                if (this.SeekBIN(0x3800, bin_start_addr, br, out gen_seek_addr))
-                {
-                    for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
-                    {
-                        out_gen[ptr] = br.ReadByte();
-                    }
-                }
+                throw new Exception("No BSAVE header");
             }
-            finally
+            UInt16 bin_start_addr = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            // Read data
+            int gen_seek_addr = 0;
+            if (this.SeekBIN(0x3800, bin_start_addr, br, out gen_seek_addr))
             {
-                br.Close();
+                for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                {
+                    out_gen[ptr] = br.ReadByte();
+                }
             }
         }
         private void BINtoSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            try
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            // Read BSAVE header
+            byte header = br.ReadByte();
+            if (header != 0xFE)
             {
-                // Read BSAVE header
-                byte header = br.ReadByte();
-                if (header != 0xFE)
+                throw new Exception("No BSAVE header");
+            }
+            _ = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            _ = br.ReadUInt16();
+            // Read data
+            int gen_seek_addr = 0;
+            // Won't see start address since there's no specified address
+            Array.Clear(overlay, 0, 64);
+            if (this.SeekBIN(0, 0, br, out gen_seek_addr))
+            {
+                for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
-                    throw new Exception("No BSAVE header");
-                }
-                _ = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                _ = br.ReadUInt16();
-                // Read data
-                int gen_seek_addr = 0;
-                // Won't see start address since there's no specified address
-                Array.Clear(overlay, 0, 64);
-                if (this.SeekBIN(0, 0, br, out gen_seek_addr))
-                {
-                    for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    out_clr[ptr] = br.ReadByte();
+                    if (((out_clr[ptr] & 0x40) != 0) && (ptr > 16))
                     {
-                        out_clr[ptr] = br.ReadByte();
-                        if (((out_clr[ptr] & 0x40) != 0) && (ptr > 16))
-                        {
-                            // Overlayed
-                            overlay[ptr / 16 - 1] = 1;
-                        }
+                        // Overlayed
+                        overlay[ptr / 16 - 1] = 1;
                     }
                 }
-            }
-            finally
-            {
-                br.Close();
             }
         }
         private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
         {
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            try
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
             {
-                for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
-                {
-                    out_gen[i] = br.ReadByte();
-                }
-            }
-            finally
-            {
-                br.Close();
+                out_gen[i] = br.ReadByte();
             }
         }
         private void RawToSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            try
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            Array.Clear(overlay, 0, 64);
+            for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
             {
-                Array.Clear(overlay, 0, 64);
-                for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
+                out_clr[i] = br.ReadByte();
+                if(((out_clr[i] & 0x40) != 0) && (i > 16))
                 {
-                    out_clr[i] = br.ReadByte();
-                    if(((out_clr[i] & 0x40) != 0) && (i > 16))
-                    {
-                        // Overlayed
-                        overlay[i / 16 - 1] = 1;
-                    }
+                    // Overlayed
+                    overlay[i / 16 - 1] = 1;
                 }
-            }
-            finally
-            {
-                br.Close();
             }
         }
         private bool SeekBIN(int vram_addr, int bin_start_addr, BinaryReader br, out int seek_addr)

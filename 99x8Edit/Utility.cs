@@ -62,19 +62,16 @@ namespace _99x8Edit
             saved_file = "";
             Func<string, bool> do_save = (file_name) =>
             {
-                BinaryWriter br = new BinaryWriter(new FileStream(file_name, FileMode.Create));
+                using BinaryWriter br = new BinaryWriter(new FileStream(file_name, FileMode.Create));
+
                 try
                 {
                     exec_save(br);
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
                 }
                 return false;
             };
@@ -131,7 +128,7 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
+                using BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
                 try
                 {
                     if(push_before_loading)
@@ -142,13 +139,9 @@ namespace _99x8Edit
                     loaded_file_name = dlg.FileName;
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    br.Close();
                 }
             }
             return false;
@@ -177,7 +170,7 @@ namespace _99x8Edit
                     exec_import(dlg.FileName, dlg.FilterIndex - 1);
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -212,7 +205,7 @@ namespace _99x8Edit
                     exec_save(type, dlg.FileName);
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

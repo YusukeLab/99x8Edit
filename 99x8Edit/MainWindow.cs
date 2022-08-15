@@ -45,14 +45,9 @@ namespace _99x8Edit
             // Initialize VDP settings
             dataSource = new Machine();
             dataSource.Initialize();
-            Stream s = new MemoryStream(Properties.Resources._default);
-            try
+            using (Stream s = new MemoryStream(Properties.Resources._default))
             {
                 dataSource.LoadAllSettings(new BinaryReader(s));    // Init by resource
-            }
-            finally
-            {
-                s.Close();
             }
             // Undo/Redo            
             MementoCaretaker.Instance.Initialize(this, dataSource);
@@ -72,7 +67,7 @@ namespace _99x8Edit
             {
                 // See the last args since many files may have been dropped
                 String dnd_path = args[args.Length - 1];
-                BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
+                using BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
                 try
                 {
                     dataSource.LoadAllSettings(br);
@@ -84,14 +79,10 @@ namespace _99x8Edit
                     mapWin.ChangeOccuredByHost();
                     spriteWin.ChangeOccuredByHost();
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     currentFile = "";
-                }
-                finally
-                {
-                    br.Close();
                 }
             }
             // Open PCG editor as default

@@ -1003,7 +1003,7 @@ namespace _99x8Edit
         }
         private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
         {
-            panelSandbox.Focus();   // Need this to catch CTRL+C and others
+            panelSandbox.Focus();
             if (e.Button == MouseButtons.Left)
             {
                 int clicked_cell_x = e.X / 16;
