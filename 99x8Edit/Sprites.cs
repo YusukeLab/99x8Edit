@@ -14,7 +14,7 @@ namespace _99x8Edit
     {
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
-        private readonly List<Control> tabOrder = new List<Control>();
+        private TabOrder tabList = new TabOrder();
         private Bitmap bmpPalette = new Bitmap(256, 64);        // Palette view
         private Bitmap bmpSprites = new Bitmap(256, 256);       // Sprites view
         private Bitmap bmpSpriteEdit = new Bitmap(256, 256);    // Sprite edit view
@@ -22,13 +22,11 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private Bitmap bmpColorOR = new Bitmap(32, 32);
-        private Point curSpr;           // Selected sprite
-        private Point selStartSpr;      // For multiple selection
-        private Point curLine;          // Selected line in editor
-        private Point selStartLine;     // For multiple selection
-        private int currentDot;         // Selected dot in line(0-7)
-        private int currentColor;       // Currently elected color, 0=left, 1=right
-        private Point curPal;           // Selection in palette
+        private Selection curSpr = new Selection(32, 32);       // Selected sprite
+        private Selection curLine = new Selection(128, 16);     // Selected line in editor
+        private int currentDot;                                 // Selected dot in line(0-7)
+        private Selection currentColor = new Selection(32, 32); // Currently elected color, 0=left, 1=right
+        private Selection curPal = new Selection(32, 32);       // Selection in palette
         String currentFile = "";
         public String CurrentFile
         {
@@ -46,7 +44,10 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order
-            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPalette, panelSprites });
+            tabList.Add(panelEditor, curLine);
+            tabList.Add(panelColor, currentColor);
+            tabList.Add(panelPalette, curPal);
+            tabList.Add(panelSprites, curSpr);
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewSprites.Image = bmpSprites;
@@ -91,10 +92,16 @@ namespace _99x8Edit
         protected override bool ProcessTabKey(bool forward)
         {
             Control prev = this.ActiveControl;
-            int index = tabOrder.IndexOf(prev) + (forward ? 1 : tabOrder.Count - 1);
-            index %= tabOrder.Count;
-            this.ActiveControl = tabOrder[index];
-            this.RefreshAllViews();     // Current focused selection will be hilighted
+            Control next = tabList.NextOf(prev, forward);
+            this.ActiveControl = next;
+            // Animation
+            Rectangle r_prev = tabList.SelectionOf(prev).GetScreenPos(prev);
+            Rectangle r_next = tabList.SelectionOf(next).GetScreenPos(next);
+            CursorAnim win = new CursorAnim(r_prev, r_next);
+            win.Show();
+            win.StartMoving();
+            // Refresh views
+            this.RefreshAllViews();
             return true;
         }
         //------------------------------------------------------------------------------
@@ -162,7 +169,7 @@ namespace _99x8Edit
                 g.DrawRectangle(Utility.DashedGray, xr * 32, yr * 32, 31, 31);
             }
             // Selection
-            Utility.DrawSelection(g, curSpr, selStartSpr, 32, 32, panelSprites.Focused);
+            Utility.DrawSelection(g, curSpr, panelSprites.Focused);
             if (refresh) viewSprites.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh = true)
@@ -227,11 +234,11 @@ namespace _99x8Edit
                 }
             }
             // Draw selection rectangle
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
-            Utility.DrawSelection(g, r.X * 128, r.Y * 16, r.Width * 128 - 1, r.Height * 16 - 1, panelEditor.Focused);
+            Utility.DrawSelection(g, curLine, panelEditor.Focused);
             if (panelEditor.Focused)
             {
-                Utility.DrawSubSelection(g, r.X * 128 + currentDot * 16, r.Y * 16, 14, 14);
+                Utility.DrawSubSelection(g, curLine.Display.X * 128 + currentDot * 16,
+                                         curLine.Display.Y * 16, 14, 14);
             }
             // CRT Filter
             if (chkCRT.Checked)
@@ -286,12 +293,12 @@ namespace _99x8Edit
                 labelColorOR.Visible = false;
             }
             // Current selection
-            if (!viewColorR.Visible && currentColor > 0) currentColor = 0;
-            if (currentColor == 0)
+            if (!viewColorR.Visible && currentColor.X > 0) currentColor.X = 0;
+            if (currentColor.X == 0)
             {
                 Utility.DrawSelection(gl, 0, 0, 29, 29, panelColor.Focused);
             }
-            else if (currentColor == 1)
+            else if (currentColor.X == 1)
             {
                 Utility.DrawSelection(gr, 0, 0, 29, 29, panelColor.Focused);
             }
@@ -336,15 +343,14 @@ namespace _99x8Edit
                     // Sprite selected
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curSpr.X = x;
-                        curSpr.Y = y;
+                        curSpr.ToX = x;
+                        curSpr.ToY = y;
                     }
                     else
                     {
-                        // New selection
-                        curSpr.X = selStartSpr.X = x;
-                        curSpr.Y = selStartSpr.Y = y;
+                        curSpr.X = x;
+                        curSpr.Y = y;
+                        curSpr.ResetSelection();          // New selection
                     }
                     this.RefreshAllViews();
                     viewSprites.DoDragDrop(new DnDSprite(), DragDropEffects.Copy);
@@ -374,7 +380,7 @@ namespace _99x8Edit
         {
             ClipSprite clip = new ClipSprite();
             // Copy selected sprites
-            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            Rectangle r = curSpr.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.One16x16Sprite> l = new List<Machine.One16x16Sprite>();
@@ -430,7 +436,7 @@ namespace _99x8Edit
         private void contextSprites_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            Rectangle r = curSpr.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -470,7 +476,7 @@ namespace _99x8Edit
         private void contextSprites_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            Rectangle r = curSpr.Selected;
             for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -484,7 +490,7 @@ namespace _99x8Edit
         private void contextSprites_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            Rectangle r = curSpr.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X + 1; j < r.X + r.Width; ++j)
@@ -507,15 +513,14 @@ namespace _99x8Edit
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curLine.X = clicked_x;
-                        curLine.Y = clicled_y;
+                        curLine.ToX = clicked_x;
+                        curLine.ToY = clicled_y;
                     }
                     else
                     {
-                        // New selection
-                        curLine.X = selStartLine.X = clicked_x;
-                        curLine.Y = selStartLine.Y = clicled_y;
+                        curLine.X = clicked_x;
+                        curLine.Y = clicled_y;
+                        curLine.ResetSelection();       // New selection
                     }
                     this.UpdateSpriteEditView();
                     this.UpdateCurrentColorView();
@@ -552,7 +557,7 @@ namespace _99x8Edit
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipOneSpriteLine clip = new ClipOneSpriteLine();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.SpriteLine> l = new List<Machine.SpriteLine>();
@@ -589,7 +594,7 @@ namespace _99x8Edit
         private void contextEditor_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -605,7 +610,7 @@ namespace _99x8Edit
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -623,7 +628,7 @@ namespace _99x8Edit
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X + 1; j < r.X + r.Width; ++j)
@@ -679,7 +684,7 @@ namespace _99x8Edit
         {
             // Update selection and controls
             panelColor.Focus();
-            currentColor = 0;
+            currentColor.X = 0;
             this.UpdateCurrentColorView();
             // Set color to target
             int current_target16x16 = curSpr.Y * 8 + curSpr.X;
@@ -701,7 +706,7 @@ namespace _99x8Edit
         {
             // Update selection and controls
             panelColor.Focus();
-            currentColor = 1;
+            currentColor.X = 1;
             this.UpdateCurrentColorView();
             // Set color to target
             int current_target16x16 = (curSpr.Y * 8 + curSpr.X + 1) % 64;

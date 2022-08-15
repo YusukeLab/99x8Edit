@@ -7,11 +7,114 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
-    public class Utility
+    // Multiple cell selection for user interface
+    internal class Selection
     {
-        public static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
+        private int _cellW;         // Size of cells to display
+        private int _cellH;
+        private int _x;             // Current col and row
+        private int _y;
+        private int _tx;            // Multiple selection to
+        private int _ty;
+        Rectangle _selection;       // Selected cols and rows
+        Rectangle _display;         // Selection on display coodinate
+        internal Selection(int cell_width, int cell_height)
+        {
+            _display.Width = _cellW = cell_width;
+            _display.Height = _cellH = cell_height;
+        }
+        internal int X
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                update();
+            }
+        }
+        internal int Y
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                update();
+            }
+        }
+        internal int ToX
+        {
+            get { return _tx; }
+            set
+            {
+                _tx = value;
+                update();
+            }
+        }
+        internal int ToY
+        {
+            get { return _ty; }
+            set
+            {
+                _ty = value;
+                update();
+            }
+        }
+        internal Rectangle Selected
+        {
+            get { return _selection; }
+        }
+        internal Rectangle Display
+        {
+            get{ return _display; }
+        }
+        internal void ResetSelection()
+        {
+            _tx = _x;
+            _ty = _y;
+            update();
+        }
+        internal Rectangle GetScreenPos(Control c)
+        {
+            Point p = new Point(_display.X, _display.Y);
+            p = c.PointToScreen(p);
+            return new Rectangle(p.X, p.Y, _display.Width, _display.Height);
+        }
+        private void update()
+        {
+            _display.X = (_selection.X = Math.Min(_x, _tx)) * _cellW;
+            _display.Y = (_selection.Y = Math.Min(_y, _ty)) * _cellH;
+            _display.Width = (_selection.Width = Math.Abs(_x - _tx) + 1) * _cellW - 1;
+            _display.Height = (_selection.Height = Math.Abs(_y - _ty) + 1) * _cellH - 1;
+        }
+    }
+    internal class TabOrder
+    {
+        // Customized tab order and the selection corresponding to
+        private List<Control> _ctrl = new List<Control>();
+        private List<Selection> _sel = new List<Selection>();
+        internal void Add(Control c, Selection s)
+        {
+            _ctrl.Add(c);
+            _sel.Add(s);
+        }
+        internal Control NextOf(Control c, bool forward)
+        {
+            int index = _ctrl.IndexOf(c);
+            index += forward ? 1 : _ctrl.Count - 1;
+            index %= _ctrl.Count;
+            return _ctrl[index];
+        }
+        internal Selection SelectionOf(Control c)
+        {
+            int index = _ctrl.IndexOf(c);
+            return _sel[index];
+        }
+    }
+    internal class Utility
+    {
+        // For UI
+        internal static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
                                        System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
-
         //--------------------------------------------------------------------
         // Utility functions
         //--------------------------------------------------------------------
@@ -24,23 +127,11 @@ namespace _99x8Edit
             srcL >>= 1;
             srcL |= (byte)(c << 7);
         }
-        internal static Rectangle Point2Rect(Point p1, Point p2)
-        {
-            return new Rectangle(Math.Min(p1.X, p2.X),
-                                 Math.Min(p1.Y, p2.Y),
-                                 Math.Abs(p1.X - p2.X) + 1,
-                                 Math.Abs(p1.Y - p2.Y) + 1);
-        }
         //--------------------------------------------------------------------
         // User interface
-        internal static void DrawSelection(Graphics g, Point p1, Point p2, int mag_x, int mag_y, bool focused)
+        internal static void DrawSelection(Graphics g, Selection s, bool focused)
         {
-            Rectangle r = Point2Rect(p1, p2);
-            int x = Math.Min(p1.X, p2.X) * mag_x;
-            int y = Math.Min(p1.Y, p2.Y) * mag_y;
-            int w = (Math.Abs(p1.X - p2.X) + 1) * mag_x - 1;
-            int h = (Math.Abs(p1.Y - p2.Y) + 1) * mag_y - 1;
-            DrawSelection(g, x, y, w, h, focused);
+            DrawSelection(g, s.Display.X, s.Display.Y, s.Display.Width, s.Display.Height, focused);
         }
         internal static void DrawSelection(Graphics g, int x, int y, int w, int h, bool focused)
         {

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
+    class dummy { }
     // Partial classes for the keyboard inputs of main editors
     public partial class PCGEditor : Form
     {
@@ -32,36 +33,36 @@ namespace _99x8Edit
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    if (currentPal.Y > 0)
+                    if (curPal.Y > 0)
                     {
-                        currentPal.Y--;
+                        curPal.Y--;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Down:
-                    if (currentPal.Y < 1)
+                    if (curPal.Y < 1)
                     {
-                        currentPal.Y++;
+                        curPal.Y++;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Left:
-                    if (currentPal.X > 0)
+                    if (curPal.X > 0)
                     {
-                        currentPal.X--;
+                        curPal.X--;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Right:
-                    if (currentPal.X < 7)
+                    if (curPal.X < 7)
                     {
-                        currentPal.X++;
+                        curPal.X++;
                     }
                     this.UpdatePaletteView();
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    this.EditPalette(currentPal.Y * 8 + currentPal.X);
+                    this.EditPalette(curPal.Y * 8 + curPal.X);
                     break;
             }
         }
@@ -70,26 +71,26 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Left:
-                    if (currentColor > 0)
+                    if (curColor.X > 0)
                     {
-                        currentColor--;
+                        curColor.X--;
                         this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Right:
-                    if (currentColor < 1)
+                    if (curColor.X < 1)
                     {
-                        currentColor++;
+                        curColor.X++;
                         this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    if (currentColor == 0)
+                    if (curColor.X == 0)
                     {
                         this.viewColorL_Click(null, null);
                     }
-                    else if (currentColor == 1)
+                    else if (curColor.X == 1)
                     {
                         this.viewColorR_Click(null, null);
                     }
@@ -106,30 +107,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curLine.Y > 0)
+                    if (curLine.ToY > 0)
                     {
-                        curLine.Y--;
+                        curLine.ToY--;
                         refresh();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curLine.Y < 15)
+                    if (curLine.ToY < 15)
                     {
-                        curLine.Y++;
+                        curLine.ToY++;
                         refresh();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curLine.X > 0)
+                    if (curLine.ToX > 0)
                     {
-                        curLine.X--;
+                        curLine.ToX--;
                         refresh();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curLine.X < 1)
+                    if (curLine.ToX < 1)
                     {
-                        curLine.X++;
+                        curLine.ToX++;
                         refresh();
                     }
                     break;
@@ -137,7 +138,7 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -145,7 +146,7 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -154,7 +155,7 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -168,7 +169,7 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -264,30 +265,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curPCG.Y > 0)
+                    if (curPCG.ToY > 0)
                     {
-                        curPCG.Y--;
+                        curPCG.ToY--;
                         refresh();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curPCG.Y < 7)
+                    if (curPCG.ToY < 7)
                     {
-                        curPCG.Y++;
+                        curPCG.ToY++;
                         refresh();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curPCG.X > 0)
+                    if (curPCG.ToX > 0)
                     {
-                        curPCG.X--;
+                        curPCG.ToX--;
                         refresh();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curPCG.X < 31)
+                    if (curPCG.ToX < 31)
                     {
-                        curPCG.X++;
+                        curPCG.ToX++;
                         refresh();
                     }
                     break;
@@ -295,7 +296,7 @@ namespace _99x8Edit
                     if (curPCG.Y > 0)
                     {
                         curPCG.Y--;
-                        selStartPCG = curPCG;
+                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -303,7 +304,7 @@ namespace _99x8Edit
                     if (curPCG.Y < 7)
                     {
                         curPCG.Y++;
-                        selStartPCG = curPCG;
+                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -311,7 +312,7 @@ namespace _99x8Edit
                     if (curPCG.X > 0)
                     {
                         curPCG.X--;
-                        selStartPCG = curPCG;
+                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -319,7 +320,7 @@ namespace _99x8Edit
                     if (curPCG.X < 31)
                     {
                         curPCG.X++;
-                        selStartPCG = curPCG;
+                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -336,30 +337,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curSand.Y > 0)
+                    if (curSand.ToY > 0)
                     {
-                        curSand.Y--;
+                        curSand.ToY--;
                         this.UpdateSandbox();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curSand.Y < 23)
+                    if (curSand.ToY < 23)
                     {
-                        curSand.Y++;
+                        curSand.ToY++;
                         this.UpdateSandbox();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curSand.X > 0)
+                    if (curSand.ToX > 0)
                     {
-                        curSand.X--;
+                        curSand.ToX--;
                         this.UpdateSandbox();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curSand.X < 31)
+                    if (curSand.ToX < 31)
                     {
-                        curSand.X++;
+                        curSand.ToX++;
                         this.UpdateSandbox();
                     }
                     break;
@@ -367,7 +368,7 @@ namespace _99x8Edit
                     if (curSand.Y > 0)
                     {
                         curSand.Y--;
-                        selStartSand = curSand;
+                        curSand.ResetSelection();
                         this.UpdateSandbox();
                     }
                     break;
@@ -375,7 +376,7 @@ namespace _99x8Edit
                     if (curSand.Y < 23)
                     {
                         curSand.Y++;
-                        selStartSand = curSand;
+                        curSand.ResetSelection();
                         this.UpdateSandbox();
                     }
                     break;
@@ -383,7 +384,7 @@ namespace _99x8Edit
                     if (curSand.X > 0)
                     {
                         curSand.X--;
-                        selStartSand = curSand;
+                        curSand.ResetSelection();
                         this.UpdateSandbox();
                     }
                     break;
@@ -391,7 +392,7 @@ namespace _99x8Edit
                     if (curSand.X < 31)
                     {
                         curSand.X++;
-                        selStartSand = curSand;
+                        curSand.ResetSelection();
                         this.UpdateSandbox();
                     }
                     break;
@@ -471,33 +472,33 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curPtn.Y > 0)
+                    if (curPtn.ToY > 0)
                     {
-                        curPtn.Y--;
+                        curPtn.ToY--;
                         if (curCellInPtn.Y > 0) curCellInPtn.Y = 0;
                         this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curPtn.Y < 15)
+                    if (curPtn.ToY < 15)
                     {
-                        curPtn.Y++;
+                        curPtn.ToY++;
                         if (curCellInPtn.Y < 1) curCellInPtn.Y = 1;
                         this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curPtn.X > 0)
+                    if (curPtn.ToX > 0)
                     {
-                        curPtn.X--;
+                        curPtn.ToX--;
                         if (curCellInPtn.X > 0) curCellInPtn.X = 0;
                         this.UpdateMapPatterns();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curPtn.X < 15)
+                    if (curPtn.ToX < 15)
                     {
-                        curPtn.X++;
+                        curPtn.ToX++;
                         if (curCellInPtn.X < 1) curCellInPtn.X = 1;
                         this.UpdateMapPatterns();
                     }
@@ -511,7 +512,7 @@ namespace _99x8Edit
                     else if (curPtn.Y > 0)
                     {
                         curPtn.Y--;
-                        selStartPtn = curPtn;
+                        curPtn.ResetSelection();
                         this.UpdateMapPatterns();
                     }
                     break;
@@ -524,7 +525,7 @@ namespace _99x8Edit
                     else if (curPtn.Y < 15)
                     {
                         curPtn.Y++;
-                        selStartPtn = curPtn;
+                        curPtn.ResetSelection();
                         this.UpdateMapPatterns();
                     }
                     break;
@@ -537,7 +538,7 @@ namespace _99x8Edit
                     else if (curPtn.X > 0)
                     {
                         curPtn.X--;
-                        selStartPtn = curPtn;
+                        curPtn.ResetSelection();
                         this.UpdateMapPatterns();
                     }
                     break;
@@ -550,7 +551,7 @@ namespace _99x8Edit
                     else if (curPtn.X < 15)
                     {
                         curPtn.X++;
-                        selStartPtn = curPtn;
+                        curPtn.ResetSelection();
                         this.UpdateMapPatterns();
                     }
                     break;
@@ -563,7 +564,7 @@ namespace _99x8Edit
                     int prev_y = curMap.Y;
                     curMap.X = (curMap.X + 1) % 16;
                     if (curMap.X == 0) curMap.Y = (curMap.Y + 1) % 12;
-                    selStartPtn = curPtn;
+                    curPtn.ResetSelection();
                     this.UpdateMap();
                     break;
             }
@@ -573,30 +574,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curMap.Y > 0)
+                    if (curMap.ToY > 0)
                     {
-                        curMap.Y--;
+                        curMap.ToY--;
                         this.UpdateMap();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curMap.Y < 11)
+                    if (curMap.ToY < 11)
                     {
-                        curMap.Y++;
+                        curMap.ToY++;
                         this.UpdateMap();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curMap.X > 0)
+                    if (curMap.ToX > 0)
                     {
-                        curMap.X--;
+                        curMap.ToX--;
                         this.UpdateMap();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curMap.X < 15)
+                    if (curMap.ToX < 15)
                     {
-                        curMap.X++;
+                        curMap.ToX++;
                         this.UpdateMap();
                     }
                     break;
@@ -606,7 +607,7 @@ namespace _99x8Edit
                         if (curMapOrg.Y > 0) curMapOrg.Y--;
                     }
                     else curMap.Y--;
-                    selStartMap = curMap;
+                    curMap.ResetSelection();
                     this.UpdateMap();
                     break;
                 case Keys.Down:
@@ -615,7 +616,7 @@ namespace _99x8Edit
                         if (curMapOrg.Y < dataSource.MapHeight - 12) curMapOrg.Y++;
                     }
                     else curMap.Y++;
-                    selStartMap = curMap;
+                    curMap.ResetSelection();
                     this.UpdateMap();
                     break;
                 case Keys.Left:
@@ -624,7 +625,7 @@ namespace _99x8Edit
                         if (curMapOrg.X > 0) curMapOrg.X--;
                     }
                     else curMap.X--;
-                    selStartMap = curMap;
+                    curMap.ResetSelection();
                     this.UpdateMap();
                     break;
                 case Keys.Right:
@@ -633,7 +634,7 @@ namespace _99x8Edit
                         if (curMapOrg.X < dataSource.MapWidth - 16) curMapOrg.X++;
                     }
                     else curMap.X++;
-                    selStartMap = curMap;
+                    curMap.ResetSelection();
                     this.UpdateMap();
                     break;
             }
@@ -665,30 +666,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (curSpr.Y > 0)
+                    if (curSpr.ToY > 0)
                     {
-                        curSpr.Y--;
+                        curSpr.ToY--;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curSpr.Y < 7)
+                    if (curSpr.ToY < 7)
                     {
-                        curSpr.Y++;
+                        curSpr.ToY++;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curSpr.X > 0)
+                    if (curSpr.ToX > 0)
                     {
-                        curSpr.X--;
+                        curSpr.ToX--;
                         this.RefreshAllViews();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curSpr.X < 7)
+                    if (curSpr.ToX < 7)
                     {
-                        curSpr.X++;
+                        curSpr.ToX++;
                         this.RefreshAllViews();
                     }
                     break;
@@ -696,7 +697,7 @@ namespace _99x8Edit
                     if (curSpr.Y > 0)
                     {
                         curSpr.Y--;
-                        selStartSpr = curSpr;
+                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -704,7 +705,7 @@ namespace _99x8Edit
                     if (curSpr.Y < 7)
                     {
                         curSpr.Y++;
-                        selStartSpr = curSpr;
+                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -712,7 +713,7 @@ namespace _99x8Edit
                     if (curSpr.X > 0)
                     {
                         curSpr.X--;
-                        selStartSpr = curSpr;
+                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -720,7 +721,7 @@ namespace _99x8Edit
                     if (curSpr.X < 7)
                     {
                         curSpr.X++;
-                        selStartSpr = curSpr;
+                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -737,30 +738,30 @@ namespace _99x8Edit
             {
                 // Multiple selection
                 case Keys.Up | Keys.Shift:
-                    if (curLine.Y > 0)
+                    if (curLine.ToY > 0)
                     {
-                        curLine.Y--;
+                        curLine.ToY--;
                         refresh();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (curLine.Y < 15)
+                    if (curLine.ToY < 15)
                     {
-                        curLine.Y++;
+                        curLine.ToY++;
                         refresh();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (curLine.X > 0)
+                    if (curLine.ToX > 0)
                     {
-                        curLine.X--;
+                        curLine.ToX--;
                         refresh();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (curLine.X < 1)
+                    if (curLine.ToX < 1)
                     {
-                        curLine.X++;
+                        curLine.ToX++;
                         refresh();
                     }
                     break;
@@ -769,7 +770,7 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -777,7 +778,7 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -786,7 +787,7 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -800,7 +801,7 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        selStartLine = curLine;
+                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -899,26 +900,26 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Left:
-                    if (currentColor > 0)
+                    if (currentColor.X > 0)
                     {
-                        currentColor--;
+                        currentColor.X--;
                         this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Right:
-                    if (currentColor < 1 && viewColorR.Visible)
+                    if (currentColor.X < 1 && viewColorR.Visible)
                     {
-                        currentColor++;
+                        currentColor.X++;
                         this.UpdateCurrentColorView();
                     }
                     break;
                 case Keys.Space:
                 case Keys.Enter:
-                    if (currentColor == 0)
+                    if (currentColor.X == 0)
                     {
                         this.viewColorL_Click(null, null);
                     }
-                    else if (currentColor == 1)
+                    else if (currentColor.X == 1)
                     {
                         this.viewColorR_Click(null, null);
                     }

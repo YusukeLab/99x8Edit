@@ -12,8 +12,7 @@ namespace _99x8Edit
         private BinaryReader reader = null;
         private long seekAddr = 0;
         private Bitmap bmpPeek = new Bitmap(512, 512);
-        private Point current;
-        private Point selStart;
+        private Selection current = new Selection(32, 32);
         enum PeekType
         {
             Linear = 0,
@@ -91,10 +90,10 @@ namespace _99x8Edit
                     }
                 }
             }
-            Rectangle r = Utility.Point2Rect(current, selStart);
+            Rectangle r = current.Selected;
             r.Width++;      // Selection is by two cells
             r.Height++;
-            g.DrawRectangle(Pens.Red, r.X * 16, r.Y * 16, r.Width * 16 - 1, r.Height * 16 - 1);
+            Utility.DrawSelection(g, r.X * 16, r.Y * 16, r.Width * 16 - 1, r.Height * 16 - 1, true);
             viewPeek.Refresh();
         }
         private void UpdateAddr()
@@ -120,19 +119,19 @@ namespace _99x8Edit
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Limit multiple selections to 16x16 unit
-                        int col_sel = (col - selStart.X % 2) / 2 * 2 + (selStart.X % 2);
-                        int row_sel = (row - selStart.Y % 2) / 2 * 2 + (selStart.Y % 2);
+                        int col_sel = (col - current.X % 2) / 2 * 2 + (current.X % 2);
+                        int row_sel = (row - current.Y % 2) / 2 * 2 + (current.Y % 2);
                         if ((col_sel <= 30) && (row_sel <= 30))
                         {
-                            current.X = col_sel;
-                            current.Y = row_sel;
+                            current.ToX = col_sel;
+                            current.ToY = row_sel;
                         }
                     }
                     else
                     {
                         // New selection
-                        current.X = selStart.X = Math.Min(e.X / 16, 30);
-                        current.Y = selStart.Y = Math.Min(e.Y / 16, 30);
+                        current.X = current.ToX = Math.Min(e.X / 16, 30);
+                        current.Y = current.ToY = Math.Min(e.Y / 16, 30);
                     }
                     this.UpdatePeek();
                     viewPeek.DoDragDrop(new DnDPeek(), DragDropEffects.Copy);
@@ -143,7 +142,7 @@ namespace _99x8Edit
         {
             ClipPeekedData clip = new ClipPeekedData();
             // Copy selected sprites
-            Rectangle r = Utility.Point2Rect(current, selStart);
+            Rectangle r = current.Selected;
             r.Width++;      // Selection is by two cells
             r.Height++;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
@@ -172,30 +171,30 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
-                    if (current.Y >= 2)
+                    if (current.ToY >= 2)
                     {
-                        current.Y -= 2;
+                        current.ToY -= 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Down | Keys.Shift:
-                    if (current.Y <= 28)
+                    if (current.ToY <= 28)
                     {
-                        current.Y += 2;
+                        current.ToY += 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Left | Keys.Shift:
-                    if (current.X >= 2)
+                    if (current.ToX >= 2)
                     {
-                        current.X -= 2;
+                        current.ToX -= 2;
                         this.UpdatePeek();
                     }
                     break;
                 case Keys.Right | Keys.Shift:
-                    if (current.X <= 28)
+                    if (current.ToX <= 28)
                     {
-                        current.X += 2;
+                        current.ToX += 2;
                         this.UpdatePeek();
                     }
                     break;
@@ -203,7 +202,7 @@ namespace _99x8Edit
                     if (current.Y > 0)
                     {
                         current.Y--;
-                        selStart = current;
+                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     else if(seekAddr > 0)
@@ -217,7 +216,7 @@ namespace _99x8Edit
                     if (current.Y < 30)
                     {
                         current.Y++;
-                        selStart = current;
+                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     else if (seekAddr + 8192 < reader.BaseStream.Length)
@@ -234,7 +233,7 @@ namespace _99x8Edit
                     if (current.X > 0)
                     {
                         current.X--;
-                        selStart = current;
+                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     break;
@@ -242,7 +241,7 @@ namespace _99x8Edit
                     if (current.X < 30)
                     {
                         current.X++;
-                        selStart = current;
+                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     break;
@@ -264,12 +263,12 @@ namespace _99x8Edit
                 // Limit multiple selections to 16x16 unit
                 int col = p.X / 16;
                 int row = p.Y / 16;
-                int col_sel = (col - selStart.X % 2) / 2 * 2 + (selStart.X % 2);
-                int row_sel = (row - selStart.Y % 2) / 2 * 2 + (selStart.Y % 2);
+                int col_sel = (col - current.X % 2) / 2 * 2 + (current.X % 2);
+                int row_sel = (row - current.Y % 2) / 2 * 2 + (current.Y % 2);
                 if ((col_sel <= 30) && (row_sel <= 30))
                 {
-                    current.X = col_sel;
-                    current.Y = row_sel;
+                    current.ToX = col_sel;
+                    current.ToY = row_sel;
                     this.RefreshAllViews();
                 }
             }

@@ -11,22 +11,19 @@ namespace _99x8Edit
     {
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
-        private readonly List<Control> tabOrder = new List<Control>();
-        private Bitmap bmpPCGList = new Bitmap(512, 128);    // PCG list view
-        private Bitmap bmpPalette = new Bitmap(256, 64);     // Palette view
-        private Bitmap bmpSandbox = new Bitmap(512, 384);    // Sandbox view
-        private Bitmap bmpPCGEdit = new Bitmap(256, 256);    // PCG Editor view
+        private TabOrder tabList = new TabOrder();
+        private Bitmap bmpPCGList = new Bitmap(512, 128);   // PCG list view
+        private Bitmap bmpPalette = new Bitmap(256, 64);    // Palette view
+        private Bitmap bmpSandbox = new Bitmap(512, 384);   // Sandbox view
+        private Bitmap bmpPCGEdit = new Bitmap(256, 256);   // PCG Editor view
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
-        private Point curPCG;               // Selected PCG in PCG list
-        private Point selStartPCG;          // For multiple selection
-        private Point curSand;              // Selected cell in sandbox
-        private Point selStartSand;         // For multiple selection
-        private Point curLine;              // Selected line in editor
-        private Point selStartLine;         // For multiple selection
+        private Selection curPCG = new Selection(16, 16);   // Selection in PCG list
+        private Selection curSand = new Selection(16, 16);  // Selection in sandbox
+        private Selection curLine = new Selection(128, 16); // Selected line
         private int currentDot = 0;
-        private int currentColor = 0;       // Currently elected color, 0=left, 1=right
-        private Point currentPal;           // Selection in palette
+        private Selection curColor = new Selection(16, 16); // Currently elected color, 0=left, 1=right
+        private Selection curPal = new Selection(32, 32);   // Selection in palette
         String currentFile = "";
         public String CurrentFile
         {
@@ -46,7 +43,11 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order
-            tabOrder.AddRange(new Control[] { panelEditor, panelColor, panelPalette, panelPCG, panelSandbox });
+            tabList.Add(panelEditor, curLine);
+            tabList.Add(panelColor, curColor);
+            tabList.Add(panelPalette, curPal);
+            tabList.Add(panelPCG, curPCG);
+            tabList.Add(panelSandbox, curSand);
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewPCG.Image = bmpPCGList;
@@ -93,10 +94,15 @@ namespace _99x8Edit
         protected override bool ProcessTabKey(bool forward)
         {
             Control prev = this.ActiveControl;
-            int index = tabOrder.IndexOf(prev);
-            index += forward ? 1 : tabOrder.Count - 1;
-            index %= tabOrder.Count;
-            this.ActiveControl = tabOrder[index];
+            Control next = tabList.NextOf(prev, forward);
+            this.ActiveControl = next;
+            // Animation
+            Rectangle r_prev = tabList.SelectionOf(prev).GetScreenPos(prev);
+            Rectangle r_next = tabList.SelectionOf(next).GetScreenPos(next);
+            CursorAnim win = new CursorAnim(r_prev, r_next);
+            win.Show();
+            win.StartMoving();
+            // Refresh views
             this.RefreshAllViews();
             return true;
         }
@@ -124,8 +130,8 @@ namespace _99x8Edit
                 g.FillRectangle(new SolidBrush(c), (i % 8) * 32, (i / 8) * 32, 32, 32);
             }
             // Current selection
-            Utility.DrawSelection(g, currentPal.X * 32, currentPal.Y * 32, 31, 31, panelPalette.Focused);
-            if(refresh) this.viewPalette.Refresh();
+            Utility.DrawSelection(g, curPal.X * 32, curPal.Y * 32, 31, 31, panelPalette.Focused);
+            if (refresh) this.viewPalette.Refresh();
         }
         private void UpdatePCGEditView(bool refresh = true)
         {
@@ -151,12 +157,12 @@ namespace _99x8Edit
                     }
                 }
             }
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
-            Utility.DrawSelection(g, r.X * 128, r.Y * 16, r.Width * 128 - 1, r.Height * 16 - 1, panelEditor.Focused);
+            // Draw selection
+            Utility.DrawSelection(g, curLine, panelEditor.Focused);
             if (panelEditor.Focused)
             {
                 // One dot can be selected when focused
-                Utility.DrawSubSelection(g, r.X * 128 + currentDot * 16, r.Y * 16, 14, 14);
+                Utility.DrawSubSelection(g, curLine.Display.X + currentDot * 16, curLine.Display.Y, 14, 14);
             }
             if (refresh) viewPCGEdit.Refresh();
         }
@@ -175,7 +181,7 @@ namespace _99x8Edit
                 Color c = dataSource.ColorOf(color_code_l);
                 gl.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
             }
-            if (currentColor == 0)
+            if (curColor.X == 0)
             {
                 Utility.DrawSelection(gl, 0, 0, 29, 29, panelColor.Focused);
             }
@@ -185,7 +191,7 @@ namespace _99x8Edit
                 Color c = dataSource.ColorOf(color_code_r);
                 gr.FillRectangle(new SolidBrush(c), 0, 0, 32, 32);
             }
-            if (currentColor == 1)
+            if (curColor.X == 1)
             {
                 Utility.DrawSelection(gr, 0, 0, 29, 29, panelColor.Focused);
             }
@@ -213,7 +219,7 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
                 }
                 // Current selection
-                Utility.DrawSelection(g, curPCG, selStartPCG, 16, 16, panelPCG.Focused);
+                Utility.DrawSelection(g, curPCG, panelPCG.Focused);
                 viewPCG.Refresh();
             }
         }
@@ -236,7 +242,7 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
-                Utility.DrawSelection(g, curSand, selStartSand, 16, 16, panelSandbox.Focused);
+                Utility.DrawSelection(g, curSand, panelSandbox.Focused);
                 viewSandbox.Refresh();
             }
         }
@@ -247,8 +253,8 @@ namespace _99x8Edit
             // Palette view clicked
             panelPalette.Focus();      // Key events to parent panel
             int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
-            currentPal.X = clicked_color_num % 8;
-            currentPal.Y = clicked_color_num / 8;
+            curPal.X = clicked_color_num % 8;
+            curPal.Y = clicked_color_num / 8;
             // Update color table of current line
             int current_pcg = curPCG.Y * 32 + curPCG.X;
             int current_target_pcg = (current_pcg + curLine.X + (curLine.Y / 8) * 32) % 256;
@@ -275,7 +281,7 @@ namespace _99x8Edit
         private void viewColorL_Click(object sender, EventArgs e)
         {
             panelColor.Focus();
-            currentColor = 0;
+            curColor.X = 0;
             this.UpdateCurrentColorView();
             int current_pcg = curPCG.Y * 32 + curPCG.X;
             int current_target_pcg = (current_pcg + curLine.X + (curLine.Y / 8) * 32) % 256;
@@ -293,7 +299,7 @@ namespace _99x8Edit
         private void viewColorR_Click(object sender, EventArgs e)
         {
             panelColor.Focus();
-            currentColor = 1;
+            curColor.X = 1;
             this.UpdateCurrentColorView();
             int current_pcg = curPCG.Y * 32 + curPCG.X;
             int current_target_pcg = (current_pcg + curLine.X + (curLine.Y / 8) * 32) % 256;
@@ -336,15 +342,14 @@ namespace _99x8Edit
                     // Current selected line has changed
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curLine.X = clicked_line_x;
-                        curLine.Y = clicked_line_y;
+                        curLine.ToX = clicked_line_x;
+                        curLine.ToY = clicked_line_y;
                     }
                     else
                     {
-                        // New selection
-                        curLine.X = selStartLine.X = clicked_line_x;
-                        curLine.Y = selStartLine.Y = clicked_line_y;
+                        curLine.X = clicked_line_x;
+                        curLine.Y = clicked_line_y;
+                        curLine.ResetSelection();           // New selection
                     }
                     this.UpdatePCGEditView();               // Update editor view
                     this.UpdateCurrentColorView();          // Update view of current color
@@ -379,7 +384,7 @@ namespace _99x8Edit
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipPCGLines clip = new ClipPCGLines();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.PCGLine> l = new List<Machine.PCGLine>();
@@ -415,7 +420,7 @@ namespace _99x8Edit
         private void contextEditor_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -430,7 +435,7 @@ namespace _99x8Edit
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -447,7 +452,7 @@ namespace _99x8Edit
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Rectangle r = curLine.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X + 1; j < r.X + r.Width; ++j)
@@ -475,15 +480,14 @@ namespace _99x8Edit
                     // Selected PCG has changed
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curPCG.X = clicked_pcg_x;
-                        curPCG.Y = clicked_pcg_y;
+                        curPCG.ToX = clicked_pcg_x;
+                        curPCG.ToY = clicked_pcg_y;
                     }
                     else
                     {
-                        // New selection
-                        curPCG.X = selStartPCG.X = clicked_pcg_x;
-                        curPCG.Y = selStartPCG.Y = clicked_pcg_y;
+                        curPCG.X = clicked_pcg_x;
+                        curPCG.Y = clicked_pcg_y;
+                        curPCG.ResetSelection();        // New selection
                     }
                     this.UpdatePCGList();
                     this.UpdatePCGEditView();
@@ -534,7 +538,7 @@ namespace _99x8Edit
         {
             ClipPCG clip = new ClipPCG();
             clip.index = (byte)(curPCG.Y * 32 + curPCG.X);
-            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            Rectangle r = curPCG.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> gen_row = new List<byte[]>();
@@ -585,7 +589,7 @@ namespace _99x8Edit
         private void contextPCGList_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            Rectangle r = curPCG.Selected;
             for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
@@ -603,7 +607,7 @@ namespace _99x8Edit
         private void contextPCGList_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            Rectangle r = curPCG.Selected;
             for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
@@ -616,7 +620,7 @@ namespace _99x8Edit
         private void contextPCGList_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            Rectangle r = curPCG.Selected;
             for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for (int j = r.X + 1; (j < r.X + r.Width) && (j < 32); ++j)
@@ -639,15 +643,14 @@ namespace _99x8Edit
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curSand.X = clicked_cell_x;
-                        curSand.Y = clicled_cell_y;
+                        curSand.ToX = clicked_cell_x;
+                        curSand.ToY = clicled_cell_y;
                     }
                     else
                     {
-                        // New selection
-                        curSand.X = selStartSand.X = clicked_cell_x;
-                        curSand.Y = selStartSand.Y = clicled_cell_y;
+                        curSand.X = clicked_cell_x;
+                        curSand.Y = clicled_cell_y;
+                        curSand.ResetSelection();          // New selection
                     }
                     this.UpdateSandbox();
                 }
@@ -657,7 +660,7 @@ namespace _99x8Edit
         private void contextSandbox_copy(object sender, EventArgs e)
         {
             ClipNametable clip = new ClipNametable();
-            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            Rectangle r = curSand.Selected;
             for(int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<int> l = new List<int>();
@@ -695,8 +698,8 @@ namespace _99x8Edit
         private void contextSandbox_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
-            for(int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
+            Rectangle r = curSand.Selected;
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for(int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
                 {
@@ -714,7 +717,7 @@ namespace _99x8Edit
         private void contextSandbox_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            Rectangle r = curSand.Selected;
             for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
@@ -728,7 +731,7 @@ namespace _99x8Edit
         private void contextSandbox_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            Rectangle r = curSand.Selected;
             for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
                 for (int j = r.X + 1; (j < r.X + r.Width) && (j < 32); ++j)

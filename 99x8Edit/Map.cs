@@ -11,17 +11,15 @@ namespace _99x8Edit
     {
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
-        private readonly List<Control> tabOrder = new List<Control>();
+        private TabOrder tabList = new TabOrder();
         private Bitmap bmpPCGList = new Bitmap(512, 128);       // PCG list view
         private Bitmap bmpMapPatterns = new Bitmap(512, 512);   // Map pattern view
         private Bitmap bmpMap = new Bitmap(512, 384);           // Map view
-        private Point curPCG;               // Selected character
-        private Point curPtn;               // Selected tile pattern
-        private Point selStartPtn;          // For multiple selection
-        private Point curCellInPtn;         // Selected cell in one tile pattern
-        private Point curMapOrg;            // Coordinate of left top corner of map
-        private Point curMap;               // Selected map cell 0-15
-        private Point selStartMap;          // For multiple selection
+        private Selection curPCG = new Selection(16, 16);       // Selected character
+        private Selection curPtn = new Selection(32, 32);       // Selected tile pattern
+        private Selection curCellInPtn = new Selection(16, 16); // Selected cell in one tile pattern
+        private Point curMapOrg;                                // Coordinate of left top corner of map
+        private Selection curMap = new Selection(32, 32);       // Selected map cell 0-15
         String currentFile = "";
         public String CurrentFile
         {
@@ -41,7 +39,9 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order
-            tabOrder.AddRange(new Control[] { panelPCG, panelPtns, panelMap });
+            tabList.Add(panelPCG, curPCG);
+            tabList.Add(panelPtns, curPtn);
+            tabList.Add(panelMap, curMap);
             // Initialize controls
             viewPCG.Image = bmpPCGList;
             viewPatterns.Image = bmpMapPatterns;
@@ -79,10 +79,15 @@ namespace _99x8Edit
         protected override bool ProcessTabKey(bool forward)
         {
             Control prev = this.ActiveControl;
-            int index = tabOrder.IndexOf(prev);
-            index += forward ? 1 : tabOrder.Count - 1;
-            index %= tabOrder.Count;
-            this.ActiveControl = tabOrder[index];
+            Control next = tabList.NextOf(prev, forward);
+            this.ActiveControl = next;
+            // Animation
+            Rectangle r_prev = tabList.SelectionOf(prev).GetScreenPos(prev);
+            Rectangle r_next = tabList.SelectionOf(next).GetScreenPos(next);
+            CursorAnim win = new CursorAnim(r_prev, r_next);
+            win.Show();
+            win.StartMoving();
+            // Refresh views
             this.RefreshAllViews();
             return true;
         }
@@ -136,7 +141,7 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMapPatterns);
             }
             // Selection
-            Utility.DrawSelection(g, curPtn, selStartPtn, 32, 32, panelPtns.Focused);
+            Utility.DrawSelection(g, curPtn, panelPtns.Focused);
             // Selection, cell in one pattern
             int cx = curPtn.X * 32;
             int cy = curPtn.Y * 32;
@@ -163,7 +168,7 @@ namespace _99x8Edit
                 Filter.Create(Filter.Type.CRT).Process(bmpMap);
             }
             // Selection
-            Utility.DrawSelection(g, curMap, selStartMap, 32, 32, panelMap.Focused);
+            Utility.DrawSelection(g, curMap, panelMap.Focused);
             if (refresh) viewMap.Refresh();
             // Map size may be changed by loading, undo, etc
             if ((curMapOrg.X + 16 > dataSource.MapWidth) || (curMapOrg.Y + 12 > dataSource.MapHeight))
@@ -223,7 +228,7 @@ namespace _99x8Edit
         {
             ClipMapPtn clip = new ClipMapPtn();
             clip.index = curPtn.Y * 16 + curPtn.X;
-            Rectangle r = Utility.Point2Rect(curPtn, selStartPtn);
+            Rectangle r = curPtn.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> l = new List<byte[]>();
@@ -256,7 +261,7 @@ namespace _99x8Edit
         private void contextPatterns_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curPtn, selStartPtn);
+            Rectangle r = curPtn.Selected;
             for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
@@ -270,7 +275,7 @@ namespace _99x8Edit
         private void contextPatterns_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curPtn, selStartPtn);
+            Rectangle r = curPtn.Selected;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 for (int j = r.X + 1; j < r.X + r.Width; ++j)
@@ -300,17 +305,16 @@ namespace _99x8Edit
                 }
                 if (selected_pattern_num != current_pattern_num)
                 {
-                    if (Control.ModifierKeys == Keys.Shift)
+                    if (Control.ModifierKeys != Keys.Shift)
                     {
-                        // Multiple selection
-                        curPtn.X = selected_ptn_x;
-                        curPtn.Y = selected_ptn_y;
+                        curPtn.ToX = selected_ptn_x;
+                        curPtn.ToY = selected_ptn_y;
                     }
                     else
                     {
-                        // New selection
-                        curPtn.X = selStartPtn.X = selected_ptn_x;
-                        curPtn.Y = selStartPtn.Y = selected_ptn_y;
+                        curPtn.X = selected_ptn_x;
+                        curPtn.Y = selected_ptn_y;
+                        curPtn.ResetSelection();        // New selection
                     }
                     this.UpdateMapPatterns();   // refresh before dragging
                     // Start multiple selections
@@ -384,15 +388,14 @@ namespace _99x8Edit
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
-                        // Multiple selection
-                        curMap.X = selected_x;
-                        curMap.Y = selected_y;
+                        curMap.ToX = selected_x;
+                        curMap.ToY = selected_y;
                     }
                     else
                     {
-                        // New selection
-                        curMap.X = selStartMap.X = selected_x;
-                        curMap.Y = selStartMap.Y = selected_y;
+                        curMap.X = selected_x;
+                        curMap.Y = selected_y;
+                        curMap.ResetSelection();    // New selection
                     }
                     this.UpdateMap();
                 }
@@ -402,7 +405,7 @@ namespace _99x8Edit
         private void contextMap_copy(object sender, EventArgs e)
         {
             ClipMapCell clip = new ClipMapCell();
-            Rectangle r = Utility.Point2Rect(curMap, selStartMap);
+            Rectangle r = curMap.Selected;
             for(int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<int> l = new List<int>();
@@ -441,7 +444,7 @@ namespace _99x8Edit
         private void contextMap_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curMap, selStartMap);
+            Rectangle r = curMap.Selected;
             for (int i = r.Y; (i < r.Y + r.Height) && (i < 12); ++i)
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 16); ++j)
@@ -461,7 +464,7 @@ namespace _99x8Edit
         private void contextMap_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curMap, selStartMap);
+            Rectangle r = curMap.Selected;
             for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 12); ++i)
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 16); ++j)
@@ -475,7 +478,7 @@ namespace _99x8Edit
         private void contextMap_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = Utility.Point2Rect(curMap, selStartMap);
+            Rectangle r = curMap.Selected;
             for (int i = r.Y; (i < r.Y + r.Height) && (i < 12); ++i)
             {
                 for (int j = r.X + 1; (j < r.X + r.Width) && (j < 16); ++j)
