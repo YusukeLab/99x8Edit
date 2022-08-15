@@ -91,11 +91,10 @@ namespace _99x8Edit
                     }
                 }
             }
-            int x = Math.Min(current.X, selStart.X);
-            int y = Math.Min(current.Y, selStart.Y);
-            int w = Math.Abs(current.X - selStart.X) + 2;
-            int h = Math.Abs(current.Y - selStart.Y) + 2;
-            g.DrawRectangle(Pens.Red, x * 16, y * 16, w * 16 - 1, h * 16 - 1);
+            Rectangle r = Utility.Point2Rect(current, selStart);
+            r.Width++;      // Selection is by two cells
+            r.Height++;
+            g.DrawRectangle(Pens.Red, r.X * 16, r.Y * 16, r.Width * 16 - 1, r.Height * 16 - 1);
             viewPeek.Refresh();
         }
         private void UpdateAddr()
@@ -144,14 +143,13 @@ namespace _99x8Edit
         {
             ClipPeekedData clip = new ClipPeekedData();
             // Copy selected sprites
-            int x = Math.Min(current.X, selStart.X);
-            int y = Math.Min(current.Y, selStart.Y);
-            int w = Math.Abs(current.X - selStart.X) + 2;
-            int h = Math.Abs(current.Y - selStart.Y) + 2;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(current, selStart);
+            r.Width++;      // Selection is by two cells
+            r.Height++;
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> l = new List<byte[]>();
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     byte[] one_cell = new byte[8];
                     int addr = this.ColRowToAddr(j, i);
@@ -205,8 +203,7 @@ namespace _99x8Edit
                     if (current.Y > 0)
                     {
                         current.Y--;
-                        selStart.X = current.X;
-                        selStart.Y = current.Y;
+                        selStart = current;
                         this.UpdatePeek();
                     }
                     else if(seekAddr > 0)
@@ -220,8 +217,7 @@ namespace _99x8Edit
                     if (current.Y < 30)
                     {
                         current.Y++;
-                        selStart.X = current.X;
-                        selStart.Y = current.Y;
+                        selStart = current;
                         this.UpdatePeek();
                     }
                     else if (seekAddr + 8192 < reader.BaseStream.Length)
@@ -238,8 +234,7 @@ namespace _99x8Edit
                     if (current.X > 0)
                     {
                         current.X--;
-                        selStart.X = current.X;
-                        selStart.Y = current.Y;
+                        selStart = current;
                         this.UpdatePeek();
                     }
                     break;
@@ -247,8 +242,7 @@ namespace _99x8Edit
                     if (current.X < 30)
                     {
                         current.X++;
-                        selStart.X = current.X;
-                        selStart.Y = current.Y;
+                        selStart = current;
                         this.UpdatePeek();
                     }
                     break;

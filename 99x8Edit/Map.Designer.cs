@@ -42,7 +42,7 @@ namespace _99x8Edit
             this.btnRight = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
-            this.panelPatterns = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelPtns = new System.Windows.Forms.FlowLayoutPanel();
             this.contextPattern = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripPatternCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripPatternPaste = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +77,7 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
-            this.panelPatterns.SuspendLayout();
+            this.panelPtns.SuspendLayout();
             this.contextPattern.SuspendLayout();
             this.contextMap.SuspendLayout();
             this.panelMap.SuspendLayout();
@@ -212,17 +212,17 @@ namespace _99x8Edit
             // 
             // panelPatterns
             // 
-            this.panelPatterns.AllowDrop = true;
-            this.panelPatterns.ContextMenuStrip = this.contextPattern;
-            this.panelPatterns.Controls.Add(this.viewPatterns);
-            this.panelPatterns.Location = new System.Drawing.Point(579, 65);
-            this.panelPatterns.Name = "panelPatterns";
-            this.panelPatterns.Size = new System.Drawing.Size(524, 560);
-            this.panelPatterns.TabIndex = 36;
-            this.panelPatterns.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragDrop);
-            this.panelPatterns.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragEnter);
-            this.panelPatterns.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragOver);
-            this.panelPatterns.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPatterns_PreviewKeyDown);
+            this.panelPtns.AllowDrop = true;
+            this.panelPtns.ContextMenuStrip = this.contextPattern;
+            this.panelPtns.Controls.Add(this.viewPatterns);
+            this.panelPtns.Location = new System.Drawing.Point(579, 65);
+            this.panelPtns.Name = "panelPatterns";
+            this.panelPtns.Size = new System.Drawing.Size(524, 560);
+            this.panelPtns.TabIndex = 36;
+            this.panelPtns.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragDrop);
+            this.panelPtns.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragEnter);
+            this.panelPtns.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragOver);
+            this.panelPtns.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPatterns_PreviewKeyDown);
             // 
             // contextPattern
             // 
@@ -489,7 +489,7 @@ namespace _99x8Edit
             this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.btnMapSize);
             this.Controls.Add(this.panelMap);
-            this.Controls.Add(this.panelPatterns);
+            this.Controls.Add(this.panelPtns);
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.btnRight);
@@ -512,7 +512,7 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).EndInit();
-            this.panelPatterns.ResumeLayout(false);
+            this.panelPtns.ResumeLayout(false);
             this.contextPattern.ResumeLayout(false);
             this.contextMap.ResumeLayout(false);
             this.panelMap.ResumeLayout(false);
@@ -538,7 +538,7 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnRight;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
-        private System.Windows.Forms.FlowLayoutPanel panelPatterns;
+        private System.Windows.Forms.FlowLayoutPanel panelPtns;
         private System.Windows.Forms.ContextMenuStrip contextPattern;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopy;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternPaste;

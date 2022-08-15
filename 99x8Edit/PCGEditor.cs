@@ -170,15 +170,12 @@ namespace _99x8Edit
                     }
                 }
             }
-            int sx = Math.Min(curLine.X, selStartLine.X) * 128;
-            int sy = Math.Min(curLine.Y, selStartLine.Y) * 16;
-            int sw = (Math.Abs(curLine.X - selStartLine.X) + 1) * 128 - 1;
-            int sh = (Math.Abs(curLine.Y - selStartLine.Y) + 1) * 16 - 1;
-            Utility.DrawSelection(g, sx, sy, sw, sh, panelEditor.Focused);
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Utility.DrawSelection(g, r.X * 128, r.Y * 16, r.Width * 128 - 1, r.Height * 16 - 1, panelEditor.Focused);
             if (panelEditor.Focused)
             {
                 // One dot can be selected when focused
-                Utility.DrawSubSelection(g, sx + currentDot * 16, sy, 14, 14);
+                Utility.DrawSubSelection(g, r.X * 128 + currentDot * 16, r.Y * 16, 14, 14);
             }
             if (refresh) viewPCGEdit.Refresh();
         }
@@ -258,12 +255,7 @@ namespace _99x8Edit
                     Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
                 }
                 // Current selection
-                Utility.DrawSelection(g,
-                                      Math.Min(curSand.X, selStartSand.X) * 16,
-                                      Math.Min(curSand.Y, selStartSand.Y) * 16,
-                                      (Math.Abs(curSand.X - selStartSand.X) + 1) * 16 - 1,
-                                      (Math.Abs(curSand.Y - selStartSand.Y) + 1) * 16 - 1,
-                                      panelSandbox.Focused);
+                Utility.DrawSelection(g, curSand, selStartSand, 16, 16, panelSandbox.Focused);
                 viewSandbox.Refresh();
             }
         }
@@ -494,8 +486,7 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     break;
@@ -503,8 +494,7 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     break;
@@ -513,8 +503,7 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -528,8 +517,7 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -636,14 +624,11 @@ namespace _99x8Edit
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipPCGLines clip = new ClipPCGLines();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.PCGLine> l = new List<Machine.PCGLine>();
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop_pcg = curPCG.Y * 32 + curPCG.X;
                     int pcg = (lefttop_pcg + j + (i / 8) * 32) % 256;
@@ -675,13 +660,10 @@ namespace _99x8Edit
         private void contextEditor_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop_pcg = curPCG.Y * 32 + curPCG.X;
                     int pcg = (lefttop_pcg + j + (i / 8) * 32) % 256;
@@ -693,18 +675,15 @@ namespace _99x8Edit
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y + 1; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop_pcg = curPCG.Y * 32 + curPCG.X;
-                    int pcg_src = (lefttop_pcg + (y / 8) * 32 + j) % 256;
+                    int pcg_src = (lefttop_pcg + (r.Y / 8) * 32 + j) % 256;
                     int pcg_dst = (lefttop_pcg + (i / 8) * 32 + j) % 256;
-                    Machine.PCGLine line = dataSource.GetPCGLine(pcg_src, y % 8);
+                    Machine.PCGLine line = dataSource.GetPCGLine(pcg_src, r.Y % 8);
                     dataSource.SetPCGLine(pcg_dst, i % 8, line, false);
                 }
             }
@@ -713,16 +692,13 @@ namespace _99x8Edit
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x + 1; j < x + w; ++j)
+                for (int j = r.X + 1; j < r.X + r.Width; ++j)
                 {
                     int lefttop_pcg = curPCG.Y * 32 + curPCG.X;
-                    int pcg_src = (lefttop_pcg + (i / 8) * 32 + x) % 256;
+                    int pcg_src = (lefttop_pcg + (i / 8) * 32 + r.X) % 256;
                     int pcg_dst = (lefttop_pcg + (i / 8) * 32 + j) % 256;
                     Machine.PCGLine line = dataSource.GetPCGLine(pcg_src, i % 8);
                     dataSource.SetPCGLine(pcg_dst, i % 8, line, false);
@@ -805,8 +781,7 @@ namespace _99x8Edit
                     if (curPCG.Y > 0)
                     {
                         curPCG.Y--;
-                        selStartPCG.X = curPCG.X;
-                        selStartPCG.Y = curPCG.Y;
+                        selStartPCG = curPCG;
                         refresh();
                     }
                     break;
@@ -814,8 +789,7 @@ namespace _99x8Edit
                     if (curPCG.Y < 7)
                     {
                         curPCG.Y++;
-                        selStartPCG.X = curPCG.X;
-                        selStartPCG.Y = curPCG.Y;
+                        selStartPCG = curPCG;
                         refresh();
                     }
                     break;
@@ -823,8 +797,7 @@ namespace _99x8Edit
                     if (curPCG.X > 0)
                     {
                         curPCG.X--;
-                        selStartPCG.X = curPCG.X;
-                        selStartPCG.Y = curPCG.Y;
+                        selStartPCG = curPCG;
                         refresh();
                     }
                     break;
@@ -832,8 +805,7 @@ namespace _99x8Edit
                     if (curPCG.X < 31)
                     {
                         curPCG.X++;
-                        selStartPCG.X = curPCG.X;
-                        selStartPCG.Y = curPCG.Y;
+                        selStartPCG = curPCG;
                         refresh();
                     }
                     break;
@@ -885,15 +857,12 @@ namespace _99x8Edit
         {
             ClipPCG clip = new ClipPCG();
             clip.index = (byte)(curPCG.Y * 32 + curPCG.X);
-            int x = Math.Min(curPCG.X, selStartPCG.X);
-            int y = Math.Min(curPCG.Y, selStartPCG.Y);
-            int w = Math.Abs(curPCG.X - selStartPCG.X) + 1;
-            int h = Math.Abs(curPCG.Y - selStartPCG.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> gen_row = new List<byte[]>();
                 List<byte[]> clr_row = new List<byte[]>();
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     gen_row.Add(dataSource.GetPCGGen(i * 32 + j));
                     clr_row.Add(dataSource.GetPCGClr(i * 32 + j));
@@ -939,13 +908,10 @@ namespace _99x8Edit
         private void contextPCGList_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curPCG.X, selStartPCG.X);
-            int y = Math.Min(curPCG.Y, selStartPCG.Y);
-            int w = Math.Abs(curPCG.X - selStartPCG.X) + 1;
-            int h = Math.Abs(curPCG.Y - selStartPCG.Y) + 1;
-            for (int i = y; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for (int j = x; (j < x + w) && (j < 32); ++j)
+                for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
                 {
                     dataSource.ClearPCG(i * 32 + j);
                 }
@@ -960,15 +926,12 @@ namespace _99x8Edit
         private void contextPCGList_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curPCG.X, selStartPCG.X);
-            int y = Math.Min(curPCG.Y, selStartPCG.Y);
-            int w = Math.Abs(curPCG.X - selStartPCG.X) + 1;
-            int h = Math.Abs(curPCG.Y - selStartPCG.Y) + 1;
-            for (int i = y + 1; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for (int j = x; (j < x + w) && (j < 32); ++j)
+                for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
                 {
-                    dataSource.CopyPCG(y * 32 + j, i * 32 + j, false);
+                    dataSource.CopyPCG(r.Y * 32 + j, i * 32 + j, false);
                 }
             }
             this.RefreshAllViews();
@@ -976,15 +939,12 @@ namespace _99x8Edit
         private void contextPCGList_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curPCG.X, selStartPCG.X);
-            int y = Math.Min(curPCG.Y, selStartPCG.Y);
-            int w = Math.Abs(curPCG.X - selStartPCG.X) + 1;
-            int h = Math.Abs(curPCG.Y - selStartPCG.Y) + 1;
-            for (int i = y; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curPCG, selStartPCG);
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for (int j = x + 1; (j < x + w) && (j < 32); ++j)
+                for (int j = r.X + 1; (j < r.X + r.Width) && (j < 32); ++j)
                 {
-                    dataSource.CopyPCG(i * 32 + x, i * 32 + j, false);
+                    dataSource.CopyPCG(i * 32 + r.X, i * 32 + j, false);
                 }
             }
             this.RefreshAllViews();
@@ -1053,8 +1013,7 @@ namespace _99x8Edit
                     if (curSand.Y > 0)
                     {
                         curSand.Y--;
-                        selStartSand.X = curSand.X;
-                        selStartSand.Y = curSand.Y;
+                        selStartSand = curSand;
                         this.UpdateSandbox();
                     }
                     break;
@@ -1062,8 +1021,7 @@ namespace _99x8Edit
                     if (curSand.Y < 23)
                     {
                         curSand.Y++;
-                        selStartSand.X = curSand.X;
-                        selStartSand.Y = curSand.Y;
+                        selStartSand = curSand;
                         this.UpdateSandbox();
                     }
                     break;
@@ -1071,8 +1029,7 @@ namespace _99x8Edit
                     if (curSand.X > 0)
                     {
                         curSand.X--;
-                        selStartSand.X = curSand.X;
-                        selStartSand.Y = curSand.Y;
+                        selStartSand = curSand;
                         this.UpdateSandbox();
                     }
                     break;
@@ -1080,8 +1037,7 @@ namespace _99x8Edit
                     if (curSand.X < 31)
                     {
                         curSand.X++;
-                        selStartSand.X = curSand.X;
-                        selStartSand.Y = curSand.Y;
+                        selStartSand = curSand;
                         this.UpdateSandbox();
                     }
                     break;
@@ -1096,14 +1052,11 @@ namespace _99x8Edit
         private void contextSandbox_copy(object sender, EventArgs e)
         {
             ClipNametable clip = new ClipNametable();
-            int x = Math.Min(curSand.X, selStartSand.X);
-            int y = Math.Min(curSand.Y, selStartSand.Y);
-            int w = Math.Abs(curSand.X - selStartSand.X) + 1;
-            int h = Math.Abs(curSand.Y - selStartSand.Y) + 1;
-            for(int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            for(int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<int> l = new List<int>();
-                for(int j = x; j < x + w; ++j)
+                for(int j = r.X; j < r.X + r.Width; ++j)
                 {
                     l.Add(dataSource.GetNameTable(i * 32 + j));
                 }
@@ -1137,13 +1090,10 @@ namespace _99x8Edit
         private void contextSandbox_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSand.X, selStartSand.X);
-            int y = Math.Min(curSand.Y, selStartSand.Y);
-            int w = Math.Abs(curSand.X - selStartSand.X) + 1;
-            int h = Math.Abs(curSand.Y - selStartSand.Y) + 1;
-            for(int i = y; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            for(int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for(int j = x; (j < x + w) && (j < 32); ++j)
+                for(int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
                 {
                     dataSource.SetNameTable(i * 32 + j, 0, false);
                 }
@@ -1159,15 +1109,12 @@ namespace _99x8Edit
         private void contextSandbox_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSand.X, selStartSand.X);
-            int y = Math.Min(curSand.Y, selStartSand.Y);
-            int w = Math.Abs(curSand.X - selStartSand.X) + 1;
-            int h = Math.Abs(curSand.Y - selStartSand.Y) + 1;
-            for (int i = y + 1; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for (int j = x; (j < x + w) && (j < 32); ++j)
+                for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
                 {
-                    int src = dataSource.GetNameTable(y * 32 + j);
+                    int src = dataSource.GetNameTable(r.Y * 32 + j);
                     dataSource.SetNameTable(i * 32 + j, src, false);
                 }
             }
@@ -1176,15 +1123,12 @@ namespace _99x8Edit
         private void contextSandbox_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSand.X, selStartSand.X);
-            int y = Math.Min(curSand.Y, selStartSand.Y);
-            int w = Math.Abs(curSand.X - selStartSand.X) + 1;
-            int h = Math.Abs(curSand.Y - selStartSand.Y) + 1;
-            for (int i = y; (i < y + h) && (i < 24); ++i)
+            Rectangle r = Utility.Point2Rect(curSand, selStartSand);
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
             {
-                for (int j = x + 1; (j < x + w) && (j < 32); ++j)
+                for (int j = r.X + 1; (j < r.X + r.Width) && (j < 32); ++j)
                 {
-                    int src = dataSource.GetNameTable(i * 32 + x);
+                    int src = dataSource.GetNameTable(i * 32 + r.X);
                     dataSource.SetNameTable(i * 32 + j, src, false);
                 }
             }

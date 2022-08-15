@@ -181,11 +181,7 @@ namespace _99x8Edit
                 g.DrawRectangle(Utility.DashedGray, xr * 32, yr * 32, 31, 31);
             }
             // Selection
-            int x = Math.Min(curSpr.X, selStartSpr.X);
-            int y = Math.Min(curSpr.Y, selStartSpr.Y);
-            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
-            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
-            Utility.DrawSelection(g, x * 32, y * 32, w * 32 - 1, h * 32 - 1, panelSprites.Focused);
+            Utility.DrawSelection(g, curSpr, selStartSpr, 32, 32, panelSprites.Focused);
             if (refresh) viewSprites.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh = true)
@@ -250,14 +246,11 @@ namespace _99x8Edit
                 }
             }
             // Draw selection rectangle
-            int sx = Math.Min(curLine.X, selStartLine.X);
-            int sy = Math.Min(curLine.Y, selStartLine.Y);
-            int sw = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int sh = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            Utility.DrawSelection(g, sx * 128, sy * 16, sw * 128 - 1, sh * 16 - 1, panelEditor.Focused);
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            Utility.DrawSelection(g, r.X * 128, r.Y * 16, r.Width * 128 - 1, r.Height * 16 - 1, panelEditor.Focused);
             if (panelEditor.Focused)
             {
-                Utility.DrawSubSelection(g, sx * 128 + currentDot * 16, sy * 16, 14, 14);
+                Utility.DrawSubSelection(g, r.X * 128 + currentDot * 16, r.Y * 16, 14, 14);
             }
             // CRT Filter
             if (chkCRT.Checked)
@@ -413,8 +406,7 @@ namespace _99x8Edit
                     if (curSpr.Y > 0)
                     {
                         curSpr.Y--;
-                        selStartSpr.X = curSpr.X;
-                        selStartSpr.Y = curSpr.Y;
+                        selStartSpr = curSpr;
                         this.RefreshAllViews();
                     }
                     break;
@@ -422,8 +414,7 @@ namespace _99x8Edit
                     if (curSpr.Y < 7)
                     {
                         curSpr.Y++;
-                        selStartSpr.X = curSpr.X;
-                        selStartSpr.Y = curSpr.Y;
+                        selStartSpr = curSpr;
                         this.RefreshAllViews();
                     }
                     break;
@@ -431,8 +422,7 @@ namespace _99x8Edit
                     if (curSpr.X > 0)
                     {
                         curSpr.X--;
-                        selStartSpr.X = curSpr.X;
-                        selStartSpr.Y = curSpr.Y;
+                        selStartSpr = curSpr;
                         this.RefreshAllViews();
                     }
                     break;
@@ -440,8 +430,7 @@ namespace _99x8Edit
                     if (curSpr.X < 7)
                     {
                         curSpr.X++;
-                        selStartSpr.X = curSpr.X;
-                        selStartSpr.Y = curSpr.Y;
+                        selStartSpr = curSpr;
                         this.RefreshAllViews();
                     }
                     break;
@@ -470,14 +459,11 @@ namespace _99x8Edit
         {
             ClipSprite clip = new ClipSprite();
             // Copy selected sprites
-            int x = Math.Min(curSpr.X, selStartSpr.X);
-            int y = Math.Min(curSpr.Y, selStartSpr.Y);
-            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
-            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.One16x16Sprite> l = new List<Machine.One16x16Sprite>();
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     l.Add(dataSource.Get16x16Sprite(i * 8 + j));
                 }
@@ -529,13 +515,10 @@ namespace _99x8Edit
         private void contextSprites_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSpr.X, selStartSpr.X);
-            int y = Math.Min(curSpr.Y, selStartSpr.Y);
-            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
-            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     dataSource.Clear16x16Sprite(i * 8 + j, false);
                 }
@@ -572,13 +555,10 @@ namespace _99x8Edit
         private void contextSprites_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSpr.X, selStartSpr.X);
-            int y = Math.Min(curSpr.Y, selStartSpr.Y);
-            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
-            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
-            for (int i = y + 1; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     Machine.One16x16Sprite spr = dataSource.Get16x16Sprite(y * 8 + j);
                     dataSource.Set16x16Sprite(i * 8 + j, spr, false);
@@ -589,13 +569,10 @@ namespace _99x8Edit
         private void contextSprites_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curSpr.X, selStartSpr.X);
-            int y = Math.Min(curSpr.Y, selStartSpr.Y);
-            int w = Math.Abs(curSpr.X - selStartSpr.X) + 1;
-            int h = Math.Abs(curSpr.Y - selStartSpr.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curSpr, selStartSpr);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x + 1; j < x + w; ++j)
+                for (int j = r.X + 1; j < r.X + r.Width; ++j)
                 {
                     Machine.One16x16Sprite spr = dataSource.Get16x16Sprite(i * 8 + x);
                     dataSource.Set16x16Sprite(i * 8 + j, spr, false);
@@ -680,8 +657,7 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     break;
@@ -689,8 +665,7 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     break;
@@ -699,8 +674,7 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -714,8 +688,7 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        selStartLine.X = curLine.X;
-                        selStartLine.Y = curLine.Y;
+                        selStartLine = curLine;
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -832,14 +805,11 @@ namespace _99x8Edit
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipOneSpriteLine clip = new ClipOneSpriteLine();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.SpriteLine> l = new List<Machine.SpriteLine>();
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int target8x8 = lefttop16x16 * 4 + j * 2 + i / 8;
@@ -872,13 +842,10 @@ namespace _99x8Edit
         private void contextEditor_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int target8x8 = lefttop16x16 * 4 + j * 2 + i / 8;
@@ -891,13 +858,10 @@ namespace _99x8Edit
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y + 1; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
             {
-                for (int j = x; j < x + w; ++j)
+                for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int src = lefttop16x16 * 4 + (j * 2) + (y / 8);
@@ -912,13 +876,10 @@ namespace _99x8Edit
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            int x = Math.Min(curLine.X, selStartLine.X);
-            int y = Math.Min(curLine.Y, selStartLine.Y);
-            int w = Math.Abs(curLine.X - selStartLine.X) + 1;
-            int h = Math.Abs(curLine.Y - selStartLine.Y) + 1;
-            for (int i = y; i < y + h; ++i)
+            Rectangle r = Utility.Point2Rect(curLine, selStartLine);
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                for (int j = x + 1; j < x + w; ++j)
+                for (int j = r.X + 1; j < r.X + r.Width; ++j)
                 {
                     int lefttop16x16 = curSpr.Y * 8 + curSpr.X;
                     int src = lefttop16x16 * 4 + (x * 2) + (i / 8);
