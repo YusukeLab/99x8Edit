@@ -84,6 +84,9 @@ namespace _99x8Edit
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this.panelColor = new System.Windows.Forms.Panel();
             this.panelPalette = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
@@ -482,7 +485,8 @@ namespace _99x8Edit
             // 
             this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripBarFile});
+            this.toolStripBarFile,
+            this.toolStripBarEdit});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
             this.menuStripMain.Size = new System.Drawing.Size(562, 28);
@@ -578,6 +582,30 @@ namespace _99x8Edit
             this.toolStripFileSavePal.Name = "toolStripFileSavePal";
             this.toolStripFileSavePal.Size = new System.Drawing.Size(266, 26);
             this.toolStripFileSavePal.Text = "Save Palette";
+            // 
+            // toolStripBarEdit
+            // 
+            this.toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripEditUndo,
+            this.toolStripEditRedo});
+            this.toolStripBarEdit.Name = "toolStripBarEdit";
+            this.toolStripBarEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
+            this.toolStripBarEdit.Text = "Edit(&E)";
+            // 
+            // toolStripEditUndo
+            // 
+            this.toolStripEditUndo.Name = "toolStripEditUndo";
+            this.toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.toolStripEditUndo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditUndo.Text = "Undo";
+            // 
+            // toolStripEditRedo
+            // 
+            this.toolStripEditRedo.Name = "toolStripEditRedo";
+            this.toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditRedo.Text = "Redo";
             // 
             // panelColor
             // 
@@ -709,5 +737,8 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripRotateDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripRotateLeft;
         private System.Windows.Forms.ToolStripMenuItem toolStripRotateRight;
+        private System.Windows.Forms.ToolStripMenuItem toolStripBarEdit;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditUndo;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
     }
 }

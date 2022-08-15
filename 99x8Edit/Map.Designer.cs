@@ -69,8 +69,11 @@ namespace _99x8Edit
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSaveMap = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileLoadMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripFileSaveMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
@@ -374,7 +377,8 @@ namespace _99x8Edit
             // 
             this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripBarFile});
+            this.toolStripBarFile,
+            this.toolStripBarEdit});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
             this.menuStripMain.Size = new System.Drawing.Size(1102, 28);
@@ -438,6 +442,13 @@ namespace _99x8Edit
             this.toolStripFileExport.Size = new System.Drawing.Size(261, 26);
             this.toolStripFileExport.Text = "Export Map(&E)";
             // 
+            // toolStripFileLoadMap
+            // 
+            this.toolStripFileLoadMap.Name = "toolStripFileLoadMap";
+            this.toolStripFileLoadMap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.toolStripFileLoadMap.Size = new System.Drawing.Size(261, 26);
+            this.toolStripFileLoadMap.Text = "Load Map Data(&L)";
+            // 
             // toolStripFileSaveMap
             // 
             this.toolStripFileSaveMap.Name = "toolStripFileSaveMap";
@@ -445,12 +456,29 @@ namespace _99x8Edit
             this.toolStripFileSaveMap.Size = new System.Drawing.Size(261, 26);
             this.toolStripFileSaveMap.Text = "Save Map Data(&S)";
             // 
-            // toolStripFileLoadMap
+            // toolStripBarEdit
             // 
-            this.toolStripFileLoadMap.Name = "toolStripFileLoadMap";
-            this.toolStripFileLoadMap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
-            this.toolStripFileLoadMap.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileLoadMap.Text = "Load Map Data(&L)";
+            this.toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripEditUndo,
+            this.toolStripEditRedo});
+            this.toolStripBarEdit.Name = "toolStripBarEdit";
+            this.toolStripBarEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
+            this.toolStripBarEdit.Text = "Edit(&E)";
+            // 
+            // toolStripEditUndo
+            // 
+            this.toolStripEditUndo.Name = "toolStripEditUndo";
+            this.toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.toolStripEditUndo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditUndo.Text = "Undo";
+            // 
+            // toolStripEditRedo
+            // 
+            this.toolStripEditRedo.Name = "toolStripEditRedo";
+            this.toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditRedo.Text = "Redo";
             // 
             // Map
             // 
@@ -539,5 +567,8 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveMap;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadMap;
+        private System.Windows.Forms.ToolStripMenuItem toolStripBarEdit;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditUndo;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
     }
 }

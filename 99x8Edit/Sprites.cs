@@ -72,6 +72,8 @@ namespace _99x8Edit
             toolStripFileSaveSprite.Click += new EventHandler(menu_fileSaveSprite);
             toolStripFileLoadPal.Click += new EventHandler(menu_fileLoadPalette);
             toolStripFileSavePal.Click += new EventHandler(menu_fileSavePalette);
+            toolStripEditUndo.Click += new EventHandler(menu_editUndo);
+            toolStripEditRedo.Click += new EventHandler(menu_editRedo);
             // context menu
             toolStripSprCopy.Click += new EventHandler(contextSprites_copy);
             toolStripSprPaste.Click += new EventHandler(contextSprites_paste);
@@ -109,24 +111,6 @@ namespace _99x8Edit
                     return base.ProcessDialogKey(keyData);
             }
             return true;
-        }
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            Keys mod = keyData & Keys.Modifiers;
-            Keys code = keyData & Keys.KeyCode;
-            if (mod == Keys.Control)
-            {
-                switch (code)
-                {
-                    case Keys.Z:
-                        mainWin.Undo();
-                        return true;
-                    case Keys.Y:
-                        mainWin.Redo();
-                        return true;
-                }
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
         }
         protected override bool ProcessTabKey(bool forward)
         {
@@ -1220,6 +1204,14 @@ namespace _99x8Edit
                                       dataSource.SavePaletteSettings,
                                       true,
                                       out _);
+        }
+        private void menu_editUndo(object sender, EventArgs e)
+        {
+            mainWin.Undo();
+        }
+        private void menu_editRedo(object sender, EventArgs e)
+        {
+            mainWin.Redo();
         }
         //----------------------------------------------------------------------
         // Utility
