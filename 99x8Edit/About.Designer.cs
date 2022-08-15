@@ -101,8 +101,7 @@ namespace _99x8Edit
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.
-                imizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "About";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

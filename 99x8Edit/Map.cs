@@ -76,25 +76,6 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------------
         // Override
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // prevent focus movement by the cursor
-                case Keys.Down:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Left:
-                case Keys.Down | Keys.Shift:
-                case Keys.Right | Keys.Shift:
-                case Keys.Up | Keys.Shift:
-                case Keys.Left | Keys.Shift:
-                    break;
-                default:
-                    return base.ProcessDialogKey(keyData);
-            }
-            return true;
-        }
         protected override bool ProcessTabKey(bool forward)
         {
             Control prev = this.ActiveControl;
@@ -238,47 +219,6 @@ namespace _99x8Edit
                 }
             }
         }
-        private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            switch (e.KeyData)
-            {
-                case Keys.Up:
-                    if(curPCG.Y > 0)
-                    {
-                        curPCG.Y--;
-                        this.UpdatePCGList();
-                    }
-                    break;
-                case Keys.Left:
-                    if(curPCG.X > 0)
-                    {
-                        curPCG.X--;
-                        this.UpdatePCGList();
-                    }
-                    break;
-                case Keys.Right:
-                    if (curPCG.X < 31)
-                    {
-                        curPCG.X++;
-                        this.UpdatePCGList();
-                    }
-                    break;
-                case Keys.Down:
-                    if (curPCG.Y < 7)
-                    {
-                        curPCG.Y++;
-                        this.UpdatePCGList();
-                    }
-                    break;
-                case Keys.Enter:
-                    dataSource.SetPCGInPattern(curPtn.Y * 16 + curPtn.X,
-                                             curCellInPtn.X + curCellInPtn.Y * 2,
-                                             curPCG.Y * 32 + curPCG.X, true);
-                    this.UpdateMapPatterns();
-                    this.UpdateMap();
-                    break;
-            }
-        }
         private void contextPatterns_copy(object sender, EventArgs e)
         {
             ClipMapPtn clip = new ClipMapPtn();
@@ -384,108 +324,6 @@ namespace _99x8Edit
                 }
             }
         }
-        private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            switch (e.KeyData)
-            {
-                case Keys.Up | Keys.Shift:
-                    if (curPtn.Y > 0)
-                    {
-                        curPtn.Y--;
-                        if (curCellInPtn.Y > 0) curCellInPtn.Y = 0;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curPtn.Y < 15)
-                    {
-                        curPtn.Y++;
-                        if (curCellInPtn.Y < 1) curCellInPtn.Y = 1;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curPtn.X > 0)
-                    {
-                        curPtn.X--;
-                        if (curCellInPtn.X > 0) curCellInPtn.X = 0;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curPtn.X < 15)
-                    {
-                        curPtn.X++;
-                        if (curCellInPtn.X < 1) curCellInPtn.X = 1;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Up:
-                    if (curCellInPtn.Y > 0)
-                    {
-                        curCellInPtn.Y--;
-                        this.UpdateMapPatterns();
-                    }
-                    else if(curPtn.Y > 0)
-                    {
-                        curPtn.Y--;
-                        selStartPtn = curPtn;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Down:
-                    if (curCellInPtn.Y == 0)
-                    {
-                        curCellInPtn.Y++;
-                        this.UpdateMapPatterns();
-                    }
-                    else if (curPtn.Y < 15)
-                    {
-                        curPtn.Y++;
-                        selStartPtn = curPtn;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Left:
-                    if (curCellInPtn.X > 0)
-                    {
-                        curCellInPtn.X--;
-                        this.UpdateMapPatterns();
-                    }
-                    else if (curPtn.X > 0)
-                    {
-                        curPtn.X--;
-                        selStartPtn = curPtn;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Right:
-                    if (curCellInPtn.X == 0)
-                    {
-                        curCellInPtn.X++;
-                        this.UpdateMapPatterns();
-                    }
-                    else if (curPtn.X < 15)
-                    {
-                        curPtn.X++;
-                        selStartPtn = curPtn;
-                        this.UpdateMapPatterns();
-                    }
-                    break;
-                case Keys.Enter:
-                    int current_ptn = curPtn.X + curPtn.Y * 16;
-                    dataSource.SetMapData(curMapOrg.X + curMap.X,
-                                          curMapOrg.Y + curMap.Y,
-                                          current_ptn, true);
-                    int prev_x = curMap.X;
-                    int prev_y = curMap.Y;
-                    curMap.X = (curMap.X + 1) % 16;
-                    if (curMap.X == 0) curMap.Y = (curMap.Y + 1) % 12;
-                    selStartPtn = curPtn;
-                    this.UpdateMap();
-                    break;
-            }
-        }
         private void panelPatterns_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
@@ -559,76 +397,6 @@ namespace _99x8Edit
                     this.UpdateMap();
                 }
                 viewPCG.DoDragDrop(new DnDMap(), DragDropEffects.Copy);
-            }
-        }
-        private void panelMap_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            switch (e.KeyData)
-            {
-                case Keys.Up | Keys.Shift:
-                    if (curMap.Y > 0)
-                    {
-                        curMap.Y--;
-                        this.UpdateMap();
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if(curMap.Y < 11)
-                    {
-                        curMap.Y++;
-                        this.UpdateMap();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curMap.X > 0)
-                    {
-                        curMap.X--;
-                        this.UpdateMap();
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curMap.X < 15)
-                    {
-                        curMap.X++;
-                        this.UpdateMap();
-                    }
-                    break;
-                case Keys.Up:
-                    if(curMap.Y == 0)
-                    {
-                        if (curMapOrg.Y > 0) curMapOrg.Y--;
-                    }
-                    else curMap.Y--;
-                    selStartMap = curMap;
-                    this.UpdateMap();
-                    break;
-                case Keys.Down:
-                    if (curMap.Y == 11)
-                    {
-                        if (curMapOrg.Y < dataSource.MapHeight - 12) curMapOrg.Y++;
-                    }
-                    else curMap.Y++;
-                    selStartMap = curMap;
-                    this.UpdateMap();
-                    break;
-                case Keys.Left:
-                    if(curMap.X == 0)
-                    {
-                        if (curMapOrg.X > 0) curMapOrg.X--;
-                    }
-                    else curMap.X--;
-                    selStartMap = curMap;
-                    this.UpdateMap();
-                    break;
-                case Keys.Right:
-                    if (curMap.X == 15)
-                    {
-                        if (curMapOrg.X < dataSource.MapWidth - 16) curMapOrg.X++;
-                    }
-                    else curMap.X++;
-                    selStartMap = curMap;
-                    this.UpdateMap();
-                    break;
             }
         }
         private void contextMap_copy(object sender, EventArgs e)
