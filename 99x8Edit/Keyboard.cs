@@ -37,28 +37,28 @@ namespace _99x8Edit
                     {
                         curPal.Y--;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Down:
                     if (curPal.Y < 1)
                     {
                         curPal.Y++;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Left:
                     if (curPal.X > 0)
                     {
                         curPal.X--;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Right:
                     if (curPal.X < 7)
                     {
                         curPal.X++;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Space:
                 case Keys.Enter:
@@ -74,14 +74,14 @@ namespace _99x8Edit
                     if (curColor.X > 0)
                     {
                         curColor.X--;
-                        this.UpdateCurrentColorView();
+                        this.UpdateCurrentColorView(refresh: true);
                     }
                     break;
                 case Keys.Right:
                     if (curColor.X < 1)
                     {
                         curColor.X++;
-                        this.UpdateCurrentColorView();
+                        this.UpdateCurrentColorView(refresh: true);
                     }
                     break;
                 case Keys.Space:
@@ -101,8 +101,8 @@ namespace _99x8Edit
         {
             Action refresh = () =>
             {
-                this.UpdatePCGEditView();               // Update editor view
-                this.UpdateCurrentColorView();          // Update view of current color
+                this.UpdatePCGEditView(refresh: true);         // Update editor view
+                this.UpdateCurrentColorView(refresh: true);    // Update view of current color
             };
             switch (e.KeyData)
             {
@@ -225,30 +225,30 @@ namespace _99x8Edit
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
-                        int color = dataSource.GetColorTable(current_target_pcg, curLine.Y % 8, true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: true);
                         color = (color + 1) % 16;
-                        dataSource.SetColorTable(current_target_pcg, curLine.Y % 8, color, true, true);
+                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
-                        int color = dataSource.GetColorTable(current_target_pcg, curLine.Y % 8, true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: true);
                         color = (color + 15) % 16;
-                        dataSource.SetColorTable(current_target_pcg, curLine.Y % 8, color, true, true);
+                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
-                        int color = dataSource.GetColorTable(current_target_pcg, curLine.Y % 8, false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: false);
                         color = (color + 1) % 16;
-                        dataSource.SetColorTable(current_target_pcg, curLine.Y % 8, color, false, true);
+                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
-                        int color = dataSource.GetColorTable(current_target_pcg, curLine.Y % 8, false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: false);
                         color = (color + 15) % 16;
-                        dataSource.SetColorTable(current_target_pcg, curLine.Y % 8, color, false, true);
+                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     this.RefreshAllViews();
                     break;
@@ -258,9 +258,9 @@ namespace _99x8Edit
         {
             Action refresh = () =>
             {
-                this.UpdatePCGList();
-                this.UpdatePCGEditView();
-                this.UpdateCurrentColorView();
+                this.UpdatePCGList(refresh: true);
+                this.UpdatePCGEditView(refresh: true);
+                this.UpdateCurrentColorView(refresh: true);
             };
             switch (e.KeyData)
             {
@@ -326,9 +326,9 @@ namespace _99x8Edit
                     break;
                 case Keys.Enter:
                     dataSource.SetNameTable(curSand.Y * 32 + curSand.X,
-                                            curPCG.Y * 32 + curPCG.X, true);
+                                            curPCG.Y * 32 + curPCG.X, push: true);
                     if (curSand.X < 31) curSand.X++;
-                    this.UpdateSandbox();
+                    this.UpdateSandbox(refresh: true);
                     break;
             }
         }
@@ -340,28 +340,28 @@ namespace _99x8Edit
                     if (curSand.ToY > 0)
                     {
                         curSand.ToY--;
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Down | Keys.Shift:
                     if (curSand.ToY < 23)
                     {
                         curSand.ToY++;
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Left | Keys.Shift:
                     if (curSand.ToX > 0)
                     {
                         curSand.ToX--;
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Right | Keys.Shift:
                     if (curSand.ToX < 31)
                     {
                         curSand.ToX++;
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Up:
@@ -369,7 +369,7 @@ namespace _99x8Edit
                     {
                         curSand.Y--;
                         curSand.ResetSelection();
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Down:
@@ -377,7 +377,7 @@ namespace _99x8Edit
                     {
                         curSand.Y++;
                         curSand.ResetSelection();
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Left:
@@ -385,7 +385,7 @@ namespace _99x8Edit
                     {
                         curSand.X--;
                         curSand.ResetSelection();
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Right:
@@ -393,14 +393,14 @@ namespace _99x8Edit
                     {
                         curSand.X++;
                         curSand.ResetSelection();
-                        this.UpdateSandbox();
+                        this.UpdateSandbox(refresh: true);
                     }
                     break;
                 case Keys.Enter:
                     dataSource.SetNameTable(curSand.Y * 32 + curSand.X,
-                                            curPCG.Y * 32 + curPCG.X, true);
+                                            curPCG.Y * 32 + curPCG.X, push: true);
                     if (curSand.X < 31) ++curSand.X;
-                    this.UpdateSandbox();
+                    this.UpdateSandbox(refresh: true);
                     break;
             }
         }
@@ -434,36 +434,36 @@ namespace _99x8Edit
                     if (curPCG.Y > 0)
                     {
                         curPCG.Y--;
-                        this.UpdatePCGList();
+                        this.UpdatePCGList(refresh: true);
                     }
                     break;
                 case Keys.Left:
                     if (curPCG.X > 0)
                     {
                         curPCG.X--;
-                        this.UpdatePCGList();
+                        this.UpdatePCGList(refresh: true);
                     }
                     break;
                 case Keys.Right:
                     if (curPCG.X < 31)
                     {
                         curPCG.X++;
-                        this.UpdatePCGList();
+                        this.UpdatePCGList(refresh: true);
                     }
                     break;
                 case Keys.Down:
                     if (curPCG.Y < 7)
                     {
                         curPCG.Y++;
-                        this.UpdatePCGList();
+                        this.UpdatePCGList(refresh: true);
                     }
                     break;
                 case Keys.Enter:
                     dataSource.SetPCGInPattern(curPtn.Y * 16 + curPtn.X,
                                              curCellInPtn.X + curCellInPtn.Y * 2,
-                                             curPCG.Y * 32 + curPCG.X, true);
-                    this.UpdateMapPatterns();
-                    this.UpdateMap();
+                                             curPCG.Y * 32 + curPCG.X, push: true);
+                    this.UpdateMapPatterns(refresh: true);
+                    this.UpdateMap(refresh: true);
                     break;
             }
         }
@@ -476,7 +476,7 @@ namespace _99x8Edit
                     {
                         curPtn.ToY--;
                         if (curCellInPtn.Y > 0) curCellInPtn.Y = 0;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Down | Keys.Shift:
@@ -484,7 +484,7 @@ namespace _99x8Edit
                     {
                         curPtn.ToY++;
                         if (curCellInPtn.Y < 1) curCellInPtn.Y = 1;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Left | Keys.Shift:
@@ -492,7 +492,7 @@ namespace _99x8Edit
                     {
                         curPtn.ToX--;
                         if (curCellInPtn.X > 0) curCellInPtn.X = 0;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Right | Keys.Shift:
@@ -500,72 +500,72 @@ namespace _99x8Edit
                     {
                         curPtn.ToX++;
                         if (curCellInPtn.X < 1) curCellInPtn.X = 1;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Up:
                     if (curCellInPtn.Y > 0)
                     {
                         curCellInPtn.Y--;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     else if (curPtn.Y > 0)
                     {
                         curPtn.Y--;
                         curPtn.ResetSelection();
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Down:
                     if (curCellInPtn.Y == 0)
                     {
                         curCellInPtn.Y++;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     else if (curPtn.Y < 15)
                     {
                         curPtn.Y++;
                         curPtn.ResetSelection();
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Left:
                     if (curCellInPtn.X > 0)
                     {
                         curCellInPtn.X--;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     else if (curPtn.X > 0)
                     {
                         curPtn.X--;
                         curPtn.ResetSelection();
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Right:
                     if (curCellInPtn.X == 0)
                     {
                         curCellInPtn.X++;
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     else if (curPtn.X < 15)
                     {
                         curPtn.X++;
                         curPtn.ResetSelection();
-                        this.UpdateMapPatterns();
+                        this.UpdateMapPatterns(refresh: true);
                     }
                     break;
                 case Keys.Enter:
                     int current_ptn = curPtn.X + curPtn.Y * 16;
                     dataSource.SetMapData(curMapOrg.X + curMap.X,
                                           curMapOrg.Y + curMap.Y,
-                                          current_ptn, true);
+                                          current_ptn, push: true);
                     int prev_x = curMap.X;
                     int prev_y = curMap.Y;
                     curMap.X = (curMap.X + 1) % 16;
                     if (curMap.X == 0) curMap.Y = (curMap.Y + 1) % 12;
                     curPtn.ResetSelection();
-                    this.UpdateMap();
+                    this.UpdateMap(refresh: true);
                     break;
             }
         }
@@ -577,28 +577,28 @@ namespace _99x8Edit
                     if (curMap.ToY > 0)
                     {
                         curMap.ToY--;
-                        this.UpdateMap();
+                        this.UpdateMap(refresh: true);
                     }
                     break;
                 case Keys.Down | Keys.Shift:
                     if (curMap.ToY < 11)
                     {
                         curMap.ToY++;
-                        this.UpdateMap();
+                        this.UpdateMap(refresh: true);
                     }
                     break;
                 case Keys.Left | Keys.Shift:
                     if (curMap.ToX > 0)
                     {
                         curMap.ToX--;
-                        this.UpdateMap();
+                        this.UpdateMap(refresh: true);
                     }
                     break;
                 case Keys.Right | Keys.Shift:
                     if (curMap.ToX < 15)
                     {
                         curMap.ToX++;
-                        this.UpdateMap();
+                        this.UpdateMap(refresh: true);
                     }
                     break;
                 case Keys.Up:
@@ -608,7 +608,7 @@ namespace _99x8Edit
                     }
                     else curMap.Y--;
                     curMap.ResetSelection();
-                    this.UpdateMap();
+                    this.UpdateMap(refresh: true);
                     break;
                 case Keys.Down:
                     if (curMap.Y == 11)
@@ -617,7 +617,7 @@ namespace _99x8Edit
                     }
                     else curMap.Y++;
                     curMap.ResetSelection();
-                    this.UpdateMap();
+                    this.UpdateMap(refresh: true);
                     break;
                 case Keys.Left:
                     if (curMap.X == 0)
@@ -626,7 +626,7 @@ namespace _99x8Edit
                     }
                     else curMap.X--;
                     curMap.ResetSelection();
-                    this.UpdateMap();
+                    this.UpdateMap(refresh: true);
                     break;
                 case Keys.Right:
                     if (curMap.X == 15)
@@ -635,7 +635,7 @@ namespace _99x8Edit
                     }
                     else curMap.X++;
                     curMap.ResetSelection();
-                    this.UpdateMap();
+                    this.UpdateMap(refresh: true);
                     break;
             }
         }
@@ -731,8 +731,8 @@ namespace _99x8Edit
         {
             Action refresh = () =>
             {
-                this.UpdateSpriteEditView();
-                this.UpdateCurrentColorView();
+                this.UpdateSpriteEditView(refresh: true);
+                this.UpdateCurrentColorView(refresh: true);
             };
             switch (e.KeyData)
             {
@@ -853,20 +853,19 @@ namespace _99x8Edit
                 case Keys.OemMinus:
                 case Keys.Subtract:
                     {
-                        int sprite_num_16x16 = curSpr.Y * 8 + curSpr.X;
-                        int sprite_num_8x8 = sprite_num_16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
-                        int color_code_primary = dataSource.GetSpriteColorCode(sprite_num_8x8, curLine.Y % 8);
+                        int index16 = curSpr.Y * 8 + curSpr.X;
+                        int color_code = dataSource.GetSpriteColorCode(index16, curLine.Y);
                         if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                         {
                             // Increment color of the primary sprite
-                            if (color_code_primary < 15) color_code_primary++;
+                            if (color_code < 15) color_code++;
                         }
                         else
                         {
                             // Decrement color of the primary sprite
-                            if (color_code_primary > 1) color_code_primary--;
+                            if (color_code > 1) color_code--;
                         }
-                        this.SetSpriteColor(sprite_num_16x16, color_code_primary);
+                        dataSource.SetSpriteColorCode(index16, curLine.Y, color_code, push: true);
                         this.RefreshAllViews();
                     }
                     break;
@@ -875,21 +874,19 @@ namespace _99x8Edit
                     // Check overlays
                     if (dataSource.GetSpriteOverlay(curSpr.Y * 8 + curSpr.X))
                     {
-                        int sprite_num_16x16 = curSpr.Y * 8 + curSpr.X;
-                        int sprite_num_8x8 = sprite_num_16x16 * 4 + curLine.X * 2 + curLine.Y / 8;
-                        int sprite_num_8x8_secondary = (sprite_num_8x8 + 4) % 256;
-                        int color_code_secondary = dataSource.GetSpriteColorCode(sprite_num_8x8_secondary, curLine.Y % 8);
+                        int index16 = (curSpr.Y * 8 + curSpr.X + 1) % 64; // For overlayed
+                        int color_code = dataSource.GetSpriteColorCode(index16, curLine.Y);
                         if (e.KeyData == Keys.OemCloseBrackets)
                         {
                             // Increment color of the secondary sprite
-                            if (color_code_secondary < 15) color_code_secondary++;
+                            if (color_code < 15) color_code++;
                         }
                         else
                         {
                             // Decrement color of the secondary sprite
-                            if (color_code_secondary > 1) color_code_secondary--;
+                            if (color_code > 1) color_code--;
                         }
-                        this.SetSpriteColor(sprite_num_8x8_secondary / 4, color_code_secondary);
+                        dataSource.SetSpriteColorCode(index16, curLine.Y, color_code, push: true);
                         this.RefreshAllViews();
                     }
                     break;
@@ -903,14 +900,14 @@ namespace _99x8Edit
                     if (currentColor.X > 0)
                     {
                         currentColor.X--;
-                        this.UpdateCurrentColorView();
+                        this.UpdateCurrentColorView(refresh: true);
                     }
                     break;
                 case Keys.Right:
                     if (currentColor.X < 1 && viewColorR.Visible)
                     {
                         currentColor.X++;
-                        this.UpdateCurrentColorView();
+                        this.UpdateCurrentColorView(refresh: true);
                     }
                     break;
                 case Keys.Space:
@@ -935,28 +932,28 @@ namespace _99x8Edit
                     {
                         curPal.Y--;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Down:
                     if (curPal.Y < 1)
                     {
                         curPal.Y++;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Left:
                     if (curPal.X > 0)
                     {
                         curPal.X--;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Right:
                     if (curPal.X < 7)
                     {
                         curPal.X++;
                     }
-                    this.UpdatePaletteView();
+                    this.UpdatePaletteView(refresh: true);
                     break;
                 case Keys.Space:
                 case Keys.Enter:

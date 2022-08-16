@@ -27,7 +27,8 @@ namespace _99x8Edit
     [Serializable]
     internal class ClipPCGLines : ClipBase
     {
-        internal List<List<Machine.PCGLine>> lines = new List<List<Machine.PCGLine>>();
+        // PCG line(gen, color) * col width * row height
+        internal List<List<(byte, byte)>> lines = new List<List<(byte, byte)>>();
     }
     [Serializable]
     internal class ClipPCG : ClipBase

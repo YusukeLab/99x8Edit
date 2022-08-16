@@ -78,8 +78,8 @@ namespace _99x8Edit
             {
                 // Address to col, row
                 byte dat = reader.ReadByte();
-                int chr_x = this.AddressToCol(i);
-                int chr_y = this.AddressToRow(i);                
+                int chr_x = this.AddressToCol(seekAddr + i);
+                int chr_y = this.AddressToRow(seekAddr + i);                
                 int pix_y = i % 8;      // y coorinate in row
                 for(int j = 0; j < 8; ++j)
                 {
@@ -151,7 +151,7 @@ namespace _99x8Edit
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     byte[] one_cell = new byte[8];
-                    int addr = this.ColRowToAddr(j, i);
+                    long addr = this.ColRowToAddr(j, i);
                     if (addr <= reader.BaseStream.Length - 8)
                     {
                         reader.BaseStream.Seek(addr, SeekOrigin.Begin);
@@ -316,53 +316,56 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Utilities
-        private int ColRowToAddr(int col, int row)
+        private long ColRowToAddr(int col, int row)
         {
             if (type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
-                return row * 8 * 32 + col * 8;
+                int addr_in_screen = row * 8 * 32 + col * 8;
+                return (long)addr_in_screen + seekAddr;
             }
             else
             {
                 // 1   3   5   7   9...    ...62
                 // 2   4   6   8   10...   ...63
                 int base_addr_of_2rows = row * 64 * 8;
-                int addr = base_addr_of_2rows + col * 16 + (row % 2) * 8;
-                return addr;
+                int addr_in_screen = base_addr_of_2rows + col * 16 + (row % 2) * 8;
+                return (long)addr_in_screen + seekAddr;
             }
         }
-        private int AddressToCol(int addr)
+        private int AddressToCol(long addr)
         {
+            addr -= seekAddr;
             if (type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
-                return (addr / 8) % 32;
+                return (int)((addr / 8) % 32);
             }
             else
             {
                 // 1   3   5   7   9...    ...62
                 // 2   4   6   8   10...   ...63
-                int block_x = (addr / 32) % 16;         // block for each 4 characters
-                return block_x * 2 + (addr / 16) % 2;
+                int block_x = ((int)addr / 32) % 16;         // block for each 4 characters
+                return block_x * 2 + ((int)addr / 16) % 2;
             }
         }
-        private int AddressToRow(int addr)
+        private int AddressToRow(long addr)
         {
+            addr -= seekAddr;
             if (type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
-                return addr / 256;
+                return (int)(addr / 256);
             }
             else
             {
                 // 1   3   5   7   9...    ...62
                 // 2   4   6   8   10...   ...63
-                int block_y = addr / 512;
-                return block_y * 2 + (addr / 8) % 2;
+                int block_y = (int)addr / 512;
+                return block_y * 2 + ((int)addr / 8) % 2;
             }
         }
     }

@@ -44,7 +44,7 @@ namespace _99x8Edit
         {
             // Initialize VDP settings
             dataSource = new Machine();
-            dataSource.Initialize();
+            dataSource.SetToDefault();
             using (Stream s = new MemoryStream(Properties.Resources._default))
             {
                 dataSource.LoadAllSettings(new BinaryReader(s));    // Init by resource
