@@ -11,12 +11,12 @@ namespace _99x8Edit
     public class Import
     {
         // Import types
-        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin|"
-                                             + "PNG File(*.png)|*.png";
-        internal static string SpriteTypeFilter = "MSX BASIC pattern data(*.bin)|*.bin|"
-                                                + "MSX BASIC color data(*.bin)|*.bin|" 
-                                                + "Raw pattern data(*.raw)|*.raw|"
-                                                + "Raw color data(*.raw)|*.raw";
+        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin"
+                                             + "|PNG File(*.png)|*.png";
+        internal static string SpriteTypeFilter = "MSX BSAVE format, pattern data(*.bin)|*.bin"
+                                                + "|MSX BSAVE format, color data(*.bin)|*.bin"
+                                                + "|Raw pattern data(*.raw)|*.raw"
+                                                + "|Raw color data(*.raw)|*.raw";
         enum PCGType
         {
             MSXBASIC = 0,

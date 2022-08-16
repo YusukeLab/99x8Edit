@@ -20,6 +20,7 @@ namespace _99x8Edit
             return null;
         }
     }
+    // Classes for each clipping types
     [Serializable]
     internal abstract class ClipBase
     {

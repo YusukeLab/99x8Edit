@@ -11,6 +11,7 @@ namespace _99x8Edit
     {
         private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in palette control
             switch (e.KeyCode)
             {
                 case Keys.Up:
@@ -49,6 +50,7 @@ namespace _99x8Edit
         }
         private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in current color control
             switch (e.KeyData)
             {
                 case Keys.Left:
@@ -80,6 +82,7 @@ namespace _99x8Edit
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in character editor
             Action refresh = () =>
             {
                 this.UpdatePCGEditView(refresh: true);         // Update editor view
@@ -233,6 +236,7 @@ namespace _99x8Edit
         }
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in character list
             Action refresh = () =>
             {
                 this.UpdatePCGList(refresh: true);
@@ -307,6 +311,7 @@ namespace _99x8Edit
         }
         private void panelSandbox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in sandbox
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
@@ -378,6 +383,7 @@ namespace _99x8Edit
     {
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in character list
             switch (e.KeyData)
             {
                 case Keys.Up:
@@ -419,6 +425,7 @@ namespace _99x8Edit
         }
         private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in pattern list
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
@@ -516,6 +523,7 @@ namespace _99x8Edit
         }
         private void panelMap_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in map editor
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
@@ -585,6 +593,7 @@ namespace _99x8Edit
     {
         private void panelSprites_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in sprite list
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
@@ -647,6 +656,7 @@ namespace _99x8Edit
         }
         private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in sprite editor
             Action refresh = () =>
             {
                 this.UpdateSpriteEditView(refresh: true);
@@ -808,6 +818,7 @@ namespace _99x8Edit
         }
         private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in current color control
             switch (e.KeyData)
             {
                 case Keys.Left:
@@ -839,6 +850,7 @@ namespace _99x8Edit
         }
         private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            // Key events in palette control
             switch (e.KeyCode)
             {
                 case Keys.Up:

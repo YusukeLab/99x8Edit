@@ -14,10 +14,11 @@ namespace _99x8Edit
         // Application information window
         public About()
         {
-            // Acquire version info from itself
+            // Acquire version info from assembly
             InitializeComponent();
             System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
             Version ver = asm.GetName().Version;
+            // Currently it's alpha version
             lblVer.Text = "ver" + ver.ToString() + " alpha";
         }
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

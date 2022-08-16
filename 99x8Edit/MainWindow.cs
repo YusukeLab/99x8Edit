@@ -51,12 +51,6 @@ namespace _99x8Edit
             }
             // Undo/Redo            
             MementoCaretaker.Instance.Initialize(this, dataSource);
-            // Export menu
-            foreach (String item in Export.TypeList)
-            {
-                comboExportType.Items.Add(item);   // Code it since items may be expanded
-            }
-            comboExportType.SelectedIndex = 0;
             // Editors
             PCGWin = new PCGEditor(dataSource, this);
             mapWin = new Map(dataSource, this);
@@ -220,7 +214,7 @@ namespace _99x8Edit
             // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export PCG data to",
-                                          (Export.Type)comboExportType.SelectedIndex,
+                                          Export.PCGTypeFilter,
                                           dataSource.ExportPCG);
         }
         internal void ExportMap(object sender, EventArgs e)
@@ -228,7 +222,7 @@ namespace _99x8Edit
             // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export map data to",
-                                          (Export.Type)comboExportType.SelectedIndex,
+                                          Export.MapTypeFilter,
                                           dataSource.ExportMap);
         }
         internal void ExportSprite(object sender, EventArgs e)
@@ -236,7 +230,7 @@ namespace _99x8Edit
             // Called from button and child window
             Utility.ExportDialogAndExport(currentFile,
                                           "Export sprite data to",
-                                          (Export.Type)comboExportType.SelectedIndex,
+                                          Export.SpriteTypeFilter,
                                           dataSource.ExportSprites);
         }
         private void btnUndo_Click(object sender, EventArgs e)

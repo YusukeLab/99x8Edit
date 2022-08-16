@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace _99x8Edit
 {
@@ -32,7 +30,7 @@ namespace _99x8Edit
         }
         internal void Push()
         {
-            if(vdpData == null)
+            if (vdpData == null)
             {
                 // Not initialized
                 return;
@@ -43,7 +41,7 @@ namespace _99x8Edit
                 m.vdpData = vdpData.CreateCopy();
             }
             mementoList.Add(m);
-            if(mementoList.Count > 256)
+            if (mementoList.Count > 256)
             {
                 mementoList.RemoveAt(0);
             }
@@ -53,7 +51,7 @@ namespace _99x8Edit
         }
         internal void Undo()
         {
-            if(mementoList.Count == 0)
+            if (mementoList.Count == 0)
             {
                 return;
             }
@@ -74,7 +72,7 @@ namespace _99x8Edit
         }
         internal void Redo()
         {
-            if(mementoRedo.Count == 0)
+            if (mementoRedo.Count == 0)
             {
                 return;
             }

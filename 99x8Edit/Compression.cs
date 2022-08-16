@@ -7,6 +7,10 @@ namespace _99x8Edit
 {
     public class Compression
     {
+        // Encoder for the data compression
+        // Expected to be used as:
+        // byte[] new_Data = Compression.Create(Compression.Type.BytePair).Encode(original_data);
+
         public enum Type
         {
             BytePair,

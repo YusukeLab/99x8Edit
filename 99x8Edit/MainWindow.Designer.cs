@@ -33,7 +33,6 @@ namespace _99x8Edit
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.btnExportSprites = new System.Windows.Forms.Button();
             this.btnSpritesWin = new System.Windows.Forms.Button();
-            this.comboExportType = new System.Windows.Forms.ComboBox();
             this.toolTipMain = new System.Windows.Forms.ToolTip(this.components);
             this.btnMapWin = new System.Windows.Forms.Button();
             this.btnLoad = new System.Windows.Forms.Button();
@@ -73,17 +72,6 @@ namespace _99x8Edit
             this.btnSpritesWin.UseVisualStyleBackColor = false;
             this.btnSpritesWin.Click += new System.EventHandler(this.btnSpritesWin_Click);
             // 
-            // comboExportType
-            // 
-            this.comboExportType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboExportType.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.comboExportType.FormattingEnabled = true;
-            this.comboExportType.Location = new System.Drawing.Point(21, 177);
-            this.comboExportType.Name = "comboExportType";
-            this.comboExportType.Size = new System.Drawing.Size(133, 28);
-            this.comboExportType.TabIndex = 7;
-            this.toolTipMain.SetToolTip(this.comboExportType, "Export Type");
-            // 
             // toolTipMain
             // 
             this.toolTipMain.AutomaticDelay = 0;
@@ -106,7 +94,7 @@ namespace _99x8Edit
             this.btnLoad.BackColor = System.Drawing.Color.White;
             this.btnLoad.BackgroundImage = global::_99x8Edit.Properties.Resources.open;
             this.btnLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnLoad.Location = new System.Drawing.Point(8, 236);
+            this.btnLoad.Location = new System.Drawing.Point(10, 188);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(48, 48);
             this.btnLoad.TabIndex = 8;
@@ -119,7 +107,7 @@ namespace _99x8Edit
             this.btnSave.BackColor = System.Drawing.Color.White;
             this.btnSave.BackgroundImage = global::_99x8Edit.Properties.Resources.save;
             this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSave.Location = new System.Drawing.Point(62, 236);
+            this.btnSave.Location = new System.Drawing.Point(64, 188);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(48, 48);
             this.btnSave.TabIndex = 9;
@@ -170,7 +158,7 @@ namespace _99x8Edit
             this.btnUndo.BackgroundImage = global::_99x8Edit.Properties.Resources.undo;
             this.btnUndo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnUndo.Enabled = false;
-            this.btnUndo.Location = new System.Drawing.Point(33, 290);
+            this.btnUndo.Location = new System.Drawing.Point(35, 242);
             this.btnUndo.Name = "btnUndo";
             this.btnUndo.Size = new System.Drawing.Size(48, 48);
             this.btnUndo.TabIndex = 19;
@@ -184,7 +172,7 @@ namespace _99x8Edit
             this.btnRedo.BackgroundImage = global::_99x8Edit.Properties.Resources.redo;
             this.btnRedo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnRedo.Enabled = false;
-            this.btnRedo.Location = new System.Drawing.Point(88, 290);
+            this.btnRedo.Location = new System.Drawing.Point(90, 242);
             this.btnRedo.Name = "btnRedo";
             this.btnRedo.Size = new System.Drawing.Size(48, 48);
             this.btnRedo.TabIndex = 20;
@@ -197,7 +185,7 @@ namespace _99x8Edit
             this.btnPeek.BackColor = System.Drawing.Color.White;
             this.btnPeek.BackgroundImage = global::_99x8Edit.Properties.Resources.peek;
             this.btnPeek.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnPeek.Location = new System.Drawing.Point(33, 344);
+            this.btnPeek.Location = new System.Drawing.Point(35, 296);
             this.btnPeek.Name = "btnPeek";
             this.btnPeek.Size = new System.Drawing.Size(48, 48);
             this.btnPeek.TabIndex = 21;
@@ -210,7 +198,7 @@ namespace _99x8Edit
             this.btnAbout.BackColor = System.Drawing.Color.White;
             this.btnAbout.BackgroundImage = global::_99x8Edit.Properties.Resources.info;
             this.btnAbout.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnAbout.Location = new System.Drawing.Point(88, 344);
+            this.btnAbout.Location = new System.Drawing.Point(90, 296);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(48, 48);
             this.btnAbout.TabIndex = 22;
@@ -223,7 +211,7 @@ namespace _99x8Edit
             this.btnSaveAs.BackColor = System.Drawing.Color.White;
             this.btnSaveAs.BackgroundImage = global::_99x8Edit.Properties.Resources.saveas;
             this.btnSaveAs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSaveAs.Location = new System.Drawing.Point(116, 236);
+            this.btnSaveAs.Location = new System.Drawing.Point(118, 188);
             this.btnSaveAs.Name = "btnSaveAs";
             this.btnSaveAs.Size = new System.Drawing.Size(48, 48);
             this.btnSaveAs.TabIndex = 23;
@@ -234,7 +222,7 @@ namespace _99x8Edit
             // MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(175, 402);
+            this.ClientSize = new System.Drawing.Size(175, 352);
             this.Controls.Add(this.btnSaveAs);
             this.Controls.Add(this.btnAbout);
             this.Controls.Add(this.btnPeek);
@@ -244,7 +232,6 @@ namespace _99x8Edit
             this.Controls.Add(this.btnPCGWin);
             this.Controls.Add(this.btnExportMap);
             this.Controls.Add(this.btnSpritesWin);
-            this.Controls.Add(this.comboExportType);
             this.Controls.Add(this.btnPCGExport);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnMapWin);
@@ -262,7 +249,6 @@ namespace _99x8Edit
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox comboExportType;
         private System.Windows.Forms.Button btnExportSprites;
         private System.Windows.Forms.Button btnSpritesWin;
         private System.Windows.Forms.ToolTip toolTipMain;

@@ -148,21 +148,21 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // Export methods
-        internal void ExportPCG(Export.Type type, String path)
+        internal void ExportPCG(int type, String path)
         {
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
                                   spriteGen, spriteClr);
-            e.ExportPCG(type, path);
+            e.ExportPCG((Export.PCGType)type, path);
         }
-        internal void ExportMap(Export.Type type, String path)
+        internal void ExportMap(int type, String path)
         {
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
                                   spriteGen, spriteClr);
-            e.ExportMap(type, path);
+            e.ExportMap((Export.MapType)type, path);
         }
-        internal void ExportSprites(Export.Type type, String path)
+        internal void ExportSprites(int type, String path)
         {
             // Set the CC flags of the sprite color
             /*
@@ -174,7 +174,7 @@ namespace _99x8Edit
             Export e = new Export(ptnGen, ptnClr, nameTable, pltDat, isTMS9918,
                                   mapPattern, mapData, mapWidth, mapHeight,
                                   spriteGen, spriteClr);
-            e.ExportSprites(type, path);
+            e.ExportSprites((Export.SpriteType)type, path);
         }
         //--------------------------------------------------------------------
         // Import

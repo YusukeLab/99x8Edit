@@ -172,7 +172,7 @@ namespace _99x8Edit
                         int code = dataSource.GetPCGColor(target_pcg, j, is_foreground: (p != 0));
                         if(code != 0)
                         {
-                            // Outline
+                            // Outline of one dot
                             g.FillRectangle(Brushes.Gray,
                                             (i % 2) * 128 + k * 16,
                                             (i / 2) * 128 + j * 16, 16, 16);
@@ -391,7 +391,7 @@ namespace _99x8Edit
                 int clicked_line_y = e.Y / 16;
                 if ((curLine.X != clicked_line_x) || (curLine.Y != clicked_line_y))
                 {
-                    // Selected line has changed
+                    // Selected line has been changed
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Multiple selection

@@ -35,7 +35,7 @@ namespace _99x8Edit
         }
         // I'm not sure how many events to cover in order to handle textboxes perfectly.
         // Therefore, I'll just handle leave events to limit the range of numbers.
-        // Obviously this is not enough, but better than too much.
+        // This might be not enough, but better than too much.
         private void txtW_Leave(object sender, EventArgs e)
         {
             int val = 0;

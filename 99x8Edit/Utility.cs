@@ -20,6 +20,7 @@ namespace _99x8Edit
         Rectangle _display;         // Selection on display coodinate
         internal Selection(int cell_width, int cell_height)
         {
+            // Width and height are for calculating coodinates
             _display.Width = _cellW = cell_width;
             _display.Height = _cellH = cell_height;
         }
@@ -61,14 +62,17 @@ namespace _99x8Edit
                 this.Update();
             }
         }
+        // Col and row, width and height of the selection
         internal Rectangle Selected
         {
             get { return _selection; }
         }
+        // Coodinates in one control
         internal Rectangle Display
         {
             get{ return _display; }
         }
+        // Coodinates in whole screen
         internal Rectangle GetScreenPos(Control c)
         {
             Point p = new Point(_display.X, _display.Y);
@@ -79,7 +83,6 @@ namespace _99x8Edit
         {
             _tx = _x;
             _ty = _y;
-            Update();
         }
         private void Update()
         {
@@ -92,8 +95,8 @@ namespace _99x8Edit
     internal class TabOrder
     {
         // Customized tab order and the selection corresponding to
-        private List<Control> _ctrl = new List<Control>();
-        private List<Selection> _sel = new List<Selection>();
+        private List<Control> _ctrl = new List<Control>();      // Controls to be added
+        private List<Selection> _sel = new List<Selection>();   // Selected cell in the control
         internal void Add(Control c, Selection s)
         {
             _ctrl.Add(c);
@@ -114,7 +117,6 @@ namespace _99x8Edit
     }
     internal class Utility
     {
-        // For UI
         internal static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
                                        System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
         //--------------------------------------------------------------------
@@ -294,8 +296,8 @@ namespace _99x8Edit
         }
         internal static bool ExportDialogAndExport(string current_file,
                                                    string dialog_title,
-                                                   Export.Type type,
-                                                   Action<Export.Type, string> exec_save)
+                                                   string filter,
+                                                   Action<int, string> exec_save)
         {
             String dir = Path.GetDirectoryName(current_file);
             if (dir == null)
@@ -303,12 +305,10 @@ namespace _99x8Edit
                 dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             SaveFileDialog dlg = new SaveFileDialog();
-            String ext = Export.TypeExt[(int)type];
-            String filter = ext + " files(*" + ext + ")|*" + ext;
             dlg.FileName = "";
             dlg.InitialDirectory = dir;
-            dlg.Filter = Export.Filter;
-            dlg.FilterIndex = (int)type + 1;
+            dlg.Filter = filter;
+            dlg.FilterIndex = 1;
             dlg.Title = dialog_title;
             dlg.RestoreDirectory = true;
             dlg.OverwritePrompt = true;
@@ -316,8 +316,7 @@ namespace _99x8Edit
             {
                 try
                 {
-                    type = (Export.Type)dlg.FilterIndex - 1;
-                    exec_save(type, dlg.FileName);
+                    exec_save(dlg.FilterIndex - 1, dlg.FileName);
                     return true;
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
