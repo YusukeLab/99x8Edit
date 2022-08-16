@@ -54,7 +54,7 @@ namespace _99x8Edit
             this.btnOK.Location = new System.Drawing.Point(174, 144);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 35);
-            this.btnOK.TabIndex = 12;
+            this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -66,7 +66,7 @@ namespace _99x8Edit
             this.btnCancel.Location = new System.Drawing.Point(93, 144);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 35);
-            this.btnCancel.TabIndex = 11;
+            this.btnCancel.TabIndex = 0;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);

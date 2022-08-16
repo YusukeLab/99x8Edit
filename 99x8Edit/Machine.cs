@@ -329,6 +329,31 @@ namespace _99x8Edit
             isTMS9918 = false;
             this.UpdateAllViewItems();  // Update bitmaps
         }
+        internal (int R, int G, int B) GetPalette(int color_code)
+        {
+            color_code = Math.Clamp(color_code, 0, 15);
+            int R = pltDat[color_code * 2] >> 4;
+            int G = pltDat[color_code * 2 + 1];
+            int B = pltDat[color_code * 2] & 0x0F;
+            return (R, G, B);
+        }
+        internal void SetPalette(int color_code, int R, int G, int B, bool push)
+        {
+            if (push) MementoCaretaker.Instance.Push();
+            color_code = Math.Clamp(color_code, 0, 15);
+            R = Math.Clamp(R, 0, 7);
+            G = Math.Clamp(G, 0, 7);
+            B = Math.Clamp(B, 0, 7);
+            // Update palette
+            pltDat[color_code * 2] = (byte)((R << 4) | B);
+            pltDat[color_code * 2 + 1] = (byte)(G);
+            // Update windows color corresponding to the color code
+            Color c = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
+            colorOf[color_code] = c;
+            brushOf[color_code] = new SolidBrush(c);
+            // Update bitmaps
+            this.UpdateAllViewItems();
+        }
         internal Color ColorOf(int color_code)
         {
             // Color code(0-15) to windows color
@@ -340,39 +365,6 @@ namespace _99x8Edit
             // Color code(0-15) to windows brush, to avoid creating brushed everytime
             color_code = Math.Clamp(color_code, 0, 15);
             return brushOf[color_code];
-        }
-        // VDP
-        internal void SetPalette(int colorCode, int R, int G, int B, bool push)
-        {
-            if (push) MementoCaretaker.Instance.Push();
-            colorCode = Math.Clamp(colorCode, 0, 15);
-            R = Math.Clamp(R, 0, 7);
-            G = Math.Clamp(G, 0, 7);
-            B = Math.Clamp(B, 0, 7);
-            // Update palette
-            pltDat[colorCode * 2] = (byte)((R << 4) | B);
-            pltDat[colorCode * 2 + 1] = (byte)(G);
-            // Update windows color corresponding to the color code
-            Color c = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
-            colorOf[colorCode] = c;
-            brushOf[colorCode] = new SolidBrush(c);
-            // Update bitmaps
-            this.UpdateAllViewItems();
-        }
-        internal int GetPaletteR(int colorCode)
-        {
-            colorCode = Math.Clamp(colorCode, 0, 15);
-            return pltDat[colorCode * 2] >> 4;
-        }
-        internal int GetPaletteG(int colorCode)
-        {
-            colorCode = Math.Clamp(colorCode, 0, 15);
-            return pltDat[colorCode * 2 + 1];
-        }
-        internal int GetPaletteB(int colorCode)
-        {
-            colorCode = Math.Clamp(colorCode, 0, 15);
-            return pltDat[colorCode * 2] & 0x0F;
         }
         //------------------------------------------------
         // Programmable characters
@@ -487,12 +479,12 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(pcg);
         }
-        internal int GetPCGColor(int pcg, int line, bool isForeGround)
+        internal int GetPCGColor(int pcg, int line, bool is_foreground)
         {
             pcg = Math.Clamp(pcg, 0, 255);
             line = Math.Clamp(line, 0, 7);
             int addr = pcg * 8 + line;
-            if (isForeGround)
+            if (is_foreground)
             {
                 return ptnClr[addr] >> 4;
             }
@@ -774,85 +766,100 @@ namespace _99x8Edit
         }
         internal int GetSpritePixel(int index16, int x, int y, bool dummy)
         {
-            index16 = Math.Clamp(index16, 0, 255);
+            index16 = Math.Clamp(index16, 0, 63);
             x = Math.Clamp(x, 0, 15);
             y = Math.Clamp(y, 0, 15);
             int index8 = index16 * 4 + (x / 8) * 2 + (y / 8);
             int line = y % 8;
-            int bit_x = 7 - (x % 8);
+            int bitcol = 7 - (x % 8);
             int target_dat = spriteGen[index8 * 8 + line];
-            int target = (target_dat >> bit_x) & 1;       // left side is LSB of data source
+            int target = (target_dat >> bitcol) & 1;       // left side is LSB of data source
             return target;
         }
-        internal void SetSpritePixel(int index8, int line, int x, int val, bool push)
+        internal void SetSpritePixel(int index16, int x, int y, int val, bool push)
         {
-            index8 = Math.Clamp(index8, 0, 255);
-            line = Math.Clamp(line, 0, 7);
-            x = Math.Clamp(x, 0, 7);
+            index16 = Math.Clamp(index16, 0, 63);
+            x = Math.Clamp(x, 0, 15);
+            y = Math.Clamp(y, 0, 15);
             if (push) MementoCaretaker.Instance.Push();
             // Update Sprite pattern
-            int addr = index8 * 8 + line;
-            int bitcol = 7 - x;
-            spriteGen[addr] &= (byte)(~(1 << bitcol));     // Set target bit to 0
+            int index8 = index16 * 4 + (x / 8) * 2 + (y / 8);
+            int line = y % 8;
+            int bitcol = 7 - (x % 8);
+            spriteGen[index8 * 8 + line] &= (byte)(~(1 << bitcol));     // Set target bit to 0
             if (val != 0)
             {
-                spriteGen[addr] |= (byte)(1 << bitcol);    // Set target bit
+                spriteGen[index8 * 8 + line] |= (byte)(1 << bitcol);    // Set target bit
             }
-            // Update Sprite bitmap
             this.UpdateSpriteBitmap(index8);
         }
         [Serializable]
         internal class SpriteLine
         {
             public byte genData = 0;
-            public byte clrData = 0;
+            public byte colorData = 0;
             public byte overlayed = 0;
             public byte genDataOv = 0;
-            public byte clrDataOv = 0;
+            public byte colorDataOv = 0;
         }
-        internal SpriteLine GetSpriteLine(int index8, int line)
+        internal SpriteLine GetSpriteLine(int index16, int line_x, int line_y)
         {
-            index8 = Math.Clamp(index8, 0, 255);
-            line = Math.Clamp(line, 0, 7);
+            index16 = Math.Clamp(index16, 0, 63);
+            line_x = Math.Clamp(line_x, 0, 1);
+            line_y = Math.Clamp(line_y, 0, 15);
+            // Generator table is 8 lines per 8x8 sprite
+            int index8 = index16 * 4 + (line_x) * 2 + (line_y / 8);
+            int line = line_y % 8;
+            // Color address is 16 lines per 16x16 sprite
+            int color_addr = index16 * 16 + line_y;
+            // Return corresponding data of one line
             SpriteLine ret = new SpriteLine();
             ret.genData = spriteGen[index8 * 8 + line];
-            int addr = this.Index256ToSprClrAddr(index8);
-            ret.clrData = spriteClr[addr + line];
-            if ((ret.overlayed = spriteOverlay[index8 / 4]) != 0)
+            ret.colorData = spriteClr[color_addr];
+            if ((ret.overlayed = spriteOverlay[index16]) != 0)
             {
                 index8 = (index8 + 4) % 256;
+                color_addr = ((index16 + 1) % 64) * 16 + line_y;
                 ret.genDataOv = spriteGen[index8 * 8 + line];
-                int addr_ov = this.Index256ToSprClrAddr(index8);
-                ret.clrDataOv = spriteClr[addr_ov + line];
+                ret.colorDataOv = spriteClr[color_addr];
             }
             return ret;
         }
-        internal void SetSpriteLine(int index8, int line, SpriteLine val, bool push)
+        internal void SetSpriteLine(int index16, int line_x, int line_y, SpriteLine val, bool push)
         {
-            index8 = Math.Clamp(index8, 0, 255);
-            line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
+            index16 = Math.Clamp(index16, 0, 63);
+            line_x = Math.Clamp(line_x, 0, 1);
+            line_y = Math.Clamp(line_y, 0, 15);
+            // Generator table is 8 lines per 8x8 sprite
+            int index8 = index16 * 4 + (line_x) * 2 + (line_y / 8);
+            int line = line_y % 8;
+            // Color address is 16 lines per 16x16 sprite
+            int color_addr = index16 * 16 + line_y;
             spriteGen[index8 * 8 + line] = val.genData;
-            int addr = this.Index256ToSprClrAddr(index8);
-            spriteClr[addr + line] = val.clrData;
+            spriteClr[color_addr] = val.colorData;
             this.UpdateSpriteBitmap(index8);
             if (val.overlayed != 0)
             {
                 index8 = (index8 + 4) % 256;
+                color_addr = ((index16 + 1) % 64) * 16 + line_y;
                 spriteGen[index8 * 8 + line] = val.genDataOv;
-                int addr_ov = this.Index256ToSprClrAddr(index8);
-                spriteClr[addr_ov + line] = val.clrDataOv;
+                spriteClr[color_addr] = val.colorDataOv;
                 this.UpdateSpriteBitmap(index8);
             }
         }
-        internal void ClearSpriteLine(int index8, int line, bool push)
+        internal void ClearSpriteLine(int index16, int line_x, int line_y, bool push)
         {
-            index8 = Math.Clamp(index8, 0, 255);
-            line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
+            index16 = Math.Clamp(index16, 0, 63);
+            line_x = Math.Clamp(line_x, 0, 1);
+            line_y = Math.Clamp(line_y, 0, 15);
+            int index8 = index16 * 4 + (line_x) * 2 + (line_y / 8);
+            int line = line_y % 8;
+            // Clear the generator table and keep the color data
             spriteGen[index8 * 8 + line] = 0;
             this.UpdateSpriteBitmap(index8);
-            if (spriteOverlay[index8 / 4] != 0)
+            if (spriteOverlay[index16] != 0)
             {
                 index8 = (index8 + 4) % 256;
                 spriteGen[index8 * 8 + line] = 0;
@@ -915,15 +922,17 @@ namespace _99x8Edit
             this.UpdateSpriteBitmap();
         }
         //--------------------------------------------------------------------
-        // Internal methods
+        // Private use
         private void UpdateAllViewItems()
         {
+            // Update the bitmaps corresponding to data
             this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
             this.UpdateSpriteBitmap();
         }
         private void UpdateColorsByPalette()
         {
+            // Update windows colors and brushes corresponding to data
             if (isTMS9918)
             {
                 for (int i = 0; i < 16; ++i)
@@ -967,8 +976,7 @@ namespace _99x8Edit
         }
         private void UpdatePCGBitmap(int pcg)
         {
-            // PCG data had been changed, so remake coresponding bitmap
-            bmpOneChr[pcg] = new Bitmap(8, 8);
+            bmpOneChr[pcg] = bmpOneChr[pcg] ?? new Bitmap(8, 8);
             for (int i = 0; i < 8; ++i)          // Each line
             {
                 byte pattern_per_line = ptnGen[pcg * 8 + i];    // Pattern of the line
@@ -996,36 +1004,29 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(i);
             }
         }
-        private void UpdateSpriteBitmap(int index)
+        private void UpdateSpriteBitmap(int index8)
         {
-            // Sprite data had been changed, so remake coresponding bitmap
-            bmpOneSprite[index] = new Bitmap(8, 8);
-            int color_code = spriteClr16[index / 4];
-            int addr_color = Index256ToSprClrAddr(index);
-            for (int i = 0; i < 8; ++i)          // Each line
+            bmpOneSprite[index8] = bmpOneSprite[index8] ?? new Bitmap(8, 8);
+            int color_code = spriteClr16[index8 / 4];
+            int addr_color = (index8 / 4) * 16 + (index8 % 2) * 8;
+            for (int i = 0; i < 8; ++i)    // Each line
             {
-                byte pattern_per_line = spriteGen[index * 8 + i];   // Pattern of the line
+                byte pattern = spriteGen[index8 * 8 + i];   // Pattern of the line
                 if (!isTMS9918)
                 {
-                    color_code = spriteClr[addr_color + i] & 0x0F;  // On V9938 the color is set to each line
+                    color_code = spriteClr[addr_color + i] & 0x0F;
                 }
-                Color Fore = colorOf[color_code];               // Color code to windows color
+                Color Fore = colorOf[color_code];   // Color code to windows color
                 Color Back = Color.Transparent;
-                for (int j = 0; j < 8; ++j)                     // Each pixel right to left
+                for (int j = 0; j < 8; ++j)         // Each pixel right to left
                 {
-                    int x = (pattern_per_line >> j) & 1;        // Get one bit of pattern
+                    int x = (pattern >> j) & 1;     // Get one bit of pattern
                     if (x != 0)
-                        bmpOneSprite[index].SetPixel(7 - j, i, Fore);
+                        bmpOneSprite[index8].SetPixel(7 - j, i, Fore);
                     else
-                        bmpOneSprite[index].SetPixel(7 - j, i, Back);
+                        bmpOneSprite[index8].SetPixel(7 - j, i, Back);
                 }
             }
-        }
-        private int Index256ToSprClrAddr(int index)
-        {
-            // 8x8 sprite index (0-255) to address in SprClr[]
-            int index16 = index / 4;
-            return index16 * 16 + (index % 2) * 8;
         }
         private void SetSpriteCCFlags()
         {

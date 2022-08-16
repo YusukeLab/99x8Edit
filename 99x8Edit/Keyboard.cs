@@ -9,25 +9,6 @@ namespace _99x8Edit
     // Partial classes for the keyboard inputs of main editors
     public partial class PCGEditor : Form
     {
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // prevent focus movement by the cursor
-                case Keys.Down:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Left:
-                case Keys.Down | Keys.Shift:
-                case Keys.Right | Keys.Shift:
-                case Keys.Up | Keys.Shift:
-                case Keys.Left | Keys.Shift:
-                    break;
-                default:
-                    return base.ProcessDialogKey(keyData);
-            }
-            return true;
-        }
         private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             switch (e.KeyCode)
@@ -138,7 +119,6 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -146,7 +126,6 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -155,7 +134,6 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -169,7 +147,6 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot < 7)
@@ -180,39 +157,39 @@ namespace _99x8Edit
                     break;
                 case Keys.Space:
                     // toggle the color of selected pixel
-                    this.EditCurrentPCG(currentDot, curLine.Y % 8);
+                    this.EditCurrentPCG(currentDot);
                     break;
                 case Keys.D1:
                 case Keys.NumPad1:
-                    this.EditCurrentPCG(0, curLine.Y % 8);
+                    this.EditCurrentPCG(0);
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
-                    this.EditCurrentPCG(1, curLine.Y % 8);
+                    this.EditCurrentPCG(1);
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
-                    this.EditCurrentPCG(2, curLine.Y % 8);
+                    this.EditCurrentPCG(2);
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
-                    this.EditCurrentPCG(3, curLine.Y % 8);
+                    this.EditCurrentPCG(3);
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
-                    this.EditCurrentPCG(4, curLine.Y % 8);
+                    this.EditCurrentPCG(4);
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
-                    this.EditCurrentPCG(5, curLine.Y % 8);
+                    this.EditCurrentPCG(5);
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
-                    this.EditCurrentPCG(6, curLine.Y % 8);
+                    this.EditCurrentPCG(6);
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
-                    this.EditCurrentPCG(7, curLine.Y % 8);
+                    this.EditCurrentPCG(7);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:
@@ -225,28 +202,28 @@ namespace _99x8Edit
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: true);
                         color = (color + 1) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: true);
                         color = (color + 15) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: false);
                         color = (color + 1) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, isForeGround: false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: false);
                         color = (color + 15) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
@@ -296,7 +273,6 @@ namespace _99x8Edit
                     if (curPCG.Y > 0)
                     {
                         curPCG.Y--;
-                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -304,7 +280,6 @@ namespace _99x8Edit
                     if (curPCG.Y < 7)
                     {
                         curPCG.Y++;
-                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -312,7 +287,6 @@ namespace _99x8Edit
                     if (curPCG.X > 0)
                     {
                         curPCG.X--;
-                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -320,7 +294,6 @@ namespace _99x8Edit
                     if (curPCG.X < 31)
                     {
                         curPCG.X++;
-                        curPCG.ResetSelection();
                         refresh();
                     }
                     break;
@@ -368,7 +341,6 @@ namespace _99x8Edit
                     if (curSand.Y > 0)
                     {
                         curSand.Y--;
-                        curSand.ResetSelection();
                         this.UpdateSandbox(refresh: true);
                     }
                     break;
@@ -376,7 +348,6 @@ namespace _99x8Edit
                     if (curSand.Y < 23)
                     {
                         curSand.Y++;
-                        curSand.ResetSelection();
                         this.UpdateSandbox(refresh: true);
                     }
                     break;
@@ -384,7 +355,6 @@ namespace _99x8Edit
                     if (curSand.X > 0)
                     {
                         curSand.X--;
-                        curSand.ResetSelection();
                         this.UpdateSandbox(refresh: true);
                     }
                     break;
@@ -392,7 +362,6 @@ namespace _99x8Edit
                     if (curSand.X < 31)
                     {
                         curSand.X++;
-                        curSand.ResetSelection();
                         this.UpdateSandbox(refresh: true);
                     }
                     break;
@@ -407,25 +376,6 @@ namespace _99x8Edit
     }
     public partial class Map : Form
     {
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // prevent focus movement by the cursor
-                case Keys.Down:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Left:
-                case Keys.Down | Keys.Shift:
-                case Keys.Right | Keys.Shift:
-                case Keys.Up | Keys.Shift:
-                case Keys.Left | Keys.Shift:
-                    break;
-                default:
-                    return base.ProcessDialogKey(keyData);
-            }
-            return true;
-        }
         private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             switch (e.KeyData)
@@ -512,7 +462,6 @@ namespace _99x8Edit
                     else if (curPtn.Y > 0)
                     {
                         curPtn.Y--;
-                        curPtn.ResetSelection();
                         this.UpdateMapPatterns(refresh: true);
                     }
                     break;
@@ -525,7 +474,6 @@ namespace _99x8Edit
                     else if (curPtn.Y < 15)
                     {
                         curPtn.Y++;
-                        curPtn.ResetSelection();
                         this.UpdateMapPatterns(refresh: true);
                     }
                     break;
@@ -538,7 +486,6 @@ namespace _99x8Edit
                     else if (curPtn.X > 0)
                     {
                         curPtn.X--;
-                        curPtn.ResetSelection();
                         this.UpdateMapPatterns(refresh: true);
                     }
                     break;
@@ -551,7 +498,6 @@ namespace _99x8Edit
                     else if (curPtn.X < 15)
                     {
                         curPtn.X++;
-                        curPtn.ResetSelection();
                         this.UpdateMapPatterns(refresh: true);
                     }
                     break;
@@ -564,7 +510,6 @@ namespace _99x8Edit
                     int prev_y = curMap.Y;
                     curMap.X = (curMap.X + 1) % 16;
                     if (curMap.X == 0) curMap.Y = (curMap.Y + 1) % 12;
-                    curPtn.ResetSelection();
                     this.UpdateMap(refresh: true);
                     break;
             }
@@ -607,7 +552,6 @@ namespace _99x8Edit
                         if (curMapOrg.Y > 0) curMapOrg.Y--;
                     }
                     else curMap.Y--;
-                    curMap.ResetSelection();
                     this.UpdateMap(refresh: true);
                     break;
                 case Keys.Down:
@@ -616,7 +560,6 @@ namespace _99x8Edit
                         if (curMapOrg.Y < dataSource.MapHeight - 12) curMapOrg.Y++;
                     }
                     else curMap.Y++;
-                    curMap.ResetSelection();
                     this.UpdateMap(refresh: true);
                     break;
                 case Keys.Left:
@@ -625,7 +568,6 @@ namespace _99x8Edit
                         if (curMapOrg.X > 0) curMapOrg.X--;
                     }
                     else curMap.X--;
-                    curMap.ResetSelection();
                     this.UpdateMap(refresh: true);
                     break;
                 case Keys.Right:
@@ -634,7 +576,6 @@ namespace _99x8Edit
                         if (curMapOrg.X < dataSource.MapWidth - 16) curMapOrg.X++;
                     }
                     else curMap.X++;
-                    curMap.ResetSelection();
                     this.UpdateMap(refresh: true);
                     break;
             }
@@ -642,25 +583,6 @@ namespace _99x8Edit
     }
     public partial class Sprites : Form
     {
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // prevent focus movement by the cursor
-                case Keys.Down:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Left:
-                case Keys.Down | Keys.Shift:
-                case Keys.Right | Keys.Shift:
-                case Keys.Up | Keys.Shift:
-                case Keys.Left | Keys.Shift:
-                    break;
-                default:
-                    return base.ProcessDialogKey(keyData);
-            }
-            return true;
-        }
         private void panelSprites_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             switch (e.KeyData)
@@ -697,7 +619,6 @@ namespace _99x8Edit
                     if (curSpr.Y > 0)
                     {
                         curSpr.Y--;
-                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -705,7 +626,6 @@ namespace _99x8Edit
                     if (curSpr.Y < 7)
                     {
                         curSpr.Y++;
-                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -713,7 +633,6 @@ namespace _99x8Edit
                     if (curSpr.X > 0)
                     {
                         curSpr.X--;
-                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -721,7 +640,6 @@ namespace _99x8Edit
                     if (curSpr.X < 7)
                     {
                         curSpr.X++;
-                        curSpr.ResetSelection();
                         this.RefreshAllViews();
                     }
                     break;
@@ -770,7 +688,6 @@ namespace _99x8Edit
                     if (curLine.Y > 0)
                     {
                         curLine.Y--;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -778,7 +695,6 @@ namespace _99x8Edit
                     if (curLine.Y < 15)
                     {
                         curLine.Y++;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     break;
@@ -787,7 +703,6 @@ namespace _99x8Edit
                     {
                         curLine.X--;
                         currentDot = 7;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot > 0)
@@ -801,7 +716,6 @@ namespace _99x8Edit
                     {
                         curLine.X++;
                         currentDot = 0;
-                        curLine.ResetSelection();
                         refresh();
                     }
                     else if (currentDot < 7)

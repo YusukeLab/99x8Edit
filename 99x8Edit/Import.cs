@@ -29,9 +29,6 @@ namespace _99x8Edit
             RawPattern,
             RawColor
         }
-        // Palette
-        private Color[] palette = new Color[16];         // Windows color corresponding to color code
-
         //------------------------------------------------------------------------
         // Initialize
         public Import()
@@ -41,8 +38,9 @@ namespace _99x8Edit
         // Properties
         internal Color[] Palette
         {
-            get { return palette; }
-            set { palette = value.Clone() as Color[]; }
+            // Windows color corresponding to color code, set by the host
+            get;
+            set;
         }
         //------------------------------------------------------------------------
         // Methods
@@ -246,21 +244,21 @@ namespace _99x8Edit
             int[] distance = new int[16];
             for(int i = 0; i < 16; ++i)
             {
-                int d = Math.Abs(c.R - palette[i].R)
-                      + Math.Abs(c.G - palette[i].G)
-                      + Math.Abs(c.B - palette[i].B);
+                int d = Math.Abs(c.R - Palette[i].R)
+                      + Math.Abs(c.G - Palette[i].G)
+                      + Math.Abs(c.B - Palette[i].B);
                 distance[i] = d;
             }
             return Array.IndexOf(distance, distance.Min());
         }
         private int WhichColorCodeIsNear(Color c, int code1, int code2)
         {
-            int d1 = Math.Abs(c.R - palette[code1].R)
-                   + Math.Abs(c.G - palette[code1].G)
-                   + Math.Abs(c.B - palette[code1].B);
-            int d2 = Math.Abs(c.R - palette[code2].R)
-                   + Math.Abs(c.G - palette[code2].G)
-                   + Math.Abs(c.B - palette[code2].B);
+            int d1 = Math.Abs(c.R - Palette[code1].R)
+                   + Math.Abs(c.G - Palette[code1].G)
+                   + Math.Abs(c.B - Palette[code1].B);
+            int d2 = Math.Abs(c.R - Palette[code2].R)
+                   + Math.Abs(c.G - Palette[code2].G)
+                   + Math.Abs(c.B - Palette[code2].B);
             if(d1 < d2)
             {
                 return code1;

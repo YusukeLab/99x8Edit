@@ -11,7 +11,7 @@ namespace _99x8Edit
 {
     internal partial class CursorAnim : Form
     {
-        // Transparent window for the cursor effect flying from control to control
+        // Transparent window for the cursor effect, flying from control to control
         static private Bitmap bmp = null;
         private readonly int loopNum = 12;
         private Rectangle start;
@@ -41,7 +41,7 @@ namespace _99x8Edit
             await Task.Run(() => {
                 for (int i = 0; i < loopNum; ++i)
                 {
-                    // Use log to avoid constant velocity
+                    // Use log to avoid constant speed
                     int distance = (int)(Math.Log10((double)i + 1.0) * 1000.0);
                     int max = (int)(Math.Log10((double)loopNum) * 1000.0);
                     current.X = start.X + (end.X - start.X) * distance / max;

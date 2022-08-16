@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace _99x8Edit
 {
@@ -12,18 +12,18 @@ namespace _99x8Edit
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
-        private Bitmap bmpPCGList = new Bitmap(512, 128);       // PCG list view
-        private Bitmap bmpMapPatterns = new Bitmap(512, 512);   // Map pattern view
+        private Bitmap bmpPCG = new Bitmap(512, 128);           // PCG list view
+        private Bitmap bmpMapPtn = new Bitmap(512, 512);        // Map pattern view
         private Bitmap bmpMap = new Bitmap(512, 384);           // Map view
         private Selection curPCG = new Selection(16, 16);       // Selected character
         private Selection curPtn = new Selection(32, 32);       // Selected tile pattern
         private Selection curCellInPtn = new Selection(16, 16); // Selected cell in one tile pattern
         private Point curMapOrg;                                // Coordinate of left top corner of map
         private Selection curMap = new Selection(32, 32);       // Selected map cell 0-15
-        String currentFile = "";
-        public String CurrentFile
+        internal String CurrentFile
         {
-            set { currentFile = value; }
+            get;
+            set;
         }
         // For internal drag control
         private class DnDPattern { }
@@ -38,13 +38,13 @@ namespace _99x8Edit
             // Set corresponding data and owner window
             dataSource = src;
             mainWin = parent;
-            // Tab order
+            // Tab order for the customed control
             tabList.Add(panelPCG, curPCG);
             tabList.Add(panelPtns, curPtn);
             tabList.Add(panelMap, curMap);
             // Initialize controls
-            viewPCG.Image = bmpPCGList;
-            viewPatterns.Image = bmpMapPatterns;
+            viewPCG.Image = bmpPCG;
+            viewPatterns.Image = bmpMapPtn;
             viewMap.Image = bmpMap;
             btnLeft.Enabled = false;
             btnRight.Enabled = (dataSource.MapWidth > 16);
@@ -76,8 +76,28 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------------
         // Override
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                // prevent focus movement by the cursor and catch cursor keys
+                case Keys.Down:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Left:
+                case Keys.Down | Keys.Shift:
+                case Keys.Right | Keys.Shift:
+                case Keys.Up | Keys.Shift:
+                case Keys.Left | Keys.Shift:
+                    break;
+                default:
+                    return base.ProcessDialogKey(keyData);
+            }
+            return true;
+        }
         protected override bool ProcessTabKey(bool forward)
         {
+            // Set to next control
             Control prev = this.ActiveControl;
             Control next = tabList.NextOf(prev, forward);
             this.ActiveControl = next;
@@ -92,7 +112,7 @@ namespace _99x8Edit
             return true;
         }
         //------------------------------------------------------------------------------
-        // Refreshing Views
+        // Views
         private void RefreshAllViews()
         {
             this.UpdatePCGList(refresh: false);          // PCG view
@@ -103,30 +123,32 @@ namespace _99x8Edit
         private void UpdatePCGList(bool refresh)
         {
             // Update all PCG list
-            Utility.DrawTransparent(bmpPCGList);
-            Graphics g = Graphics.FromImage(bmpPCGList);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpPCGList.Width, bmpPCGList.Height);
+            Utility.DrawTransparent(bmpPCG);
+            Graphics g = Graphics.FromImage(bmpPCG);
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.FillRectangle(Brushes.Black, 0, 0, bmpPCG.Width, bmpPCG.Height);
             for (int i = 0; i < 256; ++i)
             {
-                g.DrawImage(dataSource.GetBitmapOfPCG(i), (i % 32) * 16, (i / 32) * 16, 17, 17);
+                g.DrawImage(dataSource.GetBitmapOfPCG(i),
+                           (i % 32) * 16, (i / 32) * 16, 17, 17);
             }
             // CRT Filter
             if (chkCRT.Checked)
             {
-                Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
+                Filter.Create(Filter.Type.CRT).Process(bmpPCG);
             }
             // Selection
-            Utility.DrawSelection(g, curPCG.X * 16, curPCG.Y * 16, 15, 15, panelPCG.Focused);
+            Utility.DrawSelection(g, curPCG, panelPCG.Focused);
             if (refresh) viewPCG.Refresh();
         }
         private void UpdateMapPatterns(bool refresh)
         {
-            Graphics g = Graphics.FromImage(bmpMapPatterns);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpMapPatterns.Width, bmpMapPatterns.Height);
+            Graphics g = Graphics.FromImage(bmpMapPtn);
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.FillRectangle(Brushes.Black, 0, 0, bmpMapPtn.Width, bmpMapPtn.Height);
             for (int i = 0; i < 256; ++i)
             {
+                // Four characters in each patterns
                 for (int j = 0; j < 4; ++j)
                 {
                     int one_pcg = dataSource.GetPCGInPattern(i, j);
@@ -139,23 +161,29 @@ namespace _99x8Edit
             // CRT Filter
             if (chkCRT.Checked)
             {
-                Filter.Create(Filter.Type.CRT).Process(bmpMapPatterns);
+                Filter.Create(Filter.Type.CRT).Process(bmpMapPtn);
             }
             // Selection
             Utility.DrawSelection(g, curPtn, panelPtns.Focused);
             // Selection, cell in one pattern
             int cx = curPtn.X * 32;
             int cy = curPtn.Y * 32;
-            g.DrawRectangle(Pens.Yellow,
-                            cx + curCellInPtn.X * 16 + (1 - curCellInPtn.X),
-                            cy + curCellInPtn.Y * 16 + (1 - curCellInPtn.Y), 14, 14);
+            Utility.DrawSubSelection(g, cx + curCellInPtn.X * 16 + (1 - curCellInPtn.X),
+                                     cy + curCellInPtn.Y * 16 + (1 - curCellInPtn.Y), 14, 14);
             if (refresh) viewPatterns.Refresh();
         }
         private void UpdateMap(bool refresh)
         {
+            // Map size may have been changed
+            if ((curMapOrg.X + 16 > dataSource.MapWidth) || (curMapOrg.Y + 12 > dataSource.MapHeight))
+            {
+                txtMapX.Text = (curMapOrg.X = 0).ToString();
+                txtMapY.Text = (curMapOrg.Y = 0).ToString();
+            }
+            // Draw cells in the map
             Graphics g = Graphics.FromImage(bmpMap);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.FillRectangle(new SolidBrush(Color.Black), 0, 0, bmpMap.Width, bmpMap.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, bmpMap.Width, bmpMap.Height);
             for (int i = 0; i < 12; ++i)
             {
                 for (int j = 0; j < 16; ++j)
@@ -171,12 +199,6 @@ namespace _99x8Edit
             // Selection
             Utility.DrawSelection(g, curMap, panelMap.Focused);
             if (refresh) viewMap.Refresh();
-            // Map size may be changed by loading, undo, etc
-            if ((curMapOrg.X + 16 > dataSource.MapWidth) || (curMapOrg.Y + 12 > dataSource.MapHeight))
-            {
-                txtMapX.Text = (curMapOrg.X = 0).ToString();
-                txtMapY.Text = (curMapOrg.Y = 0).ToString();
-            }
             // Controls corresponding to map
             txtMapX.Text = curMapOrg.X.ToString();
             txtMapY.Text = curMapOrg.Y.ToString();
@@ -208,19 +230,18 @@ namespace _99x8Edit
             panelPCG.Focus();   // Key events are handled by parent panel
             if (e.Button == MouseButtons.Left)
             {
-                int clicked_pcg_x = e.X / 16;
-                int clicked_pcg_y = e.Y / 16;
-                if (clicked_pcg_x > 31) clicked_pcg_x = 31;
-                if (clicked_pcg_y > 7) clicked_pcg_y = 7;
+                int clicked_pcg_x = Math.Min(e.X / 16, 31);
+                int clicked_pcg_y = Math.Min(e.Y / 16, 7);
                 if ((clicked_pcg_x != curPCG.X) || (clicked_pcg_y != curPCG.Y))
                 {
-                    // Selected PCG has changed
+                    // Selection changed
                     curPCG.X = clicked_pcg_x;
                     curPCG.Y = clicked_pcg_y;
                     this.UpdatePCGList(refresh: true);
                 }
                 else
                 {
+                    // Drag to patterns
                     viewPCG.DoDragDrop(new DnDMapPCG(), DragDropEffects.Copy);
                 }
             }
@@ -235,6 +256,7 @@ namespace _99x8Edit
                 List<byte[]> l = new List<byte[]>();
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
+                    // For each selected patterns
                     l.Add(dataSource.GetPattern(i * 16 + j));
                 }
                 clip.ptns.Add(l);
@@ -252,6 +274,7 @@ namespace _99x8Edit
                     List<byte[]> l = clip.ptns[i];
                     for (int j = 0; (j < l.Count) && (curPtn.X + j < 16); ++j)
                     {
+                        // For each copied patterns
                         dataSource.SetPattern((curPtn.Y + i) * 16 + (curPtn.X + j), l[j], push: false);
                     }
                 }
@@ -267,6 +290,7 @@ namespace _99x8Edit
             {
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
+                    // For each selected patterns
                     byte[] src = dataSource.GetPattern(r.Y * 16 + j);
                     dataSource.SetPattern(i * 16 + j, src, push: false);
                 }
@@ -281,6 +305,7 @@ namespace _99x8Edit
             {
                 for (int j = r.X + 1; j < r.X + r.Width; ++j)
                 {
+                    // For each selected patterns
                     byte[] src = dataSource.GetPattern(i * 16 + r.X);
                     dataSource.SetPattern(i * 16 + j, src, push: false);
                 }
@@ -293,38 +318,41 @@ namespace _99x8Edit
             if (e.Button == MouseButtons.Left)
             {
                 // Tile pattern selected
-                int selected_ptn_x = e.X / 32;
-                int selected_ptn_y = e.Y / 32;
                 int sel_cell_x = (e.X / 16) % 2;
                 int sel_cell_y = (e.Y / 16) % 2;
-                int selected_pattern_num = selected_ptn_x + selected_ptn_y * 16;
-                int current_pattern_num = curPtn.X + curPtn.Y * 16;
                 if ((sel_cell_x != curCellInPtn.X) || (sel_cell_y != curCellInPtn.Y))
                 {
+                    // Update the selection of four cells in one pattern
                     curCellInPtn.X = sel_cell_x;
                     curCellInPtn.Y = sel_cell_y;
                 }
+                int selected_ptn_x = Math.Min(e.X / 32, 31);
+                int selected_ptn_y = Math.Min(e.Y / 32, 31);
+                int selected_pattern_num = selected_ptn_x + selected_ptn_y * 16;
+                int current_pattern_num = curPtn.X + curPtn.Y * 16;
                 if (selected_pattern_num != current_pattern_num)
                 {
-                    if (Control.ModifierKeys != Keys.Shift)
+                    // Selection changed
+                    if (Control.ModifierKeys == Keys.Shift)
                     {
+                        // Multiple selection
                         curPtn.ToX = selected_ptn_x;
                         curPtn.ToY = selected_ptn_y;
                     }
                     else
                     {
+                        // New selection
                         curPtn.X = selected_ptn_x;
                         curPtn.Y = selected_ptn_y;
-                        curPtn.ResetSelection();        // New selection
                     }
                     this.UpdateMapPatterns(refresh: true);   // refresh before dragging
-                    // Start multiple selections
+                    // When selection has been changed, start dragging for multiple selections
                     viewPatterns.DoDragDrop(new DnDPtnSel(), DragDropEffects.Copy);
                 }
                 else
                 {
-                    this.UpdateMapPatterns(refresh: true);
-                    // Start dragging when current pattern was already selected
+                    this.UpdateMapPatterns(refresh: true);   // refresh before dragging
+                    // When selection was same, start dragging for copying action
                     viewPatterns.DoDragDrop(new DnDPattern(), DragDropEffects.Copy);
                 }
             }
@@ -333,14 +361,17 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
+                // Dragging map pattern
                 e.Effect = DragDropEffects.Copy;
             }
             else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
             {
+                // Dragged from PCG list
                 e.Effect = DragDropEffects.Copy;
             }
             else if (e.Data.GetDataPresent(typeof(DnDPtnSel)))
             {
+                // Multiple selection
                 e.Effect = DragDropEffects.Copy;
             }
             else e.Effect = DragDropEffects.None;
@@ -349,9 +380,10 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDPtnSel)))
             {
+                // Update multiple selection
                 Point p = viewPatterns.PointToClient(Cursor.Position);
-                curPtn.X = Math.Min(p.X / 32, 15);
-                curPtn.Y = Math.Min(p.Y / 32, 15);
+                curPtn.ToX = Math.Min(p.X / 32, 15);
+                curPtn.ToY = Math.Min(p.Y / 32, 15);
                 this.UpdateMapPatterns(refresh: true);
             }
         }
@@ -362,12 +394,14 @@ namespace _99x8Edit
             if (p.Y > viewPatterns.Height - 1) p.X = viewPatterns.Height - 1;
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
+                // Other map pattern has been dropped
                 dataSource.CopyMapPattern(curPtn.Y * 16 + curPtn.X, (p.Y / 32) * 16 + (p.X / 32), push: true);
                 this.UpdateMapPatterns(refresh: true);
                 this.UpdateMap(refresh: true);
             }
             else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
             {
+                // Character has been dropped from PCG list
                 int target_ptn = p.X / 32 + (p.Y / 32) * 16;
                 int target_cell = (p.X / 16) % 2 + ((p.Y / 16) % 2) * 2;
                 dataSource.SetPCGInPattern(target_ptn, target_cell, curPCG.Y * 32 + curPCG.X, push: true);
@@ -377,29 +411,29 @@ namespace _99x8Edit
         }
         private void viewMap_MouseDown(object sender, MouseEventArgs e)
         {
-            // Selected map cell has changed
-            panelMap.Focus();   // CTRL+C and others will be cathced at parent panel
+            // Catch key events at parent control
+            panelMap.Focus();
             if (e.Button == MouseButtons.Left)
             {
-                int selected_x = e.X / 32;
-                int selected_y = e.Y / 32;
-                int previous_x = curMap.X;
-                int previous_y = curMap.Y;
-                if ((selected_x != previous_x) || (selected_y != previous_y))
+                int selected_x = Math.Min(e.X / 32, 31);
+                int selected_y = Math.Min(e.Y / 32, 31);
+                if ((selected_x != curMap.X) || (selected_y != curMap.Y))
                 {
                     if (Control.ModifierKeys == Keys.Shift)
                     {
+                        // Multiple selection of map
                         curMap.ToX = selected_x;
                         curMap.ToY = selected_y;
                     }
                     else
                     {
+                        // New selection
                         curMap.X = selected_x;
                         curMap.Y = selected_y;
-                        curMap.ResetSelection();    // New selection
                     }
                     this.UpdateMap(refresh: true);
                 }
+                // Drag action for multiple control
                 viewPCG.DoDragDrop(new DnDMap(), DragDropEffects.Copy);
             }
         }
@@ -412,6 +446,7 @@ namespace _99x8Edit
                 List<int> l = new List<int>();
                 for(int j = r.X; j < r.X + r.Width; ++j)
                 {
+                    // For each selected map tiles
                     l.Add(dataSource.GetMapData(curMapOrg.X + j, curMapOrg.Y + i));
                 }
                 clip.ptnID.Add(l);
@@ -423,6 +458,7 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipMapPtn)
             {
+                // One map pattern has been pasted
                 dataSource.SetMapData(curMapOrg.X + curMap.X,
                                       curMapOrg.Y + curMap.Y,
                                       clip.index, push: true);
@@ -430,12 +466,14 @@ namespace _99x8Edit
             }
             else if (clip is ClipMapCell)
             {
+                // Map data has been pasted
                 MementoCaretaker.Instance.Push();
                 for (int i = 0; (i < clip.ptnID.Count) && (curMap.Y + i < 12); ++i)
                 {
                     List<int> l = clip.ptnID[i];
                     for (int j = 0; (j < l.Count) && (curMap.X + j < 16); ++j)
                     {
+                        // For each map tiles
                         dataSource.SetMapData(curMap.X + j, curMap.Y + i, l[j], push: false);
                     }
                 }
@@ -450,6 +488,7 @@ namespace _99x8Edit
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 16); ++j)
                 {
+                    // Delete each map patterns
                     dataSource.SetMapData(curMapOrg.X + j, curMapOrg.Y + i, 0, push: false);
                 }
             }
@@ -458,7 +497,7 @@ namespace _99x8Edit
         private void contextMap_paint(object sender, EventArgs e)
         {
             int selected_ptn_num = curPtn.X + curPtn.Y * 16;
-            MementoCaretaker.Instance.Push();   // For undo action
+            MementoCaretaker.Instance.Push();
             this.PaintMap(curMapOrg.X + curMap.X, curMapOrg.Y + curMap.Y, selected_ptn_num);
             this.UpdateMap(refresh: true);
         }
@@ -470,6 +509,7 @@ namespace _99x8Edit
             {
                 for (int j = r.X; (j < r.X + r.Width) && (j < 16); ++j)
                 {
+                    // For each selected map tiles
                     int src = dataSource.GetMapData(curMapOrg.X + j, curMapOrg.Y + r.Y);
                     dataSource.SetMapData(curMapOrg.X + j, curMapOrg.Y + i, src, push: false);
                 }
@@ -484,6 +524,7 @@ namespace _99x8Edit
             {
                 for (int j = r.X + 1; (j < r.X + r.Width) && (j < 16); ++j)
                 {
+                    // For each selected map tiles
                     int src = dataSource.GetMapData(curMapOrg.X + r.X, curMapOrg.Y + i);
                     dataSource.SetMapData(curMapOrg.X + j, curMapOrg.Y + i, src, push: false);
                 }
@@ -494,10 +535,12 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
+                // Map pattern has been dragged into
                 e.Effect = DragDropEffects.Copy;
             }
             else if (e.Data.GetDataPresent(typeof(DnDMap)))
             {
+                // Multiple selection
                 e.Effect = DragDropEffects.Copy;
             }
             else e.Effect = DragDropEffects.None;
@@ -506,9 +549,10 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDMap)))
             {
+                // Multiple selection
                 Point p = viewMap.PointToClient(Cursor.Position);
-                curMap.X = Math.Min(p.X / 32, 15);
-                curMap.Y = Math.Min(p.Y / 32, 11);
+                curMap.ToX = Math.Min(p.X / 32, 15);
+                curMap.ToY = Math.Min(p.Y / 32, 11);
                 this.UpdateMap(refresh: true);
             }
         }
@@ -516,6 +560,7 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
+                // Map pattern has been dropped
                 Point p = viewMap.PointToClient(Cursor.Position);
                 dataSource.SetMapData(Math.Min(p.X / 32, 15), Math.Min(p.Y / 32, 11),
                                       curPtn.Y * 16 + curPtn.X, push: true);
@@ -524,26 +569,31 @@ namespace _99x8Edit
         }
         private void btnLeft_Click(object sender, EventArgs e)
         {
+            // Scrolling map leftward
             curMapOrg.X = Math.Max(curMapOrg.X - 16, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnRight_Click(object sender, EventArgs e)
         {
+            // Scrolling map rightward
             curMapOrg.X = Math.Min(curMapOrg.X + 16, dataSource.MapWidth - 16);
             this.UpdateMap(refresh: true);
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
+            // Scrolling map upward
             curMapOrg.Y = Math.Max(curMapOrg.Y - 12, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
+            // Scrolling map downward
             curMapOrg.Y = Math.Min(curMapOrg.Y + 12, dataSource.MapHeight - 12);
             this.UpdateMap(refresh: true);
         }
         private void btnMapSize_Click(object sender, EventArgs e)
         {
+            // Show the map size window
             MapSize dlg = new MapSize(dataSource.MapWidth, dataSource.MapHeight);
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -560,7 +610,7 @@ namespace _99x8Edit
         }
         private void Map_Activated(object sender, EventArgs e)
         {
-            // Refresh everything when form has been activated, since it may be edited
+            // Redraw the views according to data at this timing
             this.RefreshAllViews();
         }
         public void ChangeOccuredByHost()
@@ -595,11 +645,11 @@ namespace _99x8Edit
         }
         private void menu_fileLoadMap(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(currentFile,
+            if (Utility.LoadDialogAndLoad(CurrentFile,
                                           "Map File(*.map)|*.map",
                                           "Load map settings",
                                           dataSource.LoadMap,
-                                          push_before_loading: true,
+                                          push: true,
                                           out _))
             {
                 this.RefreshAllViews();
@@ -607,7 +657,7 @@ namespace _99x8Edit
         }
         private void menu_fileSaveMap(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(currentFile,
+            Utility.SaveDialogAndSave(CurrentFile,
                                       "Map File(*.map)|*.map",
                                       "Save map settings",
                                       dataSource.SaveMap,

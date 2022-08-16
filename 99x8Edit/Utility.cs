@@ -29,7 +29,8 @@ namespace _99x8Edit
             set
             {
                 _x = value;
-                update();
+                this.ResetSelection();  // Multiple selection cancelled
+                this.Update();
             }
         }
         internal int Y
@@ -38,7 +39,8 @@ namespace _99x8Edit
             set
             {
                 _y = value;
-                update();
+                this.ResetSelection();  // Multiple selection cancelled
+                this.Update();
             }
         }
         internal int ToX
@@ -47,7 +49,7 @@ namespace _99x8Edit
             set
             {
                 _tx = value;
-                update();
+                this.Update();
             }
         }
         internal int ToY
@@ -56,7 +58,7 @@ namespace _99x8Edit
             set
             {
                 _ty = value;
-                update();
+                this.Update();
             }
         }
         internal Rectangle Selected
@@ -67,19 +69,19 @@ namespace _99x8Edit
         {
             get{ return _display; }
         }
-        internal void ResetSelection()
-        {
-            _tx = _x;
-            _ty = _y;
-            update();
-        }
         internal Rectangle GetScreenPos(Control c)
         {
             Point p = new Point(_display.X, _display.Y);
             p = c.PointToScreen(p);
             return new Rectangle(p.X, p.Y, _display.Width, _display.Height);
         }
-        private void update()
+        private void ResetSelection()
+        {
+            _tx = _x;
+            _ty = _y;
+            Update();
+        }
+        private void Update()
         {
             _display.X = (_selection.X = Math.Min(_x, _tx)) * _cellW;
             _display.Y = (_selection.Y = Math.Min(_y, _ty)) * _cellH;
@@ -224,7 +226,7 @@ namespace _99x8Edit
                                                string dialog_filter,
                                                string dialog_title,
                                                Action<BinaryReader> exec_load,
-                                               bool push_before_loading,
+                                               bool push,
                                                out string loaded_file_name)
         {
             loaded_file_name = "";
@@ -244,7 +246,7 @@ namespace _99x8Edit
                 using BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
                 try
                 {
-                    if(push_before_loading)
+                    if(push)
                     {
                         MementoCaretaker.Instance.Push();
                     }

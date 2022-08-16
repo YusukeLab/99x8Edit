@@ -202,7 +202,6 @@ namespace _99x8Edit
                     if (current.Y > 0)
                     {
                         current.Y--;
-                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     else if(seekAddr > 0)
@@ -216,7 +215,6 @@ namespace _99x8Edit
                     if (current.Y < 30)
                     {
                         current.Y++;
-                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     else if (seekAddr + 8192 < reader.BaseStream.Length)
@@ -233,7 +231,6 @@ namespace _99x8Edit
                     if (current.X > 0)
                     {
                         current.X--;
-                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     break;
@@ -241,7 +238,6 @@ namespace _99x8Edit
                     if (current.X < 30)
                     {
                         current.X++;
-                        current.ResetSelection();
                         this.UpdatePeek();
                     }
                     break;
@@ -261,8 +257,8 @@ namespace _99x8Edit
             {
                 Point p = viewPeek.PointToClient(Cursor.Position);
                 // Limit multiple selections to 16x16 unit
-                int col = p.X / 16;
-                int row = p.Y / 16;
+                int col = Math.Min(p.X / 16, 31);
+                int row = Math.Min(p.Y / 16, 31);
                 int col_sel = (col - current.X % 2) / 2 * 2 + (current.X % 2);
                 int row_sel = (row - current.Y % 2) / 2 * 2 + (current.Y % 2);
                 if ((col_sel <= 30) && (row_sel <= 30))
