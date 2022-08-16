@@ -772,12 +772,16 @@ namespace _99x8Edit
                 this.UpdateSpriteBitmap(dst);
             }
         }
-        internal int GetSpritePixel(int index8, int line, int x)
+        internal int GetSpritePixel(int index16, int x, int y, bool dummy)
         {
-            index8 = Math.Clamp(index8, 0, 255);
-            line = Math.Clamp(line, 0, 7);
+            index16 = Math.Clamp(index16, 0, 255);
+            x = Math.Clamp(x, 0, 15);
+            y = Math.Clamp(y, 0, 15);
+            int index8 = index16 * 4 + (x / 8) * 2 + (y / 8);
+            int line = y % 8;
+            int bit_x = 7 - (x % 8);
             int target_dat = spriteGen[index8 * 8 + line];
-            int target = (target_dat >> (7 - x)) & 1;       // left side is LSB of data source
+            int target = (target_dat >> bit_x) & 1;       // left side is LSB of data source
             return target;
         }
         internal void SetSpritePixel(int index8, int line, int x, int val, bool push)

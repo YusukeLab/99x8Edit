@@ -177,33 +177,30 @@ namespace _99x8Edit
             Utility.DrawTransparent(bmpPreview);
             Graphics g = Graphics.FromImage(bmpSpriteEdit);
             Graphics preview = Graphics.FromImage(bmpPreview);
-            int index_of_16x16 = curSpr.X + curSpr.Y * 8;
-            bool overlayed = dataSource.GetSpriteOverlay(index_of_16x16);
+            int index16 = curSpr.X + curSpr.Y * 8;
+            bool overlayed = dataSource.GetSpriteOverlay(index16);
             // Four sprites are in one 16x16 sprite
             for (int x = 0; x < 2; ++x)
             {
                 for (int y = 0; y < 2; ++y)
                 {
                     // One sprite in 16x16 sprite
-                    int target_sprite = index_of_16x16 * 4 + x * 2 + y;
-
                     for (int j = 0; j < 8; ++j)         // Line
                     {
                         for (int k = 0; k < 8; ++k)     // Pixel
                         {
                             int color_code = 0;     // transparent as default
-                            int ptn_but = dataSource.GetSpritePixel(target_sprite, j, k);
+                            int ptn_but = dataSource.GetSpritePixel(index16, x * 8 + k, y * 8 + j, true);
                             if (ptn_but != 0)
                             {
                                 // pixel exists, so get the color code
-                                color_code = dataSource.GetSpriteColorCode(index_of_16x16, y * 8 + j);
+                                color_code = dataSource.GetSpriteColorCode(index16, y * 8 + j);
                             }
                             if (overlayed)
                             {
                                 // Overlay sprite exists
-                                int index16ov = (index_of_16x16 + 1) % 64;
-                                int over_index = (target_sprite + 4) % 256;
-                                int ptn_over = dataSource.GetSpritePixel(over_index, j, k);
+                                int index16ov = (index16 + 1) % 64;
+                                int ptn_over = dataSource.GetSpritePixel(index16ov, x * 8 + k, y * 8 + j, true);
                                 if (ptn_over != 0)
                                 {
                                     // pixel of overlayed sprite exists, so get or of the color code
@@ -237,8 +234,8 @@ namespace _99x8Edit
             Utility.DrawSelection(g, curLine, panelEditor.Focused);
             if (panelEditor.Focused)
             {
-                Utility.DrawSubSelection(g, curLine.Display.X * 128 + currentDot * 16,
-                                         curLine.Display.Y * 16, 14, 14);
+                Utility.DrawSubSelection(g, curLine.Display.X + currentDot * 16,
+                                         curLine.Display.Y, 14, 14);
             }
             // CRT Filter
             if (chkCRT.Checked)
@@ -452,22 +449,22 @@ namespace _99x8Edit
             int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
             for (int i = 0; i < loop_cnt; ++i)
             {
-                int target16x16 = (current + i) % 64;
-                int target8x8 = target16x16 * 4;
+                int target16 = (current + i) % 64;
                 for (int y = 0; y < 16; ++y)
                 {
-                    List<int> one_line = new List<int>();
-                    for (int x = 0; x < 16; ++x)
+                    List<int> bits = new List<int>();   // Each bits in one line
+                    for (int x = 15; x >= 0; --x)
                     {
                         // Read from right to left
-                        int src8x8 = target8x8 + ((1 - x / 8) * 2) + (y / 8);
-                        one_line.Add(dataSource.GetSpritePixel(src8x8, y % 8, 7 - (x % 8)));
+                        //int src8x8 = target8x8 + ((1 - x / 8) * 2) + (y / 8);
+                        bits.Add(dataSource.GetSpritePixel(target16, x, y, true));
                     }
                     for (int x = 0; x < 16; ++x)
                     {
                         // Write from left to right
+                        int target8x8 = target16 * 4;
                         int dst8x8 = target8x8 + ((x / 8) * 2) + (y / 8);
-                        dataSource.SetSpritePixel(dst8x8, y % 8, x % 8, one_line[x], push: true);
+                        dataSource.SetSpritePixel(dst8x8, y % 8, x % 8, bits[x], push: true);
                     }
                 }
             }
@@ -530,7 +527,7 @@ namespace _99x8Edit
                 else
                 {
                     // toggle the color of selected pixel
-                    this.EditCurrentSprite((e.X / 16) % 8, curLine.Y % 8);
+                    this.EditCurrentSprite(e.X / 16, curLine.Y);
                 }
             }
         }
@@ -873,20 +870,16 @@ namespace _99x8Edit
         }
         private void EditCurrentSprite(int x, int y)
         {
-            int col = curLine.X;
-            int row = curLine.Y / 8;
-            int target_lefttop16x16 = curSpr.Y * 8 + curSpr.X;
-            int target_sprite8x8 = target_lefttop16x16 * 4 + col * 2 + row;
-            int target_prev_pixel = dataSource.GetSpritePixel(target_sprite8x8, y, x);
+            int index16 = curSpr.Y * 8 + curSpr.X;
+            int target_prev_pixel = dataSource.GetSpritePixel(index16, x, y, true);
             // check pixel of second sprite
-            int target_lefttop16x16_ov = (target_lefttop16x16 + 1) % 64;
-            int target_sprite8x8_ov = target_lefttop16x16_ov * 4 + col * 2 + row;
-            int target_prev_pixel_ov = dataSource.GetSpritePixel(target_sprite8x8_ov, y, x);
+            int index16ov = (index16 + 1) % 64;
+            int target_prev_pixel_ov = dataSource.GetSpritePixel(index16ov, x, y, true);
             // current status 0:transparent, 1:first sprite, 2:second sprie, 3:both
             int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
             // so the next status will be....
             int target_stat = current_stat + 1;
-            if (dataSource.GetSpriteOverlay(target_lefttop16x16))
+            if (dataSource.GetSpriteOverlay(index16))
             {
                 if (dataSource.IsTMS9918)
                 {
@@ -901,13 +894,18 @@ namespace _99x8Edit
             {
                 target_stat %= 2;           // No overlay
             }
+            int col = curLine.X;
+            int row = curLine.Y / 8;
+            int target_sprite8x8 = index16 * 4 + col * 2 + row;
+            int target_lefttop16x16_ov = (index16 + 1) % 64;
+            int target_sprite8x8_ov = target_lefttop16x16_ov * 4 + col * 2 + row;
             // set pixel 0:transparent, 1:first sprite, 2:second sprie, 3:both
             int pixel = ((target_stat & 0x01) > 0) ? 1 : 0;
-            dataSource.SetSpritePixel(target_sprite8x8, y, x, pixel, push: true);
-            if (dataSource.GetSpriteOverlay(target_lefttop16x16))
+            dataSource.SetSpritePixel(target_sprite8x8, y % 8, x % 8, pixel, push: true);
+            if (dataSource.GetSpriteOverlay(index16))
             {
                 pixel = ((target_stat & 0x02) > 0) ? 1 : 0;
-                dataSource.SetSpritePixel(target_sprite8x8_ov, y, x, pixel, push: true);
+                dataSource.SetSpritePixel(target_sprite8x8_ov, y % 8, x % 8, pixel, push: true);
             }
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);

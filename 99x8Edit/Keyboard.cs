@@ -813,40 +813,40 @@ namespace _99x8Edit
                 // Editing
                 case Keys.Space:
                     // toggle the color of selected pixel
-                    this.EditCurrentSprite(currentDot, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + currentDot, curLine.Y);
                     break;
                 // Changing colors
                 case Keys.D1:
                 case Keys.NumPad1:
-                    this.EditCurrentSprite(0, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 0, curLine.Y);
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
-                    this.EditCurrentSprite(1, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 1, curLine.Y);
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
-                    this.EditCurrentSprite(2, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 2, curLine.Y);
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
-                    this.EditCurrentSprite(3, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 3, curLine.Y);
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
-                    this.EditCurrentSprite(4, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 4, curLine.Y);
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
-                    this.EditCurrentSprite(5, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 5, curLine.Y);
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
-                    this.EditCurrentSprite(6, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 6, curLine.Y);
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
-                    this.EditCurrentSprite(7, curLine.Y % 8);
+                    this.EditCurrentSprite(curLine.X * 8 + 7, curLine.Y);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:
