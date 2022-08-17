@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace _99x8Edit
 {
-    internal partial class CursorAnim : Form
+    internal partial class CursorAnimation : Form
     {
         // Transparent window for the cursor effect, flying from control to control
         static private Bitmap bmp = null;
@@ -17,7 +17,7 @@ namespace _99x8Edit
         private Rectangle start;
         private Rectangle end;
         private Rectangle current;
-        internal CursorAnim(Rectangle startFrom, Rectangle endTo)
+        internal CursorAnimation(Rectangle startFrom, Rectangle endTo)
         {
             start = startFrom;
             end = endTo;

@@ -80,155 +80,46 @@ namespace _99x8Edit
                     break;
             }
         }
-        private void panelEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void viewEdit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // Key events in character editor
-            Action refresh = () =>
-            {
-                this.UpdatePCGEditView(refresh: true);         // Update editor view
-                this.UpdateCurrentColorView(refresh: true);    // Update view of current color
-            };
             switch (e.KeyData)
             {
-                case Keys.Up | Keys.Shift:
-                    if (curLine.ToY > 0)
-                    {
-                        curLine.ToY--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curLine.ToY < 15)
-                    {
-                        curLine.ToY++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curLine.ToX > 0)
-                    {
-                        curLine.ToX--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curLine.ToX < 1)
-                    {
-                        curLine.ToX++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Up:
-                    if (curLine.Y > 0)
-                    {
-                        curLine.Y--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Down:
-                    if (curLine.Y < 15)
-                    {
-                        curLine.Y++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Left:
-                    if ((currentDot == 0) && (curLine.X > 0))
-                    {
-                        curLine.X--;
-                        currentDot = 7;
-                        refresh();
-                    }
-                    else if (currentDot > 0)
-                    {
-                        currentDot--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Right:
-                    if ((currentDot == 7) && (curLine.X < 1))
-                    {
-                        curLine.X++;
-                        currentDot = 0;
-                        refresh();
-                    }
-                    else if (currentDot < 7)
-                    {
-                        currentDot++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Space:
-                    // toggle the color of selected pixel
-                    this.EditCurrentPCG(currentDot);
-                    break;
-                case Keys.D1:
-                case Keys.NumPad1:
-                    this.EditCurrentPCG(0);
-                    break;
-                case Keys.D2:
-                case Keys.NumPad2:
-                    this.EditCurrentPCG(1);
-                    break;
-                case Keys.D3:
-                case Keys.NumPad3:
-                    this.EditCurrentPCG(2);
-                    break;
-                case Keys.D4:
-                case Keys.NumPad4:
-                    this.EditCurrentPCG(3);
-                    break;
-                case Keys.D5:
-                case Keys.NumPad5:
-                    this.EditCurrentPCG(4);
-                    break;
-                case Keys.D6:
-                case Keys.NumPad6:
-                    this.EditCurrentPCG(5);
-                    break;
-                case Keys.D7:
-                case Keys.NumPad7:
-                    this.EditCurrentPCG(6);
-                    break;
-                case Keys.D8:
-                case Keys.NumPad8:
-                    this.EditCurrentPCG(7);
-                    break;
                 case Keys.Oemplus:
                 case Keys.Add:
                 case Keys.OemMinus:
                 case Keys.Subtract:
                 case Keys.OemCloseBrackets:
                 case Keys.OemOpenBrackets:
-                    int index = viewPCG.Index;
-                    int target = (index + curLine.X + (curLine.Y / 8) * 32) % 256;
+                    int target = viewPCG.Index
+                               + (viewEdit.LineY / 8) * viewPCG.ColumnNum
+                               + viewEdit.LineX;        // Target character
+                    int line = viewEdit.LineY % 8;      // Target line
+                    int fore = dataSource.GetPCGColor(target, line, foreground: true);
+                    int back = dataSource.GetPCGColor(target, line, foreground: false);
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
-                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: true);
-                        color = (color + 1) % 16;
-                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: true, push: true);
+                        fore = (fore + 1) % 16;
+                        dataSource.SetPCGColor(target, line, fore, isForeGround: true, push: true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
-                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: true);
-                        color = (color + 15) % 16;
-                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: true, push: true);
+                        fore = (fore + 15) % 16;
+                        dataSource.SetPCGColor(target, line, fore, isForeGround: true, push: true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
-                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: false);
-                        color = (color + 1) % 16;
-                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: false, push: true);
+                        back = (back + 1) % 16;
+                        dataSource.SetPCGColor(target, line, back, isForeGround: false, push: true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
-                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: false);
-                        color = (color + 15) % 16;
-                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: false, push: true);
+                        back = (back + 15) % 16;
+                        dataSource.SetPCGColor(target, line, back, isForeGround: false, push: true);
                     }
                     this.RefreshAllViews();
                     break;

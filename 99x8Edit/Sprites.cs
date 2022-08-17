@@ -114,7 +114,7 @@ namespace _99x8Edit
             // Animation
             Rectangle r_prev = tabList.SelectionOf(prev).GetScreenPos(prev);
             Rectangle r_next = tabList.SelectionOf(next).GetScreenPos(next);
-            CursorAnim win = new CursorAnim(r_prev, r_next);
+            CursorAnimation win = new CursorAnimation(r_prev, r_next);
             win.Show();
             win.StartMoving();
             // Refresh views

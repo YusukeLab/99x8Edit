@@ -1,7 +1,7 @@
 ﻿
 namespace _99x8Edit
 {
-    partial class CursorAnim
+    partial class CursorAnimation
     {
         /// <summary>
         /// Required designer variable.

@@ -8,22 +8,23 @@ namespace _99x8Edit
 {
     public partial class MatrixControl : UserControl
     {
-        private int _cellWidth;         // Width of one cell
-        private int _cellHeight;        // Height of one cell
-        private int _columnNum;         // Number of columns
-        private int _rowNum;            // Number of rows
-        private Bitmap _bmp;            // Buffer to draw images
-        private bool _updated;          // Should be drawn to buffer
-        private Bitmap[,] _cellImg;     // Images for each cells
-        private Selection _selection;   // Current selection
-        private FilterBase _filter;     // Filter to be applyed
+        // Control for the ordinal matrix view
+        protected int _cellWidth;       // Width of one cell
+        protected int _cellHeight;      // Height of one cell
+        protected int _columnNum;       // Number of columns
+        protected int _rowNum;          // Number of rows
+        protected Bitmap _bmp;          // Buffer to draw images
+        protected bool _updated;        // Should be drawn to buffer
+        protected Selection _selection; // Current selection
+        protected FilterBase _filter;   // Filter to be applyed
+        protected Bitmap[,] _cellImg;   // Images for each cells
         // For multiple selections
         internal class DragSelection {
             internal UserControl _sender;
             internal DragSelection(UserControl sender)
             {
                 _sender = sender;
-            } 
+            }
             internal UserControl Sender
             {
                 get => _sender;
@@ -44,7 +45,7 @@ namespace _99x8Edit
         // Properties
         [Browsable(true)]
         [Description("Width of one cell")]
-        public int CellWidth
+        public virtual int CellWidth
         {
             get => _cellWidth;
             set
@@ -57,7 +58,7 @@ namespace _99x8Edit
         }
         [Browsable(true)]
         [Description("Height of one cell")]
-        public int CellHeight
+        public virtual int CellHeight
         {
             get => _cellHeight;
             set
@@ -101,29 +102,28 @@ namespace _99x8Edit
         [Description("Called when cell was dragged")]
         public event EventHandler<EventArgs> CellDragStart;
         //--------------------------------------------------------------------
-        // Methods and properties for hosts
-        public Selection Selected
+        // Properties for hosts
+        [Browsable(false)]
+        public Selection Selector
         {
             get => _selection;
         }
+        [Browsable(false)]
         public int X
         {
             get => _selection.X;
         }
+        [Browsable(false)]
         public int Y
         {
             get => _selection.Y;
         }
+        [Browsable(false)]
         public Rectangle SelectedRect
         {
             get => _selection.Selected;
         }
-        public void SetImage(Bitmap img, int col, int row)
-        {
-            _cellImg ??= new Bitmap[ColumnNum, RowNum];
-            _cellImg[col, row] = img;
-            _updated = true;
-        }
+        [Browsable(false)]
         public FilterBase Filter
         {
             set
@@ -132,12 +132,13 @@ namespace _99x8Edit
                 _updated = true;
             }
         }
+        [Browsable(false)]
         public int Index
         {
             get => _selection.Y * ColumnNum + _selection.X;
             set
             {
-                if((ColumnNum != 0) && (RowNum != 0))
+                if ((ColumnNum != 0) && (RowNum != 0))
                 {
                     int id = Math.Clamp(value, 0, ColumnNum * RowNum - 1);
                     _selection.X = id % ColumnNum;
@@ -145,6 +146,14 @@ namespace _99x8Edit
                     _updated = true;
                 }
             }
+        }
+        //--------------------------------------------------------------------
+        // Methods for hosts
+        public void SetImage(Bitmap img, int col, int row)
+        {
+            _cellImg ??= new Bitmap[ColumnNum, RowNum];
+            _cellImg[col, row] = img;
+            _updated = true;
         }
         public (int col, int row) ScreenCoodinateToColRow(Point screen_p)
         {
@@ -170,9 +179,9 @@ namespace _99x8Edit
         public void ForEachCells(int col, int row, int w, int h,
                                  Action<int, int> callback)
         {
-            for(int y = row; (y < row + h) && (y < RowNum); ++y)
+            for (int y = row; (y < row + h) && (y < RowNum); ++y)
             {
-                for(int x = col; (x < col + w) && (x < ColumnNum); ++x)
+                for (int x = col; (x < col + w) && (x < ColumnNum); ++x)
                 {
                     callback?.Invoke(x, y);
                 }
@@ -262,10 +271,10 @@ namespace _99x8Edit
                 else
                 {
                     // Cell to be dragged
-                    CellDragStart?.Invoke(this, e);
+                    CellDragStart?.Invoke(this, new EventArgs());
                 }
+                base.OnMouseDown(e);
             }
-            base.OnMouseDown(e);
         }
         protected override void OnDragEnter(DragEventArgs drgevent)
         {
@@ -274,7 +283,7 @@ namespace _99x8Edit
             {
                 // Accept only the drag objects created by itself
                 dynamic obj = drgevent.Data.GetData(typeof(DragSelection));
-                if(obj.Sender == this)
+                if (obj.Sender == this)
                 {
                     // Multiple selection
                     drgevent.Effect = DragDropEffects.Copy;
@@ -291,7 +300,7 @@ namespace _99x8Edit
                 if (obj.Sender == this)
                 {
                     // Multiple selection
-                    Point p = this.PointToClient(System.Windows.Forms.Cursor.Position);
+                    Point p = this.PointToClient(Cursor.Position);
                     int hoverd_x = Math.Min(p.X / CellWidth, ColumnNum - 1);
                     int hoverd_y = Math.Min(p.Y / CellHeight, RowNum - 1);
                     if ((hoverd_x != _selection.ToX) || (hoverd_y != _selection.ToY))
@@ -308,13 +317,17 @@ namespace _99x8Edit
         protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
         {
             // Key events in sandbox
+            Action handled = () =>
+            {
+                _updated = true;
+            };
             switch (e.KeyData)
             {
                 case Keys.Up | Keys.Shift:
                     if (_selection.ToY > 0)
                     {
                         _selection.ToY--;
-                        _updated = true;
+                        handled();
                         this.Refresh();
                     }
                     break;
@@ -322,7 +335,7 @@ namespace _99x8Edit
                     if (_selection.ToY < RowNum - 1)
                     {
                         _selection.ToY++;
-                        _updated = true;
+                        handled();
                         this.Refresh();
                     }
                     break;
@@ -330,7 +343,7 @@ namespace _99x8Edit
                     if (_selection.ToX > 0)
                     {
                         _selection.ToX--;
-                        _updated = true;
+                        handled();
                         this.Refresh();
                     }
                     break;
@@ -338,7 +351,7 @@ namespace _99x8Edit
                     if (_selection.ToX < ColumnNum - 1)
                     {
                         _selection.ToX++;
-                        _updated = true;
+                        handled();
                         this.Refresh();
                     }
                     break;
@@ -346,8 +359,8 @@ namespace _99x8Edit
                     if (_selection.Y > 0)
                     {
                         _selection.Y--;
+                        handled();
                         SelectionChanged?.Invoke(this, new EventArgs());
-                        _updated = true;
                         this.Refresh();
                     }
                     break;
@@ -355,8 +368,8 @@ namespace _99x8Edit
                     if (_selection.Y < RowNum - 1)
                     {
                         _selection.Y++;
+                        handled();
                         SelectionChanged?.Invoke(this, new EventArgs());
-                        _updated = true;
                         this.Refresh();
                     }
                     break;
@@ -364,8 +377,8 @@ namespace _99x8Edit
                     if (_selection.X > 0)
                     {
                         _selection.X--;
+                        handled();
                         SelectionChanged?.Invoke(this, new EventArgs());
-                        _updated = true;
                         this.Refresh();
                     }
                     break;
@@ -373,8 +386,8 @@ namespace _99x8Edit
                     if (_selection.X < ColumnNum - 1)
                     {
                         _selection.X++;
+                        handled();
                         SelectionChanged?.Invoke(this, new EventArgs());
-                        _updated = true;
                         this.Refresh();
                     }
                     break;

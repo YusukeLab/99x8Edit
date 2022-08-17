@@ -31,7 +31,6 @@ namespace _99x8Edit
         {
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
-            this.viewPCGEdit = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.contextPCG = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripPCGCopy = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +63,6 @@ namespace _99x8Edit
             this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelEditor = new System.Windows.Forms.FlowLayoutPanel();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.toolStripBarFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,12 +86,11 @@ namespace _99x8Edit
             this.panelPalette = new System.Windows.Forms.Panel();
             this.viewSand = new _99x8Edit.MatrixControl();
             this.viewPCG = new _99x8Edit.MatrixControl();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).BeginInit();
+            this.viewEdit = new _99x8Edit.EditorControl();
             this.contextPCG.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).BeginInit();
             this.contextSandbox.SuspendLayout();
             this.contextEditor.SuspendLayout();
-            this.panelEditor.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
@@ -105,22 +102,11 @@ namespace _99x8Edit
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label1.Location = new System.Drawing.Point(13, 37);
+            this.label1.Location = new System.Drawing.Point(12, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "PCG Editor";
-            // 
-            // viewPCGEdit
-            // 
-            this.viewPCGEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPCGEdit.Location = new System.Drawing.Point(0, 0);
-            this.viewPCGEdit.Margin = new System.Windows.Forms.Padding(0);
-            this.viewPCGEdit.Name = "viewPCGEdit";
-            this.viewPCGEdit.Size = new System.Drawing.Size(258, 258);
-            this.viewPCGEdit.TabIndex = 1;
-            this.viewPCGEdit.TabStop = false;
-            this.viewPCGEdit.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPCGEdit_MouseDown);
             // 
             // label2
             // 
@@ -389,20 +375,6 @@ namespace _99x8Edit
             this.toolStripEditorDel.Size = new System.Drawing.Size(208, 24);
             this.toolStripEditorDel.Text = "Delete";
             // 
-            // panelEditor
-            // 
-            this.panelEditor.AllowDrop = true;
-            this.panelEditor.ContextMenuStrip = this.contextEditor;
-            this.panelEditor.Controls.Add(this.viewPCGEdit);
-            this.panelEditor.Location = new System.Drawing.Point(14, 65);
-            this.panelEditor.Name = "panelEditor";
-            this.panelEditor.Size = new System.Drawing.Size(267, 264);
-            this.panelEditor.TabIndex = 0;
-            this.panelEditor.TabStop = true;
-            this.panelEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragEnter);
-            this.panelEditor.DragOver += new System.Windows.Forms.DragEventHandler(this.panelEditor_DragOver);
-            this.panelEditor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelEditor_PreviewKeyDown);
-            // 
             // chkCRT
             // 
             this.chkCRT.AutoSize = true;
@@ -621,17 +593,35 @@ namespace _99x8Edit
             this.viewPCG.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragEnter);
             this.viewPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewPCG_PreviewKeyDown);
             // 
+            // viewEdit
+            // 
+            this.viewEdit.AllowDrop = true;
+            this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewEdit.CellHeight = 16;
+            this.viewEdit.CellWidth = 16;
+            this.viewEdit.ColumnNum = 16;
+            this.viewEdit.ContextMenuStrip = this.contextEditor;
+            this.viewEdit.DataType = _99x8Edit.EditorControl.Type.PCG;
+            this.viewEdit.Index = 0;
+            this.viewEdit.Location = new System.Drawing.Point(14, 61);
+            this.viewEdit.Name = "viewEdit";
+            this.viewEdit.RowNum = 16;
+            this.viewEdit.Size = new System.Drawing.Size(258, 258);
+            this.viewEdit.TabIndex = 35;
+            this.viewEdit.Edited += new System.EventHandler<System.EventArgs>(this.myEditor_Edited);
+            this.viewEdit.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewEdit_PreviewKeyDown);
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 642);
+            this.Controls.Add(this.viewEdit);
             this.Controls.Add(this.viewPCG);
             this.Controls.Add(this.viewSand);
             this.Controls.Add(this.panelPalette);
             this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
-            this.Controls.Add(this.panelEditor);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.chkTMS);
             this.Controls.Add(this.label4);
@@ -649,12 +639,10 @@ namespace _99x8Edit
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "PCG Editor";
             this.Activated += new System.EventHandler(this.FormPCG_Activated);
-            ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).EndInit();
             this.contextPCG.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).EndInit();
             this.contextSandbox.ResumeLayout(false);
             this.contextEditor.ResumeLayout(false);
-            this.panelEditor.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).EndInit();
@@ -670,7 +658,6 @@ namespace _99x8Edit
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.PictureBox viewPCGEdit;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
@@ -696,7 +683,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaste;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
-        private System.Windows.Forms.FlowLayoutPanel panelEditor;
         private System.Windows.Forms.CheckBox chkCRT;
         private System.Windows.Forms.ToolStripMenuItem toolStripPCGInverse;
         private System.Windows.Forms.ToolStripMenuItem toolStripSandboxCopyDown;
@@ -727,5 +713,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
         private MatrixControl viewSand;
         private MatrixControl viewPCG;
+        private EditorControl viewEdit;
     }
 }
