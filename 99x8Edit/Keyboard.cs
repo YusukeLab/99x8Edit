@@ -205,28 +205,28 @@ namespace _99x8Edit
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: true);
                         color = (color + 1) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: true);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: true);
                         color = (color + 15) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: false);
                         color = (color + 1) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, is_foreground: false);
+                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: false);
                         color = (color + 15) % 16;
                         dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
@@ -302,9 +302,9 @@ namespace _99x8Edit
                     }
                     break;
                 case Keys.Enter:
-                    dataSource.SetNameTable(curSand.Y * 32 + curSand.X,
+                    dataSource.SetNameTable(viewSand.SelectedIndex,
                                             curPCG.Y * 32 + curPCG.X, push: true);
-                    if (curSand.X < 31) curSand.X++;
+                    viewSand.SelectNext();
                     this.UpdateSandbox(refresh: true);
                     break;
             }
@@ -314,66 +314,10 @@ namespace _99x8Edit
             // Key events in sandbox
             switch (e.KeyData)
             {
-                case Keys.Up | Keys.Shift:
-                    if (curSand.ToY > 0)
-                    {
-                        curSand.ToY--;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curSand.ToY < 23)
-                    {
-                        curSand.ToY++;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curSand.ToX > 0)
-                    {
-                        curSand.ToX--;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curSand.ToX < 31)
-                    {
-                        curSand.ToX++;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Up:
-                    if (curSand.Y > 0)
-                    {
-                        curSand.Y--;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Down:
-                    if (curSand.Y < 23)
-                    {
-                        curSand.Y++;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Left:
-                    if (curSand.X > 0)
-                    {
-                        curSand.X--;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
-                case Keys.Right:
-                    if (curSand.X < 31)
-                    {
-                        curSand.X++;
-                        this.UpdateSandbox(refresh: true);
-                    }
-                    break;
                 case Keys.Enter:
-                    dataSource.SetNameTable(curSand.Y * 32 + curSand.X,
+                    dataSource.SetNameTable(viewSand.SelectedIndex,
                                             curPCG.Y * 32 + curPCG.X, push: true);
-                    if (curSand.X < 31) ++curSand.X;
+                    viewSand.SelectNext();
                     this.UpdateSandbox(refresh: true);
                     break;
             }

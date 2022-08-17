@@ -19,7 +19,6 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private Selection curPCG = new Selection(16, 16);   // Selection in PCG list
-        private Selection curSand = new Selection(16, 16);  // Selection in sandbox
         private Selection curLine = new Selection(128, 16); // Selected line
         private int currentDot = 0;
         private Selection curColor = new Selection(16, 16); // Currently elected color, 0=left, 1=right
@@ -47,11 +46,10 @@ namespace _99x8Edit
             tabList.Add(panelColor, curColor);
             tabList.Add(panelPalette, curPal);
             tabList.Add(panelPCG, curPCG);
-            tabList.Add(panelSandbox, curSand);
+            tabList.Add(viewSand, viewSand.Selection);
             // Initialize controls
             viewPalette.Image = bmpPalette;
             viewPCG.Image = bmpPCGList;
-            viewSandbox.Image = bmpSandbox;
             viewPCGEdit.Image = bmpPCGEdit;
             viewColorL.Image = bmpColorL;
             viewColorR.Image = bmpColorR;
@@ -169,7 +167,7 @@ namespace _99x8Edit
                     {
                         // Draw one cell
                         int p = dataSource.GetPCGPixel(target_pcg, j, k);
-                        int code = dataSource.GetPCGColor(target_pcg, j, is_foreground: (p != 0));
+                        int code = dataSource.GetPCGColor(target_pcg, j, foreground: (p != 0));
                         if(code != 0)
                         {
                             // Outline of one dot
@@ -203,9 +201,9 @@ namespace _99x8Edit
             int current_target_pcg = (current_pcg + curLine.X + (curLine.Y / 8) * 32) % 256;
             // Get the corresponding color code
             int color_code_l = dataSource.GetPCGColor(current_target_pcg,
-                                                      curLine.Y % 8, is_foreground: true);
+                                                      curLine.Y % 8, foreground: true);
             int color_code_r = dataSource.GetPCGColor(current_target_pcg,
-                                                      curLine.Y % 8, is_foreground: false);
+                                                      curLine.Y % 8, foreground: false);
             Utility.DrawTransparent(bmpColorL);
             // Draw foreground and background colors
             if(color_code_l > 0)
@@ -238,40 +236,35 @@ namespace _99x8Edit
             {
                 g.DrawImage(dataSource.GetBitmapOfPCG(i), (i % 32) * 16, (i / 32) * 16, 17, 17);
             }
+            // CRT Filter
+            if (chkCRT.Checked)
+            {
+                Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
+            }
+            // Current selection
+            Utility.DrawSelection(g, curPCG, panelPCG.Focused);
             if (refresh)
             {
-                if (chkCRT.Checked)
-                {
-                    // CRT Filter
-                    Filter.Create(Filter.Type.CRT).Process(bmpPCGList);
-                }
-                // Current selection
-                Utility.DrawSelection(g, curPCG, panelPCG.Focused);
                 viewPCG.Refresh();
             }
         }
         private void UpdateSandbox(bool refresh)
         {
             // Draw the sandbox
-            Graphics g = Graphics.FromImage(bmpSandbox);
-            g.FillRectangle(Brushes.Black, 0, 0, bmpSandbox.Width, bmpSandbox.Height);
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            for (int i = 0; i < 768; ++i)
+            for (int y = 0; y < viewSand.RowNum; ++y)
             {
-                int ptn = dataSource.GetNameTable(i);
-                g.DrawImage(dataSource.GetBitmapOfPCG(ptn),
-                            (i % 32) * 16, (i / 32) * 16, 17, 17);
+                for (int x = 0; x < viewSand.ColumnNum; ++x)
+                {
+                    int pcg = dataSource.GetNameTable(y * viewSand.ColumnNum + x);
+                    Bitmap src = dataSource.GetBitmapOfPCG(pcg);
+                    viewSand.SetImage(src, x, y);
+                }
             }
+            // CRT Filter
+            viewSand.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
             if (refresh)
             {
-                if (chkCRT.Checked)
-                {
-                    // CRT Filter
-                    Filter.Create(Filter.Type.CRT).Process(bmpSandbox);
-                }
-                // Current selection
-                Utility.DrawSelection(g, curSand, panelSandbox.Focused);
-                viewSandbox.Refresh();
+                viewSand.Refresh();
             }
         }
         //-----------------------------------------------------------------------------
@@ -334,7 +327,7 @@ namespace _99x8Edit
             // Open the color selection window
             int color_code_l = dataSource.GetPCGColor(current_target_pcg,
                                                       curLine.Y % 8,
-                                                      is_foreground: true);
+                                                      foreground: true);
             PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_l, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
@@ -360,7 +353,7 @@ namespace _99x8Edit
             // Open the color selection window
             int color_code_r = dataSource.GetPCGColor(current_target_pcg,
                                                       curLine.Y % 8,
-                                                      is_foreground: false);
+                                                      foreground: false);
             PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_r, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
@@ -709,46 +702,17 @@ namespace _99x8Edit
             }
             this.RefreshAllViews();
         }
-        private void viewSandbox_MouseDown(object sender, MouseEventArgs e)
-        {
-            // Sandbox has been clicked
-            panelSandbox.Focus();
-            if (e.Button == MouseButtons.Left)
-            {
-                int clicked_cell_x = Math.Min(e.X / 16, 31);
-                int clicled_cell_y = Math.Min(e.Y / 16, 23);
-                if ((clicked_cell_x != curSand.X) || (clicked_cell_x != curSand.Y))
-                {
-                    // Selection changed
-                    if (Control.ModifierKeys == Keys.Shift)
-                    {
-                        // Multiple selection
-                        curSand.ToX = clicked_cell_x;
-                        curSand.ToY = clicled_cell_y;
-                    }
-                    else
-                    {
-                        // New selection
-                        curSand.X = clicked_cell_x;
-                        curSand.Y = clicled_cell_y;
-                    }
-                    this.UpdateSandbox(refresh: true);
-                }
-                // Drag for multiple selection
-                viewPCG.DoDragDrop(new DnDSandbox(), DragDropEffects.Copy);
-            }
-        }
         private void contextSandbox_copy(object sender, EventArgs e)
         {
             ClipNametable clip = new ClipNametable();
-            Rectangle r = curSand.Selected;
+            Rectangle r = viewSand.Selection.Selected;
             for(int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<int> l = new List<int>();
                 for(int j = r.X; j < r.X + r.Width; ++j)
                 {
                     // Copy each selected cells
-                    l.Add(dataSource.GetNameTable(i * 32 + j));
+                    l.Add(dataSource.GetNameTable(i * viewSand.ColumnNum + j));
                 }
                 clip.pcgID.Add(l);
             }
@@ -761,19 +725,22 @@ namespace _99x8Edit
             {
                 // Pasted from character list
                 int pcgIndex = clip.index;
-                dataSource.SetNameTable(curSand.Y * 32 + curSand.X, pcgIndex, true);
+                dataSource.SetNameTable(viewSand.SelectedIndex, pcgIndex, true);
                 this.UpdateSandbox(refresh: true);
             }
             else if (clip is ClipNametable)
             {
                 MementoCaretaker.Instance.Push();
-                for(int i = 0; (i < clip.pcgID.Count) && (curSand.Y + i < 24); ++i)
+                for(int i = 0; (i < clip.pcgID.Count)
+                    && (viewSand.Selection.Y + i < viewSand.RowNum); ++i)
                 {
                     List<int> l = clip.pcgID[i];
-                    for(int j = 0; (j < l.Count) && (curSand.X + j < 32); ++j)
+                    for(int j = 0; (j < l.Count)
+                        && (viewSand.Selection.X + j < viewSand.ColumnNum); ++j)
                     {
                         // Paste each copied cells
-                        dataSource.SetNameTable((curSand.Y + i) * 32 + curSand.X + j, l[j], push: false);
+                        dataSource.SetNameTable((viewSand.Selection.Y + i) * viewSand.ColumnNum
+                            + viewSand.Selection.X + j, l[j], push: false);
                     }
                 }
                 this.UpdateSandbox(refresh: true);
@@ -782,13 +749,13 @@ namespace _99x8Edit
         private void contextSandbox_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSand.Selected;
-            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
+            Rectangle r = viewSand.Selection.Selected;
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < viewSand.RowNum); ++i)
             {
-                for(int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
+                for(int j = r.X; (j < r.X + r.Width) && (j < viewSand.ColumnNum); ++j)
                 {
                     // Delete each selected cells
-                    dataSource.SetNameTable(i * 32 + j, 0, push: false);
+                    dataSource.SetNameTable(i * viewSand.ColumnNum + j, 0, push: false);
                 }
             }
             this.UpdateSandbox(refresh: true);
@@ -797,20 +764,20 @@ namespace _99x8Edit
         {
             // Paint action
             MementoCaretaker.Instance.Push();   // For undo action
-            this.PaintSandbox(curSand.X, curSand.Y, curPCG.Y * 32 + curPCG.X);
+            this.PaintSandbox(viewSand.Selection.X, viewSand.Selection.Y, curPCG.Y * 32 + curPCG.X);
             this.UpdateSandbox(refresh: true);
         }
         private void contextSandbox_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSand.Selected;
-            for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < 24); ++i)
+            Rectangle r = viewSand.Selection.Selected;
+            for (int i = r.Y + 1; (i < r.Y + r.Height) && (i < viewSand.RowNum); ++i)
             {
-                for (int j = r.X; (j < r.X + r.Width) && (j < 32); ++j)
+                for (int j = r.X; (j < r.X + r.Width) && (j < viewSand.ColumnNum); ++j)
                 {
                     // For each selected cells
                     int src = dataSource.GetNameTable(r.Y * 32 + j);
-                    dataSource.SetNameTable(i * 32 + j, src, push: false);
+                    dataSource.SetNameTable(i * viewSand.ColumnNum + j, src, push: false);
                 }
             }
             this.UpdateSandbox(refresh: true);
@@ -818,14 +785,14 @@ namespace _99x8Edit
         private void contextSandbox_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSand.Selected;
-            for (int i = r.Y; (i < r.Y + r.Height) && (i < 24); ++i)
+            Rectangle r = viewSand.Selection.Selected;
+            for (int i = r.Y; (i < r.Y + r.Height) && (i < viewSand.RowNum); ++i)
             {
-                for (int j = r.X + 1; (j < r.X + r.Width) && (j < 32); ++j)
+                for (int j = r.X + 1; (j < r.X + r.Width) && (j < viewSand.ColumnNum); ++j)
                 {
                     // For each selected cells
-                    int src = dataSource.GetNameTable(i * 32 + r.X);
-                    dataSource.SetNameTable(i * 32 + j, src, push: false);
+                    int src = dataSource.GetNameTable(i * viewSand.ColumnNum + r.X);
+                    dataSource.SetNameTable(i * viewSand.ColumnNum + j, src, push: false);
                 }
             }
             this.UpdateSandbox(refresh: true);
@@ -837,32 +804,17 @@ namespace _99x8Edit
                 // Dragged from character list
                 e.Effect = DragDropEffects.Copy;
             }
-            else if (e.Data.GetDataPresent(typeof(DnDSandbox)))
-            {
-                // Multiple selection
-                e.Effect = DragDropEffects.Copy;
-            }
-            else e.Effect = DragDropEffects.None;
-        }
-        private void panelSandbox_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(DnDSandbox)))
-            {
-                // Multiple selection
-                Point p = viewSandbox.PointToClient(Cursor.Position);
-                curSand.ToX = Math.Min(p.X / 16, 31);
-                curSand.ToY = Math.Min(p.Y / 16, 23);
-                this.UpdateSandbox(refresh: true);
-            }
+            // Let the effect changed by the control also
+            //else e.Effect = DragDropEffects.None;
         }
         private void panelSandbox_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(DnDPCG)))
             {
                 // Dropped from character list
-                Point p = viewSandbox.PointToClient(Cursor.Position);
-                if (p.X > viewSandbox.Width - 1) p.X = viewSandbox.Width - 1;
-                if (p.Y > viewSandbox.Height - 1) p.X = viewSandbox.Height - 1;
+                Point p = viewSand.PointToClient(Cursor.Position);
+                if (p.X > viewSand.Width - 1) p.X = viewSand.Width - 1;
+                if (p.Y > viewSand.Height - 1) p.X = viewSand.Height - 1;
                 int target_cell = ((p.Y / 16) * 32 + p.X / 16) % 768;
                 dataSource.SetNameTable(target_cell, curPCG.Y * 32 + curPCG.X, push: true);
                 this.UpdateSandbox(refresh: true);

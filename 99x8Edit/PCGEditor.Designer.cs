@@ -49,7 +49,6 @@ namespace _99x8Edit
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.viewSandbox = new System.Windows.Forms.PictureBox();
             this.panelPCG = new System.Windows.Forms.FlowLayoutPanel();
             this.viewPCG = new System.Windows.Forms.PictureBox();
             this.contextSandbox = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -60,7 +59,6 @@ namespace _99x8Edit
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSandboxDel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSandboxPaint = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelSandbox = new System.Windows.Forms.FlowLayoutPanel();
             this.contextEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripEditorCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditorPaste = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,14 +88,13 @@ namespace _99x8Edit
             this.viewColorL = new System.Windows.Forms.PictureBox();
             this.panelColor = new System.Windows.Forms.Panel();
             this.panelPalette = new System.Windows.Forms.Panel();
+            this.viewSand = new _99x8Edit.MatrixControl();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).BeginInit();
             this.contextPCGList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewSandbox)).BeginInit();
             this.panelPCG.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
             this.contextSandbox.SuspendLayout();
-            this.panelSandbox.SuspendLayout();
             this.contextEditor.SuspendLayout();
             this.panelEditor.SuspendLayout();
             this.menuStripMain.SuspendLayout();
@@ -119,6 +116,7 @@ namespace _99x8Edit
             // 
             // viewPCGEdit
             // 
+            this.viewPCGEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPCGEdit.Location = new System.Drawing.Point(0, 0);
             this.viewPCGEdit.Margin = new System.Windows.Forms.Padding(0);
             this.viewPCGEdit.Name = "viewPCGEdit";
@@ -280,16 +278,6 @@ namespace _99x8Edit
             this.label7.TabIndex = 19;
             this.label7.Text = "Sandbox";
             // 
-            // viewSandbox
-            // 
-            this.viewSandbox.Location = new System.Drawing.Point(0, 0);
-            this.viewSandbox.Margin = new System.Windows.Forms.Padding(0);
-            this.viewSandbox.Name = "viewSandbox";
-            this.viewSandbox.Size = new System.Drawing.Size(514, 386);
-            this.viewSandbox.TabIndex = 20;
-            this.viewSandbox.TabStop = false;
-            this.viewSandbox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewSandbox_MouseDown);
-            // 
             // panelPCG
             // 
             this.panelPCG.AllowDrop = true;
@@ -373,20 +361,6 @@ namespace _99x8Edit
             this.toolStripSandboxPaint.Name = "toolStripSandboxPaint";
             this.toolStripSandboxPaint.Size = new System.Drawing.Size(208, 24);
             this.toolStripSandboxPaint.Text = "Paint";
-            // 
-            // panelSandbox
-            // 
-            this.panelSandbox.AllowDrop = true;
-            this.panelSandbox.ContextMenuStrip = this.contextSandbox;
-            this.panelSandbox.Controls.Add(this.viewSandbox);
-            this.panelSandbox.Location = new System.Drawing.Point(301, 230);
-            this.panelSandbox.Name = "panelSandbox";
-            this.panelSandbox.Size = new System.Drawing.Size(534, 386);
-            this.panelSandbox.TabIndex = 24;
-            this.panelSandbox.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragDrop);
-            this.panelSandbox.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragEnter);
-            this.panelSandbox.DragOver += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragOver);
-            this.panelSandbox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSandbox_PreviewKeyDown);
             // 
             // contextEditor
             // 
@@ -635,16 +609,33 @@ namespace _99x8Edit
             this.panelPalette.TabIndex = 32;
             this.panelPalette.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPalette_PreviewKeyDown);
             // 
+            // viewSand
+            // 
+            this.viewSand.AllowDrop = true;
+            this.viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewSand.CellHeight = 16;
+            this.viewSand.CellWidth = 16;
+            this.viewSand.ColumnNum = 32;
+            this.viewSand.ContextMenuStrip = this.contextSandbox;
+            this.viewSand.Location = new System.Drawing.Point(301, 227);
+            this.viewSand.Name = "viewSand";
+            this.viewSand.RowNum = 24;
+            this.viewSand.Size = new System.Drawing.Size(514, 386);
+            this.viewSand.TabIndex = 33;
+            this.viewSand.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragDrop);
+            this.viewSand.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelSandbox_DragEnter);
+            this.viewSand.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSandbox_PreviewKeyDown);
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 642);
+            this.Controls.Add(this.viewSand);
             this.Controls.Add(this.panelPalette);
             this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.panelEditor);
-            this.Controls.Add(this.panelSandbox);
             this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.chkTMS);
@@ -666,11 +657,9 @@ namespace _99x8Edit
             ((System.ComponentModel.ISupportInitialize)(this.viewPCGEdit)).EndInit();
             this.contextPCGList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewSandbox)).EndInit();
             this.panelPCG.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).EndInit();
             this.contextSandbox.ResumeLayout(false);
-            this.panelSandbox.ResumeLayout(false);
             this.contextEditor.ResumeLayout(false);
             this.panelEditor.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
@@ -698,7 +687,6 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.PictureBox viewSandbox;
         private System.Windows.Forms.ContextMenuStrip contextPCGList;
         private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopy;
         private System.Windows.Forms.ToolStripMenuItem toolStripPCGPaste;
@@ -711,7 +699,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripSandboxPaste;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem toolStripSandboxDel;
-        private System.Windows.Forms.FlowLayoutPanel panelSandbox;
         private System.Windows.Forms.ToolStripMenuItem toolStripSandboxPaint;
         private System.Windows.Forms.ContextMenuStrip contextEditor;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopy;
@@ -747,5 +734,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripBarEdit;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditUndo;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
+        private MatrixControl viewSand;
     }
 }

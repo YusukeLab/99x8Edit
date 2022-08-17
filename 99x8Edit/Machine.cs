@@ -479,12 +479,12 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(pcg);
         }
-        internal int GetPCGColor(int pcg, int line, bool is_foreground)
+        internal int GetPCGColor(int pcg, int line, bool foreground)
         {
             pcg = Math.Clamp(pcg, 0, 255);
             line = Math.Clamp(line, 0, 7);
             int addr = pcg * 8 + line;
-            if (is_foreground)
+            if (foreground)
             {
                 return ptnClr[addr] >> 4;
             }

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace _99x8Edit
 {
     // Multiple cell selection for user interface
-    internal class Selection
+    public class Selection
     {
         private int _cellW;         // Size of cells to display
         private int _cellH;
@@ -18,13 +18,13 @@ namespace _99x8Edit
         private int _ty;
         Rectangle _selection;       // Selected cols and rows
         Rectangle _display;         // Selection on display coodinate
-        internal Selection(int cell_width, int cell_height)
+        public Selection(int cell_width, int cell_height)
         {
             // Width and height are for calculating coodinates
             _display.Width = _cellW = cell_width;
             _display.Height = _cellH = cell_height;
         }
-        internal int X
+        public int X
         {
             get { return _x; }
             set
@@ -34,7 +34,7 @@ namespace _99x8Edit
                 this.Update();
             }
         }
-        internal int Y
+        public int Y
         {
             get { return _y; }
             set
@@ -44,7 +44,7 @@ namespace _99x8Edit
                 this.Update();
             }
         }
-        internal int ToX
+        public int ToX
         {
             get { return _tx; }
             set
@@ -53,7 +53,7 @@ namespace _99x8Edit
                 this.Update();
             }
         }
-        internal int ToY
+        public int ToY
         {
             get { return _ty; }
             set
@@ -63,7 +63,7 @@ namespace _99x8Edit
             }
         }
         // Col and row, width and height of the selection
-        internal Rectangle Selected
+        public Rectangle Selected
         {
             get { return _selection; }
         }
