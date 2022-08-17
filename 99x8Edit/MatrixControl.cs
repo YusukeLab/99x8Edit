@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace _99x8Edit
 {
@@ -20,14 +17,14 @@ namespace _99x8Edit
         private Bitmap[,] _cellImg;     // Images for each cells
         private Selection _selection;   // Current selection
         private FilterBase _filter;     // Filter to be applyed
-        // For dragging action of multiple selection
-        public class DragSelection {
-            private UserControl _sender;
-            public DragSelection(UserControl sender)
+        // For multiple selections
+        internal class DragSelection {
+            internal UserControl _sender;
+            internal DragSelection(UserControl sender)
             {
                 _sender = sender;
             } 
-            public UserControl Sender
+            internal UserControl Sender
             {
                 get => _sender;
             }
@@ -104,17 +101,26 @@ namespace _99x8Edit
         [Description("Called when cell was dragged")]
         public event EventHandler<EventArgs> CellDragStart;
         //--------------------------------------------------------------------
-        // Methods and prioerties for hosts
-        public Selection Selection
+        // Methods and properties for hosts
+        public Selection Selected
         {
             get => _selection;
         }
+        public int X
+        {
+            get => _selection.X;
+        }
+        public int Y
+        {
+            get => _selection.Y;
+        }
+        public Rectangle SelectedRect
+        {
+            get => _selection.Selected;
+        }
         public void SetImage(Bitmap img, int col, int row)
         {
-            if (_cellImg == null)
-            {
-                _cellImg = new Bitmap[ColumnNum, RowNum];
-            }
+            _cellImg ??= new Bitmap[ColumnNum, RowNum];
             _cellImg[col, row] = img;
             _updated = true;
         }
@@ -126,17 +132,71 @@ namespace _99x8Edit
                 _updated = true;
             }
         }
-        public int SelectedIndex
+        public int Index
         {
             get => _selection.Y * ColumnNum + _selection.X;
-        }
-        public void SelectNext()
-        {
-            if (_selection.X < ColumnNum - 1)
+            set
             {
-                _selection.X++;
-                _updated = true;
+                if((ColumnNum != 0) && (RowNum != 0))
+                {
+                    int id = Math.Clamp(value, 0, ColumnNum * RowNum - 1);
+                    _selection.X = id % ColumnNum;
+                    _selection.Y = id / ColumnNum;
+                    _updated = true;
+                }
             }
+        }
+        public (int col, int row) ScreenCoodinateToColRow(Point screen_p)
+        {
+            Point p = this.PointToClient(screen_p);
+            int col = Math.Clamp(p.X / CellWidth, 0, ColumnNum);
+            int row = Math.Clamp(p.Y / CellHeight, 0, RowNum);
+            return (col, row);
+        }
+        public int ScreenCoodinateToIndex(Point screen_p)
+        {
+            (int col, int row) = ScreenCoodinateToColRow(screen_p);
+            return IndexOf(col, row);
+        }
+        public int IndexOf(int col, int row)
+        {
+            return row * ColumnNum + col;
+        }
+        public void ForEachCells(Rectangle selection, Action<int, int> callback)
+        {
+            this.ForEachCells(selection.X, selection.Y,
+                              selection.Width, selection.Height, callback);
+        }
+        public void ForEachCells(int col, int row, int w, int h,
+                                 Action<int, int> callback)
+        {
+            for(int y = row; (y < row + h) && (y < RowNum); ++y)
+            {
+                for(int x = col; (x < col + w) && (x < ColumnNum); ++x)
+                {
+                    callback?.Invoke(x, y);
+                }
+            }
+        }
+        public void ForEachCells(int col, int row, int w, int h,
+                                 Action<int, int, int, int> callback)
+        {
+            int y_cnt = 0;
+            for (int y = row; (y < row + h) && (y < RowNum); ++y)
+            {
+                int x_cnt = 0;
+                for (int x = col; (x < col + w) && (x < ColumnNum); ++x)
+                {
+                    callback?.Invoke(x, y, x_cnt, y_cnt);
+                    x_cnt++;
+                }
+                y_cnt++;
+            }
+        }
+        public void ResetMultipleSelection()
+        {
+            _selection.ResetSelectionAndUpdate();
+            _updated = true;
         }
         //--------------------------------------------------------------------
         // Overrides
@@ -148,12 +208,10 @@ namespace _99x8Edit
             {
                 return;
             }
-            if (_bmp == null)
-            {
-                _bmp = new Bitmap(ColumnNum * CellWidth, RowNum * CellHeight);
-            }
+            _bmp ??= new Bitmap(ColumnNum * CellWidth, RowNum * CellHeight);
             if (_updated)
             {
+                // If something has been changed, redraw the buffer
                 Graphics g = Graphics.FromImage(_bmp);
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 for (int y = 0; y < RowNum; ++y)
@@ -178,25 +236,25 @@ namespace _99x8Edit
             if (e.Button == MouseButtons.Left)
             {
                 int clicked_cell_x = Math.Min(e.X / CellWidth, ColumnNum - 1);
-                int clicled_cell_y = Math.Min(e.Y / CellHeight, RowNum - 1);
-                if ((clicked_cell_x != _selection.X) || (clicked_cell_x != _selection.Y))
+                int clicked_cell_y = Math.Min(e.Y / CellHeight, RowNum - 1);
+                if ((clicked_cell_x != _selection.X) || (clicked_cell_y != _selection.Y))
                 {
                     // Selection changed
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         // Multiple selection
                         _selection.ToX = clicked_cell_x;
-                        _selection.ToY = clicled_cell_y;
+                        _selection.ToY = clicked_cell_y;
                     }
                     else
                     {
                         // New selection
                         _selection.X = clicked_cell_x;
-                        _selection.Y = clicled_cell_y;
+                        _selection.Y = clicked_cell_y;
                         // For host
                         SelectionChanged?.Invoke(this, new EventArgs());
                     }
-                    _updated = true;
+                    _updated = true;    // Redraw buffer at the timing of OnPaint
                     this.Refresh();
                     // Drag for multiple selection
                     this.DoDragDrop(new DragSelection(this), DragDropEffects.Copy);
@@ -228,16 +286,21 @@ namespace _99x8Edit
         {
             if (drgevent.Data.GetDataPresent(typeof(DragSelection)))
             {
-                // Multiple selection
-                Point p = this.PointToClient(Cursor.Position);
-                int hoverd_x = Math.Min(p.X / CellWidth, ColumnNum - 1);
-                int hoverd_y = Math.Min(p.Y / CellHeight, RowNum - 1);
-                if((hoverd_x != _selection.ToX) || (hoverd_y != Selection.ToY))
+                // Accept only the drag objects created by itself
+                dynamic obj = drgevent.Data.GetData(typeof(DragSelection));
+                if (obj.Sender == this)
                 {
-                    _selection.ToX = hoverd_x;
-                    _selection.ToY = hoverd_y;
-                    _updated = true;
-                    this.Refresh();
+                    // Multiple selection
+                    Point p = this.PointToClient(System.Windows.Forms.Cursor.Position);
+                    int hoverd_x = Math.Min(p.X / CellWidth, ColumnNum - 1);
+                    int hoverd_y = Math.Min(p.Y / CellHeight, RowNum - 1);
+                    if ((hoverd_x != _selection.ToX) || (hoverd_y != _selection.ToY))
+                    {
+                        _selection.ToX = hoverd_x;
+                        _selection.ToY = hoverd_y;
+                        _updated = true;
+                        this.Refresh();
+                    }
                 }
             }
             base.OnDragOver(drgevent);

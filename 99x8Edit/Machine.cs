@@ -427,8 +427,8 @@ namespace _99x8Edit
             pcg = Math.Clamp(pcg, 0, 255);
             for (int i = 0; i < 8; ++i)
             {
-                if (gen != null)  ptnGen[pcg * 8 + i] = gen[i];
-                if (clr != null) ptnClr[pcg * 8 + i] = clr[i];
+                ptnGen[pcg * 8 + i] = gen?[i] ?? 0;
+                ptnClr[pcg * 8 + i] = clr?[i] ?? 0xF0;
             }
             this.UpdatePCGBitmap(pcg);
         }

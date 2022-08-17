@@ -30,8 +30,7 @@ namespace _99x8Edit
             set
             {
                 _x = value;
-                this.ResetSelection();  // Multiple selection cancelled
-                this.Update();
+                this.ResetSelectionAndUpdate();  // Multiple selection cancelled
             }
         }
         public int Y
@@ -40,8 +39,7 @@ namespace _99x8Edit
             set
             {
                 _y = value;
-                this.ResetSelection();  // Multiple selection cancelled
-                this.Update();
+                this.ResetSelectionAndUpdate();  // Multiple selection cancelled
             }
         }
         public int ToX
@@ -79,10 +77,11 @@ namespace _99x8Edit
             p = c.PointToScreen(p);
             return new Rectangle(p.X, p.Y, _display.Width, _display.Height);
         }
-        private void ResetSelection()
+        internal void ResetSelectionAndUpdate()
         {
             _tx = _x;
             _ty = _y;
+            this.Update();
         }
         private void Update()
         {
@@ -193,11 +192,8 @@ namespace _99x8Edit
                 return false;
             };
             String dir = Path.GetDirectoryName(current_file);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
-            else if(!save_as)
+            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            if(!save_as)
             {
                 // Directory exists and want to overwrite
                 if(do_save(current_file))
@@ -233,10 +229,7 @@ namespace _99x8Edit
         {
             loaded_file_name = "";
             String dir = Path.GetDirectoryName(current_file);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
+            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = dialog_filter;
@@ -269,10 +262,7 @@ namespace _99x8Edit
                                                    Action<string, int> exec_import)
         {
             String dir = Path.GetDirectoryName(current_file);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
+            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = filter;
@@ -300,10 +290,7 @@ namespace _99x8Edit
                                                    Action<int, string> exec_save)
         {
             String dir = Path.GetDirectoryName(current_file);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
+            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.FileName = "";
             dlg.InitialDirectory = dir;

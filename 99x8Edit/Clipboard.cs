@@ -34,9 +34,9 @@ namespace _99x8Edit
     [Serializable]
     internal class ClipPCG : ClipBase
     {
-        internal byte index;
         internal List<List<byte[]>> pcgGen = new List<List<byte[]>>();
         internal List<List<byte[]>> pcgClr = new List<List<byte[]>>();
+        internal List<List<int>> pcgIndex = new List<List<int>>();
     }
     [Serializable]
     internal class ClipNametable : ClipBase

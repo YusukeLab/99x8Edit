@@ -200,124 +200,60 @@ namespace _99x8Edit
                 case Keys.Subtract:
                 case Keys.OemCloseBrackets:
                 case Keys.OemOpenBrackets:
-                    int current_pcg = curPCG.Y * 32 + curPCG.X;
-                    int current_target_pcg = (current_pcg + curLine.X + (curLine.Y / 8) * 32) % 256;
+                    int index = viewPCG.Index;
+                    int target = (index + curLine.X + (curLine.Y / 8) * 32) % 256;
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))
                     {
                         // Increment foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: true);
+                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: true);
                         color = (color + 1) % 16;
-                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
+                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if ((e.KeyData == Keys.OemMinus) || (e.KeyData == Keys.Subtract))
                     {
                         // Decrement foreground color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: true);
+                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: true);
                         color = (color + 15) % 16;
-                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: true, push: true);
+                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: true, push: true);
                     }
                     if (e.KeyData == Keys.OemCloseBrackets)
                     {
                         // Increment backgroundcolor
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: false);
+                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: false);
                         color = (color + 1) % 16;
-                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
+                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     if (e.KeyData == Keys.OemOpenBrackets)
                     {
                         // Decrement background color
-                        int color = dataSource.GetPCGColor(current_target_pcg, curLine.Y % 8, foreground: false);
+                        int color = dataSource.GetPCGColor(target, curLine.Y % 8, foreground: false);
                         color = (color + 15) % 16;
-                        dataSource.SetPCGColor(current_target_pcg, curLine.Y % 8, color, isForeGround: false, push: true);
+                        dataSource.SetPCGColor(target, curLine.Y % 8, color, isForeGround: false, push: true);
                     }
                     this.RefreshAllViews();
                     break;
             }
         }
-        private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void viewPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // Key events in character list
-            Action refresh = () =>
-            {
-                this.UpdatePCGList(refresh: true);
-                this.UpdatePCGEditView(refresh: true);
-                this.UpdateCurrentColorView(refresh: true);
-            };
             switch (e.KeyData)
             {
-                case Keys.Up | Keys.Shift:
-                    if (curPCG.ToY > 0)
-                    {
-                        curPCG.ToY--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curPCG.ToY < 7)
-                    {
-                        curPCG.ToY++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curPCG.ToX > 0)
-                    {
-                        curPCG.ToX--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curPCG.ToX < 31)
-                    {
-                        curPCG.ToX++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Up:
-                    if (curPCG.Y > 0)
-                    {
-                        curPCG.Y--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Down:
-                    if (curPCG.Y < 7)
-                    {
-                        curPCG.Y++;
-                        refresh();
-                    }
-                    break;
-                case Keys.Left:
-                    if (curPCG.X > 0)
-                    {
-                        curPCG.X--;
-                        refresh();
-                    }
-                    break;
-                case Keys.Right:
-                    if (curPCG.X < 31)
-                    {
-                        curPCG.X++;
-                        refresh();
-                    }
-                    break;
                 case Keys.Enter:
-                    dataSource.SetNameTable(viewSand.SelectedIndex,
-                                            curPCG.Y * 32 + curPCG.X, push: true);
-                    viewSand.SelectNext();
+                    dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
+                    viewSand.Index++;
                     this.UpdateSandbox(refresh: true);
                     break;
             }
         }
-        private void panelSandbox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void viewSand_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // Key events in sandbox
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    dataSource.SetNameTable(viewSand.SelectedIndex,
-                                            curPCG.Y * 32 + curPCG.X, push: true);
-                    viewSand.SelectNext();
+                    dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
+                    viewSand.Index++;
                     this.UpdateSandbox(refresh: true);
                     break;
             }

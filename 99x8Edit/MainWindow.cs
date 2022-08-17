@@ -261,10 +261,7 @@ namespace _99x8Edit
             }
             // Create window
             String dir = Path.GetDirectoryName(peekPath);
-            if (dir == null)
-            {
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            }
+            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = "Rom(*.rom)|*.rom|All files(*.*)|*.*";
