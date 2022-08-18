@@ -61,6 +61,8 @@ namespace _99x8Edit
             this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditorCopyColor = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripEditorInverse = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.toolTipSprite = new System.Windows.Forms.ToolTip(this.components);
@@ -318,9 +320,11 @@ namespace _99x8Edit
             this.toolStripEditorCopyRight,
             this.toolStripEditorCopyColor,
             this.toolStripSeparator2,
+            this.toolStripEditorInverse,
+            this.toolStripSeparator6,
             this.toolStripEditorDel});
             this.contextEditor.Name = "contextPCGList";
-            this.contextEditor.Size = new System.Drawing.Size(244, 154);
+            this.contextEditor.Size = new System.Drawing.Size(244, 184);
             // 
             // toolStripEditorCopy
             // 
@@ -362,6 +366,19 @@ namespace _99x8Edit
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(240, 6);
+            // 
+            // toolStripEditorInverse
+            // 
+            this.toolStripEditorInverse.Name = "toolStripEditorInverse";
+            this.toolStripEditorInverse.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.I)));
+            this.toolStripEditorInverse.Size = new System.Drawing.Size(243, 24);
+            this.toolStripEditorInverse.Text = "Inverse";
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(240, 6);
             // 
             // toolStripEditorDel
             // 
@@ -701,5 +718,7 @@ namespace _99x8Edit
         private MatrixControl viewSprite;
         private EditorControl viewEdit;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyColor;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditorInverse;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }

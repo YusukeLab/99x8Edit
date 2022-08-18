@@ -61,6 +61,7 @@ namespace _99x8Edit
             toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
             toolStripEditorCopyColor.Click += new EventHandler(contextEditor_copyColor);
+            toolStripEditorInverse.Click += new EventHandler(contextEditor_inverse);
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -568,6 +569,25 @@ namespace _99x8Edit
                 clip.lines.Add(l);
             }
             ClipboardWrapper.SetData(clip);
+        }
+        private void contextEditor_inverse(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            Rectangle r = viewEdit.SelectedRect;
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            {
+                for (int j = r.X; j < r.X + r.Width; ++j)
+                {
+                    // Copy each lines
+                    int index16 = viewSprite.Index;
+                    Machine.SpriteLine line = dataSource.GetSpriteLine(index16, j, i);
+                    line.genData = (byte)~line.genData;
+                    line.genDataOv = (byte)~line.genDataOv;
+                    dataSource.SetSpriteLine(index16, j, i, line, false);
+                }
+            }
+            this.UpdateSpriteEditView(refresh: true);
+            this.UpdateSpriteView(refresh: true);
         }
         private void contextEditor_paste(object sender, EventArgs e)
         {
