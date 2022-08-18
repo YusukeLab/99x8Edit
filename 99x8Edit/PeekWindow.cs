@@ -83,8 +83,7 @@ namespace _99x8Edit
             {
                 // Address to col, row
                 byte dat = reader.ReadByte();
-                int chr_x = this.AddressToCol(seekAddr + i);
-                int chr_y = this.AddressToRow(seekAddr + i);                
+                (int chr_x, int chr_y) = this.AddressToColRow(seekAddr + i);
                 int pix_y = i % 8;          // row in 8x8 character
                 for(int j = 0; j < 8; ++j)  // for each columns in one 8x1 line
                 {
@@ -220,39 +219,28 @@ namespace _99x8Edit
                 return (long)addr_in_screen + seekAddr;
             }
         }
-        private int AddressToCol(long addr)
+        private (int col, int row) AddressToColRow(long addr)
         {
+            int col = 0;
+            int row = 0;
             addr -= seekAddr;
             if (type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
-                return (int)((addr / 8) % 32);
+                col =  (int)((addr / 8) % 32);
+                row = (int)(addr / 256);
             }
             else
             {
                 // 1   3   5   7   9...    ...62
                 // 2   4   6   8   10...   ...63
                 int block_x = ((int)addr / 32) % 16;         // block for each 4 characters
-                return block_x * 2 + ((int)addr / 16) % 2;
-            }
-        }
-        private int AddressToRow(long addr)
-        {
-            addr -= seekAddr;
-            if (type == PeekType.Linear)
-            {
-                // 1   2   3   4   5...    ...31
-                // 32  33  34...           ...63
-                return (int)(addr / 256);
-            }
-            else
-            {
-                // 1   3   5   7   9...    ...62
-                // 2   4   6   8   10...   ...63
+                col = block_x * 2 + ((int)addr / 16) % 2;
                 int block_y = (int)addr / 512;
-                return block_y * 2 + ((int)addr / 8) % 2;
+                row = block_y * 2 + ((int)addr / 8) % 2;
             }
+            return (col, row);
         }
     }
 }
