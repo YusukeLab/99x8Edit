@@ -132,9 +132,9 @@ namespace _99x8Edit
         private void UpdatePCGEditView(bool refresh)
         {
             // Update PCG editor
-            for (int i = 0; i < viewEdit.TileRowNum; ++i)
+            for (int i = 0; i < viewEdit.ChrRowNum; ++i)
             {
-                for (int j = 0; j < viewEdit.TileColNum; ++j)
+                for (int j = 0; j < viewEdit.ChrColNum; ++j)
                 {
                     // Draw each characters in one editor
                     int index = viewPCG.Index + i * viewPCG.ColumnNum + j;
@@ -230,7 +230,7 @@ namespace _99x8Edit
         // Editor
         private void viewEdit_CellOnEdit(object sender, EventArgs e)
         {
-            (int x, int y) = viewEdit.PosInTile();              // Dot in one PCG
+            (int x, int y) = viewEdit.PosInChr();              // Dot in one PCG
             int index = viewPCG.Index
                       + (viewEdit.Y / 8) * viewPCG.ColumnNum
                       + viewEdit.X;                            // Selected character

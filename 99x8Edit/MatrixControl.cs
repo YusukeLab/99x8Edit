@@ -22,12 +22,12 @@ namespace _99x8Edit
         protected FilterBase _filter;       // Filter to be applyed
         protected Bitmap[,] _cellImg;       // Images for each cells
         protected Color[,] _background;     // Background colors
-        private static Pen DashedGray = new Pen(Color.Gray)
+        private static Pen DashedGray = new Pen(Color.Gray)     // For overlayed selection
         {
             DashStyle = DashStyle.Dash,
             Width = 2
         };
-        // For multiple selections
+        // DnD object for multiple selections
         internal class DragSelection {
             internal UserControl _sender;
             internal DragSelection(UserControl sender)
@@ -109,7 +109,7 @@ namespace _99x8Edit
             }
         }
         [Browsable(true)]
-        [Description("Number of columns of one selection")]
+        [Description("Number of columns in one selection")]
         public int SelectionWidth
         {
             get => _selectionWidth;
@@ -122,7 +122,7 @@ namespace _99x8Edit
             }
         } 
         [Browsable(true)]
-        [Description("Number of rows of one selection")]
+        [Description("Number of rows in one selection")]
         public int SelectionHeight
         {
             get => _selectionHeight;
@@ -135,7 +135,7 @@ namespace _99x8Edit
             }
         }
         [Browsable(true)]
-        [Description("Has sub selection inside one selection")]
+        [Description("Sub selection inside one selection")]
         public bool AllowSubSelection
         {
             get;
@@ -225,32 +225,38 @@ namespace _99x8Edit
         [Browsable(false)]
         public int SelectionColNum
         {
+            // Columns of selectable tiles
             // E.g. map has 32 columns and 16 selectable tiles within
             get => _columnNum / _selectionWidth;
         }
         [Browsable(false)]
         public int SelectionRowNum
         {
+            // Rows of selectable tiles
             get => _rowNum / _selectionHeight;
         }
         [Browsable(false)]
+        // For  overlayed sprite
         public bool DrawOverlayedSelection { get; set; } = false;
         //--------------------------------------------------------------------
         // Methods for hosts
         public void SetImage(Bitmap img, int col, int row)
         {
+            // Set images to be drawn
             _cellImg ??= new Bitmap[_columnNum, _rowNum];
             _cellImg[col, row] = img;
             _updated = true;
         }
         public void SetBackground(Color c, int col, int row)
         {
+            // Set the background colors of each cells
             _background ??= new Color[_columnNum, _rowNum];
             _background[col, row] = c;
             _updated = true;
         }
         public (int col, int row) ScreenCoodinateToCell(Point screen_p)
         {
+            // Screen coodinate to col row index of each cells
             Point p = this.PointToClient(screen_p);
             int col = Math.Clamp(p.X / _cellWidth, 0, _columnNum);
             int row = Math.Clamp(p.Y / _cellHeight, 0, _rowNum);
@@ -258,6 +264,7 @@ namespace _99x8Edit
         }
         public (int col, int row) ScreenCoodinateToSelection(Point screen_p)
         {
+            // Screen coodinate to col row index of selection
             Point p = this.PointToClient(screen_p);
             int col = Math.Clamp(p.X / (_cellWidth * _selectionWidth), 0, _columnNum);
             int row = Math.Clamp(p.Y / (_cellHeight * _selectionHeight), 0, _rowNum);
@@ -276,6 +283,7 @@ namespace _99x8Edit
         }
         public void IncrementSelection()
         {
+            // Increment current selection rightward
             if(_selection.X < SelectionColNum - 1)
             {
                 _selection.X++;
@@ -284,12 +292,14 @@ namespace _99x8Edit
         }
         public void ForEachSelection(Rectangle selection, Action<int, int> callback)
         {
+            // Callback for each selection if its cols and rows are valid
             this.ForEachSelection(selection.X, selection.Y,
                                   selection.Width, selection.Height, callback);
         }
         public void ForEachSelection(int col, int row, int w, int h,
-                                 Action<int, int> callback)
+                                     Action<int, int> callback)
         {
+            // Callback for each selection if its cols and rows are valid
             for (int y = row; (y < row + h) && (y < SelectionRowNum); ++y)
             {
                 for (int x = col; (x < col + w) && (x < SelectionColNum); ++x)
@@ -301,6 +311,7 @@ namespace _99x8Edit
         public void ForEachSelection(int col, int row, int w, int h,
                                      Action<int, int, int, int> callback)
         {
+            // Callback for each selection if its cols and rows are valid
             int y_cnt = 0;
             for (int y = row; (y < row + h) && (y < SelectionRowNum); ++y)
             {
@@ -315,6 +326,7 @@ namespace _99x8Edit
         }
         public void ResetMultipleSelection()
         {
+            // Cancel the current multiple selection
             _selection.ResetSelectionAndUpdate();
             _updated = true;
         }
@@ -334,6 +346,7 @@ namespace _99x8Edit
                 {
                     Utility.DrawTransparent(_bmp);
                 }
+                // Draw background colors of each cells
                 if (_background != null)
                 {
                     for (int y = 0; y < RowNum; ++y)
@@ -348,6 +361,7 @@ namespace _99x8Edit
                         }
                     }
                 }
+                // Draw images of each cells
                 if (_cellImg != null)
                 {
                     for (int y = 0; y < RowNum; ++y)
@@ -396,10 +410,12 @@ namespace _99x8Edit
         {
             if (e.Button == MouseButtons.Left)
             {
+                // Coodinate to selection col/row
                 int clicked_selection_x = Math.Min(e.X / (_cellWidth * _selectionWidth),
                                                    _columnNum / _selectionWidth - 1);
                 int clicked_selection_y = Math.Min(e.Y / (_cellHeight * _selectionHeight),
                                                    _rowNum / _selectionHeight - 1);
+                // Coodinato to sub selection col/row
                 int clicked__sub_x = Math.Min((e.X / _cellWidth) % _selectionWidth,
                                               _selectionWidth - 1);
                 int clicked__sub_y = Math.Min((e.Y / _cellHeight) % _selectionHeight,
@@ -494,10 +510,12 @@ namespace _99x8Edit
             {
                 case Keys.Space:
                 case Keys.Enter:
+                    // Space and enter for editing
                     this.InvokeOnEdit();
                     _updated = true;
                     break;
                 case Keys.Up | Keys.Shift:
+                    // Multiple selection
                     if (_selection.ToY > 0 && AllowMultipleSelection)
                     {
                         _selection.ToY--;
@@ -534,6 +552,7 @@ namespace _99x8Edit
                     {
                         if ((_sub.Y == 0) && (_selection.Y > 0))
                         {
+                            // Selection upward
                             _selection.Y--;
                             _sub.Y = _selectionHeight - 1;
                             _updated = true;
@@ -542,6 +561,7 @@ namespace _99x8Edit
                         }
                         else if (_sub.Y > 0)
                         {
+                            // Sub selection upward
                             _sub.Y--;
                             _updated = true;
                             this.Refresh();
@@ -551,6 +571,7 @@ namespace _99x8Edit
                     {
                         if (_selection.Y > 0)
                         {
+                            // Selection upward
                             _selection.Y--;
                             _updated = true;
                             SelectionChanged?.Invoke(this, new EventArgs());
@@ -558,6 +579,7 @@ namespace _99x8Edit
                         }
                         else
                         {
+                            // Scroll upward if needed
                             ScrollEventArgs se = new ScrollEventArgs()
                             {
                                 DX = 0,
@@ -686,7 +708,7 @@ namespace _99x8Edit
             }
             base.OnPreviewKeyDown(e);
         }
-        // Allows invoke to derived classes
+        // For derived classes
         protected void InvokeOnEdit()
         {
             CellOnEdit?.Invoke(this, new EventArgs());

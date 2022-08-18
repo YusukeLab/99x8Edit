@@ -11,8 +11,7 @@ namespace _99x8Edit
     {
         private BinaryReader reader = null;
         private long seekAddr = 0;
-        private Bitmap bmpPeek = new Bitmap(512, 512);
-        private Selection current = new Selection(32, 32);
+        private Bitmap[,] bmps = new Bitmap[32, 32];
         enum PeekType
         {
             Linear = 0,
@@ -28,7 +27,6 @@ namespace _99x8Edit
             InitializeComponent();
             reader = new BinaryReader(new FileStream(filename, FileMode.Open));
             Text = "Peek - " + Path.GetFileName(filename);
-            viewPeek.Image = bmpPeek;
             toolStripCopy.Click += new EventHandler(contextPeek_copy);
             RefreshAllViews();
         }
@@ -70,30 +68,34 @@ namespace _99x8Edit
         private void UpdatePeek()
         {
             long length_left = reader.BaseStream.Length - seekAddr;
-            Graphics g = Graphics.FromImage(bmpPeek);
-            g.Clear(Color.Gray);
             reader.BaseStream.Seek(seekAddr, SeekOrigin.Begin);
-            Brush b = new SolidBrush(Color.Black);
+            for (int row = 0; row < 32; ++row)
+            {
+                for(int col = 0; col < 32; ++col)
+                {
+                    bmps[col, row] ??= new Bitmap(8, 8);
+                    Graphics g = Graphics.FromImage(bmps[col, row]);
+                    g.Clear(Color.Gray);
+                    viewPeek.SetImage(bmps[col, row], col, row);
+                }
+            }
             for(int i = 0; i < 8192 && i < length_left; ++i)
             {
                 // Address to col, row
                 byte dat = reader.ReadByte();
                 int chr_x = this.AddressToCol(seekAddr + i);
                 int chr_y = this.AddressToRow(seekAddr + i);                
-                int pix_y = i % 8;      // y coorinate in row
-                for(int j = 0; j < 8; ++j)
+                int pix_y = i % 8;          // row in 8x8 character
+                for(int j = 0; j < 8; ++j)  // for each columns in one 8x1 line
                 {
                     int bit = (dat >> (7 - j)) & 1;
                     if(bit != 0)
                     {
-                        g.FillRectangle(b, chr_x * 16 + j * 2, chr_y * 16 + pix_y * 2, 2, 2);
+                        Graphics g = Graphics.FromImage(bmps[chr_x, chr_y]);
+                        bmps[chr_x, chr_y].SetPixel(j, pix_y, Color.Black);
                     }
                 }
             }
-            Rectangle r = current.Selected;
-            r.Width++;      // Selection is by two cells
-            r.Height++;
-            Utility.DrawSelection(g, r.X * 16, r.Y * 16, r.Width * 16 - 1, r.Height * 16 - 1, true);
             viewPeek.Refresh();
         }
         private void UpdateAddr()
@@ -107,44 +109,16 @@ namespace _99x8Edit
         }
         //----------------------------------------------------------------------
         // Controls
-        private void viewPeek_MouseDown(object sender, MouseEventArgs e)
-        {
-            panelPeek.Focus();  // Key events are handled by parent panel
-            if (e.Button == MouseButtons.Left)
-            {
-                int col = e.X / 16;
-                int row = e.Y / 16;
-                if((col != current.X) || (row != current.Y))
-                {
-                    if (Control.ModifierKeys == Keys.Shift)
-                    {
-                        // Limit multiple selections to 16x16 unit
-                        int col_sel = (col - current.X % 2) / 2 * 2 + (current.X % 2);
-                        int row_sel = (row - current.Y % 2) / 2 * 2 + (current.Y % 2);
-                        if ((col_sel <= 30) && (row_sel <= 30))
-                        {
-                            current.ToX = col_sel;
-                            current.ToY = row_sel;
-                        }
-                    }
-                    else
-                    {
-                        // New selection
-                        current.X = current.ToX = Math.Min(e.X / 16, 30);
-                        current.Y = current.ToY = Math.Min(e.Y / 16, 30);
-                    }
-                    this.UpdatePeek();
-                    viewPeek.DoDragDrop(new DnDPeek(), DragDropEffects.Copy);
-                }
-            }
-        }
         private void contextPeek_copy(object sender, EventArgs e)
         {
             ClipPeekedData clip = new ClipPeekedData();
             // Copy selected sprites
-            Rectangle r = current.Selected;
-            r.Width++;      // Selection is by two cells
-            r.Height++;
+            Rectangle r = viewPeek.SelectedRect;
+            // 16x16 Selection to 8x8 cell index
+            r.X *= 2;
+            r.Y *= 2;
+            r.Width *= 2;
+            r.Height *= 2;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> l = new List<byte[]>();
@@ -166,107 +140,23 @@ namespace _99x8Edit
             }
             ClipboardWrapper.SetData(clip);
         }
-        private void panelPeek_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void viewPtn_MatrixOnScroll(object sender, MatrixControl.ScrollEventArgs e)
         {
-            switch (e.KeyData)
+            int dy = e.DY;
+            if((e.DY < 0) && (seekAddr > 0))
             {
-                case Keys.Up | Keys.Shift:
-                    if (current.ToY >= 2)
-                    {
-                        current.ToY -= 2;
-                        this.UpdatePeek();
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (current.ToY <= 28)
-                    {
-                        current.ToY += 2;
-                        this.UpdatePeek();
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (current.ToX >= 2)
-                    {
-                        current.ToX -= 2;
-                        this.UpdatePeek();
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (current.ToX <= 28)
-                    {
-                        current.ToX += 2;
-                        this.UpdatePeek();
-                    }
-                    break;
-                case Keys.Up:
-                    if (current.Y > 0)
-                    {
-                        current.Y--;
-                        this.UpdatePeek();
-                    }
-                    else if(seekAddr > 0)
-                    {
-                        seekAddr -= 32 * 8 * 2;
-                        if (seekAddr < 0) seekAddr = 0;
-                        this.RefreshAllViews();
-                    }
-                    break;
-                case Keys.Down:
-                    if (current.Y < 30)
-                    {
-                        current.Y++;
-                        this.UpdatePeek();
-                    }
-                    else if (seekAddr + 8192 < reader.BaseStream.Length)
-                    {
-                        seekAddr += 32 * 8 * 2;
-                        if (seekAddr + 8192 >= reader.BaseStream.Length)
-                        {
-                            seekAddr = reader.BaseStream.Length - 8192;
-                        }
-                        this.RefreshAllViews();
-                    }
-                    break;
-                case Keys.Left:
-                    if (current.X > 0)
-                    {
-                        current.X--;
-                        this.UpdatePeek();
-                    }
-                    break;
-                case Keys.Right:
-                    if (current.X < 30)
-                    {
-                        current.X++;
-                        this.UpdatePeek();
-                    }
-                    break;
+                seekAddr -= 32 * 8 * 2;
+                if (seekAddr < 0) seekAddr = 0;
+                this.RefreshAllViews();
             }
-        }
-        private void panelPeek_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(DnDPeek)))
+            if((e.DY > 0) && (seekAddr + 8192 < reader.BaseStream.Length))
             {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else e.Effect = DragDropEffects.None;
-        }
-        private void panelPeek_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(DnDPeek)))
-            {
-                Point p = viewPeek.PointToClient(Cursor.Position);
-                // Limit multiple selections to 16x16 unit
-                int col = Math.Min(p.X / 16, 31);
-                int row = Math.Min(p.Y / 16, 31);
-                int col_sel = (col - current.X % 2) / 2 * 2 + (current.X % 2);
-                int row_sel = (row - current.Y % 2) / 2 * 2 + (current.Y % 2);
-                if ((col_sel <= 30) && (row_sel <= 30))
+                seekAddr += 32 * 8 * 2;
+                if (seekAddr + 8192 >= reader.BaseStream.Length)
                 {
-                    current.ToX = col_sel;
-                    current.ToY = row_sel;
-                    this.RefreshAllViews();
+                    seekAddr = reader.BaseStream.Length - 8192;
                 }
+                this.RefreshAllViews();
             }
         }
         private void txtAddr_Leave(object sender, EventArgs e)

@@ -44,27 +44,32 @@ namespace _99x8Edit
         // Methods and properties for hosts
         public void SetBrush(Brush b, int col, int row)
         {
+            // Set brush to not to be created everytime
             _brush ??= new Brush[ColumnNum, RowNum];
             _brush[col, row] = b;
             _updated = true;
         }
         [Browsable(false)]
-        public (int x, int y) PosInTile()
+        public (int x, int y) PosInChr()
         {
+            // Position in one 8x8 character
             return (_sub.X, _selection.Y % 8);
         }
         public (int x, int y) PosInEditor()
         {
+            // Position in whole editor control
             int x = _selection.X * _selectionWidth + _sub.X;
             int y = _selection.Y * _selectionHeight + _sub.Y;
             return (x, y);
         }
-        public int TileColNum
+        public int ChrColNum
         {
+            // The number of horizontal characters in one edit control
             get => _columnNum / 8;
         }
-        public int TileRowNum
+        public int ChrRowNum
         {
+            // The number of vertical characters in one edit control
             get => _rowNum / 8;
         }
         //--------------------------------------------------------------------
@@ -121,6 +126,7 @@ namespace _99x8Edit
             {
                 case Keys.D1:
                 case Keys.NumPad1:
+                    // Events for 1-8 key
                     _sub.X = 0;
                     _updated = true;
                     this.InvokeOnEdit();
@@ -170,6 +176,7 @@ namespace _99x8Edit
                 case Keys.Oemplus:
                 case Keys.Add:
                     {
+                        // Event for + key
                         AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.PlusMinus, 1);
                         AddKeyPressed?.Invoke(this, ke);
                     }
@@ -177,18 +184,21 @@ namespace _99x8Edit
                 case Keys.OemMinus:
                 case Keys.Subtract:
                     {
+                        // Event for - key
                         AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.PlusMinus, -1);
                         AddKeyPressed?.Invoke(this, ke);
                     }
                     break;
                 case Keys.OemCloseBrackets:
                     {
+                        // Event for ] key
                         AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Brackets, 1);
                         AddKeyPressed?.Invoke(this, ke);
                     }
                     break;
                 case Keys.OemOpenBrackets:
                     {
+                        // Event for [ key
                         AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Brackets, -1);
                         AddKeyPressed?.Invoke(this, ke);
                     }

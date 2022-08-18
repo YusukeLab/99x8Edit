@@ -32,17 +32,14 @@ namespace _99x8Edit
             this.components = new System.ComponentModel.Container();
             this.btnLinear = new System.Windows.Forms.RadioButton();
             this.btnSprites = new System.Windows.Forms.RadioButton();
-            this.panelPeek = new System.Windows.Forms.FlowLayoutPanel();
             this.contextPeek = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewPeek = new System.Windows.Forms.PictureBox();
             this.txtAddr = new System.Windows.Forms.TextBox();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
             this.toolTipPeek = new System.Windows.Forms.ToolTip(this.components);
-            this.panelPeek.SuspendLayout();
+            this.viewPeek = new _99x8Edit.MatrixControl();
             this.contextPeek.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPeek)).BeginInit();
             this.SuspendLayout();
             // 
             // btnLinear
@@ -71,19 +68,6 @@ namespace _99x8Edit
             this.btnSprites.UseVisualStyleBackColor = true;
             this.btnSprites.Click += new System.EventHandler(this.btnSprites_Click);
             // 
-            // panelPeek
-            // 
-            this.panelPeek.AllowDrop = true;
-            this.panelPeek.ContextMenuStrip = this.contextPeek;
-            this.panelPeek.Controls.Add(this.viewPeek);
-            this.panelPeek.Location = new System.Drawing.Point(8, 65);
-            this.panelPeek.Name = "panelPeek";
-            this.panelPeek.Size = new System.Drawing.Size(540, 523);
-            this.panelPeek.TabIndex = 2;
-            this.panelPeek.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPeek_DragEnter);
-            this.panelPeek.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPeek_DragOver);
-            this.panelPeek.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPeek_PreviewKeyDown);
-            // 
             // contextPeek
             // 
             this.contextPeek.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -98,15 +82,6 @@ namespace _99x8Edit
             this.toolStripCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.toolStripCopy.Size = new System.Drawing.Size(163, 24);
             this.toolStripCopy.Text = "Copy";
-            // 
-            // viewPeek
-            // 
-            this.viewPeek.Location = new System.Drawing.Point(3, 3);
-            this.viewPeek.Name = "viewPeek";
-            this.viewPeek.Size = new System.Drawing.Size(512, 512);
-            this.viewPeek.TabIndex = 0;
-            this.viewPeek.TabStop = false;
-            this.viewPeek.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPeek_MouseDown);
             // 
             // txtAddr
             // 
@@ -142,27 +117,48 @@ namespace _99x8Edit
             // 
             this.toolTipPeek.AutomaticDelay = 0;
             // 
-            // Peek
+            // viewPeek
+            // 
+            this.viewPeek.AllowDrop = true;
+            this.viewPeek.AllowMultipleSelection = true;
+            this.viewPeek.AllowSubSelection = false;
+            this.viewPeek.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewPeek.CellHeight = 16;
+            this.viewPeek.CellWidth = 16;
+            this.viewPeek.ColumnNum = 32;
+            this.viewPeek.ContextMenuStrip = this.contextPeek;
+            this.viewPeek.DrawOverlayedSelection = false;
+            this.viewPeek.DrawTranparentColor = false;
+            this.viewPeek.Location = new System.Drawing.Point(8, 65);
+            this.viewPeek.Name = "viewPeek";
+            this.viewPeek.RowNum = 32;
+            this.viewPeek.SelectionHeight = 2;
+            this.viewPeek.SelectionWidth = 2;
+            this.viewPeek.Size = new System.Drawing.Size(514, 514);
+            this.viewPeek.TabIndex = 48;
+            this.viewPeek.X = 0;
+            this.viewPeek.Y = 0;
+            this.viewPeek.MatrixOnScroll += new System.EventHandler<_99x8Edit.MatrixControl.ScrollEventArgs>(this.viewPtn_MatrixOnScroll);
+            // 
+            // PeekWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(532, 586);
+            this.Controls.Add(this.viewPeek);
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.txtAddr);
-            this.Controls.Add(this.panelPeek);
             this.Controls.Add(this.btnSprites);
             this.Controls.Add(this.btnLinear);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Peek";
+            this.Name = "PeekWindow";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Peek binaries";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Peek_FormClosing);
-            this.panelPeek.ResumeLayout(false);
             this.contextPeek.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.viewPeek)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,13 +168,12 @@ namespace _99x8Edit
 
         private System.Windows.Forms.RadioButton btnLinear;
         private System.Windows.Forms.RadioButton btnSprites;
-        private System.Windows.Forms.FlowLayoutPanel panelPeek;
-        private System.Windows.Forms.PictureBox viewPeek;
         private System.Windows.Forms.TextBox txtAddr;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.ContextMenuStrip contextPeek;
         private System.Windows.Forms.ToolStripMenuItem toolStripCopy;
         private System.Windows.Forms.ToolTip toolTipPeek;
+        private MatrixControl viewPeek;
     }
 }

@@ -410,6 +410,8 @@ namespace _99x8Edit
             this.viewPCG.CellHeight = 16;
             this.viewPCG.CellWidth = 16;
             this.viewPCG.ColumnNum = 32;
+            this.viewPCG.DrawOverlayedSelection = false;
+            this.viewPCG.DrawTranparentColor = false;
             this.viewPCG.Location = new System.Drawing.Point(14, 64);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.RowNum = 8;
@@ -431,6 +433,8 @@ namespace _99x8Edit
             this.viewMap.CellWidth = 16;
             this.viewMap.ColumnNum = 32;
             this.viewMap.ContextMenuStrip = this.contextMap;
+            this.viewMap.DrawOverlayedSelection = false;
+            this.viewMap.DrawTranparentColor = false;
             this.viewMap.Location = new System.Drawing.Point(14, 239);
             this.viewMap.Name = "viewMap";
             this.viewMap.RowNum = 24;
@@ -454,6 +458,8 @@ namespace _99x8Edit
             this.viewPtn.CellWidth = 16;
             this.viewPtn.ColumnNum = 32;
             this.viewPtn.ContextMenuStrip = this.contextPattern;
+            this.viewPtn.DrawOverlayedSelection = false;
+            this.viewPtn.DrawTranparentColor = false;
             this.viewPtn.Location = new System.Drawing.Point(579, 65);
             this.viewPtn.Name = "viewPtn";
             this.viewPtn.RowNum = 32;
