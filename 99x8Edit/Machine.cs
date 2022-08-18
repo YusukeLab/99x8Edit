@@ -801,6 +801,7 @@ namespace _99x8Edit
             public byte overlayed = 0;
             public byte genDataOv = 0;
             public byte colorDataOv = 0;
+            public bool colorOnly = false;
         }
         internal SpriteLine GetSpriteLine(int index16, int line_x, int line_y)
         {
@@ -836,7 +837,10 @@ namespace _99x8Edit
             int line = line_y % 8;
             // Color address is 16 lines per 16x16 sprite
             int color_addr = index16 * 16 + line_y;
-            spriteGen[index8 * 8 + line] = val.genData;
+            if(!val.colorOnly)
+            {
+                spriteGen[index8 * 8 + line] = val.genData;
+            }
             spriteClr[color_addr] = val.colorData;
             this.UpdateSpriteBitmap(index8);
             if ((val.overlayed != 0) && (spriteOverlay[index16] != 0))

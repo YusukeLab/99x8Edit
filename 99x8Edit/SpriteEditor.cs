@@ -51,15 +51,16 @@ namespace _99x8Edit
             toolStripSprReverse.Click += new EventHandler(contextSprite_reverse);
             toolStripSprCopyDown.Click += new EventHandler(contextSprite_copyDown);
             toolStripSprCopyRight.Click += new EventHandler(contextSprite_copyRight);
+            toolStripRotateUp.Click += new EventHandler(contextSprite_rotate);
+            toolStripRotateDown.Click += new EventHandler(contextSprite_rotate);
+            toolStripRotateLeft.Click += new EventHandler(contextSprite_rotate);
+            toolStripRotateRight.Click += new EventHandler(contextSprite_rotate);
             toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
             toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
             toolStripEditorDel.Click += new EventHandler(contextEditor_del);
             toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
-            toolStripRotateUp.Click += new EventHandler(contextEditor_rotate);
-            toolStripRotateDown.Click += new EventHandler(contextEditor_rotate);
-            toolStripRotateLeft.Click += new EventHandler(contextEditor_rotate);
-            toolStripRotateRight.Click += new EventHandler(contextEditor_rotate);
+            toolStripEditorCopyColor.Click += new EventHandler(contextEditor_copyColor);
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -501,6 +502,29 @@ namespace _99x8Edit
             viewSprite.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
+        private void contextSprite_rotate(object sender, EventArgs e)
+        {
+            if (sender == toolStripRotateUp)
+            {
+                dataSource.RotateSprite(viewSprite.Index, 0, -1, push: true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateDown)
+            {
+                dataSource.RotateSprite(viewSprite.Index, 0, 1, push: true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateLeft)
+            {
+                dataSource.RotateSprite(viewSprite.Index, -1, 0, push: true);
+                this.RefreshAllViews();
+            }
+            if (sender == toolStripRotateRight)
+            {
+                dataSource.RotateSprite(viewSprite.Index, 1, 0, push: true);
+                this.RefreshAllViews();
+            }
+        }
         //-------------------------------------------------------
         // Sprite editor
         private void viewEditor_CellOnEdit(object sender, EventArgs e)
@@ -521,6 +545,25 @@ namespace _99x8Edit
                     // Copy each lines
                     int index16 = viewSprite.Index;
                     l.Add(dataSource.GetSpriteLine(index16, j, i));
+                }
+                clip.lines.Add(l);
+            }
+            ClipboardWrapper.SetData(clip);
+        }
+        private void contextEditor_copyColor(object sender, EventArgs e)
+        {
+            ClipOneSpriteLine clip = new ClipOneSpriteLine();
+            Rectangle r = viewEdit.SelectedRect;
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            {
+                List<Machine.SpriteLine> l = new List<Machine.SpriteLine>();
+                for (int j = r.X; j < r.X + r.Width; ++j)
+                {
+                    // Copy each lines
+                    int index16 = viewSprite.Index;
+                    Machine.SpriteLine line = dataSource.GetSpriteLine(index16, j, i);
+                    line.colorOnly = true;
+                    l.Add(line);
                 }
                 clip.lines.Add(l);
             }
@@ -584,29 +627,6 @@ namespace _99x8Edit
             viewEdit.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
-        }
-        private void contextEditor_rotate(object sender, EventArgs e)
-        {
-            if (sender == toolStripRotateUp)
-            {
-                dataSource.RotateSprite(viewSprite.Index, 0, -1, push: true);
-                this.RefreshAllViews();
-            }
-            if (sender == toolStripRotateDown)
-            {
-                dataSource.RotateSprite(viewSprite.Index, 0, 1, push: true);
-                this.RefreshAllViews();
-            }
-            if (sender == toolStripRotateLeft)
-            {
-                dataSource.RotateSprite(viewSprite.Index, -1, 0, push: true);
-                this.RefreshAllViews();
-            }
-            if (sender == toolStripRotateRight)
-            {
-                dataSource.RotateSprite(viewSprite.Index, 1, 0, push: true);
-                this.RefreshAllViews();
-            }
         }
         //---------------------------------------------------------------------
         // Menu controls
