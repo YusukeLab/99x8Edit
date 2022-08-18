@@ -300,6 +300,22 @@ namespace _99x8Edit
                 this.UpdateMap(refresh: true);
             }
         }
+        private void viewPtn_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // Key events in pattern list
+            switch (e.KeyData)
+            {
+                case Keys.Enter:
+                case Keys.Space:
+                    // Keyboard space and enter to send pattern to map
+                    dataSource.SetMapData(curMapOrg.X + viewMap.X,
+                                          curMapOrg.Y + viewMap.Y,
+                                          viewPtn.Index, push: true);
+                    viewMap.IncrementSelection();
+                    this.UpdateMap(refresh: true);
+                    break;
+            }
+        }
         //---------------------------------------------
         // Map
         private void viewMap_MatrixOnScroll(object sender, MatrixControl.ScrollEventArgs e)

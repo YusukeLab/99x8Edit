@@ -326,6 +326,28 @@ namespace _99x8Edit
             viewEdit.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
+        private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
+        {
+            int target = viewPCG.Index + (viewEdit.Y / 8) * viewPCG.ColumnNum
+                       + viewEdit.X;        // Target character
+            int line = viewEdit.Y % 8;      // Target line
+            if (e.KeyType == EditorControl.AddKeyEventArgs.Type.PlusMinus)
+            {
+                // Increment/Decrement foreground color
+                int fore = dataSource.GetPCGColor(target, line, foreground: true);
+                fore = Math.Clamp(fore + e.Value, 0, 15);
+                dataSource.SetPCGColor(target, line, fore, isForeGround: true, push: true);
+                this.RefreshAllViews();
+            }
+            else if (e.KeyType == EditorControl.AddKeyEventArgs.Type.Brackets)
+            {
+                // Increment/Decrement backgroundcolor
+                int back = dataSource.GetPCGColor(target, line, foreground: false);
+                back = Math.Clamp(back + e.Value, 0, 15);
+                dataSource.SetPCGColor(target, line, back, isForeGround: false, push: true);
+                this.RefreshAllViews();
+            }
+        }
         //------------------------------------------------
         // PCG
         private void viewPCG_CellDragStart(object sender, EventArgs e)
@@ -459,6 +481,18 @@ namespace _99x8Edit
             viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
+        private void viewPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // Key events in character list
+            switch (e.KeyData)
+            {
+                case Keys.Enter:
+                    dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
+                    viewSand.IncrementSelection();
+                    this.UpdateSandbox(refresh: true);
+                    break;
+            }
+        }
         //------------------------------------------------
         // Sandbox
         private void viewSand_DragEnter(object sender, DragEventArgs e)
@@ -583,6 +617,18 @@ namespace _99x8Edit
             };
             viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSandbox(refresh: true);
+        }
+        private void viewSand_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // Key events in sandbox
+            switch (e.KeyData)
+            {
+                case Keys.Enter:
+                    dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
+                    viewSand.IncrementSelection();
+                    this.UpdateSandbox(refresh: true);
+                    break;
+            }
         }
         //------------------------------------------------
         // Misc

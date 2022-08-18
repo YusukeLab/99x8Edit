@@ -22,6 +22,24 @@ namespace _99x8Edit
         // Properties
         //--------------------------------------------------------------------
         // Event handlers
+        public class AddKeyEventArgs : EventArgs
+        {
+            public enum Type
+            {
+                PlusMinus,
+                Brackets
+            }
+            public Type KeyType { get; set; } 
+            public int Value { get; set; }
+            public AddKeyEventArgs(Type type, int val)
+            {
+                KeyType = type;
+                Value = val;
+            }
+        }
+        [Browsable(true)]
+        [Description("Called on additional key event")]
+        public event EventHandler<AddKeyEventArgs> AddKeyPressed;
         //--------------------------------------------------------------------
         // Methods and properties for hosts
         public void SetBrush(Brush b, int col, int row)
@@ -148,6 +166,32 @@ namespace _99x8Edit
                     _sub.X = 7;
                     _updated = true;
                     this.InvokeOnEdit();
+                    break;
+                case Keys.Oemplus:
+                case Keys.Add:
+                    {
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.PlusMinus, 1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
+                    break;
+                case Keys.OemMinus:
+                case Keys.Subtract:
+                    {
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.PlusMinus, -1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
+                    break;
+                case Keys.OemCloseBrackets:
+                    {
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Brackets, 1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
+                    break;
+                case Keys.OemOpenBrackets:
+                    {
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Brackets, -1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
                     break;
             }
             base.OnPreviewKeyDown(e);

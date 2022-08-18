@@ -567,9 +567,9 @@ namespace _99x8Edit
             this.viewEdit.TabIndex = 35;
             this.viewEdit.X = 0;
             this.viewEdit.Y = 0;
+            this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_CellOnEdit);
-            this.viewEdit.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewEdit_PreviewKeyDown);
             // 
             // viewColor
             // 

@@ -753,5 +753,27 @@ namespace _99x8Edit
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
         }
+
+        private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
+        {
+            if (e.KeyType == EditorControl.AddKeyEventArgs.Type.PlusMinus)
+            {
+                // Increment/Decrement the color of primary sprite
+                int index16 = viewSprite.Index;
+                int color_code = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
+                color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
+                dataSource.SetSpriteColorCode(index16, viewEdit.Y, color_code, push: true);
+                this.RefreshAllViews();
+            }
+            else if (e.KeyType == EditorControl.AddKeyEventArgs.Type.Brackets)
+            {
+                // Increment/Decrement the color of overlayed sprite
+                int index16 = (viewSprite.Index + 1) % 64; // For overlayed
+                int color_code = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
+                color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
+                dataSource.SetSpriteColorCode(index16, viewEdit.Y, color_code, push: true);
+                this.RefreshAllViews();
+            }
+        }
     }
 }

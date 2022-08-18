@@ -570,7 +570,7 @@ namespace _99x8Edit
             this.viewSprite.Y = 0;
             this.viewSprite.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewSprite_SelectionChanged);
             // 
-            // myedit
+            // viewEdit
             // 
             this.viewEdit.AllowDrop = true;
             this.viewEdit.AllowMultipleSelection = true;
@@ -583,7 +583,7 @@ namespace _99x8Edit
             this.viewEdit.DrawOverlayedSelection = false;
             this.viewEdit.DrawTranparentColor = true;
             this.viewEdit.Location = new System.Drawing.Point(9, 64);
-            this.viewEdit.Name = "myedit";
+            this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
             this.viewEdit.SelectionHeight = 1;
             this.viewEdit.SelectionWidth = 8;
@@ -591,6 +591,7 @@ namespace _99x8Edit
             this.viewEdit.TabIndex = 53;
             this.viewEdit.X = 0;
             this.viewEdit.Y = 0;
+            this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
             this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEditor_CellOnEdit);
             // 
             // SpriteEditor
