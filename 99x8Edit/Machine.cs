@@ -34,15 +34,15 @@ namespace _99x8Edit
         private Color[] colorOf = new Color[16];            // Windows color corresponding to color code
         private Brush[] brushOf = new Brush[16];
         // Consts(For TMS9918 view, we need higher resolution than RGB8)
-        private int[] palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
-                                      0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
-                                      0xdb6559, 0xff897d, 0xccc35e, 0xded087,
-                                      0x3aa241, 0xb766b5, 0xcccccc, 0xffffff };
+        private static readonly int[] palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
+                                                      0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
+                                                      0xdb6559, 0xff897d, 0xccc35e, 0xded087,
+                                                      0x3aa241, 0xb766b5, 0xcccccc, 0xffffff };
         //--------------------------------------------------------------------
         // Initialize
         public Machine()
         {
-            // Do nothing at constructor and initialize at Initialize() if needed,
+            // Nothing at constructor,
             // since this class will be created on each action, e.g.undo/redo
         }
         internal void SetToDefault()
@@ -684,17 +684,17 @@ namespace _99x8Edit
             this.UpdateSpriteBitmap();
         }
         [Serializable]
-        internal class One16x16Sprite
+        internal class OneSprite
         {
             public byte[] genData = new byte[32];   // 16x16 sprite
             public byte[] clrData = new byte[16];
             public byte clr = 0;
             public byte overlay = 0;
         }
-        internal One16x16Sprite GetSpriteData(int index16)
+        internal OneSprite GetSpriteData(int index16)
         {
             index16 = Math.Clamp(index16, 0, 63);
-            One16x16Sprite spr = new One16x16Sprite();
+            OneSprite spr = new OneSprite();
             for (int i = 0; i < 32; ++i)
             {
                 spr.genData[i] = spriteGen[index16 * 32 + i];
@@ -707,7 +707,7 @@ namespace _99x8Edit
             spr.overlay = spriteOverlay[index16];
             return spr;
         }
-        internal void SetSpriteData(int index16, One16x16Sprite spr, bool push)
+        internal void SetSpriteData(int index16, OneSprite spr, bool push)
         {
             index16 = Math.Clamp(index16, 0, 63);
             if (push) MementoCaretaker.Instance.Push();

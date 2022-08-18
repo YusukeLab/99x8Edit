@@ -62,7 +62,7 @@ namespace _99x8Edit
     [Serializable]
     internal class ClipSprite : ClipBase
     {
-        internal List<List<Machine.One16x16Sprite>> sprites = new List<List<Machine.One16x16Sprite>>();
+        internal List<List<Machine.OneSprite>> sprites = new List<List<Machine.OneSprite>>();
     }
     [Serializable]
     internal class ClipOneSpriteLine : ClipBase

@@ -382,7 +382,7 @@ namespace _99x8Edit
             Rectangle r = viewSprite.SelectedRect;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
-                List<Machine.One16x16Sprite> l = new List<Machine.One16x16Sprite>();
+                List<Machine.OneSprite> l = new List<Machine.OneSprite>();
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     // For each selected sprites
@@ -481,7 +481,7 @@ namespace _99x8Edit
                 // For each sprites
                 int src = viewSprite.IndexOf(col, r.Y);
                 int dst = viewSprite.IndexOf(col, row);
-                Machine.One16x16Sprite spr = dataSource.GetSpriteData(src);
+                Machine.OneSprite spr = dataSource.GetSpriteData(src);
                 dataSource.SetSpriteData(dst, spr, push: false);
 
             };
@@ -497,7 +497,7 @@ namespace _99x8Edit
                 // For each sprites
                 int src = viewSprite.IndexOf(r.X, row);
                 int dst = viewSprite.IndexOf(col, row);
-                Machine.One16x16Sprite spr = dataSource.GetSpriteData(src);
+                Machine.OneSprite spr = dataSource.GetSpriteData(src);
                 dataSource.SetSpriteData(dst, spr, push: false);
             };
             viewSprite.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
