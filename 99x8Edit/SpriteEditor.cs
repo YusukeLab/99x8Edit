@@ -2,53 +2,34 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D;
 
 namespace _99x8Edit
 {
     // Sprite editor window
-    public partial class Sprites : Form
+    public partial class SpriteEditor : Form
     {
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
-        private Bitmap bmpPalette = new Bitmap(256, 64);        // Palette view
-        private Bitmap bmpSprites = new Bitmap(256, 256);       // Sprites view
-        private Bitmap bmpSpriteEdit = new Bitmap(256, 256);    // Sprite edit view
         private Bitmap bmpPreview = new Bitmap(32, 32);         // Edit preview
-        private Bitmap bmpColorL = new Bitmap(32, 32);
-        private Bitmap bmpColorR = new Bitmap(32, 32);
-        private Bitmap bmpColorOR = new Bitmap(32, 32);
-        private Selection curSpr = new Selection(32, 32);       // Selected sprite
-        private Selection curLine = new Selection(128, 16);     // Selected line in editor
-        private int currentDot;                                 // Selected dot in line(0-7)
-        private Selection currentColor = new Selection(32, 32); // Selected color, 0=left, 1=right
-        private Selection curPal = new Selection(32, 32);       // Selection in palette
         internal String CurrentFile { get; set; }
         // For internal drag control
-        private class DnDSprite { }
         private class DnDEditor { }
         //----------------------------------------------------------------------
         // Initialize
-        public Sprites(Machine src, MainWindow parent)
+        public SpriteEditor(Machine src, MainWindow parent)
         {
             InitializeComponent();
             // Set corresponding data and owner window
             dataSource = src;
             mainWin = parent;
             // Tab order for the customed control
-            tabList.Add(panelEditor, curLine);
-            tabList.Add(panelColor, currentColor);
-            tabList.Add(panelPalette, curPal);
-            tabList.Add(panelSprites, curSpr);
+            tabList.Add(viewEdit, viewEdit.Selector);
+            tabList.Add(viewColor, viewColor.Selector);
+            tabList.Add(viewPalette, viewPalette.Selector);
+            tabList.Add(viewSprite, viewSprite.Selector);
             // Initialize controls
-            viewPalette.Image = bmpPalette;
-            viewSprites.Image = bmpSprites;
-            viewSpriteEdit.Image = bmpSpriteEdit;
             viewPreview.Image = bmpPreview;
-            viewColorL.Image = bmpColorL;
-            viewColorR.Image = bmpColorR;
-            viewColorOR.Image = bmpColorOR;
             // Refresh all views
             this.RefreshAllViews();
             // Menu bar
@@ -64,12 +45,12 @@ namespace _99x8Edit
             toolStripEditUndo.Click += new EventHandler(menu_editUndo);
             toolStripEditRedo.Click += new EventHandler(menu_editRedo);
             // context menu
-            toolStripSprCopy.Click += new EventHandler(contextSprites_copy);
-            toolStripSprPaste.Click += new EventHandler(contextSprites_paste);
-            toolStripSprDel.Click += new EventHandler(contextSprites_del);
-            toolStripSprReverse.Click += new EventHandler(contextSprites_reverse);
-            toolStripSprCopyDown.Click += new EventHandler(contextSprites_copyDown);
-            toolStripSprCopyRight.Click += new EventHandler(contextSprites_copyRight);
+            toolStripSprCopy.Click += new EventHandler(contextSprite_copy);
+            toolStripSprPaste.Click += new EventHandler(contextSprite_paste);
+            toolStripSprDel.Click += new EventHandler(contextSprite_del);
+            toolStripSprReverse.Click += new EventHandler(contextSprite_reverse);
+            toolStripSprCopyDown.Click += new EventHandler(contextSprite_copyDown);
+            toolStripSprCopyRight.Click += new EventHandler(contextSprite_copyRight);
             toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
             toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
             toolStripEditorDel.Click += new EventHandler(contextEditor_del);
@@ -134,63 +115,42 @@ namespace _99x8Edit
         private void UpdatePaletteView(bool refresh)
         {
             // Update palette view
-            Utility.DrawTransparent(bmpPalette);
-            Graphics g = Graphics.FromImage(bmpPalette);
             for (int i = 1; i < 16; ++i)
             {
-                Brush b = dataSource.BrushOf(i);
-                g.FillRectangle(b, (i % 8) * 32, (i / 8) * 32, 32, 32);
+                Color c = dataSource.ColorOf(i);
+                viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
-            Utility.DrawSelection(g, curPal, panelPalette.Focused);
-            if (refresh) viewPalette.Refresh();
+            if (refresh) this.viewPalette.Refresh();
         }
         private void UpdateSpriteView(bool refresh)
         {
-            Graphics g = Graphics.FromImage(bmpSprites);
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.FillRectangle(Brushes.Black, 0, 0, bmpSprites.Width, bmpSprites.Height);
-            for (int i = 0; i < 8; ++i)
+            for (int row = 0; row < 8; ++row)
             {
-                for (int j = 0; j < 8; ++j)
+                for (int col = 0; col < 8; ++col)
                 {
-                    // Four sprites in one 16x16 sprites
-                    var bmps = dataSource.GetBitmapsForSprite16(i * 8 + j);
+                    // Set four sprites in one 16x16 sprites
+                    var bmps = dataSource.GetBitmapsForSprite16(row * 8 + col);
                     int index = 0;
                     foreach(Bitmap b in bmps)
                     {
-                        int x = j * 32 + (index / 2) * 16;
-                        int y = i * 32 + (index % 2) * 16;
-                        g.DrawImage(b, x, y, 17, 17);
+                        int x = col * 2 + (index / 2);
+                        int y = row * 2 + (index % 2);
+                        viewSprite.SetImage(b, x, y);
                         ++index;
                     }
                 }
             }
             // CRT Filter
-            if (chkCRT.Checked)
-            {
-                Filter.Create(Filter.Type.CRT).Process(bmpSprites);
-            }
-            // Selection
-            Utility.DrawSelection(g, curSpr, panelSprites.Focused);
+            viewSprite.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
             // Selection overlayed
-            int index16 = curSpr.X + curSpr.Y * 8;
-            if (dataSource.GetSpriteOverlay(index16))
-            {
-                // Overlayed sprite, right side
-                int index_r_16x16 = (index16 + 1) % 64;
-                int xr = index_r_16x16 % 8;
-                int yr = index_r_16x16 / 8;
-                g.DrawRectangle(Utility.DashedGray, xr * 32, yr * 32, 31, 31);
-            }
-            if (refresh) viewSprites.Refresh();
+            viewSprite.DrawOverlayedSelection = dataSource.GetSpriteOverlay(viewSprite.Index);
+            if (refresh) viewSprite.Refresh();
         }
         private void UpdateSpriteEditView(bool refresh)
         {
-            Utility.DrawTransparent(bmpSpriteEdit);
             Utility.DrawTransparent(bmpPreview);
-            Graphics g = Graphics.FromImage(bmpSpriteEdit);
             Graphics preview = Graphics.FromImage(bmpPreview);
-            int index16 = curSpr.X + curSpr.Y * 8;
+            int index16 = viewSprite.Index;
             bool overlayed = dataSource.GetSpriteOverlay(index16);
             for (int y = 0; y < 16; ++y)
             {
@@ -231,155 +191,193 @@ namespace _99x8Edit
                     }
                     if (color_code != 0)
                     {
-                        g.FillRectangle(Brushes.Gray, x * 16, y * 16, 16, 16);
                         Brush b = dataSource.BrushOf(color_code);
-                        g.FillRectangle(b, x * 16, y * 16, 15, 15);
+                        viewEdit.SetBrush(b, x, y);
                         preview.FillRectangle(b, x * 2, y * 2, 2, 2);
+                    }
+                    else
+                    {
+                        viewEdit.SetBrush(null, x, y);
                     }
                 }
             }
-            // Draw selection rectangle
-            Utility.DrawSelection(g, curLine, panelEditor.Focused);
-            if (panelEditor.Focused)
-            {
-                Utility.DrawSubSelection(g, curLine.Display.X + currentDot * 16,
-                                         curLine.Display.Y, 14, 14);
-            }
             // CRT Filter
-            if (chkCRT.Checked)
-            {
-                Filter.Create(Filter.Type.CRT).Process(bmpPreview);
-            }
-            if (refresh) viewSpriteEdit.Refresh();
+            viewEdit.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
+            if (refresh) viewEdit.Refresh();
             if (refresh) viewPreview.Refresh();
         }
         void UpdateCurrentColorView(bool refresh)
         {
-            Graphics gl = Graphics.FromImage(bmpColorL);
-            Graphics gr = Graphics.FromImage(bmpColorR);
-            Graphics go = Graphics.FromImage(bmpColorOR);
+            int length = 1;
             // Draw current color of primary sprite
-            int index16 = curSpr.Y * 8 + curSpr.X;
-            int color_code_l = dataSource.GetSpriteColorCode(index16, curLine.Y);
-            Brush b = dataSource.BrushOf(color_code_l);
-            gl.FillRectangle(b, 0, 0, 32, 32);
+            int index16 = viewSprite.Index;
+            int color_code_l = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
+            Color cl = dataSource.ColorOf(color_code_l);
+            viewColor.SetBackground(cl, 0, 0);
             if (dataSource.GetSpriteOverlay(index16))
             {
                 // Draw current color of overlayed sprite
                 index16 = (index16 + 1) % 64;
-                int color_code_r = dataSource.GetSpriteColorCode(index16, curLine.Y);
-                b = dataSource.BrushOf(color_code_r);
-                gr.FillRectangle(b, 0, 0, 32, 32);
-                viewColorR.Visible = true;
-                labelColorR.Visible = true;
-                if (dataSource.IsTMS9918)
-                {
-                    // Overlayed, but no OR color (TMS9918)
-                    viewColorOR.Visible = false;
-                    labelColorOR.Visible = false;
-                }
-                else
+                int color_code_r = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
+                Color cr = dataSource.ColorOf(color_code_r);
+                viewColor.SetBackground(cr, 1, 0);
+                length = 2;
+                if (!dataSource.IsTMS9918)
                 {
                     // Draw OR color of two sprites (V9938)
                     int color_code_or = color_code_l | color_code_r;
-                    b = dataSource.BrushOf(color_code_or);
-                    go.FillRectangle(b, 0, 0, 32, 32);
-                    viewColorOR.Visible = true;
+                    Color co = dataSource.ColorOf(color_code_or);
+                    viewColor.SetBackground(co, 2, 0);
+                    length = 3;
                     labelColorOR.Visible = true;
                 }
+                else
+                {
+                    labelColorOR.Visible = false;
+                }
+                labelColorR.Visible = true;
             }
             else
             {
-                // No overlay
-                viewColorR.Visible = false;
                 labelColorR.Visible = false;
-                viewColorOR.Visible = false;
-                labelColorOR.Visible = false;
             }
-            // Draw current selection
-            if (!viewColorR.Visible && currentColor.X > 0) currentColor.X = 0;
-            Utility.DrawSelection((currentColor.X == 0) ? gl : gr,
-                                  0, 0, 29, 29, panelColor.Focused);
-            if (refresh)
+            // Width of color view is for available colors
+            viewColor.Width = length * viewColor.CellWidth + 2;
+            if(viewColor.X >= length)
             {
-                viewColorL.Refresh();
-                viewColorR.Refresh();
-                viewColorOR.Refresh();
+                viewColor.X = length - 1;   // Limit the selection
             }
+            if (refresh) viewColor.Refresh();
         }
         private void UpdateOverlayCheck(bool refresh)
         {
-            int sprite_num16x16 = curSpr.Y * 8 + curSpr.X;
-            this.checkOverlay.Checked = dataSource.GetSpriteOverlay(sprite_num16x16);
+            this.checkOverlay.Checked = dataSource.GetSpriteOverlay(viewSprite.Index);
             if (refresh) checkOverlay.Refresh();
         }
         //------------------------------------------------------------------------------
         // Controls
+        //-------------------------------------------------------
+        // Misc
+        private void checkTMS_Click(object sender, EventArgs e)
+        {
+            if (chkTMS.Checked && !dataSource.IsTMS9918)
+            {
+                // Set windows color of each color code to TMS9918
+                dataSource.SetPaletteToTMS9918(push: true);
+            }
+            else if (!chkTMS.Checked && dataSource.IsTMS9918)
+            {
+                // Set windows color of each color code to internal palette
+                dataSource.SetPaletteToV9938(push: true);
+            }
+            this.RefreshAllViews();     // Everything changes
+        }
+        private void viewColor_Click(object sender, EventArgs e)
+        {
+            if(viewColor.X == 2)
+            {
+                // When OR color is clicked, open the list of OR colors 
+                PaletteOrColors or_win = new PaletteOrColors(dataSource);
+                or_win.Show();
+                return;
+            }
+            // Color selection
+            int index16 = viewSprite.Index;
+            if(viewColor.X == 1)
+            {
+                index16 = (index16 + 1) % 64;  // For overlayed
+            }
+            int color_code = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
+            // Callback from the selector window
+            Action<int> callback = (x) =>
+            {
+                if (x != 0)
+                {
+                    dataSource.SetSpriteColorCode(index16, viewEdit.Y, x, push: true);
+                    this.RefreshAllViews();
+                }
+            };
+            // Open the selector
+            PaletteSelector win = new PaletteSelector(dataSource, color_code, callback);
+            win.StartPosition = FormStartPosition.Manual;
+            win.Location = Cursor.Position;
+            win.Show();
+        }
+        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
+        {
+            int index16 = 0;
+            // Palette view has been clicked            
+            int clicked_color_num = Math.Clamp((e.Y / viewPalette.CellHeight)
+                                              * viewPalette.ColumnNum
+                                              + (e.X / viewPalette.CellWidth), 0, 15);
+            // Update selection
+            viewPalette.X = clicked_color_num % 8;
+            viewPalette.Y = clicked_color_num / 8;
+            this.UpdatePaletteView(true);
+            // Update color table of current line
+            if (e.Button == MouseButtons.Left)
+            {
+                // Left click is for primary sprite
+                index16 = viewSprite.Index;
+            }
+            else if ((e.Button == MouseButtons.Right) && (checkOverlay.Checked == true))
+            {
+                // Right click is for overlayed sprite
+                index16 = (viewSprite.Index + 1) % 64;
+            }
+            dataSource.SetSpriteColorCode(index16, viewEdit.Y, clicked_color_num, push: true);
+            this.RefreshAllViews();
+        }
+        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (!chkTMS.Checked)
+            {
+                // Palette editing window
+                int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
+                this.EditPalette(clicked_color_num);
+            }
+        }
+        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        {
+            if (!chkTMS.Checked)
+            {
+                // Open the palette editor window
+                this.EditPalette(viewPalette.Index);
+            }
+        }
         private void checkOverlay_Click(object sender, EventArgs e)
         {
-            int current_index = curSpr.Y * 8 + curSpr.X;
-            int overlay_index = (current_index + 1) % 64;
+            int index16 = viewSprite.Index;
             if (checkOverlay.Checked)
             {
-                dataSource.SetSpriteOverlay(current_index, overlay: true, push: true);
+                dataSource.SetSpriteOverlay(index16, overlay: true, push: true);
             }
             else
             {
-                dataSource.SetSpriteOverlay(current_index, overlay: false, push: true);
+                dataSource.SetSpriteOverlay(index16, overlay: false, push: true);
             }
             this.RefreshAllViews();
         }
-        private void viewSprites_MouseDown(object sender, MouseEventArgs e)
+        private void Sprites_Activated(object sender, EventArgs e)
         {
-            panelSprites.Focus();   // Key events are handled by parent panel
-            if (e.Button == MouseButtons.Left)
-            {
-                int x = Math.Min(e.X / 32, 7);
-                int y = Math.Min(e.Y / 32, 7);
-                if ((x != curSpr.X) || (y != curSpr.Y))
-                {
-                    // Sprite selected
-                    if (Control.ModifierKeys == Keys.Shift)
-                    {
-                        // Multiple selection
-                        curSpr.ToX = x;
-                        curSpr.ToY = y;
-                    }
-                    else
-                    {
-                        // New selection
-                        curSpr.X = x;
-                        curSpr.Y = y;
-                    }
-                    this.RefreshAllViews();
-                    viewSprites.DoDragDrop(new DnDSprite(), DragDropEffects.Copy);
-                }
-            }
+            // Redraw the views according to data at this timing
+            this.RefreshAllViews();
         }
-        private void panelSprites_DragEnter(object sender, DragEventArgs e)
+        private void chkCRT_CheckedChanged(object sender, EventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDSprite)))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else e.Effect = DragDropEffects.None;
+            this.RefreshAllViews();
         }
-        private void panelSprites_DragOver(object sender, DragEventArgs e)
+        //-------------------------------------------------------
+        // Sprite selector
+        private void viewSprite_SelectionChanged(object sender, EventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DnDSprite)))
-            {
-                // Multiple selection
-                Point p = viewSprites.PointToClient(Cursor.Position);
-                curSpr.ToX = Math.Min(p.X / 32, 7);
-                curSpr.ToY = Math.Min(p.Y / 32, 7);
-                this.RefreshAllViews();
-            }
+            this.RefreshAllViews();
         }
-        private void contextSprites_copy(object sender, EventArgs e)
+        private void contextSprite_copy(object sender, EventArgs e)
         {
             ClipSprite clip = new ClipSprite();
             // Copy selected sprites
-            Rectangle r = curSpr.Selected;
+            Rectangle r = viewSprite.SelectedRect;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.One16x16Sprite> l = new List<Machine.One16x16Sprite>();
@@ -392,37 +390,34 @@ namespace _99x8Edit
             }
             ClipboardWrapper.SetData(clip);
         }
-        private void contextSprites_paste(object sender, EventArgs e)
+        private void contextSprite_paste(object sender, EventArgs e)
         {
             dynamic clip = ClipboardWrapper.GetData();
             if (clip is ClipSprite)
             {
                 MementoCaretaker.Instance.Push();
-                // Paste sprites
-                for (int i = 0; (i < clip.sprites.Count) && (curSpr.Y + i < 8); ++i)
+                Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                 {
-                    List<Machine.One16x16Sprite> l = clip.sprites[i];
-                    for (int j = 0; (j < l.Count) && (curSpr.X + j < 8); ++j)
-                    {
-                        // For each copied sprites
-                        int index16x16 = (curSpr.Y + i) * 8 + (curSpr.X + j);
-                        dataSource.SetSpriteData(index16x16, l[j], push: false);
-                    }
-                }
+                    // Paste each copied sprites
+                    int index16 = viewSprite.IndexOf(col, row);
+                    dataSource.SetSpriteData(index16, clip.sprites[rowcnt][colcnt], push: false);
+                };
+                viewSprite.ForEachSelection(viewSprite.X, viewSprite.Y,
+                                       clip.sprites?[0]?.Count, clip.sprites?.Count, callback);
                 this.RefreshAllViews();
             }
             else if (clip is ClipPeekedData)
             {
                 MementoCaretaker.Instance.Push();
                 // Copied from peek window
-                for (int i = 0; (i < clip.peeked.Count / 2) && (curSpr.Y + i < 8); ++i)
+                for (int i = 0; (i < clip.peeked.Count / 2) && (viewSprite.Y + i < 8); ++i)
                 {
                     // One row in peek window is 8 dots so we need a trick
                     List<byte[]> first_row = clip.peeked[i * 2 + 0];
                     List<byte[]> second_row = clip.peeked[i * 2 + 1];
-                    for (int j = 0; (j < first_row.Count / 2) && (curSpr.X + j < 8); ++j)
+                    for (int j = 0; (j < first_row.Count / 2) && (viewSprite.X + j < 8); ++j)
                     {
-                        int index16 = (curSpr.Y + i) * 8 + (curSpr.X + j);
+                        int index16 = (viewSprite.Y + i) * 8 + (viewSprite.X + j);
                         dataSource.SetSpriteOverlay(index16, overlay: false, push: false);
                         List<byte> gendata_16 = new List<byte>();
                         gendata_16.AddRange(first_row[j * 2 + 0]);
@@ -435,23 +430,22 @@ namespace _99x8Edit
                 this.RefreshAllViews();
             }
         }
-        private void contextSprites_del(object sender, EventArgs e)
+        private void contextSprite_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSpr.Selected;
-            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            Rectangle r = viewSprite.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X; j < r.X + r.Width; ++j)
-                {
-                    // Each selected sprite
-                    dataSource.Clear16x16Sprite(i * 8 + j, push: false);
-                }
-            }
+                // Delete each selected sprites
+                int index16 = viewSprite.IndexOf(col, row);
+                dataSource.Clear16x16Sprite(index16, push: false);
+            };
+            viewSprite.ForEachSelection(r, callback);
             this.RefreshAllViews();
         }
-        private void contextSprites_reverse(object sender, EventArgs e)
+        private void contextSprite_reverse(object sender, EventArgs e)
         {
-            int current = curSpr.Y * 8 + curSpr.X;
+            int current = viewSprite.Index;
             int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
             // Loop count for primary sprite and overlayed sprite
             for (int i = 0; i < loop_cnt; ++i)
@@ -476,101 +470,56 @@ namespace _99x8Edit
             }
             this.RefreshAllViews();
         }
-        private void contextSprites_copyDown(object sender, EventArgs e)
+        private void contextSprite_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSpr.Selected;
-            for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
+            Rectangle r = viewSprite.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X; j < r.X + r.Width; ++j)
-                {
-                    // For each sprites
-                    Machine.One16x16Sprite spr = dataSource.GetSpriteData(r.Y * 8 + j);
-                    dataSource.SetSpriteData(i * 8 + j, spr, push: false);
-                }
-            }
+                // For each sprites
+                int src = viewSprite.IndexOf(col, r.Y);
+                int dst = viewSprite.IndexOf(col, row);
+                Machine.One16x16Sprite spr = dataSource.GetSpriteData(src);
+                dataSource.SetSpriteData(dst, spr, push: false);
+
+            };
+            viewSprite.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.RefreshAllViews();
         }
-        private void contextSprites_copyRight(object sender, EventArgs e)
+        private void contextSprite_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curSpr.Selected;
-            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            Rectangle r = viewSprite.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X + 1; j < r.X + r.Width; ++j)
-                {
-                    // For each sprites
-                    Machine.One16x16Sprite spr = dataSource.GetSpriteData(i * 8 + r.X);
-                    dataSource.SetSpriteData(i * 8 + j, spr, push: false);
-                }
-            }
+                // For each sprites
+                int src = viewSprite.IndexOf(r.X, row);
+                int dst = viewSprite.IndexOf(col, row);
+                Machine.One16x16Sprite spr = dataSource.GetSpriteData(src);
+                dataSource.SetSpriteData(dst, spr, push: false);
+            };
+            viewSprite.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
-        private void viewSpriteEdit_MouseDown(object sender, MouseEventArgs e)
+        //-------------------------------------------------------
+        // Sprite editor
+        private void viewEditor_CellOnEdit(object sender, EventArgs e)
         {
-            panelEditor.Focus();    // Key events are handled by parent panel
-            if (e.Button == MouseButtons.Left)
-            {
-                int clicked_x = e.X / 128;
-                int clicled_y = e.Y / 16;
-                // Selected line have changed
-                if ((curLine.X != clicked_x) || (curLine.Y != clicled_y))
-                {
-                    if (Control.ModifierKeys == Keys.Shift)
-                    {
-                        // Multiple selection
-                        curLine.ToX = clicked_x;
-                        curLine.ToY = clicled_y;
-                    }
-                    else
-                    {
-                        // New selection
-                        curLine.X = clicked_x;
-                        curLine.Y = clicled_y;
-                    }
-                    this.UpdateSpriteEditView(refresh: true);
-                    this.UpdateCurrentColorView(refresh: true);
-                    viewSpriteEdit.DoDragDrop(new DnDEditor(), DragDropEffects.Copy);
-                    return;
-                }
-                else
-                {
-                    // Toggle the color of selected pixel
-                    this.EditCurrentSprite(e.X / 16, curLine.Y);
-                }
-            }
-        }
-        private void panelEditor_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(DnDEditor)))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else e.Effect = DragDropEffects.None;
-        }
-        private void panelEditor_DragOver(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(DnDEditor)))
-            {
-                // Multiple selection
-                Point p = viewSpriteEdit.PointToClient(Cursor.Position);
-                curLine.ToX = Math.Min(p.X / 128, 1);
-                curLine.ToY = Math.Min(p.Y / 16, 15);
-                this.UpdateSpriteEditView(refresh: true);
-                this.UpdateCurrentColorView(refresh: true);
-            }
+            // Toggle the color of selected pixel
+            (int x, int y) = viewEdit.PosInEditor();
+            this.EditCurrentSprite(x, y);
         }
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipOneSpriteLine clip = new ClipOneSpriteLine();
-            Rectangle r = curLine.Selected;
+            Rectangle r = viewEdit.SelectedRect;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<Machine.SpriteLine> l = new List<Machine.SpriteLine>();
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     // Copy each lines
-                    int index16 = curSpr.Y * 8 + curSpr.X;
+                    int index16 = viewSprite.Index;
                     l.Add(dataSource.GetSpriteLine(index16, j, i));
                 }
                 clip.lines.Add(l);
@@ -583,17 +532,14 @@ namespace _99x8Edit
             if (clip is ClipOneSpriteLine)
             {
                 MementoCaretaker.Instance.Push();
-                for (int i = 0; (i < clip.lines.Count) && (curLine.Y + i < 16); ++i)
+                Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                 {
-                    List<Machine.SpriteLine> l = clip.lines[i];
-                    for (int j = 0; (j < l.Count) && (curLine.X + j < 2); ++j)
-                    {
-                        // Paste to each lines
-                        int index16 = curSpr.Y * 8 + curSpr.X;
-                        dataSource.SetSpriteLine(index16, curLine.X + j, curLine.Y + i,
-                                                 l[j], push: false);
-                    }
-                }
+                    // Paste to each lines
+                    dataSource.SetSpriteLine(viewSprite.Index, col, row,
+                                             clip.lines[rowcnt][colcnt], push: false);
+                };
+                viewEdit.ForEachSelection(viewEdit.X, viewEdit.Y,
+                                          clip.lines?[0]?.Count, clip.lines?.Count, callback);
                 this.UpdateSpriteEditView(refresh: true);
                 this.UpdateSpriteView(refresh: true);
             }
@@ -601,50 +547,41 @@ namespace _99x8Edit
         private void contextEditor_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curLine.Selected;
-            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            Rectangle r = viewEdit.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X; j < r.X + r.Width; ++j)
-                {
-                    // Delete each lines
-                    int index16 = curSpr.Y * 8 + curSpr.X;
-                    dataSource.ClearSpriteLine(index16, j, i, push: false);
-                }
-            }
+                // Delete each lines
+                dataSource.ClearSpriteLine(viewSprite.Index, col, row, push: false);
+            };
+            viewEdit.ForEachSelection(r, callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
         }
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curLine.Selected;
-            for (int i = r.Y + 1; i < r.Y + r.Height; ++i)
+            Rectangle r = viewEdit.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X; j < r.X + r.Width; ++j)
-                {
-                    // Each lines
-                    int index16 = curSpr.Y * 8 + curSpr.X;
-                    Machine.SpriteLine line = dataSource.GetSpriteLine(index16, j, r.Y);
-                    dataSource.SetSpriteLine(index16, j, i, line, push: false);
-                }
-            }
+                // For each lines
+                Machine.SpriteLine line = dataSource.GetSpriteLine(viewSprite.Index, col, r.Y);
+                dataSource.SetSpriteLine(viewSprite.Index, col, row, line, push: false);
+            };
+            viewEdit.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
         }
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = curLine.Selected;
-            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            Rectangle r = viewEdit.SelectedRect;
+            Action<int, int> callback = (col, row) =>
             {
-                for (int j = r.X + 1; j < r.X + r.Width; ++j)
-                {
-                    // Each lines
-                    int index16 = curSpr.Y * 8 + curSpr.X;
-                    Machine.SpriteLine line = dataSource.GetSpriteLine(index16, r.X, i);
-                    dataSource.SetSpriteLine(index16, j, i, line, push: false);
-                }
-            }
+                // For each lines
+                Machine.SpriteLine line = dataSource.GetSpriteLine(viewSprite.Index, r.X, row);
+                dataSource.SetSpriteLine(viewSprite.Index, col, row, line, push: false);
+            };
+            viewEdit.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
         }
@@ -652,136 +589,24 @@ namespace _99x8Edit
         {
             if (sender == toolStripRotateUp)
             {
-                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 0, -1, push: true);
+                dataSource.RotateSprite(viewSprite.Index, 0, -1, push: true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateDown)
             {
-                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 0, 1, push: true);
+                dataSource.RotateSprite(viewSprite.Index, 0, 1, push: true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateLeft)
             {
-                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, -1, 0, push: true);
+                dataSource.RotateSprite(viewSprite.Index, -1, 0, push: true);
                 this.RefreshAllViews();
             }
             if (sender == toolStripRotateRight)
             {
-                dataSource.RotateSprite(curSpr.Y * 8 + curSpr.X, 1, 0, push: true);
+                dataSource.RotateSprite(viewSprite.Index, 1, 0, push: true);
                 this.RefreshAllViews();
             }
-        }
-        private void checkTMS_Click(object sender, EventArgs e)
-        {
-            if (chkTMS.Checked && !dataSource.IsTMS9918)
-            {
-                // Set windows color of each color code to TMS9918
-                dataSource.SetPaletteToTMS9918(push: true);
-            }
-            else if (!chkTMS.Checked && dataSource.IsTMS9918)
-            {
-                // Set windows color of each color code to internal palette
-                dataSource.SetPaletteToV9938(push: true);
-            }
-            this.RefreshAllViews();     // Everything changes
-        }
-        private void viewColorL_Click(object sender, EventArgs e)
-        {
-            // Update selection and controls
-            panelColor.Focus();
-            currentColor.X = 0;
-            this.UpdateCurrentColorView(refresh: true); // selection updated
-            // Set color to target
-            int index16 = curSpr.Y * 8 + curSpr.X;
-            int color_code = dataSource.GetSpriteColorCode(index16, curLine.Y);
-            // Callback from the selector window
-            Action<int> callback = (x) =>
-            {
-                if (x != 0)
-                {
-                    dataSource.SetSpriteColorCode(index16, curLine.Y, x, push: true);
-                    this.RefreshAllViews();
-                }
-            };
-            // Open the selector
-            PaletteSelector win = new PaletteSelector(dataSource, color_code, callback);
-            win.StartPosition = FormStartPosition.Manual;
-            win.Location = Cursor.Position;
-            win.Show();
-        }
-        private void viewColorR_Click(object sender, EventArgs e)
-        {
-            // Update selection and controls
-            panelColor.Focus();
-            currentColor.X = 1;
-            this.UpdateCurrentColorView(refresh: true); // selection updated
-            // Set color to target
-            int index16 = (curSpr.Y * 8 + curSpr.X + 1) % 64;
-            int color_code = dataSource.GetSpriteColorCode(index16, curLine.Y);
-            // Callback from the selector window
-            Action<int> callback = (x) =>
-            {
-                if(x > 0)   // Don't select transparent color
-                {
-                    dataSource.SetSpriteColorCode(index16, curLine.Y, x, push: true);
-                    this.RefreshAllViews();
-                }
-            };
-            // Open the selector
-            PaletteSelector win = new PaletteSelector(dataSource, color_code, callback);
-            win.StartPosition = FormStartPosition.Manual;
-            win.Location = Cursor.Position;
-            win.Show();
-        }
-        private void viewColorOR_Click(object sender, EventArgs e)
-        {
-            // Open the list of OR colors since to avoid confusion 
-            PaletteOrColors win = new PaletteOrColors(dataSource);
-            win.Show();
-        }
-        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
-        {
-            // Palette view clicked
-            panelPalette.Focus();
-            int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
-            curPal.X = clicked_color_num % 8;
-            curPal.Y = clicked_color_num / 8;
-            // Update color table of current line
-            int index16 = 0;
-            if (e.Button == MouseButtons.Left)
-            {
-                // Left click is for primary sprite
-                index16 = (curSpr.Y * 8 + curSpr.X) % 64;
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                // Right click is for overlayed sprite
-                if (checkOverlay.Checked == true)
-                {
-                    index16 = (curSpr.Y * 8 + curSpr.X + 1) % 64;
-                }
-                else return;    // No overlayed sprite
-            }
-            dataSource.SetSpriteColorCode(index16, curLine.Y, clicked_color_num, push: true);
-            this.RefreshAllViews();
-        }
-        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (!chkTMS.Checked)
-            {
-                // Palette editing window
-                int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-                this.EditPalette(clicked_color_num);
-            }
-        }
-        private void Sprites_Activated(object sender, EventArgs e)
-        {
-            // Redraw the views according to data at this timing
-            this.RefreshAllViews();
-        }
-        private void chkCRT_CheckedChanged(object sender, EventArgs e)
-        {
-            this.RefreshAllViews();
         }
         //---------------------------------------------------------------------
         // Menu controls
@@ -890,7 +715,7 @@ namespace _99x8Edit
         private void EditCurrentSprite(int x, int y)
         {
             // check pixel of first sprite
-            int index16 = curSpr.Y * 8 + curSpr.X;
+            int index16 = viewSprite.Y * 8 + viewSprite.X;
             int target_prev_pixel = dataSource.GetSpritePixel(index16, x, y, true);
             // check pixel of overlayed sprite
             int index16ov = (index16 + 1) % 64;

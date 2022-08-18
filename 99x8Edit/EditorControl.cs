@@ -35,6 +35,12 @@ namespace _99x8Edit
         {
             return (_sub.X, _selection.Y % 8);
         }
+        public (int x, int y) PosInEditor()
+        {
+            int x = _selection.X * _selectionWidth + _sub.X;
+            int y = _selection.Y * _selectionHeight + _sub.Y;
+            return (x, y);
+        }
         public int TileColNum
         {
             get => _columnNum / 8;
@@ -48,29 +54,30 @@ namespace _99x8Edit
         protected override void OnPaint(PaintEventArgs e)
         {
             // Draw to cells to buffer
-            if (_brush == null)
-            {
-                return;
-            }
             _bmp ??= new Bitmap(ColumnNum * CellWidth, RowNum * CellHeight);
             if (_updated)
             {
                 // If something has been changed, redraw the buffer
-                Utility.DrawTransparent(_bmp);
-                Graphics g = Graphics.FromImage(_bmp);
-
-                for (int y = 0; y < RowNum; ++y)
+                if(this.DrawTranparentColor)
                 {
-                    for (int x = 0; x < ColumnNum; ++x)
+                    Utility.DrawTransparent(_bmp);
+                }
+                Graphics g = Graphics.FromImage(_bmp);
+                if (_brush != null)
+                {
+                    for (int y = 0; y < RowNum; ++y)
                     {
-                        if (_brush[x, y] != null)
+                        for (int x = 0; x < ColumnNum; ++x)
                         {
-                            // Draw outline
-                            g.FillRectangle(Brushes.Gray, x * _cellWidth, y * _cellHeight,
-                                            _cellWidth, _cellHeight);
-                            // Draw one dot
-                            g.FillRectangle(_brush[x, y], x * _cellWidth, y * _cellHeight,
-                                            _cellWidth - 1, _cellHeight - 1);
+                            if (_brush[x, y] != null)
+                            {
+                                // Draw outline
+                                g.FillRectangle(Brushes.Gray, x * _cellWidth, y * _cellHeight,
+                                                _cellWidth, _cellHeight);
+                                // Draw one dot
+                                g.FillRectangle(_brush[x, y], x * _cellWidth, y * _cellHeight,
+                                                _cellWidth - 1, _cellHeight - 1);
+                            }
                         }
                     }
                 }

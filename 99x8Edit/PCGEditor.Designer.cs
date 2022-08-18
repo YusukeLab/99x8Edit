@@ -504,6 +504,8 @@ namespace _99x8Edit
             this.viewSand.CellWidth = 16;
             this.viewSand.ColumnNum = 32;
             this.viewSand.ContextMenuStrip = this.contextSandbox;
+            this.viewSand.DrawOverlayedSelection = false;
+            this.viewSand.DrawTranparentColor = false;
             this.viewSand.Location = new System.Drawing.Point(301, 227);
             this.viewSand.Name = "viewSand";
             this.viewSand.RowNum = 24;
@@ -527,6 +529,8 @@ namespace _99x8Edit
             this.viewPCG.CellWidth = 16;
             this.viewPCG.ColumnNum = 32;
             this.viewPCG.ContextMenuStrip = this.contextPCG;
+            this.viewPCG.DrawOverlayedSelection = false;
+            this.viewPCG.DrawTranparentColor = false;
             this.viewPCG.Location = new System.Drawing.Point(301, 61);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.RowNum = 8;
@@ -552,6 +556,8 @@ namespace _99x8Edit
             this.viewEdit.CellWidth = 16;
             this.viewEdit.ColumnNum = 16;
             this.viewEdit.ContextMenuStrip = this.contextEditor;
+            this.viewEdit.DrawOverlayedSelection = false;
+            this.viewEdit.DrawTranparentColor = true;
             this.viewEdit.Location = new System.Drawing.Point(14, 61);
             this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
@@ -562,7 +568,7 @@ namespace _99x8Edit
             this.viewEdit.X = 0;
             this.viewEdit.Y = 0;
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
-            this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_Edited);
+            this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_CellOnEdit);
             this.viewEdit.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewEdit_PreviewKeyDown);
             // 
             // viewColor
@@ -573,6 +579,8 @@ namespace _99x8Edit
             this.viewColor.CellHeight = 32;
             this.viewColor.CellWidth = 32;
             this.viewColor.ColumnNum = 2;
+            this.viewColor.DrawOverlayedSelection = false;
+            this.viewColor.DrawTranparentColor = true;
             this.viewColor.Location = new System.Drawing.Point(14, 358);
             this.viewColor.Name = "viewColor";
             this.viewColor.RowNum = 1;
@@ -593,6 +601,8 @@ namespace _99x8Edit
             this.viewPalette.CellHeight = 32;
             this.viewPalette.CellWidth = 32;
             this.viewPalette.ColumnNum = 8;
+            this.viewPalette.DrawOverlayedSelection = false;
+            this.viewPalette.DrawTranparentColor = true;
             this.viewPalette.Location = new System.Drawing.Point(13, 550);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.RowNum = 2;

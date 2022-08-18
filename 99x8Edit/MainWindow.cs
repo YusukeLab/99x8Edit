@@ -17,7 +17,7 @@ namespace _99x8Edit
         private Machine dataSource;
         private PCGEditor PCGWin;
         private MapEditor mapWin;
-        private Sprites spriteWin;
+        private SpriteEditor spriteWin;
         private PeekWindow peekWin;
         private About aboutWin;
         private String currentFile = @"";
@@ -54,7 +54,7 @@ namespace _99x8Edit
             // Editors
             PCGWin = new PCGEditor(dataSource, this);
             mapWin = new MapEditor(dataSource, this);
-            spriteWin = new Sprites(dataSource, this);
+            spriteWin = new SpriteEditor(dataSource, this);
             // Check drag and drop of files
             String[] args = System.Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -140,7 +140,7 @@ namespace _99x8Edit
         {
             if (spriteWin.IsDisposed)
             {
-                spriteWin = new Sprites(dataSource, this);
+                spriteWin = new SpriteEditor(dataSource, this);
             }
             if (spriteWin.Visible)
             {

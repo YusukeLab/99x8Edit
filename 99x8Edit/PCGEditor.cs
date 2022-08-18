@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D;
 
 namespace _99x8Edit
 {
@@ -14,7 +13,6 @@ namespace _99x8Edit
         private TabOrder tabList = new TabOrder();
         private Bitmap bmpColorL = new Bitmap(32, 32);      // Color view
         private Bitmap bmpColorR = new Bitmap(32, 32);
-        private Bitmap bmpTransparent = new Bitmap(32, 32);
         internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDPCG {
@@ -37,8 +35,6 @@ namespace _99x8Edit
             tabList.Add(viewSand, viewSand.Selector);
             // Initialize controls
             chkTMS.Checked = this.dataSource.IsTMS9918;
-            Utility.DrawTransparent(bmpTransparent);
-            viewPalette.SetImage(bmpTransparent, 0, 0);
             // Refresh all views
             this.RefreshAllViews();
             // Menu bar
@@ -131,7 +127,6 @@ namespace _99x8Edit
                 Color c = dataSource.ColorOf(i);
                 viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
-            // Current selection
             if (refresh) this.viewPalette.Refresh();
         }
         private void UpdatePCGEditView(bool refresh)
@@ -232,82 +227,8 @@ namespace _99x8Edit
         //-----------------------------------------------------------------------------
         // Controls
         //------------------------------------------------
-        // Misc
-        private void viewPalette_CellOnEdit(object sender, EventArgs e)
-        {
-            // Open the palette editor window
-            this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
-        }
-        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
-        {
-            // Palette view has been clicked
-            int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
-            // Update selection
-            viewPalette.X = clicked_color_num % 8;
-            viewPalette.Y = clicked_color_num / 8;
-            // Update color table of current line
-            int target = this.TargetPCG();
-            if (e.Button == MouseButtons.Left)
-            {
-                // Foreground color has changed
-                dataSource.SetPCGColor(target,
-                                       viewEdit.Y % 8,
-                                       clicked_color_num,
-                                       isForeGround: true, push: true);
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                // Background color has changed
-                dataSource.SetPCGColor(target,
-                                       viewEdit.Y % 8,
-                                       clicked_color_num,
-                                       isForeGround: false, push: true);
-            }
-            this.RefreshAllViews();
-        }
-        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (!chkTMS.Checked)
-            {
-                // Open the palette editor window
-                this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
-            }
-        }
-        private void viewColor_Click(object sender, EventArgs e)
-        {
-            bool foreground = (viewColor.X == 0);
-            int target = this.TargetPCG();
-            // Callback for the color selection window
-            Action<int> callback = (x) =>
-            {
-                dataSource.SetPCGColor(target, viewEdit.Y % 8, x, foreground, push: true);
-                this.RefreshAllViews();
-            };
-            // Open the color selection window
-            int color_code = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground);
-            PaletteSelector palette_win = new PaletteSelector(dataSource, color_code, callback);
-            palette_win.StartPosition = FormStartPosition.Manual;
-            palette_win.Location = Cursor.Position;
-            palette_win.Show();
-        }
-        private void checkTMS_Click(object sender, EventArgs e)
-        {
-            if (chkTMS.Checked && !dataSource.IsTMS9918)
-            {
-                // Set to TMS9918 and update palettes
-                dataSource.SetPaletteToTMS9918(push: true);
-                this.RefreshAllViews();     // Everything changes
-            }
-            else if (!chkTMS.Checked && dataSource.IsTMS9918)
-            {
-                // Set to V9938 and update palettes
-                dataSource.SetPaletteToV9938(push: true);
-                this.RefreshAllViews();     // Everything changes
-            }
-        }
-        //------------------------------------------------
         // Editor
-        private void viewEdit_Edited(object sender, EventArgs e)
+        private void viewEdit_CellOnEdit(object sender, EventArgs e)
         {
             (int x, int y) = viewEdit.PosInTile();              // Dot in one PCG
             int index = viewPCG.Index
@@ -662,6 +583,86 @@ namespace _99x8Edit
             };
             viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSandbox(refresh: true);
+        }
+        //------------------------------------------------
+        // Misc
+        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        {
+            if (!chkTMS.Checked)
+            {
+                // Open the palette editor window
+                this.EditPalette(viewPalette.Index);
+            }
+        }
+        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
+        {
+            // Palette view has been clicked
+            int clicked_color_num = Math.Clamp((e.Y / viewPalette.CellHeight)
+                                              * viewPalette.ColumnNum
+                                              + (e.X / viewPalette.CellWidth), 0, 15);
+            // Update selection
+            viewPalette.X = clicked_color_num % 8;
+            viewPalette.Y = clicked_color_num / 8;
+            this.UpdatePaletteView(true);
+            // Update color table of current line
+            int target = this.TargetPCG();
+            if (e.Button == MouseButtons.Left)
+            {
+                // Foreground color has changed
+                dataSource.SetPCGColor(target,
+                                       viewEdit.Y % 8,
+                                       clicked_color_num,
+                                       isForeGround: true, push: true);
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                // Background color has changed
+                dataSource.SetPCGColor(target,
+                                       viewEdit.Y % 8,
+                                       clicked_color_num,
+                                       isForeGround: false, push: true);
+            }
+            this.RefreshAllViews();
+        }
+        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (!chkTMS.Checked)
+            {
+                // Open the palette editor window
+                this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
+            }
+        }
+        private void viewColor_Click(object sender, EventArgs e)
+        {
+            bool foreground = (viewColor.X == 0);
+            int target = this.TargetPCG();
+            // Callback for the color selection window
+            Action<int> callback = (x) =>
+            {
+                dataSource.SetPCGColor(target, viewEdit.Y % 8, x, foreground, push: true);
+                this.RefreshAllViews();
+            };
+            // Open the color selection window
+            int color_code = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground);
+            PaletteSelector palette_win = new PaletteSelector(dataSource, color_code, callback);
+            palette_win.StartPosition = FormStartPosition.Manual;
+            palette_win.Location = Cursor.Position;
+            palette_win.Show();
+        }
+        private void checkTMS_Click(object sender, EventArgs e)
+        {
+            if (chkTMS.Checked && !dataSource.IsTMS9918)
+            {
+                // Set to TMS9918 and update palettes
+                dataSource.SetPaletteToTMS9918(push: true);
+                this.RefreshAllViews();     // Everything changes
+            }
+            else if (!chkTMS.Checked && dataSource.IsTMS9918)
+            {
+                // Set to V9938 and update palettes
+                dataSource.SetPaletteToV9938(push: true);
+                this.RefreshAllViews();     // Everything changes
+            }
         }
         private void FormPCG_Activated(object sender, EventArgs e)
         {

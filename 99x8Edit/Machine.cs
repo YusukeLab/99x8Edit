@@ -839,7 +839,7 @@ namespace _99x8Edit
             spriteGen[index8 * 8 + line] = val.genData;
             spriteClr[color_addr] = val.colorData;
             this.UpdateSpriteBitmap(index8);
-            if (val.overlayed != 0)
+            if ((val.overlayed != 0) && (spriteOverlay[index16] != 0))
             {
                 index8 = (index8 + 4) % 256;
                 color_addr = ((index16 + 1) % 64) * 16 + line_y;

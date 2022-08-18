@@ -116,8 +116,6 @@ namespace _99x8Edit
     }
     internal class Utility
     {
-        internal static Pen DashedGray = new Pen(Color.Gray) { DashStyle = 
-                                       System.Drawing.Drawing2D.DashStyle.Dash, Width = 2 };
         //--------------------------------------------------------------------
         // Utility functions
         //--------------------------------------------------------------------

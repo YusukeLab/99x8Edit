@@ -22,6 +22,11 @@ namespace _99x8Edit
         protected FilterBase _filter;       // Filter to be applyed
         protected Bitmap[,] _cellImg;       // Images for each cells
         protected Color[,] _background;     // Background colors
+        private static Pen DashedGray = new Pen(Color.Gray)
+        {
+            DashStyle = DashStyle.Dash,
+            Width = 2
+        };
         // For multiple selections
         internal class DragSelection {
             internal UserControl _sender;
@@ -143,6 +148,13 @@ namespace _99x8Edit
             get;
             set;
         } = true;
+        [Browsable(true)]
+        [Description("Draw transparent color for background")]
+        public bool DrawTranparentColor
+        {
+            get;
+            set;
+        } = false;
         //--------------------------------------------------------------------
         // Event handlers
         [Browsable(true)]
@@ -221,6 +233,8 @@ namespace _99x8Edit
         {
             get => _rowNum / _selectionHeight;
         }
+        [Browsable(false)]
+        public bool DrawOverlayedSelection { get; set; } = false;
         //--------------------------------------------------------------------
         // Methods for hosts
         public void SetImage(Bitmap img, int col, int row)
@@ -316,6 +330,10 @@ namespace _99x8Edit
                 // If something has been changed, redraw the buffer
                 Graphics g = Graphics.FromImage(_bmp);
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                if (DrawTranparentColor)
+                {
+                    Utility.DrawTransparent(_bmp);
+                }
                 if (_background != null)
                 {
                     for (int y = 0; y < RowNum; ++y)
@@ -356,6 +374,18 @@ namespace _99x8Edit
                                              (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
                                              (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
                                              _cellWidth - 2, CellHeight - 2);
+                }
+                // Overlayed selection
+                if(DrawOverlayedSelection)
+                {
+                    // Overlayed sprite, right side
+                    int index = (Index + 1) % 64;
+                    int x = index % SelectionColNum;
+                    int y = index / SelectionColNum;
+                    g.DrawRectangle(DashedGray, x * _selectionWidth * _cellWidth,
+                                    y * _selectionHeight * _cellHeight,
+                                    _selectionWidth * _cellWidth - 1,
+                                    _selectionHeight * _cellHeight - 1);
                 }
                 _updated = false;
             }
