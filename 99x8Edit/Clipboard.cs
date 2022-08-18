@@ -39,6 +39,11 @@ namespace _99x8Edit
         internal List<List<int>> pcgIndex = new List<List<int>>();
     }
     [Serializable]
+    internal class ClipPCGIndex : ClipBase
+    {
+        internal int pcgIndex;
+    }
+    [Serializable]
     internal class ClipNametable : ClipBase
     {
         internal List<List<int>> pcgID = new List<List<int>>();

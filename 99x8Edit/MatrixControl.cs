@@ -236,6 +236,10 @@ namespace _99x8Edit
             get => _rowNum / _selectionHeight;
         }
         [Browsable(false)]
+        public int SubX { get => _sub.X; }
+        [Browsable(false)]
+        public int SubY { get => _sub.Y; }
+        [Browsable(false)]
         // For  overlayed sprite
         public bool DrawOverlayedSelection { get; set; } = false;
         //--------------------------------------------------------------------

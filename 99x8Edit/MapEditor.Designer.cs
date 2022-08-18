@@ -69,11 +69,14 @@ namespace _99x8Edit
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this.viewPCG = new _99x8Edit.MatrixControl();
+            this.contextPCG = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripPCGCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMap = new _99x8Edit.MatrixControl();
             this.viewPtn = new _99x8Edit.MatrixControl();
             this.contextPattern.SuspendLayout();
             this.contextMap.SuspendLayout();
             this.menuStripMain.SuspendLayout();
+            this.contextPCG.SuspendLayout();
             this.SuspendLayout();
             // 
             // label7
@@ -410,6 +413,7 @@ namespace _99x8Edit
             this.viewPCG.CellHeight = 16;
             this.viewPCG.CellWidth = 16;
             this.viewPCG.ColumnNum = 32;
+            this.viewPCG.ContextMenuStrip = this.contextPCG;
             this.viewPCG.DrawOverlayedSelection = false;
             this.viewPCG.DrawTranparentColor = false;
             this.viewPCG.Location = new System.Drawing.Point(14, 64);
@@ -422,6 +426,21 @@ namespace _99x8Edit
             this.viewPCG.X = 0;
             this.viewPCG.Y = 0;
             this.viewPCG.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPCG_CellDragStart);
+            // 
+            // contextPCG
+            // 
+            this.contextPCG.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextPCG.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripPCGCopy});
+            this.contextPCG.Name = "contextPCG";
+            this.contextPCG.Size = new System.Drawing.Size(164, 28);
+            // 
+            // toolStripPCGCopy
+            // 
+            this.toolStripPCGCopy.Name = "toolStripPCGCopy";
+            this.toolStripPCGCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.toolStripPCGCopy.Size = new System.Drawing.Size(163, 24);
+            this.toolStripPCGCopy.Text = "Copy";
             // 
             // viewMap
             // 
@@ -507,6 +526,7 @@ namespace _99x8Edit
             this.contextMap.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
+            this.contextPCG.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -554,5 +574,7 @@ namespace _99x8Edit
         private MatrixControl viewPCG;
         private MatrixControl viewMap;
         private MatrixControl viewPtn;
+        private System.Windows.Forms.ContextMenuStrip contextPCG;
+        private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopy;
     }
 }

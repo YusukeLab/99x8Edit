@@ -46,6 +46,7 @@ namespace _99x8Edit
             toolStripEditUndo.Click += new EventHandler(menu_editUndo);
             toolStripEditRedo.Click += new EventHandler(menu_editRedo);
             // Context menu
+            toolStripPCGCopy.Click += new EventHandler(contextPCG_Copy);
             toolStripPatternCopy.Click += new EventHandler(contextPtn_copy);
             toolStripPatternPaste.Click += new EventHandler(contextPtn_paste);
             toolStripPatternCopyDown.Click += new EventHandler(contextPtn_copyDown);
@@ -195,6 +196,12 @@ namespace _99x8Edit
         {
             viewPCG.DoDragDrop(new DnDMapPCG(), DragDropEffects.Copy);
         }
+        private void contextPCG_Copy(object sender, EventArgs e)
+        {
+            ClipPCGIndex clip = new ClipPCGIndex();
+            clip.pcgIndex = viewPCG.Index;
+            ClipboardWrapper.SetData(clip);
+        }
         //---------------------------------------------
         // Patterns
         private void viewPtn_CellDragStart(object sender, EventArgs e)
@@ -232,6 +239,15 @@ namespace _99x8Edit
                 };
                 viewPtn.ForEachSelection(viewPtn.X, viewPtn.Y,
                                          clip?.ptns?[0]?.Count, clip.ptns?.Count, callback);
+                this.UpdateMapPatterns(refresh: true);
+                this.UpdateMap(refresh: true);
+            }
+            else if (clip is ClipPCGIndex)
+            {
+                int src = clip.pcgIndex;
+                int target_ptn = viewPtn.Index;
+                int target_no = viewPtn.SubY * 2 + viewPtn.SubX;
+                dataSource.SetPCGInPattern(target_ptn, target_no, src, push: true);
                 this.UpdateMapPatterns(refresh: true);
                 this.UpdateMap(refresh: true);
             }
