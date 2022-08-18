@@ -1,7 +1,7 @@
 ﻿
 namespace _99x8Edit
 {
-    partial class Peek
+    partial class PeekWindow
     {
         /// <summary>
         /// Required designer variable.

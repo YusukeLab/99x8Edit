@@ -708,7 +708,7 @@ namespace _99x8Edit
                 }
             };
             // Open the selector
-            PaletteSelector win = new PaletteSelector(bmpPalette, color_code, callback);
+            PaletteSelector win = new PaletteSelector(dataSource, color_code, callback);
             win.StartPosition = FormStartPosition.Manual;
             win.Location = Cursor.Position;
             win.Show();
@@ -732,7 +732,7 @@ namespace _99x8Edit
                 }
             };
             // Open the selector
-            PaletteSelector win = new PaletteSelector(bmpPalette, color_code, callback);
+            PaletteSelector win = new PaletteSelector(dataSource, color_code, callback);
             win.StartPosition = FormStartPosition.Manual;
             win.Location = Cursor.Position;
             win.Show();

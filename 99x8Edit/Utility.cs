@@ -110,7 +110,7 @@ namespace _99x8Edit
         }
         internal Selection SelectionOf(Control c)
         {
-            int index = _ctrl.IndexOf(c);
+            int index = Math.Max(_ctrl.IndexOf(c), 0);
             return _sel[index];
         }
     }

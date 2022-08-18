@@ -29,37 +29,46 @@ namespace _99x8Edit
         /// </summary>
         private void InitializeComponent()
         {
-            this.viewPlt = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPlt)).BeginInit();
+            this.viewPalette = new _99x8Edit.MatrixControl();
             this.SuspendLayout();
             // 
-            // viewPlt
+            // viewPalette
             // 
-            this.viewPlt.Location = new System.Drawing.Point(0, 0);
-            this.viewPlt.Name = "viewPlt";
-            this.viewPlt.Size = new System.Drawing.Size(256, 64);
-            this.viewPlt.TabIndex = 0;
-            this.viewPlt.TabStop = false;
-            this.viewPlt.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Click);
+            this.viewPalette.AllowMultipleSelection = false;
+            this.viewPalette.AllowSubSelection = false;
+            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewPalette.CellHeight = 32;
+            this.viewPalette.CellWidth = 32;
+            this.viewPalette.ColumnNum = 8;
+            this.viewPalette.Index = 0;
+            this.viewPalette.Location = new System.Drawing.Point(-1, -1);
+            this.viewPalette.Name = "viewPalette";
+            this.viewPalette.RowNum = 2;
+            this.viewPalette.SelectionHeight = 1;
+            this.viewPalette.SelectionWidth = 1;
+            this.viewPalette.Size = new System.Drawing.Size(258, 66);
+            this.viewPalette.TabIndex = 38;
+            this.viewPalette.X = 0;
+            this.viewPalette.Y = 0;
+            this.viewPalette.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewPalette_CellOnEdit);
+            this.viewPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDown);
             // 
             // PaletteSelector
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(256, 64);
-            this.Controls.Add(this.viewPlt);
+            this.Controls.Add(this.viewPalette);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteSelector";
             this.ShowInTaskbar = false;
             this.Text = "PaletteSelector";
             this.Deactivate += new System.EventHandler(this.PaletteSelector_Deactivate);
-            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PaletteSelector_PreviewKeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.viewPlt)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox viewPlt;
+        private MatrixControl viewPalette;
     }
 }

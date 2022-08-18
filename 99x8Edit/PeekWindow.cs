@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace _99x8Edit
 {
     // Binary file viewer window
-    public partial class Peek : Form
+    public partial class PeekWindow : Form
     {
         private BinaryReader reader = null;
         private long seekAddr = 0;
@@ -23,7 +23,7 @@ namespace _99x8Edit
         private class DnDPeek { }
         //----------------------------------------------------------------------
         // Initialize
-        public Peek(String filename)
+        public PeekWindow(String filename)
         {
             InitializeComponent();
             reader = new BinaryReader(new FileStream(filename, FileMode.Open));

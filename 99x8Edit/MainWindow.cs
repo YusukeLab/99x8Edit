@@ -18,7 +18,7 @@ namespace _99x8Edit
         private PCGEditor PCGWin;
         private Map mapWin;
         private Sprites spriteWin;
-        private Peek peekWin;
+        private PeekWindow peekWin;
         private About aboutWin;
         private String currentFile = @"";
         private String peekPath = "";
@@ -270,7 +270,7 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                peekWin = new Peek(dlg.FileName);
+                peekWin = new PeekWindow(dlg.FileName);
                 peekWin.Show();
                 peekPath = dlg.FileName;
             }

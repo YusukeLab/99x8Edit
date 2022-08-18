@@ -9,77 +9,6 @@ namespace _99x8Edit
     // Partial classes for the keyboard inputs of main editors
     public partial class PCGEditor : Form
     {
-        private void panelPalette_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            // Key events in palette control
-            switch (e.KeyCode)
-            {
-                case Keys.Up:
-                    if (curPal.Y > 0)
-                    {
-                        curPal.Y--;
-                    }
-                    this.UpdatePaletteView(refresh: true);
-                    break;
-                case Keys.Down:
-                    if (curPal.Y < 1)
-                    {
-                        curPal.Y++;
-                    }
-                    this.UpdatePaletteView(refresh: true);
-                    break;
-                case Keys.Left:
-                    if (curPal.X > 0)
-                    {
-                        curPal.X--;
-                    }
-                    this.UpdatePaletteView(refresh: true);
-                    break;
-                case Keys.Right:
-                    if (curPal.X < 7)
-                    {
-                        curPal.X++;
-                    }
-                    this.UpdatePaletteView(refresh: true);
-                    break;
-                case Keys.Space:
-                case Keys.Enter:
-                    this.EditPalette(curPal.Y * 8 + curPal.X);
-                    break;
-            }
-        }
-        private void panelColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            // Key events in current color control
-            switch (e.KeyData)
-            {
-                case Keys.Left:
-                    if (curColor.X > 0)
-                    {
-                        curColor.X--;
-                        this.UpdateCurrentColorView(refresh: true);
-                    }
-                    break;
-                case Keys.Right:
-                    if (curColor.X < 1)
-                    {
-                        curColor.X++;
-                        this.UpdateCurrentColorView(refresh: true);
-                    }
-                    break;
-                case Keys.Space:
-                case Keys.Enter:
-                    if (curColor.X == 0)
-                    {
-                        this.viewColorL_Click(null, null);
-                    }
-                    else if (curColor.X == 1)
-                    {
-                        this.viewColorR_Click(null, null);
-                    }
-                    break;
-            }
-        }
         private void viewEdit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // Key events in character editor
@@ -92,9 +21,9 @@ namespace _99x8Edit
                 case Keys.OemCloseBrackets:
                 case Keys.OemOpenBrackets:
                     int target = viewPCG.Index
-                               + (viewEdit.LineY / 8) * viewPCG.ColumnNum
-                               + viewEdit.LineX;        // Target character
-                    int line = viewEdit.LineY % 8;      // Target line
+                               + (viewEdit.Y / 8) * viewPCG.ColumnNum
+                               + viewEdit.X;        // Target character
+                    int line = viewEdit.Y % 8;      // Target line
                     int fore = dataSource.GetPCGColor(target, line, foreground: true);
                     int back = dataSource.GetPCGColor(target, line, foreground: false);
                     if ((e.KeyData == Keys.Oemplus) || (e.KeyData == Keys.Add))

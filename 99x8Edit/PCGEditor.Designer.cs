@@ -42,7 +42,6 @@ namespace _99x8Edit
             this.toolStripPCGInverse = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.viewPalette = new System.Windows.Forms.PictureBox();
             this.chkTMS = new System.Windows.Forms.CheckBox();
             this.toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
             this.label5 = new System.Windows.Forms.Label();
@@ -80,22 +79,15 @@ namespace _99x8Edit
             this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewColorR = new System.Windows.Forms.PictureBox();
-            this.viewColorL = new System.Windows.Forms.PictureBox();
-            this.panelColor = new System.Windows.Forms.Panel();
-            this.panelPalette = new System.Windows.Forms.Panel();
             this.viewSand = new _99x8Edit.MatrixControl();
             this.viewPCG = new _99x8Edit.MatrixControl();
             this.viewEdit = new _99x8Edit.EditorControl();
+            this.viewColor = new _99x8Edit.MatrixControl();
+            this.viewPalette = new _99x8Edit.MatrixControl();
             this.contextPCG.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).BeginInit();
             this.contextSandbox.SuspendLayout();
             this.contextEditor.SuspendLayout();
             this.menuStripMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).BeginInit();
-            this.panelColor.SuspendLayout();
-            this.panelPalette.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -200,17 +192,6 @@ namespace _99x8Edit
             this.label4.TabIndex = 7;
             this.label4.Text = "Palette";
             // 
-            // viewPalette
-            // 
-            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(0, 0);
-            this.viewPalette.Name = "viewPalette";
-            this.viewPalette.Size = new System.Drawing.Size(258, 66);
-            this.viewPalette.TabIndex = 8;
-            this.viewPalette.TabStop = false;
-            this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
-            this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
-            // 
             // chkTMS
             // 
             this.chkTMS.AutoSize = true;
@@ -236,7 +217,7 @@ namespace _99x8Edit
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label5.Location = new System.Drawing.Point(10, 33);
+            this.label5.Location = new System.Drawing.Point(25, 395);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 15);
             this.label5.TabIndex = 17;
@@ -246,7 +227,7 @@ namespace _99x8Edit
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Yu Gothic UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label6.Location = new System.Drawing.Point(38, 33);
+            this.label6.Location = new System.Drawing.Point(53, 395);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(13, 15);
             this.label6.TabIndex = 18;
@@ -513,51 +494,11 @@ namespace _99x8Edit
             this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
             this.toolStripEditRedo.Text = "Redo";
             // 
-            // viewColorR
-            // 
-            this.viewColorR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorR.Location = new System.Drawing.Point(31, 0);
-            this.viewColorR.Name = "viewColorR";
-            this.viewColorR.Size = new System.Drawing.Size(32, 32);
-            this.viewColorR.TabIndex = 6;
-            this.viewColorR.TabStop = false;
-            this.viewColorR.Click += new System.EventHandler(this.viewColorR_Click);
-            // 
-            // viewColorL
-            // 
-            this.viewColorL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColorL.Location = new System.Drawing.Point(0, 0);
-            this.viewColorL.Name = "viewColorL";
-            this.viewColorL.Size = new System.Drawing.Size(32, 32);
-            this.viewColorL.TabIndex = 5;
-            this.viewColorL.TabStop = false;
-            this.viewColorL.Click += new System.EventHandler(this.viewColorL_Click);
-            // 
-            // panelColor
-            // 
-            this.panelColor.Controls.Add(this.viewColorL);
-            this.panelColor.Controls.Add(this.viewColorR);
-            this.panelColor.Controls.Add(this.label5);
-            this.panelColor.Controls.Add(this.label6);
-            this.panelColor.Location = new System.Drawing.Point(14, 355);
-            this.panelColor.Name = "panelColor";
-            this.panelColor.Size = new System.Drawing.Size(71, 52);
-            this.panelColor.TabIndex = 1;
-            this.panelColor.TabStop = true;
-            this.panelColor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelColor_PreviewKeyDown);
-            // 
-            // panelPalette
-            // 
-            this.panelPalette.Controls.Add(this.viewPalette);
-            this.panelPalette.Location = new System.Drawing.Point(13, 550);
-            this.panelPalette.Name = "panelPalette";
-            this.panelPalette.Size = new System.Drawing.Size(268, 73);
-            this.panelPalette.TabIndex = 32;
-            this.panelPalette.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPalette_PreviewKeyDown);
-            // 
             // viewSand
             // 
             this.viewSand.AllowDrop = true;
+            this.viewSand.AllowMultipleSelection = true;
+            this.viewSand.AllowSubSelection = false;
             this.viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewSand.CellHeight = 16;
             this.viewSand.CellWidth = 16;
@@ -567,6 +508,8 @@ namespace _99x8Edit
             this.viewSand.Location = new System.Drawing.Point(301, 227);
             this.viewSand.Name = "viewSand";
             this.viewSand.RowNum = 24;
+            this.viewSand.SelectionHeight = 1;
+            this.viewSand.SelectionWidth = 1;
             this.viewSand.Size = new System.Drawing.Size(514, 386);
             this.viewSand.TabIndex = 33;
             this.viewSand.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewSand_DragDrop);
@@ -576,6 +519,8 @@ namespace _99x8Edit
             // viewPCG
             // 
             this.viewPCG.AllowDrop = true;
+            this.viewPCG.AllowMultipleSelection = true;
+            this.viewPCG.AllowSubSelection = false;
             this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPCG.CellHeight = 16;
             this.viewPCG.CellWidth = 16;
@@ -585,6 +530,8 @@ namespace _99x8Edit
             this.viewPCG.Location = new System.Drawing.Point(301, 61);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.RowNum = 8;
+            this.viewPCG.SelectionHeight = 1;
+            this.viewPCG.SelectionWidth = 1;
             this.viewPCG.Size = new System.Drawing.Size(514, 130);
             this.viewPCG.TabIndex = 34;
             this.viewPCG.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewPCG_SelectionChanged);
@@ -596,30 +543,75 @@ namespace _99x8Edit
             // viewEdit
             // 
             this.viewEdit.AllowDrop = true;
+            this.viewEdit.AllowMultipleSelection = true;
+            this.viewEdit.AllowSubSelection = true;
             this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewEdit.CellHeight = 16;
             this.viewEdit.CellWidth = 16;
             this.viewEdit.ColumnNum = 16;
             this.viewEdit.ContextMenuStrip = this.contextEditor;
-            this.viewEdit.DataType = _99x8Edit.EditorControl.Type.PCG;
             this.viewEdit.Index = 0;
             this.viewEdit.Location = new System.Drawing.Point(14, 61);
             this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
+            this.viewEdit.SelectionHeight = 1;
+            this.viewEdit.SelectionWidth = 8;
             this.viewEdit.Size = new System.Drawing.Size(258, 258);
             this.viewEdit.TabIndex = 35;
-            this.viewEdit.Edited += new System.EventHandler<System.EventArgs>(this.myEditor_Edited);
+            this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
+            this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_Edited);
             this.viewEdit.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewEdit_PreviewKeyDown);
+            // 
+            // viewColor
+            // 
+            this.viewColor.AllowMultipleSelection = false;
+            this.viewColor.AllowSubSelection = false;
+            this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewColor.CellHeight = 32;
+            this.viewColor.CellWidth = 32;
+            this.viewColor.ColumnNum = 2;
+            this.viewColor.Index = 0;
+            this.viewColor.Location = new System.Drawing.Point(14, 358);
+            this.viewColor.Name = "viewColor";
+            this.viewColor.RowNum = 1;
+            this.viewColor.SelectionHeight = 1;
+            this.viewColor.SelectionWidth = 1;
+            this.viewColor.Size = new System.Drawing.Size(66, 34);
+            this.viewColor.TabIndex = 36;
+            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_Click);
+            this.viewColor.Click += new System.EventHandler(this.viewColor_Click);
+            // 
+            // viewPalette
+            // 
+            this.viewPalette.AllowMultipleSelection = false;
+            this.viewPalette.AllowSubSelection = false;
+            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewPalette.CellHeight = 32;
+            this.viewPalette.CellWidth = 32;
+            this.viewPalette.ColumnNum = 8;
+            this.viewPalette.Index = 0;
+            this.viewPalette.Location = new System.Drawing.Point(13, 550);
+            this.viewPalette.Name = "viewPalette";
+            this.viewPalette.RowNum = 2;
+            this.viewPalette.SelectionHeight = 1;
+            this.viewPalette.SelectionWidth = 1;
+            this.viewPalette.Size = new System.Drawing.Size(258, 66);
+            this.viewPalette.TabIndex = 37;
+            this.viewPalette.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewPalette_CellOnEdit);
+            this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
+            this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
             // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(839, 642);
+            this.Controls.Add(this.viewPalette);
+            this.Controls.Add(this.viewColor);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.viewEdit);
             this.Controls.Add(this.viewPCG);
             this.Controls.Add(this.viewSand);
-            this.Controls.Add(this.panelPalette);
-            this.Controls.Add(this.panelColor);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
             this.Controls.Add(this.label7);
@@ -640,16 +632,10 @@ namespace _99x8Edit
             this.Text = "PCG Editor";
             this.Activated += new System.EventHandler(this.FormPCG_Activated);
             this.contextPCG.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).EndInit();
             this.contextSandbox.ResumeLayout(false);
             this.contextEditor.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.viewColorR)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewColorL)).EndInit();
-            this.panelColor.ResumeLayout(false);
-            this.panelColor.PerformLayout();
-            this.panelPalette.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -661,7 +647,6 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.PictureBox viewPalette;
         private System.Windows.Forms.CheckBox chkTMS;
         private System.Windows.Forms.ToolTip toolTipPCG;
         private System.Windows.Forms.Label label5;
@@ -701,10 +686,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePCG;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPCG;
-        private System.Windows.Forms.PictureBox viewColorR;
-        private System.Windows.Forms.PictureBox viewColorL;
-        private System.Windows.Forms.Panel panelColor;
-        private System.Windows.Forms.Panel panelPalette;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPal;
         private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePal;
@@ -714,5 +695,7 @@ namespace _99x8Edit
         private MatrixControl viewSand;
         private MatrixControl viewPCG;
         private EditorControl viewEdit;
+        private MatrixControl viewColor;
+        private MatrixControl viewPalette;
     }
 }

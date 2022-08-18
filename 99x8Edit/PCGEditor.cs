@@ -12,11 +12,9 @@ namespace _99x8Edit
         private readonly Machine dataSource;
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
-        private Bitmap bmpPalette = new Bitmap(256, 64);    // Palette view
         private Bitmap bmpColorL = new Bitmap(32, 32);      // Color view
         private Bitmap bmpColorR = new Bitmap(32, 32);
-        private Selection curColor = new Selection(16, 16); // Currently elected color, 0=left, 1=right
-        private Selection curPal = new Selection(32, 32);   // Selection in palette
+        private Bitmap bmpTransparent = new Bitmap(32, 32);
         internal String CurrentFile
         {
             get;
@@ -36,16 +34,15 @@ namespace _99x8Edit
             dataSource = src;
             mainWin = parent;
             // Tab order for the customed control
-            tabList.Add(viewEdit, viewEdit.LineSelector);
-            tabList.Add(panelColor, curColor);
-            tabList.Add(panelPalette, curPal);
+            tabList.Add(viewEdit, viewEdit.Selector);
+            tabList.Add(viewColor, viewColor.Selector);
+            tabList.Add(viewPalette, viewPalette.Selector);
             tabList.Add(viewPCG, viewPCG.Selector);
             tabList.Add(viewSand, viewSand.Selector);
             // Initialize controls
-            viewPalette.Image = bmpPalette;
-            viewColorL.Image = bmpColorL;
-            viewColorR.Image = bmpColorR;
             chkTMS.Checked = this.dataSource.IsTMS9918;
+            Utility.DrawTransparent(bmpTransparent);
+            viewPalette.SetImage(bmpTransparent, 0, 0);
             // Refresh all views
             this.RefreshAllViews();
             // Menu bar
@@ -117,7 +114,7 @@ namespace _99x8Edit
             return true;
         }
         //------------------------------------------------------------------------------
-        // Refreshing Views
+        // Views
         private void RefreshAllViews()
         {
             this.UpdatePaletteView(refresh: false);       // Palette view
@@ -133,15 +130,12 @@ namespace _99x8Edit
         private void UpdatePaletteView(bool refresh)
         {
             // Update palette view
-            Utility.DrawTransparent(bmpPalette);
-            Graphics g = Graphics.FromImage(bmpPalette);
             for (int i = 1; i < 16; ++i)
             {
-                Brush b = dataSource.BrushOf(i);
-                g.FillRectangle(b, (i % 8) * 32, (i / 8) * 32, 32, 32);
+                Color c = dataSource.ColorOf(i);
+                viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
             // Current selection
-            Utility.DrawSelection(g, curPal, panelPalette.Focused);
             if (refresh) this.viewPalette.Refresh();
         }
         private void UpdatePCGEditView(bool refresh)
@@ -170,33 +164,36 @@ namespace _99x8Edit
         }
         private void UpdateCurrentColorView(bool refresh)
         {
-            Graphics gl = Graphics.FromImage(bmpColorL);
-            Graphics gr = Graphics.FromImage(bmpColorR);
-            // Character to refer depends on current selected line position
             int target = this.TargetPCG();
-            // Get the corresponding color code
-            int color_code_l = dataSource.GetPCGColor(target, viewEdit.LineY % 8, foreground: true);
-            int color_code_r = dataSource.GetPCGColor(target, viewEdit.LineY % 8, foreground: false);
-            Utility.DrawTransparent(bmpColorL);
-            // Draw foreground and background colors
-            if(color_code_l > 0)
+            // Draw foreground color
+            Graphics gl = Graphics.FromImage(bmpColorL);
+            int color_code_l = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground: true);
+            if (color_code_l > 0)
             {
                 Brush b = dataSource.BrushOf(color_code_l);
                 gl.FillRectangle(b, 0, 0, 32, 32);
             }
-            Utility.DrawTransparent(bmpColorR);
+            else
+            {
+                Utility.DrawTransparent(bmpColorL);
+            }
+            viewColor.SetImage(bmpColorL, 0, 0);
+            // Draw background color
+            Graphics gr = Graphics.FromImage(bmpColorR);
+            int color_code_r = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground: false);
             if (color_code_r > 0)
             {
                 Brush b = dataSource.BrushOf(color_code_r);
                 gr.FillRectangle(b, 0, 0, 32, 32);
             }
-            // Draw selection
-            Utility.DrawSelection((curColor.X == 0) ? gl : gr,
-                                  0, 0, 29, 29, panelColor.Focused);
+            else
+            {
+                Utility.DrawTransparent(bmpColorR);
+            }
+            viewColor.SetImage(bmpColorR, 1, 0);
             if (refresh)
             {
-                viewColorL.Refresh();
-                viewColorR.Refresh();
+                viewColor.Refresh();
             }
         }
         private void UpdatePCGList(bool refresh)
@@ -240,21 +237,25 @@ namespace _99x8Edit
         // Controls
         //------------------------------------------------
         // Misc
+        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        {
+            // Open the palette editor window
+            this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
+        }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
             // Palette view has been clicked
-            panelPalette.Focus();      // Catch key events at parent control
             int clicked_color_num = Math.Clamp((e.Y / 32) * 8 + (e.X / 32), 0, 15);
             // Update selection
-            curPal.X = clicked_color_num % 8;
-            curPal.Y = clicked_color_num / 8;
+            viewPalette.X = clicked_color_num % 8;
+            viewPalette.Y = clicked_color_num / 8;
             // Update color table of current line
             int target = this.TargetPCG();
             if (e.Button == MouseButtons.Left)
             {
                 // Foreground color has changed
                 dataSource.SetPCGColor(target,
-                                       viewEdit.LineY % 8,
+                                       viewEdit.Y % 8,
                                        clicked_color_num,
                                        isForeGround: true, push: true);
             }
@@ -262,7 +263,7 @@ namespace _99x8Edit
             {
                 // Background color has changed
                 dataSource.SetPCGColor(target,
-                                       viewEdit.LineY % 8,
+                                       viewEdit.Y % 8,
                                        clicked_color_num,
                                        isForeGround: false, push: true);
             }
@@ -273,56 +274,22 @@ namespace _99x8Edit
             if (!chkTMS.Checked)
             {
                 // Open the palette editor window
-                int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-                this.EditPalette(clicked_color_num);
+                this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
             }
         }
-
-
-        private void viewColorL_Click(object sender, EventArgs e)
+        private void viewColor_Click(object sender, EventArgs e)
         {
-            // Foreground color has been clicked
-            panelColor.Focus();
-            // Update the selection before opening color selection window
-            curColor.X = 0;
-            this.UpdateCurrentColorView(refresh: true);
+            bool foreground = (viewColor.X == 0);
             int target = this.TargetPCG();
             // Callback for the color selection window
             Action<int> callback = (x) =>
             {
-                dataSource.SetPCGColor(target, viewEdit.LineY % 8, x,
-                                       isForeGround: true, push: true);
+                dataSource.SetPCGColor(target, viewEdit.Y % 8, x, foreground, push: true);
                 this.RefreshAllViews();
             };
             // Open the color selection window
-            int color_code_l = dataSource.GetPCGColor(target,
-                                                      viewEdit.LineY % 8,
-                                                      foreground: true);
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_l, callback);
-            palette_win.StartPosition = FormStartPosition.Manual;
-            palette_win.Location = Cursor.Position;
-            palette_win.Show();
-        }
-        private void viewColorR_Click(object sender, EventArgs e)
-        {
-            // Background color has been clicked
-            panelColor.Focus();
-            // Update the selection before opening color selection window
-            curColor.X = 1;
-            this.UpdateCurrentColorView(refresh: true);
-            int target = this.TargetPCG();
-            // Callback for the color selection window
-            Action<int> callback = (x) =>
-            {
-                dataSource.SetPCGColor(target, viewEdit.LineY % 8, x,
-                                       isForeGround: false, push: true);
-                this.RefreshAllViews();
-            };
-            // Open the color selection window
-            int color_code_r = dataSource.GetPCGColor(target,
-                                                      viewEdit.LineY % 8,
-                                                      foreground: false);
-            PaletteSelector palette_win = new PaletteSelector(bmpPalette, color_code_r, callback);
+            int color_code = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground);
+            PaletteSelector palette_win = new PaletteSelector(dataSource, color_code, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
@@ -344,10 +311,27 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Editor
+        private void viewEdit_Edited(object sender, EventArgs e)
+        {
+            (int x, int y) = viewEdit.PosInTile();              // Dot in one PCG
+            int index = viewPCG.Index
+                      + (viewEdit.Y / 8) * viewPCG.ColumnNum
+                      + viewEdit.X;                            // Selected character
+            int prev_pixel = dataSource.GetPCGPixel(index, y, x);
+            // Toggle On/Off of the pixel
+            dataSource.SetPCGPixel(index, y, x, (prev_pixel == 0) ? 1 : 0, push: true);
+            this.UpdatePCGEditView(refresh: true);   // PCG Editor view changes
+            this.UpdatePCGList(refresh: true);       // PCG list view changes also
+            this.UpdateSandbox(refresh: true);       // Update sandbox view
+        }
+        private void viewEdit_SelectionChanged(object sender, EventArgs e)
+        {
+            this.UpdateCurrentColorView(refresh: true);
+        }
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipPCGLines clip = new ClipPCGLines();
-            Rectangle r = viewEdit.SelectedLine;
+            Rectangle r = viewEdit.SelectedRect;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<(byte, byte)> l = new List<(byte, byte)>();
@@ -369,7 +353,7 @@ namespace _99x8Edit
             if (clip is ClipPCGLines)
             {
                 MementoCaretaker.Instance.Push();
-                Rectangle r = viewEdit.SelectedLine;
+                Rectangle r = viewEdit.SelectedRect;
                 Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                 {
                     // Paste each copied lines
@@ -378,27 +362,27 @@ namespace _99x8Edit
                     (byte gen, byte color) = l[colcnt];
                     dataSource.SetPCGLine(target, row % 8, gen, color, push: false);
                 };
-                viewEdit.ForEachLines(r.X, r.Y, clip.lines?[0]?.Count, clip.lines?.Count,  callback);
+                viewEdit.ForEachSelection(r.X, r.Y, clip.lines?[0]?.Count, clip.lines?.Count,  callback);
                 this.RefreshAllViews();
             }
         }
         private void contextEditor_delete(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewEdit.SelectedLine;
+            Rectangle r = viewEdit.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // Delete each selected lines
                 int target = this.TargetPCG(viewPCG.Index, col, row);
                 dataSource.ClearPCGLine(target, row % 8, push: false);
             };
-            viewEdit.ForEachLines(r.X, r.Y, r.Width, r.Height, callback);
+            viewEdit.ForEachSelection(r.X, r.Y, r.Width, r.Height, callback);
             this.RefreshAllViews();
         }
         private void contextEditor_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewEdit.SelectedLine;
+            Rectangle r = viewEdit.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected lines
@@ -407,13 +391,13 @@ namespace _99x8Edit
                 (byte gen, byte color) = dataSource.GetPCGLine(pcg_src, r.Y % 8);
                 dataSource.SetPCGLine(pcg_dst, row % 8, gen, color, push: false);
             };
-            viewEdit.ForEachLines(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            viewEdit.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.RefreshAllViews();
         }
         private void contextEditor_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewEdit.SelectedLine;
+            Rectangle r = viewEdit.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected lines
@@ -422,7 +406,7 @@ namespace _99x8Edit
                 (byte gen, byte color) = dataSource.GetPCGLine(pcg_src, row % 8);
                 dataSource.SetPCGLine(pcg_dst, row % 8, gen, color, push: false);
             };
-            viewEdit.ForEachLines(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            viewEdit.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
         //------------------------------------------------
@@ -467,7 +451,7 @@ namespace _99x8Edit
                     int target = viewPCG.IndexOf(col, row);
                     dataSource.SetPCGData(target, gen, color, push: false);
                 };
-                viewPCG.ForEachCells(coldst, rowdst, viewPCG.SelectedRect.Width,
+                viewPCG.ForEachSelection(coldst, rowdst, viewPCG.SelectedRect.Width,
                                      viewPCG.SelectedRect.Height, callback);
                 this.RefreshAllViews();
             }
@@ -491,8 +475,8 @@ namespace _99x8Edit
                     dataSource.SetPCGData(target, clip.pcgGen[rowcnt][colcnt],
                                           clip.pcgClr[rowcnt][colcnt], push: false);
                 };
-                viewPCG.ForEachCells(viewPCG.X, viewPCG.Y,
-                                     clip.pcgGen?[0]?.Count, clip.pcgGen?.Count, callback);
+                viewPCG.ForEachSelection(viewPCG.X, viewPCG.Y,
+                                         clip.pcgGen?[0]?.Count, clip.pcgGen?.Count, callback);
                 this.RefreshAllViews();
             }
             else if(clip is ClipPeekedData)
@@ -504,7 +488,7 @@ namespace _99x8Edit
                     int target = viewPCG.IndexOf(col, row);
                     dataSource.SetPCGData(target, clip.peeked[rowcnt][colcnt], null, push: false);
                 };
-                viewPCG.ForEachCells(viewPCG.X, viewPCG.Y,
+                viewPCG.ForEachSelection(viewPCG.X, viewPCG.Y,
                                      clip.peeked?[0]?.Count, clip.peeked?.Count, callback);
                 this.RefreshAllViews();
             }
@@ -519,7 +503,7 @@ namespace _99x8Edit
                 int index = viewPCG.IndexOf(col, row);
                 dataSource.ClearPCG(index);
             };
-            viewPCG.ForEachCells(r, callback);
+            viewPCG.ForEachSelection(r, callback);
             this.RefreshAllViews();
         }
         private void contextPCG_inverse(object sender, EventArgs e)
@@ -541,7 +525,7 @@ namespace _99x8Edit
                 int dst = viewPCG.IndexOf(col, row);
                 dataSource.CopyPCG(src, dst, push: false);
             };
-            viewSand.ForEachCells(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            viewSand.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.RefreshAllViews();
         }
         private void contextPCG_copyRight(object sender, EventArgs e)
@@ -555,7 +539,7 @@ namespace _99x8Edit
                 int dst = viewPCG.IndexOf(col, row);
                 dataSource.CopyPCG(src, dst, push: false);
             };
-            viewSand.ForEachCells(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
         //------------------------------------------------
@@ -584,7 +568,7 @@ namespace _99x8Edit
                     int dst_index = viewSand.IndexOf(col, row);
                     dataSource.SetNameTable(dst_index, src, push: false);
                 };
-                viewSand.ForEachCells(dstcol, dstrow, r_src.Width, r_src.Height, callback);
+                viewSand.ForEachSelection(dstcol, dstrow, r_src.Width, r_src.Height, callback);
                 this.UpdateSandbox(refresh: true);
             }
         }
@@ -624,7 +608,7 @@ namespace _99x8Edit
                     int index = viewSand.IndexOf(col, row);
                     dataSource.SetNameTable(index, clip.pcgID[rowcnt][colcnt], push: false);
                 };
-                viewSand.ForEachCells(viewSand.X, viewSand.Y,
+                viewSand.ForEachSelection(viewSand.X, viewSand.Y,
                                       clip.pcgID?[0]?.Count, clip.pcgID?.Count, callback);
                 this.UpdateSandbox(refresh: true);
             }
@@ -639,7 +623,7 @@ namespace _99x8Edit
                 int index = viewSand.IndexOf(col, row);
                 dataSource.SetNameTable(index, 0, push: false);
             };
-            viewSand.ForEachCells(r, callback);
+            viewSand.ForEachSelection(r, callback);
             this.UpdateSandbox(refresh: true);
         }
         private void contextSand_paint(object sender, EventArgs e)
@@ -665,7 +649,7 @@ namespace _99x8Edit
                 int dst_index = viewSand.IndexOf(col, row);
                 dataSource.SetNameTable(dst_index, src_dat, push: false);
             };
-            viewSand.ForEachCells(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            viewSand.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.UpdateSandbox(refresh: true);
         }
         private void contextSand_copyRight(object sender, EventArgs e)
@@ -680,7 +664,7 @@ namespace _99x8Edit
                 int dst_index = viewSand.IndexOf(col, row);
                 dataSource.SetNameTable(dst_index, src_dat, push: false);
             };
-            viewSand.ForEachCells(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSandbox(refresh: true);
         }
         private void FormPCG_Activated(object sender, EventArgs e)
@@ -776,19 +760,6 @@ namespace _99x8Edit
         }
         //---------------------------------------------------------------------
         // Utility
-        private void myEditor_Edited(object sender, EventArgs e)
-        {
-            (int x, int y) = viewEdit.PosInTile();              // Dot in one PCG
-            int index = viewPCG.Index
-                      + (viewEdit.LineY / 8) * viewPCG.ColumnNum
-                      + viewEdit.LineX;                         // Selected character
-            int prev_pixel = dataSource.GetPCGPixel(index, y, x);
-            // Toggle On/Off of the pixel
-            dataSource.SetPCGPixel(index, y, x, (prev_pixel == 0) ? 1 : 0, push: true);
-            this.UpdatePCGEditView(refresh: true);   // PCG Editor view changes
-            this.UpdatePCGList(refresh: true);       // PCG list view changes also
-            this.UpdateSandbox(refresh: true);       // Update sandbox view
-        }
         private void EditPalette(int index)
         {
             (int R, int G, int B) = dataSource.GetPalette(index);
@@ -849,8 +820,8 @@ namespace _99x8Edit
         {
             // Index of currently editing PCG, according to PCG selection
             // and the current line in editor.
-            return viewPCG.Index + (viewEdit.LineY / 8) * viewPCG.ColumnNum
-                                 + viewEdit.LineX;        // Target character
+            return viewPCG.Index + (viewEdit.Y / 8) * viewPCG.ColumnNum
+                                 + viewEdit.X;        // Target character
         }
         private int TargetPCG(int index, int line_x, int line_y)
         {
