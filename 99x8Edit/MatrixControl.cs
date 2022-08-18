@@ -152,8 +152,17 @@ namespace _99x8Edit
         [Description("Called when cell was dragged")]
         public event EventHandler<EventArgs> CellDragStart;
         [Browsable(true)]
-        [Description("Called when a cel has been clicked")]
+        [Description("Called when a cell was going to be edited")]
         public event EventHandler<EventArgs> CellOnEdit;
+   
+        public class ScrollEventArgs : EventArgs
+        {
+            public int DX { get; set; }
+            public int DY { get; set; }
+        }
+        [Browsable(true)]
+        [Description("Called on scroll actions")]
+        public event EventHandler<ScrollEventArgs> MatrixOnScroll;
         //--------------------------------------------------------------------
         // Properties for hosts
         [Browsable(false)]
@@ -199,17 +208,18 @@ namespace _99x8Edit
         public int Index
         {
             // Get linear index of selecion
-            get => _selection.Y * (_columnNum / _selectionWidth) + _selection.X;
-            set
-            {
-                if ((ColumnNum != 0) && (RowNum != 0))
-                {
-                    int id = Math.Clamp(value, 0, _columnNum * _rowNum - 1);
-                    _selection.X = id % _columnNum;
-                    _selection.Y = id / _columnNum;
-                    _updated = true;
-                }
-            }
+            get => _selection.Y * SelectionColNum + _selection.X;
+        }
+        [Browsable(false)]
+        public int SelectionColNum
+        {
+            // E.g. map has 32 columns and 16 selectable tiles within
+            get => _columnNum / _selectionWidth;
+        }
+        [Browsable(false)]
+        public int SelectionRowNum
+        {
+            get => _rowNum / _selectionHeight;
         }
         //--------------------------------------------------------------------
         // Methods for hosts
@@ -225,23 +235,38 @@ namespace _99x8Edit
             _background[col, row] = c;
             _updated = true;
         }
-        public (int col, int row) ScreenCoodinateToColRow(Point screen_p)
+        public (int col, int row) ScreenCoodinateToCell(Point screen_p)
         {
             Point p = this.PointToClient(screen_p);
             int col = Math.Clamp(p.X / _cellWidth, 0, _columnNum);
             int row = Math.Clamp(p.Y / _cellHeight, 0, _rowNum);
             return (col, row);
         }
+        public (int col, int row) ScreenCoodinateToSelection(Point screen_p)
+        {
+            Point p = this.PointToClient(screen_p);
+            int col = Math.Clamp(p.X / (_cellWidth * _selectionWidth), 0, _columnNum);
+            int row = Math.Clamp(p.Y / (_cellHeight * _selectionHeight), 0, _rowNum);
+            return (col, row);
+        }
         public int ScreenCoodinateToIndex(Point screen_p)
         {
             // Screen coorinate to linear index
-            (int col, int row) = ScreenCoodinateToColRow(screen_p);
+            (int col, int row) = ScreenCoodinateToSelection(screen_p);
             return IndexOf(col, row);
         }
         public int IndexOf(int col, int row)
         {
             // Columns and rows to linear index
             return row * (_columnNum / _selectionWidth) + col;
+        }
+        public void IncrementSelection()
+        {
+            if(_selection.X < SelectionColNum - 1)
+            {
+                _selection.X++;
+                _updated = true;
+            }
         }
         public void ForEachSelection(Rectangle selection, Action<int, int> callback)
         {
@@ -251,9 +276,9 @@ namespace _99x8Edit
         public void ForEachSelection(int col, int row, int w, int h,
                                  Action<int, int> callback)
         {
-            for (int y = row; (y < row + h) && (y < _rowNum); ++y)
+            for (int y = row; (y < row + h) && (y < SelectionRowNum); ++y)
             {
-                for (int x = col; (x < col + w) && (x < _columnNum); ++x)
+                for (int x = col; (x < col + w) && (x < SelectionColNum); ++x)
                 {
                     callback?.Invoke(x, y);
                 }
@@ -263,10 +288,10 @@ namespace _99x8Edit
                                      Action<int, int, int, int> callback)
         {
             int y_cnt = 0;
-            for (int y = row; (y < row + h) && (y < RowNum); ++y)
+            for (int y = row; (y < row + h) && (y < SelectionRowNum); ++y)
             {
                 int x_cnt = 0;
-                for (int x = col; (x < col + w) && (x < ColumnNum); ++x)
+                for (int x = col; (x < col + w) && (x < SelectionColNum); ++x)
                 {
                     callback?.Invoke(x, y, x_cnt, y_cnt);
                     x_cnt++;
@@ -325,6 +350,13 @@ namespace _99x8Edit
                 _filter?.Process(_bmp);
                 // Draw Selection
                 Utility.DrawSelection(g, _selection, this.Focused);
+                if (this.Focused && this.AllowSubSelection)
+                {
+                    Utility.DrawSubSelection(g,
+                                             (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
+                                             (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
+                                             _cellWidth - 2, CellHeight - 2);
+                }
                 _updated = false;
             }
             // Copy from buffer
@@ -494,6 +526,15 @@ namespace _99x8Edit
                             SelectionChanged?.Invoke(this, new EventArgs());
                             this.Refresh();
                         }
+                        else
+                        {
+                            ScrollEventArgs se = new ScrollEventArgs()
+                            {
+                                DX = 0,
+                                DY = -1
+                            };
+                            MatrixOnScroll?.Invoke(this, se);
+                        }
                     }
                     break;
                 case Keys.Down:
@@ -508,9 +549,9 @@ namespace _99x8Edit
                             SelectionChanged?.Invoke(this, new EventArgs());
                             this.Refresh();
                         }
-                        else if (_sub.Y > 0)
+                        else if (_sub.Y < _selectionHeight - 1)
                         {
-                            _sub.Y--;
+                            _sub.Y++;
                             _updated = true;
                             this.Refresh();
                         }
@@ -523,6 +564,15 @@ namespace _99x8Edit
                             _updated = true;
                             SelectionChanged?.Invoke(this, new EventArgs());
                             this.Refresh();
+                        }
+                        else
+                        {
+                            ScrollEventArgs se = new ScrollEventArgs()
+                            {
+                                DX = 0,
+                                DY = 1
+                            };
+                            MatrixOnScroll?.Invoke(this, se);
                         }
                     }
                     break;
@@ -552,6 +602,15 @@ namespace _99x8Edit
                             _updated = true;
                             SelectionChanged?.Invoke(this, new EventArgs());
                             this.Refresh();
+                        }
+                        else
+                        {
+                            ScrollEventArgs se = new ScrollEventArgs()
+                            {
+                                DX = -1,
+                                DY = 0
+                            };
+                            MatrixOnScroll?.Invoke(this, se);
                         }
                     }
                     break;
@@ -583,11 +642,21 @@ namespace _99x8Edit
                             SelectionChanged?.Invoke(this, new EventArgs());
                             this.Refresh();
                         }
+                        else
+                        {
+                            ScrollEventArgs se = new ScrollEventArgs()
+                            {
+                                DX = 1,
+                                DY = 0
+                            };
+                            MatrixOnScroll?.Invoke(this, se);
+                        }
                     }
                     break;
             }
             base.OnPreviewKeyDown(e);
         }
+        // Allows invoke to derived classes
         protected void InvokeOnEdit()
         {
             CellOnEdit?.Invoke(this, new EventArgs());

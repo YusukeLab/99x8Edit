@@ -1,7 +1,7 @@
 ﻿
 namespace _99x8Edit
 {
-    partial class Map
+    partial class MapEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -30,11 +30,8 @@ namespace _99x8Edit
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.viewPatterns = new System.Windows.Forms.PictureBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.viewPCG = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.viewMap = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtMapX = new System.Windows.Forms.TextBox();
             this.txtMapY = new System.Windows.Forms.TextBox();
@@ -42,7 +39,6 @@ namespace _99x8Edit
             this.btnRight = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
-            this.panelPtns = new System.Windows.Forms.FlowLayoutPanel();
             this.contextPattern = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripPatternCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripPatternPaste = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,9 +52,7 @@ namespace _99x8Edit
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMapDel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMapPaint = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelMap = new System.Windows.Forms.FlowLayoutPanel();
             this.btnMapSize = new System.Windows.Forms.Button();
-            this.panelPCG = new System.Windows.Forms.FlowLayoutPanel();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.toolTipMap = new System.Windows.Forms.ToolTip(this.components);
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
@@ -74,27 +68,13 @@ namespace _99x8Edit
             this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewMap)).BeginInit();
-            this.panelPtns.SuspendLayout();
+            this.viewPCG = new _99x8Edit.MatrixControl();
+            this.viewMap = new _99x8Edit.MatrixControl();
+            this.viewPtn = new _99x8Edit.MatrixControl();
             this.contextPattern.SuspendLayout();
             this.contextMap.SuspendLayout();
-            this.panelMap.SuspendLayout();
-            this.panelPCG.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // viewPatterns
-            // 
-            this.viewPatterns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPatterns.Location = new System.Drawing.Point(0, 0);
-            this.viewPatterns.Margin = new System.Windows.Forms.Padding(0);
-            this.viewPatterns.Name = "viewPatterns";
-            this.viewPatterns.Size = new System.Drawing.Size(514, 514);
-            this.viewPatterns.TabIndex = 24;
-            this.viewPatterns.TabStop = false;
-            this.viewPatterns.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPatterns_MouseDown);
             // 
             // label7
             // 
@@ -106,17 +86,6 @@ namespace _99x8Edit
             this.label7.TabIndex = 23;
             this.label7.Text = "Tile Patterns";
             // 
-            // viewPCG
-            // 
-            this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPCG.Location = new System.Drawing.Point(0, 0);
-            this.viewPCG.Margin = new System.Windows.Forms.Padding(0);
-            this.viewPCG.Name = "viewPCG";
-            this.viewPCG.Size = new System.Drawing.Size(514, 130);
-            this.viewPCG.TabIndex = 22;
-            this.viewPCG.TabStop = false;
-            this.viewPCG.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPCG_MouseDown);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -126,17 +95,6 @@ namespace _99x8Edit
             this.label2.Size = new System.Drawing.Size(36, 20);
             this.label2.TabIndex = 21;
             this.label2.Text = "PCG";
-            // 
-            // viewMap
-            // 
-            this.viewMap.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewMap.Location = new System.Drawing.Point(0, 0);
-            this.viewMap.Margin = new System.Windows.Forms.Padding(0);
-            this.viewMap.Name = "viewMap";
-            this.viewMap.Size = new System.Drawing.Size(514, 386);
-            this.viewMap.TabIndex = 28;
-            this.viewMap.TabStop = false;
-            this.viewMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewMap_MouseDown);
             // 
             // label3
             // 
@@ -209,20 +167,6 @@ namespace _99x8Edit
             this.btnDown.Text = "↓";
             this.btnDown.UseVisualStyleBackColor = true;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
-            // 
-            // panelPatterns
-            // 
-            this.panelPtns.AllowDrop = true;
-            this.panelPtns.ContextMenuStrip = this.contextPattern;
-            this.panelPtns.Controls.Add(this.viewPatterns);
-            this.panelPtns.Location = new System.Drawing.Point(579, 65);
-            this.panelPtns.Name = "panelPatterns";
-            this.panelPtns.Size = new System.Drawing.Size(524, 560);
-            this.panelPtns.TabIndex = 36;
-            this.panelPtns.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragDrop);
-            this.panelPtns.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragEnter);
-            this.panelPtns.DragOver += new System.Windows.Forms.DragEventHandler(this.panelPatterns_DragOver);
-            this.panelPtns.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPatterns_PreviewKeyDown);
             // 
             // contextPattern
             // 
@@ -323,20 +267,6 @@ namespace _99x8Edit
             this.toolStripMapPaint.Size = new System.Drawing.Size(208, 24);
             this.toolStripMapPaint.Text = "Paint";
             // 
-            // panelMap
-            // 
-            this.panelMap.AllowDrop = true;
-            this.panelMap.ContextMenuStrip = this.contextMap;
-            this.panelMap.Controls.Add(this.viewMap);
-            this.panelMap.Location = new System.Drawing.Point(14, 239);
-            this.panelMap.Name = "panelMap";
-            this.panelMap.Size = new System.Drawing.Size(519, 386);
-            this.panelMap.TabIndex = 38;
-            this.panelMap.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelMap_DragDrop);
-            this.panelMap.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelMap_DragEnter);
-            this.panelMap.DragOver += new System.Windows.Forms.DragEventHandler(this.panelMap_DragOver);
-            this.panelMap.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelMap_PreviewKeyDown);
-            // 
             // btnMapSize
             // 
             this.btnMapSize.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -347,15 +277,6 @@ namespace _99x8Edit
             this.btnMapSize.Text = "Size";
             this.btnMapSize.UseVisualStyleBackColor = true;
             this.btnMapSize.Click += new System.EventHandler(this.btnMapSize_Click);
-            // 
-            // panelPCG
-            // 
-            this.panelPCG.Controls.Add(this.viewPCG);
-            this.panelPCG.Location = new System.Drawing.Point(14, 64);
-            this.panelPCG.Name = "panelPCG";
-            this.panelPCG.Size = new System.Drawing.Size(532, 138);
-            this.panelPCG.TabIndex = 40;
-            this.panelPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelPCG_PreviewKeyDown);
             // 
             // chkCRT
             // 
@@ -480,16 +401,83 @@ namespace _99x8Edit
             this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
             this.toolStripEditRedo.Text = "Redo";
             // 
-            // Map
+            // viewPCG
+            // 
+            this.viewPCG.AllowDrop = true;
+            this.viewPCG.AllowMultipleSelection = false;
+            this.viewPCG.AllowSubSelection = false;
+            this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewPCG.CellHeight = 16;
+            this.viewPCG.CellWidth = 16;
+            this.viewPCG.ColumnNum = 32;
+            this.viewPCG.Location = new System.Drawing.Point(14, 64);
+            this.viewPCG.Name = "viewPCG";
+            this.viewPCG.RowNum = 8;
+            this.viewPCG.SelectionHeight = 1;
+            this.viewPCG.SelectionWidth = 1;
+            this.viewPCG.Size = new System.Drawing.Size(514, 130);
+            this.viewPCG.TabIndex = 45;
+            this.viewPCG.X = 0;
+            this.viewPCG.Y = 0;
+            this.viewPCG.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPCG_CellDragStart);
+            // 
+            // viewMap
+            // 
+            this.viewMap.AllowDrop = true;
+            this.viewMap.AllowMultipleSelection = true;
+            this.viewMap.AllowSubSelection = false;
+            this.viewMap.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewMap.CellHeight = 16;
+            this.viewMap.CellWidth = 16;
+            this.viewMap.ColumnNum = 32;
+            this.viewMap.ContextMenuStrip = this.contextMap;
+            this.viewMap.Location = new System.Drawing.Point(14, 239);
+            this.viewMap.Name = "viewMap";
+            this.viewMap.RowNum = 24;
+            this.viewMap.SelectionHeight = 2;
+            this.viewMap.SelectionWidth = 2;
+            this.viewMap.Size = new System.Drawing.Size(514, 386);
+            this.viewMap.TabIndex = 46;
+            this.viewMap.X = 0;
+            this.viewMap.Y = 0;
+            this.viewMap.MatrixOnScroll += new System.EventHandler<_99x8Edit.MatrixControl.ScrollEventArgs>(this.viewMap_MatrixOnScroll);
+            this.viewMap.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelMap_DragDrop);
+            this.viewMap.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelMap_DragEnter);
+            // 
+            // viewPtn
+            // 
+            this.viewPtn.AllowDrop = true;
+            this.viewPtn.AllowMultipleSelection = true;
+            this.viewPtn.AllowSubSelection = true;
+            this.viewPtn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.viewPtn.CellHeight = 16;
+            this.viewPtn.CellWidth = 16;
+            this.viewPtn.ColumnNum = 32;
+            this.viewPtn.ContextMenuStrip = this.contextPattern;
+            this.viewPtn.Location = new System.Drawing.Point(579, 65);
+            this.viewPtn.Name = "viewPtn";
+            this.viewPtn.RowNum = 32;
+            this.viewPtn.SelectionHeight = 2;
+            this.viewPtn.SelectionWidth = 2;
+            this.viewPtn.Size = new System.Drawing.Size(514, 514);
+            this.viewPtn.TabIndex = 47;
+            this.viewPtn.X = 0;
+            this.viewPtn.Y = 0;
+            this.viewPtn.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPtn_CellDragStart);
+            this.viewPtn.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelPtn_DragDrop);
+            this.viewPtn.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelPtn_DragEnter);
+            this.viewPtn.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewPtn_PreviewKeyDown);
+            // 
+            // MapEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1102, 634);
+            this.Controls.Add(this.viewPtn);
+            this.Controls.Add(this.viewMap);
+            this.Controls.Add(this.viewPCG);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.chkCRT);
-            this.Controls.Add(this.panelPCG);
             this.Controls.Add(this.btnMapSize);
-            this.Controls.Add(this.panelMap);
-            this.Controls.Add(this.panelPtns);
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.btnRight);
@@ -503,20 +491,14 @@ namespace _99x8Edit
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Map";
+            this.Name = "MapEditor";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Map and Patterns";
             this.Activated += new System.EventHandler(this.Map_Activated);
-            ((System.ComponentModel.ISupportInitialize)(this.viewPatterns)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPCG)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewMap)).EndInit();
-            this.panelPtns.ResumeLayout(false);
             this.contextPattern.ResumeLayout(false);
             this.contextMap.ResumeLayout(false);
-            this.panelMap.ResumeLayout(false);
-            this.panelPCG.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
             this.ResumeLayout(false);
@@ -525,12 +507,8 @@ namespace _99x8Edit
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox viewPatterns;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.PictureBox viewPCG;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox viewMap;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtMapX;
         private System.Windows.Forms.TextBox txtMapY;
@@ -538,19 +516,16 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnRight;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
-        private System.Windows.Forms.FlowLayoutPanel panelPtns;
         private System.Windows.Forms.ContextMenuStrip contextPattern;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopy;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternPaste;
         private System.Windows.Forms.ContextMenuStrip contextMap;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.FlowLayoutPanel panelMap;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapPaste;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapDel;
         private System.Windows.Forms.ToolStripMenuItem toolStripMapPaint;
         private System.Windows.Forms.Button btnMapSize;
-        private System.Windows.Forms.FlowLayoutPanel panelPCG;
         private System.Windows.Forms.CheckBox chkCRT;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopyDown;
         private System.Windows.Forms.ToolStripMenuItem toolStripPatternCopyRight;
@@ -570,5 +545,8 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripBarEdit;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditUndo;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
+        private MatrixControl viewPCG;
+        private MatrixControl viewMap;
+        private MatrixControl viewPtn;
     }
 }

@@ -61,7 +61,7 @@ namespace _99x8Edit
             {
                 case Keys.Enter:
                     dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
-                    viewSand.Index++;
+                    viewSand.IncrementSelection();
                     this.UpdateSandbox(refresh: true);
                     break;
             }
@@ -73,217 +73,26 @@ namespace _99x8Edit
             {
                 case Keys.Enter:
                     dataSource.SetNameTable(viewSand.Index, viewPCG.Index, push: true);
-                    viewSand.Index++;
+                    viewSand.IncrementSelection();
                     this.UpdateSandbox(refresh: true);
                     break;
             }
         }
     }
-    public partial class Map : Form
+    public partial class MapEditor : Form
     {
-        private void panelPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            // Key events in character list
-            switch (e.KeyData)
-            {
-                case Keys.Up:
-                    if (curPCG.Y > 0)
-                    {
-                        curPCG.Y--;
-                        this.UpdatePCGList(refresh: true);
-                    }
-                    break;
-                case Keys.Left:
-                    if (curPCG.X > 0)
-                    {
-                        curPCG.X--;
-                        this.UpdatePCGList(refresh: true);
-                    }
-                    break;
-                case Keys.Right:
-                    if (curPCG.X < 31)
-                    {
-                        curPCG.X++;
-                        this.UpdatePCGList(refresh: true);
-                    }
-                    break;
-                case Keys.Down:
-                    if (curPCG.Y < 7)
-                    {
-                        curPCG.Y++;
-                        this.UpdatePCGList(refresh: true);
-                    }
-                    break;
-                case Keys.Enter:
-                    dataSource.SetPCGInPattern(curPtn.Y * 16 + curPtn.X,
-                                             curCellInPtn.X + curCellInPtn.Y * 2,
-                                             curPCG.Y * 32 + curPCG.X, push: true);
-                    this.UpdateMapPatterns(refresh: true);
-                    this.UpdateMap(refresh: true);
-                    break;
-            }
-        }
-        private void panelPatterns_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void viewPtn_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // Key events in pattern list
             switch (e.KeyData)
             {
-                case Keys.Up | Keys.Shift:
-                    if (curPtn.ToY > 0)
-                    {
-                        curPtn.ToY--;
-                        if (curCellInPtn.Y > 0) curCellInPtn.Y = 0;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curPtn.ToY < 15)
-                    {
-                        curPtn.ToY++;
-                        if (curCellInPtn.Y < 1) curCellInPtn.Y = 1;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curPtn.ToX > 0)
-                    {
-                        curPtn.ToX--;
-                        if (curCellInPtn.X > 0) curCellInPtn.X = 0;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curPtn.ToX < 15)
-                    {
-                        curPtn.ToX++;
-                        if (curCellInPtn.X < 1) curCellInPtn.X = 1;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Up:
-                    if (curCellInPtn.Y > 0)
-                    {
-                        curCellInPtn.Y--;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    else if (curPtn.Y > 0)
-                    {
-                        curPtn.Y--;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Down:
-                    if (curCellInPtn.Y == 0)
-                    {
-                        curCellInPtn.Y++;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    else if (curPtn.Y < 15)
-                    {
-                        curPtn.Y++;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Left:
-                    if (curCellInPtn.X > 0)
-                    {
-                        curCellInPtn.X--;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    else if (curPtn.X > 0)
-                    {
-                        curPtn.X--;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
-                case Keys.Right:
-                    if (curCellInPtn.X == 0)
-                    {
-                        curCellInPtn.X++;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    else if (curPtn.X < 15)
-                    {
-                        curPtn.X++;
-                        this.UpdateMapPatterns(refresh: true);
-                    }
-                    break;
                 case Keys.Enter:
-                    int current_ptn = curPtn.X + curPtn.Y * 16;
-                    dataSource.SetMapData(curMapOrg.X + curMap.X,
-                                          curMapOrg.Y + curMap.Y,
-                                          current_ptn, push: true);
-                    int prev_x = curMap.X;
-                    int prev_y = curMap.Y;
-                    curMap.X = (curMap.X + 1) % 16;
-                    if (curMap.X == 0) curMap.Y = (curMap.Y + 1) % 12;
-                    this.UpdateMap(refresh: true);
-                    break;
-            }
-        }
-        private void panelMap_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            // Key events in map editor
-            switch (e.KeyData)
-            {
-                case Keys.Up | Keys.Shift:
-                    if (curMap.ToY > 0)
-                    {
-                        curMap.ToY--;
-                        this.UpdateMap(refresh: true);
-                    }
-                    break;
-                case Keys.Down | Keys.Shift:
-                    if (curMap.ToY < 11)
-                    {
-                        curMap.ToY++;
-                        this.UpdateMap(refresh: true);
-                    }
-                    break;
-                case Keys.Left | Keys.Shift:
-                    if (curMap.ToX > 0)
-                    {
-                        curMap.ToX--;
-                        this.UpdateMap(refresh: true);
-                    }
-                    break;
-                case Keys.Right | Keys.Shift:
-                    if (curMap.ToX < 15)
-                    {
-                        curMap.ToX++;
-                        this.UpdateMap(refresh: true);
-                    }
-                    break;
-                case Keys.Up:
-                    if (curMap.Y == 0)
-                    {
-                        if (curMapOrg.Y > 0) curMapOrg.Y--;
-                    }
-                    else curMap.Y--;
-                    this.UpdateMap(refresh: true);
-                    break;
-                case Keys.Down:
-                    if (curMap.Y == 11)
-                    {
-                        if (curMapOrg.Y < dataSource.MapHeight - 12) curMapOrg.Y++;
-                    }
-                    else curMap.Y++;
-                    this.UpdateMap(refresh: true);
-                    break;
-                case Keys.Left:
-                    if (curMap.X == 0)
-                    {
-                        if (curMapOrg.X > 0) curMapOrg.X--;
-                    }
-                    else curMap.X--;
-                    this.UpdateMap(refresh: true);
-                    break;
-                case Keys.Right:
-                    if (curMap.X == 15)
-                    {
-                        if (curMapOrg.X < dataSource.MapWidth - 16) curMapOrg.X++;
-                    }
-                    else curMap.X++;
+                case Keys.Space:
+                    // Keyboard space and enter to send pattern to map
+                    dataSource.SetMapData(curMapOrg.X + viewMap.X,
+                                          curMapOrg.Y + viewMap.Y,
+                                          viewPtn.Index, push: true);
+                    viewMap.IncrementSelection();
                     this.UpdateMap(refresh: true);
                     break;
             }

@@ -16,7 +16,7 @@ namespace _99x8Edit
     {
         private Machine dataSource;
         private PCGEditor PCGWin;
-        private Map mapWin;
+        private MapEditor mapWin;
         private Sprites spriteWin;
         private PeekWindow peekWin;
         private About aboutWin;
@@ -53,7 +53,7 @@ namespace _99x8Edit
             MementoCaretaker.Instance.Initialize(this, dataSource);
             // Editors
             PCGWin = new PCGEditor(dataSource, this);
-            mapWin = new Map(dataSource, this);
+            mapWin = new MapEditor(dataSource, this);
             spriteWin = new Sprites(dataSource, this);
             // Check drag and drop of files
             String[] args = System.Environment.GetCommandLineArgs();
@@ -124,7 +124,7 @@ namespace _99x8Edit
         {
             if (mapWin.IsDisposed)
             {
-                mapWin = new Map(dataSource, this);
+                mapWin = new MapEditor(dataSource, this);
             }
             if (mapWin.Visible)
             {

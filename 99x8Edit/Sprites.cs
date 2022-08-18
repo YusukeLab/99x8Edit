@@ -24,11 +24,7 @@ namespace _99x8Edit
         private int currentDot;                                 // Selected dot in line(0-7)
         private Selection currentColor = new Selection(32, 32); // Selected color, 0=left, 1=right
         private Selection curPal = new Selection(32, 32);       // Selection in palette
-        internal String CurrentFile
-        {
-            get;
-            set;
-        }
+        internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDSprite { }
         private class DnDEditor { }

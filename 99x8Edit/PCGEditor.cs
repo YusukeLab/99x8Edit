@@ -15,11 +15,7 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);      // Color view
         private Bitmap bmpColorR = new Bitmap(32, 32);
         private Bitmap bmpTransparent = new Bitmap(32, 32);
-        internal String CurrentFile
-        {
-            get;
-            set;
-        }
+        internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDPCG {
             internal ClipPCG Data { get; set; }
@@ -438,7 +434,7 @@ namespace _99x8Edit
         {
             if (e.Data.GetDataPresent(typeof(DnDPCG)))
             {
-                (int coldst, int rowdst) = viewPCG.ScreenCoodinateToColRow(Cursor.Position);
+                (int coldst, int rowdst) = viewPCG.ScreenCoodinateToSelection(Cursor.Position);
                 // Characters has been dropped
                 MementoCaretaker.Instance.Push();
                 dynamic d = e.Data.GetData(typeof(DnDPCG));
@@ -559,7 +555,7 @@ namespace _99x8Edit
                 // Dropped from character list
                 MementoCaretaker.Instance.Push();
                 dynamic clip = e.Data.GetData(typeof(DnDPCG));
-                (int dstcol, int dstrow) = viewSand.ScreenCoodinateToColRow(Cursor.Position);
+                (int dstcol, int dstrow) = viewSand.ScreenCoodinateToSelection(Cursor.Position);
                 Rectangle r_src = viewPCG.SelectedRect;
                 Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                 {

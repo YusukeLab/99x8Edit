@@ -504,7 +504,6 @@ namespace _99x8Edit
             this.viewSand.CellWidth = 16;
             this.viewSand.ColumnNum = 32;
             this.viewSand.ContextMenuStrip = this.contextSandbox;
-            this.viewSand.Index = 0;
             this.viewSand.Location = new System.Drawing.Point(301, 227);
             this.viewSand.Name = "viewSand";
             this.viewSand.RowNum = 24;
@@ -512,6 +511,8 @@ namespace _99x8Edit
             this.viewSand.SelectionWidth = 1;
             this.viewSand.Size = new System.Drawing.Size(514, 386);
             this.viewSand.TabIndex = 33;
+            this.viewSand.X = 0;
+            this.viewSand.Y = 0;
             this.viewSand.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewSand_DragDrop);
             this.viewSand.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewSand_DragEnter);
             this.viewSand.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewSand_PreviewKeyDown);
@@ -526,7 +527,6 @@ namespace _99x8Edit
             this.viewPCG.CellWidth = 16;
             this.viewPCG.ColumnNum = 32;
             this.viewPCG.ContextMenuStrip = this.contextPCG;
-            this.viewPCG.Index = 0;
             this.viewPCG.Location = new System.Drawing.Point(301, 61);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.RowNum = 8;
@@ -534,6 +534,8 @@ namespace _99x8Edit
             this.viewPCG.SelectionWidth = 1;
             this.viewPCG.Size = new System.Drawing.Size(514, 130);
             this.viewPCG.TabIndex = 34;
+            this.viewPCG.X = 0;
+            this.viewPCG.Y = 0;
             this.viewPCG.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewPCG_SelectionChanged);
             this.viewPCG.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPCG_CellDragStart);
             this.viewPCG.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragDrop);
@@ -550,7 +552,6 @@ namespace _99x8Edit
             this.viewEdit.CellWidth = 16;
             this.viewEdit.ColumnNum = 16;
             this.viewEdit.ContextMenuStrip = this.contextEditor;
-            this.viewEdit.Index = 0;
             this.viewEdit.Location = new System.Drawing.Point(14, 61);
             this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
@@ -558,6 +559,8 @@ namespace _99x8Edit
             this.viewEdit.SelectionWidth = 8;
             this.viewEdit.Size = new System.Drawing.Size(258, 258);
             this.viewEdit.TabIndex = 35;
+            this.viewEdit.X = 0;
+            this.viewEdit.Y = 0;
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_Edited);
             this.viewEdit.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewEdit_PreviewKeyDown);
@@ -570,7 +573,6 @@ namespace _99x8Edit
             this.viewColor.CellHeight = 32;
             this.viewColor.CellWidth = 32;
             this.viewColor.ColumnNum = 2;
-            this.viewColor.Index = 0;
             this.viewColor.Location = new System.Drawing.Point(14, 358);
             this.viewColor.Name = "viewColor";
             this.viewColor.RowNum = 1;
@@ -578,6 +580,8 @@ namespace _99x8Edit
             this.viewColor.SelectionWidth = 1;
             this.viewColor.Size = new System.Drawing.Size(66, 34);
             this.viewColor.TabIndex = 36;
+            this.viewColor.X = 0;
+            this.viewColor.Y = 0;
             this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_Click);
             this.viewColor.Click += new System.EventHandler(this.viewColor_Click);
             // 
@@ -589,7 +593,6 @@ namespace _99x8Edit
             this.viewPalette.CellHeight = 32;
             this.viewPalette.CellWidth = 32;
             this.viewPalette.ColumnNum = 8;
-            this.viewPalette.Index = 0;
             this.viewPalette.Location = new System.Drawing.Point(13, 550);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.RowNum = 2;
@@ -597,6 +600,8 @@ namespace _99x8Edit
             this.viewPalette.SelectionWidth = 1;
             this.viewPalette.Size = new System.Drawing.Size(258, 66);
             this.viewPalette.TabIndex = 37;
+            this.viewPalette.X = 0;
+            this.viewPalette.Y = 0;
             this.viewPalette.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewPalette_CellOnEdit);
             this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
             this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
