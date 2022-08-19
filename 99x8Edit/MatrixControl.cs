@@ -27,7 +27,7 @@ namespace _99x8Edit
             DashStyle = DashStyle.Dash,
             Width = 2
         };
-        // DnD object for multiple selections
+        // Internal DnD object for multiple selections
         internal class DragSelection {
             internal UserControl _sender;
             internal DragSelection(UserControl sender)
