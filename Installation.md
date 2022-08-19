@@ -1,6 +1,6 @@
 ## Installing
 
-This application is built for .NET Core 3.1,
+This application is built for .NET Core 3.1
 
 ### Windows
 
