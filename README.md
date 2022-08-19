@@ -14,5 +14,5 @@ Twitter:@chocolatechnica
 
 ## How to use
 
-Manual_EN.md - Instruction in English  
-Manual_JP.md - 操作方法（日本語）  
+Release/Manual_EN.md - Instruction in English  
+Release/Manual_JP.md - 操作方法（日本語）  
