@@ -10,7 +10,7 @@ applications, so any feedbacks and requests are welcome.
 
 Twitter:@chocolatechnica
 
-#How to use
+# How to use
 
 ## Main Window
 
