@@ -345,21 +345,25 @@ namespace _99x8Edit
             // Scrolled request from control
             if((e.DY < 0) && (curMapOrg.Y + e.DY >= 0))
             {
+                // Up
                 curMapOrg.Y += e.DY;
                 this.UpdateMap(refresh: true);
             }
             if((e.DY > 0) && (curMapOrg.Y + e.DY <= dataSource.MapHeight - viewMap.SelectionRowNum))
             {
+                // Down
                 curMapOrg.Y += e.DY;
                 this.UpdateMap(refresh: true);
             }
             if ((e.DX < 0) && (curMapOrg.X + e.DX >= 0))
             {
+                // Left
                 curMapOrg.X += e.DX;
                 this.UpdateMap(refresh: true);
             }
             if ((e.DX > 0) && (curMapOrg.X + e.DX <= dataSource.MapWidth - viewMap.SelectionColNum))
             {
+                // Right
                 curMapOrg.X += e.DX;
                 this.UpdateMap(refresh: true);
             }
@@ -464,9 +468,8 @@ namespace _99x8Edit
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
                 // Map pattern has been dropped
-                Point p = viewMap.PointToClient(Cursor.Position);
-                dataSource.SetMapData(Math.Min(p.X / 32, 15), Math.Min(p.Y / 32, 11),
-                                      viewPtn.Index, push: true);
+                (int col, int row) = viewMap.ScreenCoodinateToSelection(Cursor.Position);
+                dataSource.SetMapData(col, row, viewPtn.Index, push: true);
                 this.UpdateMap(refresh: true);
             }
         }
@@ -475,25 +478,27 @@ namespace _99x8Edit
         private void btnLeft_Click(object sender, EventArgs e)
         {
             // Scrolling map leftward
-            curMapOrg.X = Math.Max(curMapOrg.X - 16, 0);
+            curMapOrg.X = Math.Max(curMapOrg.X - viewMap.SelectionColNum, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnRight_Click(object sender, EventArgs e)
         {
             // Scrolling map rightward
-            curMapOrg.X = Math.Min(curMapOrg.X + 16, dataSource.MapWidth - 16);
+            curMapOrg.X = Math.Min(curMapOrg.X + viewMap.SelectionColNum,
+                                   dataSource.MapWidth - viewMap.SelectionColNum);
             this.UpdateMap(refresh: true);
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
             // Scrolling map upward
-            curMapOrg.Y = Math.Max(curMapOrg.Y - 12, 0);
+            curMapOrg.Y = Math.Max(curMapOrg.Y - viewMap.SelectionRowNum, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
             // Scrolling map downward
-            curMapOrg.Y = Math.Min(curMapOrg.Y + 12, dataSource.MapHeight - 12);
+            curMapOrg.Y = Math.Min(curMapOrg.Y + viewMap.SelectionRowNum,
+                                   dataSource.MapHeight - viewMap.SelectionRowNum);
             this.UpdateMap(refresh: true);
         }
         private void btnMapSize_Click(object sender, EventArgs e)
@@ -507,9 +512,9 @@ namespace _99x8Edit
                 txtMapX.Text = (curMapOrg.X = 0).ToString();
                 txtMapY.Text = (curMapOrg.Y = 0).ToString();
                 btnLeft.Enabled = false;
-                btnRight.Enabled = (dataSource.MapWidth > 16);
+                btnRight.Enabled = (dataSource.MapWidth > viewMap.SelectionColNum);
                 btnUp.Enabled = false;
-                btnDown.Enabled = (dataSource.MapHeight > 12);
+                btnDown.Enabled = (dataSource.MapHeight > viewMap.SelectionRowNum);
                 this.RefreshAllViews();     // Everything changes
             }
         }

@@ -14,7 +14,7 @@ namespace _99x8Edit
             for (int i = 1; i < 16; ++i)
             {
                 Color c = source.ColorOf(i);
-                viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
+                viewPalette.SetBackgroundColor(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
             viewPalette.Index = previous;
             colorSelected = callback;

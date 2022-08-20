@@ -123,25 +123,26 @@ namespace _99x8Edit
             for (int i = 1; i < 16; ++i)
             {
                 Color c = dataSource.ColorOf(i);
-                viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
+                viewPalette.SetBackgroundColor(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
             if (refresh) this.viewPalette.Refresh();
         }
         private void UpdateSpriteView(bool refresh)
         {
-            for (int row = 0; row < 8; ++row)
+            for (int row = 0; row < viewSprite.SelectionColNum; ++row)
             {
-                for (int col = 0; col < 8; ++col)
+                for (int col = 0; col < viewSprite.SelectionRowNum; ++col)
                 {
                     // Set four sprites in one 16x16 sprites
-                    var bmps = dataSource.GetBitmapsForSprite16(row * 8 + col);
-                    int index = 0;
+                    int index16 = viewSprite.IndexOf(col, row);
+                    var bmps = dataSource.GetBitmapsForSprite16(index16);
+                    int index_offset = 0;
                     foreach(Bitmap b in bmps)
                     {
-                        int x = col * 2 + (index / 2);
-                        int y = row * 2 + (index % 2);
+                        int x = col * 2 + (index_offset / 2);
+                        int y = row * 2 + (index_offset % 2);
                         viewSprite.SetImage(b, x, y);
-                        ++index;
+                        ++index_offset;
                     }
                 }
             }
@@ -157,9 +158,9 @@ namespace _99x8Edit
             Graphics preview = Graphics.FromImage(bmpPreview);
             int index16 = viewSprite.Index;
             bool overlayed = dataSource.GetSpriteOverlay(index16);
-            for (int y = 0; y < 16; ++y)
+            for (int y = 0; y < viewEdit.ColumnNum; ++y)
             {
-                for (int x = 0; x < 16; ++x)
+                for (int x = 0; x < viewEdit.RowNum; ++x)
                 {
                     int color_code = 0;     // transparent as default
                     int ptn_but = dataSource.GetSpritePixel(index16, x, y, true);
@@ -218,21 +219,21 @@ namespace _99x8Edit
             int index16 = viewSprite.Index;
             int color_code_l = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
             Color cl = dataSource.ColorOf(color_code_l);
-            viewColor.SetBackground(cl, 1, 0);
+            viewColor.SetBackgroundColor(cl, 1, 0);
             if (dataSource.GetSpriteOverlay(index16))
             {
                 // Draw current color of overlayed sprite
                 index16 = (index16 + 1) % 64;
                 int color_code_r = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
                 Color cr = dataSource.ColorOf(color_code_r);
-                viewColor.SetBackground(cr, 2, 0);
+                viewColor.SetBackgroundColor(cr, 2, 0);
                 length = 3;
                 if (!dataSource.IsTMS9918)
                 {
                     // Draw OR color of two sprites (V9938)
                     int color_code_or = color_code_l | color_code_r;
                     Color co = dataSource.ColorOf(color_code_or);
-                    viewColor.SetBackground(co, 3, 0);
+                    viewColor.SetBackgroundColor(co, 3, 0);
                     length = 4;
                     labelColorOR.Visible = true;
                 }
@@ -315,29 +316,26 @@ namespace _99x8Edit
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {
-            int index16 = 0;
-            // Palette view has been clicked            
-            int clicked_color_num = Math.Clamp((e.Y / viewPalette.CellHeight)
-                                              * viewPalette.ColumnNum
-                                              + (e.X / viewPalette.CellWidth), 0, 15);
+            int index16ov = 0;
+            // Palette view has been clicked
+            int clicked_color_num = viewPalette.ScreenCoodinateToIndex(Cursor.Position);
             // Update selection
-            viewPalette.X = clicked_color_num % 8;
-            viewPalette.Y = clicked_color_num / 8;
+            viewPalette.Index = clicked_color_num;
             this.UpdatePaletteView(true);
             // Update color table of current line
             if (e.Button == MouseButtons.Left)
             {
                 // Left click is for primary sprite
-                index16 = viewSprite.Index;
+                index16ov = viewSprite.Index;
             }
             else if ((e.Button == MouseButtons.Right) && (checkOverlay.Checked == true))
             {
                 // Right click is for overlayed sprite
-                index16 = (viewSprite.Index + 1) % 64;
+                index16ov = (viewSprite.Index + 1) % 64;
             }
             if(clicked_color_num != 0)  // Ignore transparent
             {
-                dataSource.SetSpriteColorCode(index16, viewEdit.Y, clicked_color_num, push: true);
+                dataSource.SetSpriteColorCode(index16ov, viewEdit.Y, clicked_color_num, push: true);
             }
             this.RefreshAllViews();
         }
@@ -345,9 +343,8 @@ namespace _99x8Edit
         {
             if (!chkTMS.Checked)
             {
-                // Palette editing window
-                int clicked_color_num = (e.Y / 32) * 8 + (e.X / 32);
-                this.EditPalette(clicked_color_num);
+                // Open the palette editor window
+                this.EditPalette(viewPalette.Index);
             }
         }
         private void viewPalette_CellOnEdit(object sender, EventArgs e)
@@ -397,7 +394,7 @@ namespace _99x8Edit
                 for (int j = r.X; j < r.X + r.Width; ++j)
                 {
                     // For each selected sprites
-                    l.Add(dataSource.GetSpriteData(i * 8 + j));
+                    l.Add(dataSource.GetSpriteData(viewSprite.IndexOf(j, i)));
                 }
                 clip.sprites.Add(l);
             }
@@ -423,14 +420,16 @@ namespace _99x8Edit
             {
                 MementoCaretaker.Instance.Push();
                 // Copied from peek window
-                for (int i = 0; (i < clip.peeked.Count / 2) && (viewSprite.Y + i < 8); ++i)
+                for (int i = 0; (i < clip.peeked.Count / 2)
+                    && (viewSprite.Y + i < viewSprite.SelectionRowNum); ++i)
                 {
                     // One row in peek window is 8 dots so we need a trick
                     List<byte[]> first_row = clip.peeked[i * 2 + 0];
                     List<byte[]> second_row = clip.peeked[i * 2 + 1];
-                    for (int j = 0; (j < first_row.Count / 2) && (viewSprite.X + j < 8); ++j)
+                    for (int j = 0; (j < first_row.Count / 2)
+                        && (viewSprite.X + j < viewSprite.SelectionColNum); ++j)
                     {
-                        int index16 = (viewSprite.Y + i) * 8 + (viewSprite.X + j);
+                        int index16 = viewSprite.IndexOf(viewSprite.X + j, viewSprite.Y + i);
                         dataSource.SetSpriteOverlay(index16, overlay: false, push: false);
                         List<byte> gendata_16 = new List<byte>();
                         gendata_16.AddRange(first_row[j * 2 + 0]);
@@ -446,21 +445,20 @@ namespace _99x8Edit
         private void contextSprite_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewSprite.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // Delete each selected sprites
                 int index16 = viewSprite.IndexOf(col, row);
                 dataSource.Clear16x16Sprite(index16, push: false);
             };
-            viewSprite.ForEachSelection(r, callback);
+            viewSprite.ForEachSelection(callback);
             this.RefreshAllViews();
         }
         private void contextSprite_reverse(object sender, EventArgs e)
         {
             int current = viewSprite.Index;
-            int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
             // Loop count for primary sprite and overlayed sprite
+            int loop_cnt = dataSource.GetSpriteOverlay(current) ? 2 : 1;
             for (int i = 0; i < loop_cnt; ++i)
             {
                 // Each sprites, primary and overlayed
@@ -557,6 +555,7 @@ namespace _99x8Edit
                 int index16 = viewSprite.Index;
                 if (dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
                 {
+                    // Limit the max value which depends on overlay and VDP
                     if (dataSource.IsTMS9918)
                     {
                         updated_stat %= 3;       // Overlayed, no OR color
@@ -674,13 +673,12 @@ namespace _99x8Edit
         private void contextEditor_del(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewEdit.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // Delete each lines
                 dataSource.ClearSpriteLine(viewSprite.Index, col, row, push: false);
             };
-            viewEdit.ForEachSelection(r, callback);
+            viewEdit.ForEachSelection(callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
         }
@@ -846,7 +844,7 @@ namespace _99x8Edit
         private int GetDotStatus(int x, int y)
         {
             // check pixel of first sprite
-            int index16 = viewSprite.Y * 8 + viewSprite.X;
+            int index16 = viewSprite.Index;
             int target_prev_pixel = dataSource.GetSpritePixel(index16, x, y, true);
             // check pixel of overlayed sprite
             int index16ov = (index16 + 1) % 64;
@@ -858,7 +856,7 @@ namespace _99x8Edit
         private void SetDotStatus(int x, int y, int val, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
-            int index16 = viewSprite.Y * 8 + viewSprite.X;
+            int index16 = viewSprite.Index;
             int index16ov = (index16 + 1) % 64;
             // Updated status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
             // set pixel of first sprite when above is 1 or 3
@@ -873,6 +871,7 @@ namespace _99x8Edit
         }
         private void PaintSprite(int x, int y, int color_l, int color_r, bool overlay, int status)
         {
+            // This won't be intuitive since the colors depend on line, but still useful
             int prev_dot_status = this.GetDotStatus(x, y);
             if (prev_dot_status == status) return;
             // Paint dot status

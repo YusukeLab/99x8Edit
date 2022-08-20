@@ -259,7 +259,7 @@ namespace _99x8Edit
             _cellImg[col, row] = img;
             _updated = true;
         }
-        public void SetBackground(Color c, int col, int row)
+        public void SetBackgroundColor(Color c, int col, int row)
         {
             // Set the background colors of each cells
             _background ??= new Color[_columnNum, _rowNum];
@@ -302,11 +302,11 @@ namespace _99x8Edit
                 _updated = true;
             }
         }
-        public void ForEachSelection(Rectangle selection, Action<int, int> callback)
+        public void ForEachSelection(Action<int, int> callback)
         {
             // Callback for each selection if its cols and rows are valid
-            this.ForEachSelection(selection.X, selection.Y,
-                                  selection.Width, selection.Height, callback);
+            this.ForEachSelection(_selection.Selected.X, _selection.Selected.Y,
+                                  _selection.Selected.Width, _selection.Selected.Height, callback);
         }
         public void ForEachSelection(int col, int row, int w, int h,
                                      Action<int, int> callback)
