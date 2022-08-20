@@ -87,6 +87,8 @@ namespace _99x8Edit
             this.viewEdit = new _99x8Edit.EditorControl();
             this.viewColor = new _99x8Edit.MatrixControl();
             this.viewPalette = new _99x8Edit.MatrixControl();
+            this.toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.contextPCG.SuspendLayout();
             this.contextSandbox.SuspendLayout();
             this.contextEditor.SuspendLayout();
@@ -315,9 +317,11 @@ namespace _99x8Edit
             this.toolStripEditorCopyDown,
             this.toolStripEditorCopyRight,
             this.toolStripSeparator3,
+            this.toolStripEditorPaint,
+            this.toolStripSeparator7,
             this.toolStripEditorDel});
             this.contextEditor.Name = "contextPCGList";
-            this.contextEditor.Size = new System.Drawing.Size(209, 130);
+            this.contextEditor.Size = new System.Drawing.Size(209, 160);
             // 
             // toolStripEditorCopy
             // 
@@ -648,6 +652,19 @@ namespace _99x8Edit
             this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
             this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
             // 
+            // toolStripEditorPaint
+            // 
+            this.toolStripEditorPaint.Name = "toolStripEditorPaint";
+            this.toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.B)));
+            this.toolStripEditorPaint.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorPaint.Text = "Paint";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -747,5 +764,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditCurrent;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaint;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }

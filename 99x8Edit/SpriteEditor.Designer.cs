@@ -89,6 +89,7 @@ namespace _99x8Edit
             this.viewPalette = new _99x8Edit.MatrixControl();
             this.viewSprite = new _99x8Edit.MatrixControl();
             this.viewEdit = new _99x8Edit.EditorControl();
+            this.toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.viewPreview)).BeginInit();
             this.contextSprites.SuspendLayout();
             this.contextEditor.SuspendLayout();
@@ -324,10 +325,11 @@ namespace _99x8Edit
             this.toolStripEditorCopyColor,
             this.toolStripSeparator2,
             this.toolStripEditorInverse,
+            this.toolStripEditorPaint,
             this.toolStripSeparator6,
             this.toolStripEditorDel});
             this.contextEditor.Name = "contextPCGList";
-            this.contextEditor.Size = new System.Drawing.Size(244, 184);
+            this.contextEditor.Size = new System.Drawing.Size(244, 208);
             // 
             // toolStripEditorCopy
             // 
@@ -652,6 +654,14 @@ namespace _99x8Edit
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEditor_CellOnEdit);
             // 
+            // toolStripEditorPaint
+            // 
+            this.toolStripEditorPaint.Name = "toolStripEditorPaint";
+            this.toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.B)));
+            this.toolStripEditorPaint.Size = new System.Drawing.Size(243, 24);
+            this.toolStripEditorPaint.Text = "Paint";
+            // 
             // SpriteEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -754,5 +764,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditCurrent;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaint;
     }
 }

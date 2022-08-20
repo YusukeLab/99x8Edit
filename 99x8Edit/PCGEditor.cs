@@ -69,6 +69,7 @@ namespace _99x8Edit
             toolStripEditorDel.Click += new EventHandler(contextEditor_delete);
             toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
+            toolStripEditorPaint.Click += new EventHandler(contextEditor_paint);
         }
         //------------------------------------------------------------------------------
         // Override
@@ -234,23 +235,20 @@ namespace _99x8Edit
         // Editor
         private void viewEdit_CellOnEdit(object sender, EventArgs e)
         {
-            (int x, int y) = viewEdit.PosInChr();              // Dot in one PCG
-            int index = viewPCG.Index
-                      + (viewEdit.Y / 8) * viewPCG.ColumnNum
-                      + viewEdit.X;                            // Selected character
-            int prev_pixel = dataSource.GetPCGPixel(index, y, x);
+            (int x, int y) = viewEdit.PosInEditor();
+            bool prev_val = this.GetDotStatus(x, y); // on: true off: false
             if (Config.Setting.EditControlType == EditType.Current)
             {
                 // Set to current color
-                if((viewColor.X == 0) && (prev_pixel == 0))
+                if ((viewColor.X == 0) && (!prev_val))
                 {
                     // Set foreground color
-                    dataSource.SetPCGPixel(index, y, x, 1, push: true);
+                    this.SetDotStatus(x, y, val: true, push: true);
                 }
-                else if((viewColor.X == 1) && (prev_pixel != 0))
+                else if ((viewColor.X == 1) && prev_val)
                 {
                     // Current color is background, so reset foreground color
-                    dataSource.SetPCGPixel(index, y, x, 0, push: true);
+                    this.SetDotStatus(x, y, val: false, push: true);
                 }
                 else
                 {
@@ -261,11 +259,22 @@ namespace _99x8Edit
             else
             {
                 // Toggle the color of target pixel
-                dataSource.SetPCGPixel(index, y, x, (prev_pixel == 0) ? 1 : 0, push: true);
+                this.SetDotStatus(x, y, val: !prev_val, push: true);
             }
             this.UpdatePCGEditView(refresh: true);   // PCG Editor view changes
             this.UpdatePCGList(refresh: true);       // PCG list view changes also
             this.UpdateSandbox(refresh: true);       // Update sandbox view
+        }
+        private void contextEditor_paint(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            (int x, int y) = viewEdit.PosInEditor();
+            // Acquire color code to paint
+            bool foreground = (viewColor.X == 0);
+            int color_code = this.GetDotColorCode(x, y, foreground);
+            // Paint region
+            this.PaintPCG(x, y, foreground, color_code);
+            this.RefreshAllViews();
         }
         private void viewEdit_SelectionChanged(object sender, EventArgs e)
         {
@@ -355,8 +364,7 @@ namespace _99x8Edit
         }
         private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
         {
-            int target = viewPCG.Index + (viewEdit.Y / 8) * viewPCG.ColumnNum
-                       + viewEdit.X;        // Target character
+            int target = this.TargetPCG();  // Target character
             int line = viewEdit.Y % 8;      // Target line
             if (e.KeyType == EditorControl.AddKeyEventArgs.Type.PlusMinus)
             {
@@ -857,6 +865,29 @@ namespace _99x8Edit
         }
         //---------------------------------------------------------------------
         // Utility
+        private ClipPCG CopyMultiplePCG(Rectangle r)
+        {
+            ClipPCG clip = new ClipPCG();
+            for (int i = r.Y; i < r.Y + r.Height; ++i)
+            {
+                List<byte[]> gen_row = new List<byte[]>();
+                List<byte[]> clr_row = new List<byte[]>();
+                List<int> pcg_row = new List<int>();
+                for (int j = r.X; j < r.X + r.Width; ++j)
+                {
+                    // Copy selected characters
+                    int index = viewPCG.IndexOf(j, i);
+                    (byte[] gen, byte[] color) = dataSource.GetPCGData(index);
+                    gen_row.Add(gen);
+                    clr_row.Add(color);
+                    pcg_row.Add(index);
+                }
+                clip.pcgGen.Add(gen_row);
+                clip.pcgClr.Add(clr_row);
+                clip.pcgIndex.Add(pcg_row);
+            }
+            return clip;
+        }
         private void EditPalette(int index)
         {
             (int R, int G, int B) = dataSource.GetPalette(index);
@@ -890,28 +921,53 @@ namespace _99x8Edit
                 if (dataSource.GetNameTable(y * 32 + x + 1) == pcg_to_paint)
                     this.PaintSandbox(x + 1, y, val);
         }
-        private ClipPCG CopyMultiplePCG(Rectangle r)
+        private void PaintPCG(int x, int y, bool foreground, int color_code)
         {
-            ClipPCG clip = new ClipPCG();
-            for (int i = r.Y; i < r.Y + r.Height; ++i)
-            {
-                List<byte[]> gen_row = new List<byte[]>();
-                List<byte[]> clr_row = new List<byte[]>();
-                List<int> pcg_row = new List<int>();
-                for (int j = r.X; j < r.X + r.Width; ++j)
-                {
-                    // Copy selected characters
-                    int index = viewPCG.IndexOf(j, i);
-                    (byte[] gen, byte[] color) = dataSource.GetPCGData(index);
-                    gen_row.Add(gen);
-                    clr_row.Add(color);
-                    pcg_row.Add(index);
-                }
-                clip.pcgGen.Add(gen_row);
-                clip.pcgClr.Add(clr_row);
-                clip.pcgIndex.Add(pcg_row);
-            }
-            return clip;
+            // Check whether foreground/background has changed
+            bool prev_val = this.GetDotStatus(x, y);     // 1 when foreground
+            if (prev_val == foreground) return;
+            // So paint occurs when fore/back is same and color is same
+            this.SetDotStatus(x, y, foreground, push: false);
+            // Overwrite the color also
+            this.SetDotColorCode(x, y, foreground, color_code, push: false);
+            if (y > 0)
+                if (this.GetDotStatus(x, y - 1) == prev_val)
+                    this.PaintPCG(x, y - 1, foreground, color_code);
+            if (y < 15)
+                if (this.GetDotStatus(x, y + 1) == prev_val)
+                    this.PaintPCG(x, y + 1, foreground, color_code);
+            if (x > 0)
+                if (this.GetDotStatus(x - 1, y) == prev_val)
+                    this.PaintPCG(x - 1, y, foreground, color_code);
+            if (x < 15)
+                if (this.GetDotStatus(x + 1, y) == prev_val)
+                    this.PaintPCG(x + 1, y, foreground, color_code);
+        }
+        private bool GetDotStatus(int x, int y)
+        {
+            int pcg = viewPCG.Index + (y / 8) * viewPCG.ColumnNum + x / 8;
+            int bit = x % 8;
+            int line = y % 8;
+            return dataSource.GetPCGPixel(pcg, line, bit) != 0;
+        }
+        private void SetDotStatus(int x, int y, bool val, bool push)
+        {
+            int pcg = viewPCG.Index + (y / 8) * viewPCG.ColumnNum + x / 8;
+            int bit = x % 8;
+            int line = y % 8;
+            this.dataSource.SetPCGPixel(pcg, line, bit, val ? 1 : 0, push);
+        }
+        private int GetDotColorCode(int x, int y, bool foreground)
+        {
+            int pcg = viewPCG.Index + (y / 8) * viewPCG.ColumnNum + x / 8;
+            int line = y % 8;
+            return dataSource.GetPCGColor(pcg, line, foreground);
+        }
+        private void SetDotColorCode(int x, int y, bool foreground, int color_code, bool push)
+        {
+            int pcg = viewPCG.Index + (y / 8) * viewPCG.ColumnNum + x / 8;
+            int line = y % 8;
+            dataSource.SetPCGColor(pcg, line, color_code, foreground, push);
         }
         private int TargetPCG()
         {

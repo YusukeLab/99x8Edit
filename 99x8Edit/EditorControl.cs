@@ -49,12 +49,6 @@ namespace _99x8Edit
             _brush[col, row] = b;
             _updated = true;
         }
-        [Browsable(false)]
-        public (int x, int y) PosInChr()
-        {
-            // Position in one 8x8 character
-            return (_sub.X, _selection.Y % 8);
-        }
         public (int x, int y) PosInEditor()
         {
             // Position in whole editor control

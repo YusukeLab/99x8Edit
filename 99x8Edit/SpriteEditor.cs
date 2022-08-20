@@ -62,6 +62,7 @@ namespace _99x8Edit
             toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
             toolStripEditorCopyColor.Click += new EventHandler(contextEditor_copyColor);
             toolStripEditorInverse.Click += new EventHandler(contextEditor_inverse);
+            toolStripEditorPaint.Click += new EventHandler(contextEditor_paint);
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -540,14 +541,62 @@ namespace _99x8Edit
         // Sprite editor
         private void viewEditor_CellOnEdit(object sender, EventArgs e)
         {
-            // Toggle the color of selected pixel
+            // current_status is: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             (int x, int y) = viewEdit.PosInEditor();
-            this.EditCurrentSprite(x, y);
+            int current_stat = this.GetDotStatus(x, y);
+            int updated_stat = current_stat;
+            if (Config.Setting.EditControlType == EditType.Current)
+            {
+                // Set the pixel to current color
+                updated_stat = viewColor.X;
+            }
+            else
+            {
+                // Toggle the status of pixel
+                updated_stat = current_stat + 1;
+                int index16 = viewSprite.Index;
+                if (dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
+                {
+                    if (dataSource.IsTMS9918)
+                    {
+                        updated_stat %= 3;       // Overlayed, no OR color
+                    }
+                    else
+                    {
+                        updated_stat %= 4;       // Overlayed, OR color available
+                    }
+                }
+                else
+                {
+                    updated_stat %= 2;           // No overlay
+                }
+            }
+            if (updated_stat != current_stat)
+            {
+                // Update the dot status
+                this.SetDotStatus(x, y, updated_stat, push: true);
+                // Update views
+                this.UpdateSpriteEditView(refresh: true);
+                this.UpdateSpriteView(refresh: true);
+            }
         }
         private void viewEdit_SelectionChanged(object sender, EventArgs e)
         {
             // Current line has changed
             this.UpdateCurrentColorView(true);
+        }
+        private void contextEditor_paint(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            (int x, int y) = viewEdit.PosInEditor();
+            // Aqcuire current color code to set
+            int color_l = dataSource.GetSpriteColorCode(viewSprite.Index, y);
+            int color_r = 0;
+            bool overlay = dataSource.GetSpriteOverlay(viewSprite.Index);
+            int index16ov = (viewSprite.Index + 1) % 64;
+            color_r = dataSource.GetSpriteColorCode(index16ov, y);
+            this.PaintSprite(x, y, color_l, color_r, overlay, viewColor.X);
+            this.RefreshAllViews();
         }
         private void contextEditor_copy(object sender, EventArgs e)
         {
@@ -794,7 +843,7 @@ namespace _99x8Edit
             palette_win.Location = Cursor.Position;
             palette_win.Show();
         }
-        private void EditCurrentSprite(int x, int y)
+        private int GetDotStatus(int x, int y)
         {
             // check pixel of first sprite
             int index16 = viewSprite.Y * 8 + viewSprite.X;
@@ -804,49 +853,49 @@ namespace _99x8Edit
             int target_prev_pixel_ov = dataSource.GetSpritePixel(index16ov, x, y, true);
             // current_status will be: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
-            int updated_stat = current_stat;
-            if (Config.Setting.EditControlType == EditType.Current)
+            return current_stat;
+        }
+        private void SetDotStatus(int x, int y, int val, bool push)
+        {
+            if (push) MementoCaretaker.Instance.Push();
+            int index16 = viewSprite.Y * 8 + viewSprite.X;
+            int index16ov = (index16 + 1) % 64;
+            // Updated status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
+            // set pixel of first sprite when above is 1 or 3
+            int pixel = ((val == 1) || (val == 3)) ? 1 : 0;
+            dataSource.SetSpritePixel(index16, x, y, pixel, push: false);
+            if (dataSource.GetSpriteOverlay(index16))
             {
-                // Set the pixel to current color
-                updated_stat = viewColor.X;
+                // set pixel of overlayed sprite when above is 2 or 3
+                pixel = ((val == 2) || (val == 3)) ? 1 : 0;
+                dataSource.SetSpritePixel(index16ov, x, y, pixel, false);
             }
-            else
+        }
+        private void PaintSprite(int x, int y, int color_l, int color_r, bool overlay, int status)
+        {
+            int prev_dot_status = this.GetDotStatus(x, y);
+            if (prev_dot_status == status) return;
+            // Paint dot status
+            this.SetDotStatus(x, y, status, push: false);
+            // Overwrite color code also
+            dataSource.SetSpriteColorCode(viewSprite.Index, y, color_l, false);
+            if(overlay)
             {
-                // Toggle the status of pixel
-                updated_stat = current_stat + 1;
-                if (dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
-                {
-                    if (dataSource.IsTMS9918)
-                    {
-                        updated_stat %= 3;       // Overlayed, no OR color
-                    }
-                    else
-                    {
-                        updated_stat %= 4;       // Overlayed, OR color available
-                    }
-                }
-                else
-                {
-                    updated_stat %= 2;           // No overlay
-                }
+                int index16ov = (viewSprite.Index + 1) % 64;
+                dataSource.SetSpriteColorCode(index16ov, y, color_r, false);
             }
-            if(updated_stat != current_stat)
-            {
-                MementoCaretaker.Instance.Push();
-                // So updated status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
-                // set pixel of first sprite when above is 1 or 3
-                int pixel = ((updated_stat == 1) || (updated_stat == 3)) ? 1 : 0;
-                dataSource.SetSpritePixel(index16, x, y, pixel, push: false);
-                if (dataSource.GetSpriteOverlay(index16))
-                {
-                    // set pixel of overlayed sprite when above is 2 or 3
-                    pixel = ((updated_stat == 2) || (updated_stat == 3)) ? 1 : 0;
-                    dataSource.SetSpritePixel(index16ov, x, y, pixel, push: false);
-                }
-                // Update views
-                this.UpdateSpriteEditView(refresh: true);
-                this.UpdateSpriteView(refresh: true);
-            }
+            if (y > 0)
+                if (this.GetDotStatus(x, y - 1) == prev_dot_status)
+                    this.PaintSprite(x, y - 1, color_l, color_r, overlay, status);
+            if (y < 15)
+                if (this.GetDotStatus(x, y + 1) == prev_dot_status)
+                    this.PaintSprite(x, y + 1, color_l, color_r, overlay, status);
+            if (x > 0)
+                if (this.GetDotStatus(x - 1, y) == prev_dot_status)
+                    this.PaintSprite(x - 1, y, color_l, color_r, overlay, status);
+            if (x < 15)
+                if (this.GetDotStatus(x + 1, y) == prev_dot_status)
+                    this.PaintSprite(x + 1, y, color_l, color_r, overlay, status);
         }
 
         private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
