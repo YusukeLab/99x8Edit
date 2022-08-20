@@ -7,7 +7,7 @@ using System.IO;
 namespace _99x8Edit
 {
     // All VDP related data will be wrapped here
-    public class Machine
+    public class Machine : IMementoTarget
     {
         // Data, of PCG
         private byte[] ptnGen = new byte[256 * 8];    // Pattern generator table
@@ -97,7 +97,7 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // For Mementos
-        internal Machine CreateCopy()
+        IMementoTarget IMementoTarget.CreateCopy()
         {
             Machine m = new Machine();
             m.ptnGen = ptnGen.Clone() as byte[];
@@ -115,21 +115,22 @@ namespace _99x8Edit
             m.spriteOverlay = spriteOverlay.Clone() as byte[];
             return m;
         }
-        internal void SetAllData(Machine m)
+        void IMementoTarget.Restore(IMementoTarget m)
         {
-            ptnGen = m.ptnGen.Clone() as byte[];
-            ptnClr = m.ptnClr.Clone() as byte[];
-            nameTable = m.nameTable.Clone() as byte[];
-            pltDat = m.pltDat.Clone() as byte[];
-            isTMS9918 = m.isTMS9918;
-            mapPattern = m.mapPattern.Clone() as byte[];
-            mapData = m.mapData.Clone() as byte[,];
-            mapWidth = m.mapWidth;
-            mapHeight = m.mapHeight;
-            spriteGen = m.spriteGen.Clone() as byte[];
-            spriteClr16 = m.spriteClr16.Clone() as byte[];
-            spriteClr = m.spriteClr.Clone() as byte[];
-            spriteOverlay = m.spriteOverlay.Clone() as byte[];
+            Machine src = m as Machine;
+            ptnGen = src.ptnGen.Clone() as byte[];
+            ptnClr = src.ptnClr.Clone() as byte[];
+            nameTable = src.nameTable.Clone() as byte[];
+            pltDat = src.pltDat.Clone() as byte[];
+            isTMS9918 = src.isTMS9918;
+            mapPattern = src.mapPattern.Clone() as byte[];
+            mapData = src.mapData.Clone() as byte[,];
+            mapWidth = src.mapWidth;
+            mapHeight = src.mapHeight;
+            spriteGen = src.spriteGen.Clone() as byte[];
+            spriteClr16 = src.spriteClr16.Clone() as byte[];
+            spriteClr = src.spriteClr.Clone() as byte[];
+            spriteOverlay = src.spriteOverlay.Clone() as byte[];
             this.UpdateAllViewItems();  // Update bitmaps
         }
         //------------------------------------------------------------------------

@@ -26,21 +26,7 @@ namespace _99x8Edit
         {
             InitializeComponent();
         }
-        public bool UndoEnable
-        {
-            set
-            {
-                btnUndo.Enabled = value;
-            }
-        }
-        public bool RedoEnable
-        {
-            set
-            {
-                btnRedo.Enabled = value;
-            }
-        }
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainWindow_Load(object sender, EventArgs e)
         {
             // Initialize VDP settings
             dataSource = new Machine();
@@ -50,7 +36,8 @@ namespace _99x8Edit
                 dataSource.LoadAllSettings(new BinaryReader(s));    // Init by resource
             }
             // Undo/Redo            
-            MementoCaretaker.Instance.Initialize(this, dataSource);
+            MementoCaretaker.Instance.SetCallback(MementoStateChanged);
+            MementoCaretaker.Instance.AddTarget(dataSource);  // One Machine class will be managed
             // Editors
             PCGWin = new PCGEditor(dataSource, this);
             mapWin = new MapEditor(dataSource, this);
@@ -101,6 +88,12 @@ namespace _99x8Edit
             PCGWin.ChangeOccuredByHost();
             mapWin.ChangeOccuredByHost();
             spriteWin.ChangeOccuredByHost();
+        }
+        internal void MementoStateChanged()
+        {
+            // For MementoCaretaker
+            btnUndo.Enabled = MementoCaretaker.Instance.UndoEnable;
+            btnRedo.Enabled = MementoCaretaker.Instance.RedoEnable;
         }
         //----------------------------------------------------------------------
         // Controls
