@@ -28,8 +28,6 @@ namespace _99x8Edit
         }
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            // Initialize configuration
-            Config.Init();
             // Initialize VDP settings
             dataSource = new Machine();
             dataSource.SetToDefault();
@@ -70,10 +68,6 @@ namespace _99x8Edit
             }
             // Open PCG editor as default
             PCGWin.Show();
-        }
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Config.Save();
         }
         //----------------------------------------------------------------------
         // For other forms and internal use
