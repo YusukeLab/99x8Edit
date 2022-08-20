@@ -36,10 +36,10 @@ namespace _99x8Edit
             BitmapData bd = src.LockBits(new Rectangle(0, 0, src.Width, src.Height),
                                          ImageLockMode.ReadWrite, src.PixelFormat);
             int stride = Math.Abs(bd.Stride);
-            int ch_num = Bitmap.GetPixelFormatSize(src.PixelFormat) / 8;
+            int ch_num = Image.GetPixelFormatSize(src.PixelFormat) / 8;
             // Create byte arrays of source and destination
-            Byte[] adst = new byte[stride * bd.Height];
-            Byte[] asrc = new byte[stride * bd.Height];
+            byte[] adst = new byte[stride * bd.Height];
+            byte[] asrc = new byte[stride * bd.Height];
             System.Runtime.InteropServices.Marshal.Copy(bd.Scan0, adst, 0, adst.Length);
             System.Runtime.InteropServices.Marshal.Copy(bd.Scan0, asrc, 0, asrc.Length);
             // Make new image with RGB shift

@@ -9,31 +9,31 @@ namespace _99x8Edit
     // Binary file viewer window
     public partial class PeekWindow : Form
     {
-        private BinaryReader reader = null;
-        private long seekAddr = 0;
-        private Bitmap[,] bmps = new Bitmap[32, 32];
+        private BinaryReader _reader = null;
+        private long _seekAddr = 0;
+        private Bitmap[,] _bmps = new Bitmap[32, 32];
         enum PeekType
         {
             Linear = 0,
             Sprite,
         }
-        private PeekType type = PeekType.Linear;
+        private PeekType _type = PeekType.Linear;
         // For internal drag control
         private class DnDPeek { }
         //----------------------------------------------------------------------
         // Initialize
-        public PeekWindow(String filename)
+        public PeekWindow(string filename)
         {
             InitializeComponent();
-            reader = new BinaryReader(new FileStream(filename, FileMode.Open));
-            Text = "Peek - " + Path.GetFileName(filename);
+            _reader = new BinaryReader(new FileStream(filename, FileMode.Open));
+            this.Text = "Peek - " + Path.GetFileName(filename);
             toolStripCopy.Click += new EventHandler(contextPeek_copy);
             RefreshAllViews();
         }
         private void Peek_FormClosing(object sender, FormClosingEventArgs e)
         {
-            reader.Close();
-            reader = null;
+            _reader.Close();
+            _reader = null;
         }
         //----------------------------------------------------------------------
         // Overrides
@@ -62,36 +62,36 @@ namespace _99x8Edit
         {
             this.UpdatePeek();
             this.UpdateAddr();
-            btnLinear.Checked = (type == PeekType.Linear);
-            btnSprites.Checked = (type == PeekType.Sprite);
+            btnLinear.Checked = (_type == PeekType.Linear);
+            btnSprites.Checked = (_type == PeekType.Sprite);
         }
         private void UpdatePeek()
         {
-            long length_left = reader.BaseStream.Length - seekAddr;
-            reader.BaseStream.Seek(seekAddr, SeekOrigin.Begin);
+            long length_left = _reader.BaseStream.Length - _seekAddr;
+            _reader.BaseStream.Seek(_seekAddr, SeekOrigin.Begin);
             for (int row = 0; row < 32; ++row)
             {
                 for(int col = 0; col < 32; ++col)
                 {
-                    bmps[col, row] ??= new Bitmap(8, 8);
-                    Graphics g = Graphics.FromImage(bmps[col, row]);
+                    _bmps[col, row] ??= new Bitmap(8, 8);
+                    Graphics g = Graphics.FromImage(_bmps[col, row]);
                     g.Clear(Color.Gray);
-                    viewPeek.SetImage(bmps[col, row], col, row);
+                    viewPeek.SetImage(_bmps[col, row], col, row);
                 }
             }
             for(int i = 0; i < 8192 && i < length_left; ++i)
             {
                 // Address to col, row
-                byte dat = reader.ReadByte();
-                (int chr_x, int chr_y) = this.AddressToColRow(seekAddr + i);
+                byte dat = _reader.ReadByte();
+                (int chr_x, int chr_y) = this.AddressToColRow(_seekAddr + i);
                 int pix_y = i % 8;          // row in 8x8 character
                 for(int j = 0; j < 8; ++j)  // for each columns in one 8x1 line
                 {
                     int bit = (dat >> (7 - j)) & 1;
                     if(bit != 0)
                     {
-                        Graphics g = Graphics.FromImage(bmps[chr_x, chr_y]);
-                        bmps[chr_x, chr_y].SetPixel(j, pix_y, Color.Black);
+                        Graphics g = Graphics.FromImage(_bmps[chr_x, chr_y]);
+                        _bmps[chr_x, chr_y].SetPixel(j, pix_y, Color.Black);
                     }
                 }
             }
@@ -99,12 +99,12 @@ namespace _99x8Edit
         }
         private void UpdateAddr()
         {
-            btnUp.Enabled = (seekAddr > 0);
-            btnDown.Enabled = (seekAddr < reader.BaseStream.Length - 2);
+            btnUp.Enabled = (_seekAddr > 0);
+            btnDown.Enabled = (_seekAddr < _reader.BaseStream.Length - 2);
             {
                 btnUp.Enabled = true;
             }
-            txtAddr.Text = seekAddr.ToString("x6");
+            txtAddr.Text = _seekAddr.ToString("x6");
         }
         //----------------------------------------------------------------------
         // Controls
@@ -125,12 +125,12 @@ namespace _99x8Edit
                 {
                     byte[] one_cell = new byte[8];
                     long addr = this.ColRowToAddr(j, i);
-                    if (addr <= reader.BaseStream.Length - 8)
+                    if (addr <= _reader.BaseStream.Length - 8)
                     {
-                        reader.BaseStream.Seek(addr, SeekOrigin.Begin);
+                        _reader.BaseStream.Seek(addr, SeekOrigin.Begin);
                         for (int line = 0; line < 8; ++line)
                         {
-                            one_cell[line] = reader.ReadByte();
+                            one_cell[line] = _reader.ReadByte();
                         }
                     }
                     l.Add(one_cell);
@@ -142,18 +142,18 @@ namespace _99x8Edit
         private void viewPtn_MatrixOnScroll(object sender, MatrixControl.ScrollEventArgs e)
         {
             int dy = e.DY;
-            if((e.DY < 0) && (seekAddr > 0))
+            if((e.DY < 0) && (_seekAddr > 0))
             {
-                seekAddr -= 32 * 8 * 2;
-                if (seekAddr < 0) seekAddr = 0;
+                _seekAddr -= 32 * 8 * 2;
+                if (_seekAddr < 0) _seekAddr = 0;
                 this.RefreshAllViews();
             }
-            if((e.DY > 0) && (seekAddr + 8192 < reader.BaseStream.Length))
+            if((e.DY > 0) && (_seekAddr + 8192 < _reader.BaseStream.Length))
             {
-                seekAddr += 32 * 8 * 2;
-                if (seekAddr + 8192 >= reader.BaseStream.Length)
+                _seekAddr += 32 * 8 * 2;
+                if (_seekAddr + 8192 >= _reader.BaseStream.Length)
                 {
-                    seekAddr = reader.BaseStream.Length - 8192;
+                    _seekAddr = _reader.BaseStream.Length - 8192;
                 }
                 this.RefreshAllViews();
             }
@@ -168,34 +168,34 @@ namespace _99x8Edit
                              null,
                              out input_addr))
             {
-                if((input_addr > 0) && (input_addr < reader.BaseStream.Length))
+                if((input_addr > 0) && (input_addr < _reader.BaseStream.Length))
                 {
                     validated_addr = input_addr;
                 }
             }
             txtAddr.Text = validated_addr.ToString("x6");
-            seekAddr = validated_addr;
+            _seekAddr = validated_addr;
             this.RefreshAllViews();
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
-            seekAddr = Math.Max(seekAddr - 8192, 0);
+            _seekAddr = Math.Max(_seekAddr - 8192, 0);
             this.RefreshAllViews();
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
-            seekAddr = Math.Min(seekAddr + 8192, reader.BaseStream.Length - 8192);
+            _seekAddr = Math.Min(_seekAddr + 8192, _reader.BaseStream.Length - 8192);
             this.RefreshAllViews();
         }
         private void btnLinear_Click(object sender, EventArgs e)
         {
-            type = PeekType.Linear;
+            _type = PeekType.Linear;
             btnSprites.Checked = false;
             this.RefreshAllViews();
         }
         private void btnSprites_Click(object sender, EventArgs e)
         {
-            type = PeekType.Sprite;
+            _type = PeekType.Sprite;
             btnLinear.Checked = false;
             this.RefreshAllViews();
         }
@@ -203,12 +203,12 @@ namespace _99x8Edit
         // Utilities
         private long ColRowToAddr(int col, int row)
         {
-            if (type == PeekType.Linear)
+            if (_type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
                 int addr_in_screen = row * 8 * 32 + col * 8;
-                return (long)addr_in_screen + seekAddr;
+                return (long)addr_in_screen + _seekAddr;
             }
             else
             {
@@ -216,15 +216,15 @@ namespace _99x8Edit
                 // 2   4   6   8   10...   ...63
                 int base_addr_of_2rows = row * 64 * 8;
                 int addr_in_screen = base_addr_of_2rows + col * 16 + (row % 2) * 8;
-                return (long)addr_in_screen + seekAddr;
+                return (long)addr_in_screen + _seekAddr;
             }
         }
         private (int col, int row) AddressToColRow(long addr)
         {
             int col = 0;
             int row = 0;
-            addr -= seekAddr;
-            if (type == PeekType.Linear)
+            addr -= _seekAddr;
+            if (_type == PeekType.Linear)
             {
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63

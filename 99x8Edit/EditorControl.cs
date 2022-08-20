@@ -56,16 +56,10 @@ namespace _99x8Edit
             int y = _selection.Y * _selectionHeight + _sub.Y;
             return (x, y);
         }
-        public int ChrColNum
-        {
-            // The number of horizontal characters in one edit control
-            get => _columnNum / 8;
-        }
-        public int ChrRowNum
-        {
-            // The number of vertical characters in one edit control
-            get => _rowNum / 8;
-        }
+        // The number of horizontal characters in one edit control
+        public int ChrColNum => _columnNum / 8;
+        // The number of vertical characters in one edit control
+        public int ChrRowNum => _rowNum / 8;
         //--------------------------------------------------------------------
         // Overrides
         protected override void OnPaint(PaintEventArgs e)
@@ -86,15 +80,13 @@ namespace _99x8Edit
                     {
                         for (int x = 0; x < ColumnNum; ++x)
                         {
-                            if (_brush[x, y] != null)
-                            {
-                                // Draw outline
-                                g.FillRectangle(Brushes.Gray, x * _cellWidth, y * _cellHeight,
-                                                _cellWidth, _cellHeight);
-                                // Draw one dot
-                                g.FillRectangle(_brush[x, y], x * _cellWidth, y * _cellHeight,
-                                                _cellWidth - 1, _cellHeight - 1);
-                            }
+                            if (_brush[x, y] == null) continue;
+                            // Draw outline
+                            g.FillRectangle(Brushes.Gray, x * _cellWidth, y * _cellHeight,
+                                _cellWidth, _cellHeight);
+                            // Draw one dot
+                            g.FillRectangle(_brush[x, y], x * _cellWidth, y * _cellHeight,
+                                _cellWidth - 1, _cellHeight - 1);
                         }
                     }
                 }
@@ -123,49 +115,49 @@ namespace _99x8Edit
                     // Events for 1-8 key
                     _sub.X = 0;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D2:
                 case Keys.NumPad2:
                     _sub.X = 1;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D3:
                 case Keys.NumPad3:
                     _sub.X = 2;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D4:
                 case Keys.NumPad4:
                     _sub.X = 3;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D5:
                 case Keys.NumPad5:
                     _sub.X = 4;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D6:
                 case Keys.NumPad6:
                     _sub.X = 5;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D7:
                 case Keys.NumPad7:
                     _sub.X = 6;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.D8:
                 case Keys.NumPad8:
                     _sub.X = 7;
                     _updated = true;
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:

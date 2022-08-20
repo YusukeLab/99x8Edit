@@ -14,31 +14,28 @@ namespace _99x8Edit
         {
             _sender = sender;
         }
-        internal Control Sender
-        {
-            get => _sender;
-        }
+        internal Control Sender => _sender;
     }
     // Multiple cell selection for user interface
     public class Selection
     {
-        private int _cellW;         // Size of cells to display
-        private int _cellH;
-        private int _x;             // Current col and row
+        private readonly int _cellW;    // Size of cells to display
+        private readonly int _cellH;
+        private int _x;                 // Current col and row
         private int _y;
-        private int _tx;            // Multiple selection to
+        private int _tx;                // Multiple selection to
         private int _ty;
-        Rectangle _selection;       // Selected cols and rows
-        Rectangle _display;         // Selection on display coodinate
+        private Rectangle _selection;   // Selected cols and rows
+        private Rectangle _display;     // Selection on display coodinate
         public Selection(int cell_width, int cell_height)
         {
-            // Width and height are for calculating coodinates
+            // Width and height are for calculating coordinates
             _display.Width = _cellW = cell_width;
             _display.Height = _cellH = cell_height;
         }
         public int X
         {
-            get { return _x; }
+            get => _x;
             set
             {
                 _x = value;
@@ -47,7 +44,7 @@ namespace _99x8Edit
         }
         public int Y
         {
-            get { return _y; }
+            get => _y;
             set
             {
                 _y = value;
@@ -56,7 +53,7 @@ namespace _99x8Edit
         }
         public int ToX
         {
-            get { return _tx; }
+            get => _tx;
             set
             {
                 _tx = value;
@@ -65,7 +62,7 @@ namespace _99x8Edit
         }
         public int ToY
         {
-            get { return _ty; }
+            get => _ty;
             set
             {
                 _ty = value;
@@ -73,15 +70,9 @@ namespace _99x8Edit
             }
         }
         // Col and row, width and height of the selection
-        public Rectangle Selected
-        {
-            get { return _selection; }
-        }
-        // Coodinates in one control
-        internal Rectangle Display
-        {
-            get{ return _display; }
-        }
+        public Rectangle Selected => _selection;
+        // Coordinates in one control
+        internal Rectangle Display => _display;
         // Coodinates in whole screen
         internal Rectangle GetScreenPos(Control c)
         {
@@ -106,8 +97,8 @@ namespace _99x8Edit
     internal class TabOrder
     {
         // Customized tab order and the selection corresponding to
-        private List<Control> _ctrl = new List<Control>();      // Controls to be added
-        private List<Selection> _sel = new List<Selection>();   // Selected cell in the control
+        private readonly List<Control> _ctrl = new List<Control>();      // Controls to be added
+        private readonly List<Selection> _sel = new List<Selection>();   // Selected cell in the control
         internal void Add(Control c, Selection s)
         {
             _ctrl.Add(c);
@@ -188,8 +179,8 @@ namespace _99x8Edit
             saved_file = "";
             Func<string, bool> do_save = (file_name) =>
             {
-                using BinaryWriter br = new BinaryWriter(new FileStream(file_name, FileMode.Create));
-
+                using BinaryWriter br = new BinaryWriter(
+                    new FileStream(file_name, FileMode.Create));
                 try
                 {
                     exec_save(br);
@@ -197,13 +188,23 @@ namespace _99x8Edit
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 return false;
             };
-            String dir = Path.GetDirectoryName(file_name);
-            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            if((!save_as) && File.Exists(file_name))
+            String dir = file_name;
+            if (File.Exists(dir))
+            {
+                // File name to directory
+                dir = Path.GetDirectoryName(file_name);
+            }
+            else if (!Directory.Exists(dir))
+            {
+                // No directory
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+            if ((!save_as) && File.Exists(file_name))
             {
                 // Directory exists and want to overwrite
                 if(do_save(file_name))
@@ -238,8 +239,17 @@ namespace _99x8Edit
                                                out string loaded_file_name)
         {
             loaded_file_name = "";
-            String dir = Path.GetDirectoryName(current_file);
-            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            String dir = current_file;
+            if (File.Exists(dir))
+            {
+                // File name to directory
+                dir = Path.GetDirectoryName(current_file);
+            }
+            else if (!Directory.Exists(dir))
+            {
+                // No directory
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = dialog_filter;
@@ -248,7 +258,8 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                using BinaryReader br = new BinaryReader(new FileStream(dlg.FileName, FileMode.Open));
+                using BinaryReader br = new BinaryReader(
+                    new FileStream(dlg.FileName, FileMode.Open));
                 try
                 {
                     if(push)
@@ -261,7 +272,8 @@ namespace _99x8Edit
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             return false;
@@ -273,8 +285,17 @@ namespace _99x8Edit
                                                    out string imported_file)
         {
             imported_file = "";
-            String dir = Path.GetDirectoryName(current_file);
-            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            String dir = current_file;
+            if (File.Exists(dir))
+            {
+                // File name to directory
+                dir = Path.GetDirectoryName(current_file);
+            }
+            else if (!Directory.Exists(dir))
+            {
+                // No directory
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = filter;
@@ -292,7 +313,8 @@ namespace _99x8Edit
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             return false;
@@ -304,8 +326,17 @@ namespace _99x8Edit
                                                    out string exported_file)
         {
             exported_file = "";
-            String dir = Path.GetDirectoryName(current_file);
-            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            String dir = current_file;
+            if (File.Exists(dir))
+            {
+                // File name to directory
+                dir = Path.GetDirectoryName(current_file);
+            }
+            else if (!Directory.Exists(dir))
+            {
+                // No directory
+                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.FileName = "";
             dlg.InitialDirectory = dir;
@@ -324,7 +355,8 @@ namespace _99x8Edit
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             return false;

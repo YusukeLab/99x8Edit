@@ -22,7 +22,7 @@ namespace _99x8Edit
         protected FilterBase _filter;       // Filter to be applyed
         protected Bitmap[,] _cellImg;       // Images for each cells
         protected Color[,] _background;     // Background colors
-        private static Pen DashedGray = new Pen(Color.Gray)     // For overlayed selection
+        private static Pen _dashedGray = new Pen(Color.Gray)     // For overlayed selection
         {
             DashStyle = DashStyle.Dash,
             Width = 2
@@ -169,7 +169,18 @@ namespace _99x8Edit
         [Browsable(true)]
         [Description("Called when a cell was going to be edited")]
         public event EventHandler<EventArgs> CellOnEdit;
-   
+
+        internal class EditEventArgs : EventArgs
+        {
+            internal bool _shouldPush;
+
+            internal EditEventArgs(bool should_push)
+            {
+                _shouldPush = should_push;
+            }
+
+            internal bool ShouldPush => _shouldPush;
+        }
         public class ScrollEventArgs : EventArgs
         {
             public int DX { get; set; }
@@ -181,10 +192,7 @@ namespace _99x8Edit
         //--------------------------------------------------------------------
         // Properties for hosts
         [Browsable(false)]
-        public Selection Selector
-        {
-            get => _selection;
-        }
+        public Selection Selector => _selection;
         [Browsable(false)]
         public int X
         {
@@ -206,10 +214,7 @@ namespace _99x8Edit
             }
         }
         [Browsable(false)]
-        public Rectangle SelectedRect
-        {
-            get => _selection.Selected;
-        }
+        public Rectangle SelectedRect => _selection.Selected;
         [Browsable(false)]
         public FilterBase Filter
         {
@@ -231,22 +236,16 @@ namespace _99x8Edit
             }
         }
         [Browsable(false)]
-        public int SelectionColNum
-        {
-            // Columns of selectable tiles
-            // E.g. map has 32 columns and 16 selectable tiles within
-            get => _columnNum / _selectionWidth;
-        }
+        // Columns of selectable tiles
+        // E.g. map has 32 columns and 16 selectable tiles within
+        public int SelectionColNum => _columnNum / _selectionWidth;
         [Browsable(false)]
-        public int SelectionRowNum
-        {
-            // Rows of selectable tiles
-            get => _rowNum / _selectionHeight;
-        }
+        // Rows of selectable tiles
+        public int SelectionRowNum => _rowNum / _selectionHeight;
         [Browsable(false)]
-        public int SubX { get => _sub.X; }
+        public int SubX => _sub.X;
         [Browsable(false)]
-        public int SubY { get => _sub.Y; }
+        public int SubY => _sub.Y;
         [Browsable(false)]
         // For  overlayed sprite
         public bool DrawOverlayedSelection { get; set; } = false;
@@ -266,26 +265,26 @@ namespace _99x8Edit
             _background[col, row] = c;
             _updated = true;
         }
-        public (int col, int row) ScreenCoodinateToCell(Point screen_p)
+        public (int col, int row) ScreenCoordinateToCell(Point screen_p)
         {
-            // Screen coodinate to col row index of each cells
+            // Screen coordinate to col row index of each cells
             Point p = this.PointToClient(screen_p);
             int col = Math.Clamp(p.X / _cellWidth, 0, _columnNum);
             int row = Math.Clamp(p.Y / _cellHeight, 0, _rowNum);
             return (col, row);
         }
-        public (int col, int row) ScreenCoodinateToSelection(Point screen_p)
+        public (int col, int row) ScreenCoordinateToSelection(Point screen_p)
         {
-            // Screen coodinate to col row index of selection
+            // Screen coordinate to col row index of selection
             Point p = this.PointToClient(screen_p);
             int col = Math.Clamp(p.X / (_cellWidth * _selectionWidth), 0, _columnNum);
             int row = Math.Clamp(p.Y / (_cellHeight * _selectionHeight), 0, _rowNum);
             return (col, row);
         }
-        public int ScreenCoodinateToIndex(Point screen_p)
+        public int ScreenCoordinateToIndex(Point screen_p)
         {
-            // Screen coorinate to linear index
-            (int col, int row) = ScreenCoodinateToSelection(screen_p);
+            // Screen coordinate to linear index
+            (int col, int row) = ScreenCoordinateToSelection(screen_p);
             return IndexOf(col, row);
         }
         public int IndexOf(int col, int row)
@@ -365,11 +364,10 @@ namespace _99x8Edit
                     {
                         for (int x = 0; x < ColumnNum; ++x)
                         {
-                            if (_background[x, y] != null)
-                            {
-                                SolidBrush b = new SolidBrush(_background[x, y]);
-                                g.FillRectangle(b, x * _cellWidth, y * _cellHeight, _cellWidth, _cellHeight);
-                            }
+                            if (_background[x, y] == null) continue;
+                            SolidBrush b = new SolidBrush(_background[x, y]);
+                            g.FillRectangle(b, x * _cellWidth, y * _cellHeight,
+                                            _cellWidth, _cellHeight);
                         }
                     }
                 }
@@ -380,13 +378,11 @@ namespace _99x8Edit
                     {
                         for (int x = 0; x < ColumnNum; ++x)
                         {
-                            if(_cellImg[x, y] != null)
-                            {
-                                g.FillRectangle(Brushes.Black, x * _cellWidth, y * _cellHeight,
-                                                _cellWidth, _cellHeight);
-                                g.DrawImage(_cellImg[x, y], x * _cellWidth, y * _cellHeight,
-                                            _cellWidth + 1, _cellHeight + 1);
-                            }
+                            if (_cellImg[x, y] == null) continue;
+                            g.FillRectangle(Brushes.Black, x * _cellWidth, y * _cellHeight,
+                                            _cellWidth, _cellHeight);
+                            g.DrawImage(_cellImg[x, y], x * _cellWidth, y * _cellHeight,
+                                        _cellWidth + 1, _cellHeight + 1);
                         }
                     }
                 }
@@ -404,11 +400,11 @@ namespace _99x8Edit
                 // Overlayed selection
                 if(DrawOverlayedSelection)
                 {
-                    // Overlayed sprite, right side
+                    // For overlayed sprite selection
                     int index = (Index + 1) % 64;
                     int x = index % SelectionColNum;
                     int y = index / SelectionColNum;
-                    g.DrawRectangle(DashedGray, x * _selectionWidth * _cellWidth,
+                    g.DrawRectangle(_dashedGray, x * _selectionWidth * _cellWidth,
                                     y * _selectionHeight * _cellHeight,
                                     _selectionWidth * _cellWidth - 1,
                                     _selectionHeight * _cellHeight - 1);
@@ -436,7 +432,8 @@ namespace _99x8Edit
                                               _selectionWidth - 1);
                 int clicked__sub_y = Math.Min((e.Y / _cellHeight) % _selectionHeight,
                                               _selectionHeight - 1);
-                if ((clicked_selection_x != _selection.X) || (clicked_selection_y != _selection.Y))
+                if ((clicked_selection_x != _selection.X)
+                    || (clicked_selection_y != _selection.Y))
                 {
                     // Selection changed
                     if ((Control.ModifierKeys == Keys.Shift) && AllowMultipleSelection)
@@ -471,7 +468,7 @@ namespace _99x8Edit
                     _sub.X = clicked__sub_x;
                     _sub.Y = clicked__sub_y;
                     // Cell edited
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     // Cell to be dragged
                     CellDragStart?.Invoke(this, new EventArgs());
                     if(AllowOneStrokeEditing)
@@ -479,7 +476,7 @@ namespace _99x8Edit
                         this.DoDragDrop(new DragEditing(this), DragDropEffects.Copy);
                     }
                 }
-                // Base method diactivates the new opened window at above
+                // Base method deactivates the new opened window at above
                 //base.OnMouseDown(e);
             }
         }
@@ -537,7 +534,7 @@ namespace _99x8Edit
                     // Selection changed
                     SelectionChanged?.Invoke(this, new EventArgs());
                     // Cell edited
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: false);
                 }
             }
             base.OnDragOver(drgevent);
@@ -550,7 +547,7 @@ namespace _99x8Edit
                 case Keys.Space:
                 case Keys.Enter:
                     // Space and enter for editing
-                    this.InvokeOnEdit();
+                    this.InvokeOnEdit(should_push: true);
                     _updated = true;
                     break;
                 case Keys.Up | Keys.Shift:
@@ -748,9 +745,9 @@ namespace _99x8Edit
             base.OnPreviewKeyDown(e);
         }
         // For derived classes
-        protected void InvokeOnEdit()
+        protected void InvokeOnEdit(bool should_push)
         {
-            CellOnEdit?.Invoke(this, new EventArgs());
+            CellOnEdit?.Invoke(this, new EditEventArgs(should_push));
         }
     }
 }

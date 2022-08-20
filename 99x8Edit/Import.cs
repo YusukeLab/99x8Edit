@@ -205,7 +205,7 @@ namespace _99x8Edit
                 }
             }
         }
-        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
+        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)

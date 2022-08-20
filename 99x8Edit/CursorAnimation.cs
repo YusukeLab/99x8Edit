@@ -6,48 +6,47 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace _99x8Edit
 {
     internal partial class CursorAnimation : Form
     {
         // Transparent window for the cursor effect, flying from control to control
-        static private Bitmap bmp = null;
-        private readonly int loopNum = 12;
-        private Rectangle start;
-        private Rectangle end;
-        private Rectangle current;
+        private static Bitmap _bmp = null;
+        private readonly int _loop = 12;
+        private Rectangle _start;
+        private Rectangle _end;
+        private Rectangle _current;
         internal CursorAnimation(Rectangle startFrom, Rectangle endTo)
         {
-            start = startFrom;
-            end = endTo;
-            int w = Math.Max(startFrom.Width, end.Width);
-            int h = Math.Max(startFrom.Height, end.Height);
-            if((bmp == null) || (bmp?.Width < w) || (bmp?.Height < h))
+            _start = startFrom;
+            _end = endTo;
+            int w = Math.Max(startFrom.Width, _end.Width);
+            int h = Math.Max(startFrom.Height, _end.Height);
+            if((_bmp == null) || (_bmp?.Width < w) || (_bmp?.Height < h))
             {
-                bmp = new Bitmap(w, h);
+                _bmp = new Bitmap(w, h);
             }
             InitializeComponent();
-            pict.Image = bmp;
+            pict.Image = _bmp;
             this.Draw();
         }
-        protected override bool ShowWithoutActivation
-        {
-            // Ignore controls
-            get { return true; }
-        }
+
+        // Ignore controls
+        protected override bool ShowWithoutActivation => true;
         internal async void StartMoving()
         {
             await Task.Run(() => {
-                for (int i = 0; i < loopNum; ++i)
+                for (int i = 0; i < _loop; ++i)
                 {
                     // Use log to avoid constant speed
                     int distance = (int)(Math.Log10((double)i + 1.0) * 1000.0);
-                    int max = (int)(Math.Log10((double)loopNum) * 1000.0);
-                    current.X = start.X + (end.X - start.X) * distance / max;
-                    current.Y = start.Y + (end.Y - start.Y) * distance / max;
-                    current.Width = start.Width + (end.Width - start.Width) * distance / max;
-                    current.Height = start.Height + (end.Height - start.Height) * distance / max;
+                    int max = (int)(Math.Log10((double)_loop) * 1000.0);
+                    _current.X = _start.X + (_end.X - _start.X) * distance / max;
+                    _current.Y = _start.Y + (_end.Y - _start.Y) * distance / max;
+                    _current.Width = _start.Width + (_end.Width - _start.Width) * distance / max;
+                    _current.Height = _start.Height + (_end.Height - _start.Height) * distance / max;
                     this.Invoke(new DelegateDrawCursor(this.Draw));
                     System.Threading.Thread.Sleep(1);
                 }
@@ -57,12 +56,12 @@ namespace _99x8Edit
         private delegate void DelegateDrawCursor();
         private void Draw()
         {
-            this.Location = new Point(current.X, current.Y);
-            this.Size = pict.Size = new Size(current.Width, current.Height);
-            Graphics g = Graphics.FromImage(bmp);
+            this.Location = new Point(_current.X, _current.Y);
+            this.Size = pict.Size = new Size(_current.Width, _current.Height);
+            Graphics g = Graphics.FromImage(_bmp);
             g.Clear(Color.Transparent);
-            g.DrawRectangle(Pens.LightGreen, 0, 0, current.Width, current.Height);
-            g.DrawRectangle(Pens.Green, 1, 1, current.Width - 2, current.Height - 2);
+            g.DrawRectangle(Pens.LightGreen, 0, 0, _current.Width, _current.Height);
+            g.DrawRectangle(Pens.Green, 1, 1, _current.Width - 2, _current.Height - 2);
             this.Refresh();
         }
     }

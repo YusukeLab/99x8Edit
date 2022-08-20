@@ -6,16 +6,17 @@ namespace _99x8Edit
 {
     internal class ClipboardWrapper
     {
+        internal static readonly string _clipID = "99x8Edit";
         // For copy and paste actions
         internal static void SetData(ClipBase clip)
         {
-            System.Windows.Forms.Clipboard.SetData("99x8Edit", clip);
+            System.Windows.Forms.Clipboard.SetData(_clipID, clip);
         }
         internal static ClipBase GetData()
         {
-            if (System.Windows.Forms.Clipboard.ContainsData("99x8Edit"))
+            if (System.Windows.Forms.Clipboard.ContainsData(_clipID))
             {
-                return System.Windows.Forms.Clipboard.GetData("99x8Edit") as ClipBase;
+                return System.Windows.Forms.Clipboard.GetData(_clipID) as ClipBase;
             }
             return null;
         }

@@ -11,7 +11,7 @@ namespace _99x8Edit
     // RGB888 Palette editor window
     public partial class PaletteEditor : Form
     {
-        Action paletteEdited;
+        Action _paletteEdited;
         public PaletteEditor(int R, int G, int B, Action callback)
         {
             InitializeComponent();
@@ -21,21 +21,12 @@ namespace _99x8Edit
             trackBarR.Value = R;
             trackBarG.Value = G;
             trackBarB.Value = B;
-            paletteEdited = callback;
+            _paletteEdited = callback;
             this.UpdateColor();
         }
-        public int R
-        {
-            get { return trackBarR.Value; }
-        }
-        public int G
-        {
-            get { return trackBarG.Value; }
-        }
-        public int B
-        {
-            get { return trackBarB.Value; }
-        }
+        public int R => trackBarR.Value;
+        public int G => trackBarG.Value;
+        public int B => trackBarB.Value;
         protected override bool ProcessDialogKey(Keys keyData)
         {
             switch (keyData)
@@ -54,41 +45,31 @@ namespace _99x8Edit
         }
         private void UpdateColor()
         {
-            Color c = Color.FromArgb((trackBarR.Value * 255) / 7, (trackBarG.Value * 255) / 7, (trackBarB.Value * 255) / 7);
+            Color c = Color.FromArgb((trackBarR.Value * 255) / 7,
+                                     (trackBarG.Value * 255) / 7,
+                                     (trackBarB.Value * 255) / 7);
             pictColor.BackColor = c;
         }
         private void textBoxR_Leave(object sender, EventArgs e)
         {
-            int val = 0;
-            if (int.TryParse(textBoxR.Text, out val))
-            {
-                if (val < 0) val = 0;
-                if (val > 7) val = 7;
-            }
+            int.TryParse(textBoxR.Text, out int val);
+            val = Math.Clamp(val, 0, 7);
             textBoxR.Text = val.ToString();
             trackBarR.Value = val;
             this.UpdateColor();
         }
         private void textBoxG_Leave(object sender, EventArgs e)
         {
-            int val = 0;
-            if (int.TryParse(textBoxG.Text, out val))
-            {
-                if (val < 0) val = 0;
-                if (val > 7) val = 7;
-            }
+            int.TryParse(textBoxG.Text, out int val);
+            val = Math.Clamp(val, 0, 7);
             textBoxG.Text = val.ToString();
             trackBarG.Value = val;
             this.UpdateColor();
         }
         private void textBoxB_Leave(object sender, EventArgs e)
         {
-            int val = 0;
-            if (int.TryParse(textBoxB.Text, out val))
-            {
-                if (val < 0) val = 0;
-                if (val > 7) val = 7;
-            }
+            int.TryParse(textBoxB.Text, out int val);
+            val = Math.Clamp(val, 0, 7);
             textBoxB.Text = val.ToString();
             trackBarB.Value = val;
             this.UpdateColor();
@@ -114,7 +95,7 @@ namespace _99x8Edit
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
-            paletteEdited?.Invoke();
+            _paletteEdited?.Invoke();
             this.Dispose();
         }
     }

@@ -78,7 +78,7 @@ namespace _99x8Edit
         // Compression based on byte pair encoding
         public override byte[] Encode(byte[] source)
         {
-            const int Threshold = 3;                    // Quit when there are only 3 pairs
+            const int threshold = 3;                    // Quit when there are only 3 pairs
             // for output
             Dictionary<byte, int> pair_table = new Dictionary<byte, int>();
             byte[] work_buffer = source.Clone() as byte[];   // Default output buffer =  input data
@@ -108,7 +108,7 @@ namespace _99x8Edit
                 int bestcount = pairs_count.Values.Max();
                 int bestpair = pairs_count.FirstOrDefault(c => c.Value == bestcount).Key;
                 // If there are enough pairs and unused value, compress
-                if ((bestcount < Threshold) || (unused == -1))
+                if ((bestcount < threshold ) || (unused == -1))
                 {
                     break;  // End compression
                 }
@@ -166,7 +166,7 @@ namespace _99x8Edit
             {
                 ret.Add(work_buffer[i]);
             }
-            System.Diagnostics.Debug.WriteLine("Compress: orginal buffer size:" + work_buffer.Length.ToString());
+            System.Diagnostics.Debug.WriteLine("Compress: original buffer size:" + work_buffer.Length.ToString());
             System.Diagnostics.Debug.WriteLine("Compress: compressed buffer size:" + ret.Count.ToString());
             return ret.ToArray();
         }

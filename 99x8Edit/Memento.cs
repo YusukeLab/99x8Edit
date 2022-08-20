@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace _99x8Edit
 {
@@ -30,15 +31,13 @@ namespace _99x8Edit
     internal class MementoCaretaker
     {
         // Singleton class for memento management
-        private static MementoCaretaker _instance = new MementoCaretaker();
-        private List<IMementoTarget> _targetList = new List<IMementoTarget>();
-        private List<Memento> _undoList = new List<Memento>();
-        private List<Memento> _redoList = new List<Memento>();
+        private static readonly MementoCaretaker _instance = new MementoCaretaker();
+        private static readonly int _undoCnt = 256;
+        private readonly List<IMementoTarget> _targetList = new List<IMementoTarget>();
+        private readonly List<Memento> _undoList = new List<Memento>();
+        private readonly List<Memento> _redoList = new List<Memento>();
         private Action _stateChanged;
-        internal static MementoCaretaker Instance
-        {
-            get => _instance;
-        }
+        internal static MementoCaretaker Instance => _instance;
         internal bool UndoEnable
         {
             get;
@@ -65,7 +64,7 @@ namespace _99x8Edit
         {
             // Push current status for further undo
             _undoList.Add(this.CreateCurrentMemento());
-            if (_undoList.Count > 256)
+            if (_undoList.Count > _undoCnt)
             {
                 _undoList.RemoveAt(0);
             }
@@ -84,8 +83,8 @@ namespace _99x8Edit
             // Set current status for future redo action
             _redoList.Add(this.CreateCurrentMemento());
             // Pop one status from memento list
-            Memento m = _undoList[_undoList.Count - 1];
-            _undoList.RemoveAt(_undoList.Count - 1);
+            Memento m = _undoList.Last();
+            _undoList.Remove(m);
             // Restore current status from memento
             this.RestoreFromMemento(m);
             // State changed
@@ -105,13 +104,13 @@ namespace _99x8Edit
             }
             // Push current status to undo list
             _undoList.Add(this.CreateCurrentMemento());
-            if (_undoList.Count > 32)
+            if (_undoList.Count > _undoCnt)
             {
                 _undoList.RemoveAt(0);
             }
             // Pop one status from redo list and restore
-            Memento m = _redoList[_redoList.Count - 1];
-            _redoList.RemoveAt(_redoList.Count - 1);
+            Memento m = _redoList.Last();
+            _redoList.Remove(m);
             this.RestoreFromMemento(m);
             // State changed
             if (_redoList.Count == 0)

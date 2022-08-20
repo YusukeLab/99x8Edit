@@ -14,13 +14,13 @@ namespace _99x8Edit
     // Main window
     public partial class MainWindow : Form
     {
-        private Machine dataSource;
-        private PCGEditor PCGWin;
-        private MapEditor mapWin;
-        private SpriteEditor spriteWin;
-        private PeekWindow peekWin;
-        private About aboutWin;
-        private String peekPath = "";
+        private Machine _dataSource;
+        private PCGEditor _PCGWin;
+        private MapEditor _mapWin;
+        private SpriteEditor _spriteWin;
+        private PeekWindow _peekWin;
+        private About _aboutWin;
+        private String _peekPath = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -28,24 +28,26 @@ namespace _99x8Edit
         private void MainWindow_Load(object sender, EventArgs e)
         {
             // Initialize VDP settings
-            dataSource = new Machine();
+            _dataSource = new Machine();
             // Check drag and drop of project file
             bool project_loaded = false;
             String[] args = System.Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
                 // Project file dropped
-                String dnd_path = args[args.Length - 1];
-                using BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
+                String dnd_path = args.Last();
+                using BinaryReader br = new BinaryReader(
+                    new FileStream(dnd_path, FileMode.Open));
                 try
                 {
-                    dataSource.LoadAllSettings(br);
+                    _dataSource.LoadAllSettings(br);
                     Config.Setting.ProjectFile = dnd_path;
                     project_loaded = true;
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
                 {
-                    MessageBox.Show(ex.Message, "Error reading project file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error reading project file",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             // Load configuration
@@ -56,7 +58,7 @@ namespace _99x8Edit
                 {
                     // Read the previous project file
                     using Stream s = new FileStream(Config.Setting.ProjectFile, FileMode.Open);
-                    dataSource.LoadAllSettings(new BinaryReader(s));
+                    _dataSource.LoadAllSettings(new BinaryReader(s));
                 }
                 catch
                 {
@@ -66,24 +68,24 @@ namespace _99x8Edit
                     {
                         // Read from built in resource
                         using Stream s = new MemoryStream(Properties.Resources._default);
-                        dataSource.LoadAllSettings(new BinaryReader(s));
+                        _dataSource.LoadAllSettings(new BinaryReader(s));
                     }
                     catch
                     {
                         // Everything failed
-                        dataSource.SetToDefault();
+                        _dataSource.SetToDefault();
                     }
                 }
             }
             // Undo/Redo            
             MementoCaretaker.Instance.SetCallback(MementoStateChanged);
-            MementoCaretaker.Instance.AddTarget(dataSource);  // One Machine class will be managed
+            MementoCaretaker.Instance.AddTarget(_dataSource);  // One Machine class will be managed
             // Editors
-            PCGWin = new PCGEditor(dataSource, this);
-            mapWin = new MapEditor(dataSource, this);
-            spriteWin = new SpriteEditor(dataSource, this);
+            _PCGWin = new PCGEditor(_dataSource, this);
+            _mapWin = new MapEditor(_dataSource, this);
+            _spriteWin = new SpriteEditor(_dataSource, this);
             // Open PCG editor as default
-            PCGWin.Show();
+            _PCGWin.Show();
         }
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -96,18 +98,18 @@ namespace _99x8Edit
             // Undo
             MementoCaretaker.Instance.Undo();
             // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
+            _PCGWin.ChangeOccuredByHost();
+            _mapWin.ChangeOccuredByHost();
+            _spriteWin.ChangeOccuredByHost();
         }
         public void Redo()
         {
             // Redo
             MementoCaretaker.Instance.Redo();
             // Update UI
-            PCGWin.ChangeOccuredByHost();
-            mapWin.ChangeOccuredByHost();
-            spriteWin.ChangeOccuredByHost();
+            _PCGWin.ChangeOccuredByHost();
+            _mapWin.ChangeOccuredByHost();
+            _spriteWin.ChangeOccuredByHost();
         }
         internal void MementoStateChanged()
         {
@@ -119,50 +121,50 @@ namespace _99x8Edit
         // Controls
         private void btnPCGWin_Click(object sender, EventArgs e)
         {
-            if (PCGWin.IsDisposed)
+            if (_PCGWin.IsDisposed)
             {
-                PCGWin = new PCGEditor(dataSource, this);
+                _PCGWin = new PCGEditor(_dataSource, this);
             }
-            if (PCGWin.Visible)
+            if (_PCGWin.Visible)
             {
-                PCGWin.Hide();
+                _PCGWin.Hide();
             }
             else
             {
-                PCGWin.Show();
-                PCGWin.BringToFront();
+                _PCGWin.Show();
+                _PCGWin.BringToFront();
             }
         }
         private void btnMapWin_MouseClick(object sender, MouseEventArgs e)
         {
-            if (mapWin.IsDisposed)
+            if (_mapWin.IsDisposed)
             {
-                mapWin = new MapEditor(dataSource, this);
+                _mapWin = new MapEditor(_dataSource, this);
             }
-            if (mapWin.Visible)
+            if (_mapWin.Visible)
             {
-                mapWin.Hide();
+                _mapWin.Hide();
             }
             else
             {
-                mapWin.Show();
-                mapWin.BringToFront();
+                _mapWin.Show();
+                _mapWin.BringToFront();
             }
         }
         private void btnSpritesWin_Click(object sender, EventArgs e)
         {
-            if (spriteWin.IsDisposed)
+            if (_spriteWin.IsDisposed)
             {
-                spriteWin = new SpriteEditor(dataSource, this);
+                _spriteWin = new SpriteEditor(_dataSource, this);
             }
-            if (spriteWin.Visible)
+            if (_spriteWin.Visible)
             {
-                spriteWin.Hide();
+                _spriteWin.Hide();
             }
             else
             {
-                spriteWin.Show();
-                spriteWin.BringToFront();
+                _spriteWin.Show();
+                _spriteWin.BringToFront();
             }
         }
         internal void SaveProject(object sender, EventArgs e)
@@ -172,7 +174,7 @@ namespace _99x8Edit
             if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
-                                          dataSource.SaveAllSettings,
+                                          _dataSource.SaveAllSettings,
                                           false,    // overwrite
                                           out saved_filename))
             {
@@ -186,7 +188,7 @@ namespace _99x8Edit
             if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
-                                          dataSource.SaveAllSettings,
+                                          _dataSource.SaveAllSettings,
                                           true,     // save as
                                           out saved_filename))
             {
@@ -200,15 +202,15 @@ namespace _99x8Edit
             if (Utility.LoadDialogAndLoad(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Load settings",
-                                          dataSource.LoadAllSettings,
+                                          _dataSource.LoadAllSettings,
                                           false,       // Won't push memento
                                           out loaded_filename))
             {
                 Config.Setting.ProjectFile = loaded_filename;
                 // Update UI
-                PCGWin.ChangeOccuredByHost();
-                mapWin.ChangeOccuredByHost();
-                spriteWin.ChangeOccuredByHost();
+                _PCGWin.ChangeOccuredByHost();
+                _mapWin.ChangeOccuredByHost();
+                _spriteWin.ChangeOccuredByHost();
                 // Clear mementos
                 MementoCaretaker.Instance.Clear();
             }
@@ -220,7 +222,7 @@ namespace _99x8Edit
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export PCG data to",
                                             Export.PCGTypeFilter,
-                                            dataSource.ExportPCG,
+                                            _dataSource.ExportPCG,
                                             out exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
@@ -233,7 +235,7 @@ namespace _99x8Edit
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export map data to",
                                             Export.MapTypeFilter,
-                                            dataSource.ExportMap,
+                                            _dataSource.ExportMap,
                                             out exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
@@ -246,7 +248,7 @@ namespace _99x8Edit
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export sprite data to",
                                             Export.SpriteTypeFilter,
-                                            dataSource.ExportSprites,
+                                            _dataSource.ExportSprites,
                                             out exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
@@ -262,24 +264,24 @@ namespace _99x8Edit
         }
         private void btnPeek_Click(object sender, EventArgs e)
         {
-            if (peekWin != null)
+            if (_peekWin != null)
             {
-                if (peekWin.IsDisposed == false)
+                if (_peekWin.IsDisposed == false)
                 {
-                    if (peekWin.Visible)
+                    if (_peekWin.Visible)
                     {
-                        peekWin.Hide();
+                        _peekWin.Hide();
                     }
                     else
                     {
-                        peekWin.Show();
-                        peekWin.BringToFront();
+                        _peekWin.Show();
+                        _peekWin.BringToFront();
                     }
                     return;
                 }
             }
             // Create window
-            String dir = Path.GetDirectoryName(Config.Setting.PeekDirectory);
+            string dir = Path.GetDirectoryName(Config.Setting.PeekDirectory);
             dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
@@ -290,24 +292,24 @@ namespace _99x8Edit
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Config.Setting.PeekDirectory = Path.GetDirectoryName(dlg.FileName);
-                peekWin = new PeekWindow(dlg.FileName);
-                peekWin.Show();
-                peekPath = dlg.FileName;
+                _peekWin = new PeekWindow(dlg.FileName);
+                _peekWin.Show();
+                _peekPath = dlg.FileName;
             }
         }
         private void btnAbout_Click(object sender, EventArgs e)
         {
-            if (aboutWin != null)
+            if (_aboutWin != null)
             {
-                if (aboutWin.IsDisposed == false)
+                if (_aboutWin.IsDisposed == false)
                 {
-                    aboutWin.Show();
-                    aboutWin.BringToFront();
+                    _aboutWin.Show();
+                    _aboutWin.BringToFront();
                     return;
                 }
             }
-            aboutWin = new About();
-            aboutWin.Show();
+            _aboutWin = new About();
+            _aboutWin.Show();
         }
     }
 }

@@ -11,46 +11,28 @@ namespace _99x8Edit
     // Map size dialog
     public partial class MapSize : Form
     {
-        private int width;
-        private int height;
+        private int _width;
+        private int _height;
         public MapSize(int w, int h)
         {
             InitializeComponent();
-            txtW.Text = (width = w).ToString();
-            txtH.Text = (height = h).ToString();
+            txtW.Text = (_width = w).ToString();
+            txtH.Text = (_height = h).ToString();
         }
-        public int MapWidth
-        {
-            get
-            {
-                return width;
-            }
-        }
-        public int MapHeight
-        {
-            get
-            {
-                return height;
-            }
-        }
-        // I'm not sure how many events to cover in order to handle textboxes perfectly.
-        // Therefore, I'll just handle leave events to limit the range of numbers.
-        // This might be not enough, but better than too much.
+        public int MapWidth => _width;
+        public int MapHeight => _height;
+        // Handle leave events of textboxes to limit the range of numbers
         private void txtW_Leave(object sender, EventArgs e)
         {
-            int val = 0;
-            int.TryParse(txtW.Text, out val);
-            if (val < 16) val = 16;
-            if (val > 128) val = 128;
-            txtW.Text = (width = val).ToString();
+            int.TryParse(txtW.Text, out int val);
+            val = Math.Clamp(val, 16, 128);
+            txtW.Text = (_width = val).ToString();
         }
         private void txtH_Leave(object sender, EventArgs e)
         {
-            int val = 0;
-            int.TryParse(txtH.Text, out val);
-            if (val < 12) val = 12;
-            if (val > 128) val = 128;
-            txtH.Text = (height = val).ToString();
+            int.TryParse(txtH.Text, out int val);
+            val = Math.Clamp(val, 12, 128);
+            txtH.Text = (_height = val).ToString();
         }
     }
 }
