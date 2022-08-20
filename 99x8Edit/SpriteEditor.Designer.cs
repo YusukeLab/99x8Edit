@@ -101,9 +101,9 @@ namespace _99x8Edit
             this.labelColorR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.labelColorR.Location = new System.Drawing.Point(83, 394);
             this.labelColorR.Name = "labelColorR";
-            this.labelColorR.Size = new System.Drawing.Size(13, 15);
+            this.labelColorR.Size = new System.Drawing.Size(14, 15);
             this.labelColorR.TabIndex = 25;
-            this.labelColorR.Text = "2";
+            this.labelColorR.Text = "R";
             // 
             // labelColorL
             // 
@@ -113,7 +113,7 @@ namespace _99x8Edit
             this.labelColorL.Name = "labelColorL";
             this.labelColorL.Size = new System.Drawing.Size(13, 15);
             this.labelColorL.TabIndex = 24;
-            this.labelColorL.Text = "1";
+            this.labelColorL.Text = "L";
             // 
             // label3
             // 
@@ -555,6 +555,7 @@ namespace _99x8Edit
             // viewColor
             // 
             this.viewColor.AllowMultipleSelection = false;
+            this.viewColor.AllowOneStrokeEditing = false;
             this.viewColor.AllowSubSelection = false;
             this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewColor.CellHeight = 32;
@@ -577,6 +578,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.AllowMultipleSelection = false;
+            this.viewPalette.AllowOneStrokeEditing = false;
             this.viewPalette.AllowSubSelection = false;
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPalette.CellHeight = 32;
@@ -602,6 +604,7 @@ namespace _99x8Edit
             // 
             this.viewSprite.AllowDrop = true;
             this.viewSprite.AllowMultipleSelection = true;
+            this.viewSprite.AllowOneStrokeEditing = false;
             this.viewSprite.AllowSubSelection = false;
             this.viewSprite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewSprite.CellHeight = 16;
@@ -626,6 +629,7 @@ namespace _99x8Edit
             // 
             this.viewEdit.AllowDrop = true;
             this.viewEdit.AllowMultipleSelection = true;
+            this.viewEdit.AllowOneStrokeEditing = true;
             this.viewEdit.AllowSubSelection = true;
             this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewEdit.CellHeight = 16;

@@ -13,8 +13,6 @@ namespace _99x8Edit
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
         private Bitmap bmpPreview = new Bitmap(32, 32);         // Edit preview
-        // For internal drag control
-        private class DnDEditor { }
         //----------------------------------------------------------------------
         // Initialize
         public SpriteEditor(Machine src, MainWindow parent)
@@ -336,7 +334,10 @@ namespace _99x8Edit
                 // Right click is for overlayed sprite
                 index16 = (viewSprite.Index + 1) % 64;
             }
-            dataSource.SetSpriteColorCode(index16, viewEdit.Y, clicked_color_num, push: true);
+            if(clicked_color_num != 0)  // Ignore transparent
+            {
+                dataSource.SetSpriteColorCode(index16, viewEdit.Y, clicked_color_num, push: true);
+            }
             this.RefreshAllViews();
         }
         private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)

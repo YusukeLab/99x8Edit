@@ -14,8 +14,14 @@ namespace _99x8Edit
         private TabOrder tabList = new TabOrder();
         private Point curMapOrg;       // Coordinate of left top corner of map
         // For internal drag control
-        private class DnDPattern { }
-        private class DnDMapPCG { }
+        private class DnDPattern : DnDBase
+        {
+            internal DnDPattern(Control c) : base(c) { }
+        }
+        private class DnDPCG : DnDBase 
+        {
+            internal DnDPCG(Control c) : base(c) { }
+        }
         //------------------------------------------------------------------------------
         // Initialize
         public MapEditor(Machine src, MainWindow parent)
@@ -194,7 +200,7 @@ namespace _99x8Edit
         // PCG list
         private void viewPCG_CellDragStart(object sender, EventArgs e)
         {
-            viewPCG.DoDragDrop(new DnDMapPCG(), DragDropEffects.Copy);
+            viewPCG.DoDragDrop(new DnDPCG(this), DragDropEffects.Copy);
         }
         private void contextPCG_Copy(object sender, EventArgs e)
         {
@@ -206,7 +212,7 @@ namespace _99x8Edit
         // Patterns
         private void viewPtn_CellDragStart(object sender, EventArgs e)
         {
-            viewPtn.DoDragDrop(new DnDPattern(), DragDropEffects.Copy);
+            viewPtn.DoDragDrop(new DnDPattern(this), DragDropEffects.Copy);
         }
         private void contextPtn_copy(object sender, EventArgs e)
         {
@@ -289,7 +295,7 @@ namespace _99x8Edit
                 // Dragging map pattern
                 e.Effect = DragDropEffects.Copy;
             }
-            else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
+            else if (e.Data.GetDataPresent(typeof(DnDPCG)))
             {
                 // Dragged from PCG list
                 e.Effect = DragDropEffects.Copy;
@@ -306,7 +312,7 @@ namespace _99x8Edit
                 this.UpdateMapPatterns(refresh: true);
                 this.UpdateMap(refresh: true);
             }
-            else if (e.Data.GetDataPresent(typeof(DnDMapPCG)))
+            else if (e.Data.GetDataPresent(typeof(DnDPCG)))
             {
                 // Character has been dropped from PCG list
                 (int col_sub, int row_sub) = viewPtn.ScreenCoodinateToCell(Cursor.Position);

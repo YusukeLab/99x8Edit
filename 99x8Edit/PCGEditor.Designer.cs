@@ -521,6 +521,7 @@ namespace _99x8Edit
             // 
             this.viewSand.AllowDrop = true;
             this.viewSand.AllowMultipleSelection = true;
+            this.viewSand.AllowOneStrokeEditing = false;
             this.viewSand.AllowSubSelection = false;
             this.viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewSand.CellHeight = 16;
@@ -529,6 +530,7 @@ namespace _99x8Edit
             this.viewSand.ContextMenuStrip = this.contextSandbox;
             this.viewSand.DrawOverlayedSelection = false;
             this.viewSand.DrawTranparentColor = false;
+            this.viewSand.Index = 0;
             this.viewSand.Location = new System.Drawing.Point(301, 227);
             this.viewSand.Name = "viewSand";
             this.viewSand.RowNum = 24;
@@ -546,6 +548,7 @@ namespace _99x8Edit
             // 
             this.viewPCG.AllowDrop = true;
             this.viewPCG.AllowMultipleSelection = true;
+            this.viewPCG.AllowOneStrokeEditing = false;
             this.viewPCG.AllowSubSelection = false;
             this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPCG.CellHeight = 16;
@@ -554,6 +557,7 @@ namespace _99x8Edit
             this.viewPCG.ContextMenuStrip = this.contextPCG;
             this.viewPCG.DrawOverlayedSelection = false;
             this.viewPCG.DrawTranparentColor = false;
+            this.viewPCG.Index = 0;
             this.viewPCG.Location = new System.Drawing.Point(301, 61);
             this.viewPCG.Name = "viewPCG";
             this.viewPCG.RowNum = 8;
@@ -573,6 +577,7 @@ namespace _99x8Edit
             // 
             this.viewEdit.AllowDrop = true;
             this.viewEdit.AllowMultipleSelection = true;
+            this.viewEdit.AllowOneStrokeEditing = true;
             this.viewEdit.AllowSubSelection = true;
             this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewEdit.CellHeight = 16;
@@ -581,6 +586,7 @@ namespace _99x8Edit
             this.viewEdit.ContextMenuStrip = this.contextEditor;
             this.viewEdit.DrawOverlayedSelection = false;
             this.viewEdit.DrawTranparentColor = true;
+            this.viewEdit.Index = 0;
             this.viewEdit.Location = new System.Drawing.Point(14, 61);
             this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
@@ -597,6 +603,7 @@ namespace _99x8Edit
             // viewColor
             // 
             this.viewColor.AllowMultipleSelection = false;
+            this.viewColor.AllowOneStrokeEditing = false;
             this.viewColor.AllowSubSelection = false;
             this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewColor.CellHeight = 32;
@@ -604,6 +611,7 @@ namespace _99x8Edit
             this.viewColor.ColumnNum = 2;
             this.viewColor.DrawOverlayedSelection = false;
             this.viewColor.DrawTranparentColor = true;
+            this.viewColor.Index = 0;
             this.viewColor.Location = new System.Drawing.Point(14, 358);
             this.viewColor.Name = "viewColor";
             this.viewColor.RowNum = 1;
@@ -618,6 +626,7 @@ namespace _99x8Edit
             // viewPalette
             // 
             this.viewPalette.AllowMultipleSelection = false;
+            this.viewPalette.AllowOneStrokeEditing = false;
             this.viewPalette.AllowSubSelection = false;
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPalette.CellHeight = 32;
@@ -625,6 +634,7 @@ namespace _99x8Edit
             this.viewPalette.ColumnNum = 8;
             this.viewPalette.DrawOverlayedSelection = false;
             this.viewPalette.DrawTranparentColor = true;
+            this.viewPalette.Index = 0;
             this.viewPalette.Location = new System.Drawing.Point(13, 550);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.RowNum = 2;

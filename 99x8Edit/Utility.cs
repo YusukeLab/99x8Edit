@@ -7,6 +7,18 @@ using System.Windows.Forms;
 
 namespace _99x8Edit
 {
+    internal class DnDBase
+    {
+        internal Control _sender;
+        internal DnDBase(Control sender)
+        {
+            _sender = sender;
+        }
+        internal Control Sender
+        {
+            get => _sender;
+        }
+    }
     // Multiple cell selection for user interface
     public class Selection
     {

@@ -28,16 +28,12 @@ namespace _99x8Edit
             Width = 2
         };
         // Internal DnD object for multiple selections
-        internal class DragSelection {
-            internal UserControl _sender;
-            internal DragSelection(UserControl sender)
-            {
-                _sender = sender;
-            }
-            internal UserControl Sender
-            {
-                get => _sender;
-            }
+        internal class DragSelection : DnDBase {
+            internal DragSelection(Control sender) : base(sender) { }
+        }
+        internal class DragEditing : DnDBase
+        {
+            internal DragEditing(Control sender) : base(sender) { }
         }
         //--------------------------------------------------------------------
         // Initialize
@@ -148,6 +144,13 @@ namespace _99x8Edit
             get;
             set;
         } = true;
+        [Browsable(true)]
+        [Description("Allow editing with mouse drag")]
+        public bool AllowOneStrokeEditing
+        {
+            get;
+            set;
+        } = false;
         [Browsable(true)]
         [Description("Draw transparent color for background")]
         public bool DrawTranparentColor
@@ -417,6 +420,10 @@ namespace _99x8Edit
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
+            // Grab key events afterward
+            // Needed because this override prevents the base method call,
+            // and have to do this here since other window may open below
+            this.Focus();
             if (e.Button == MouseButtons.Left)
             {
                 // Coodinate to selection col/row
@@ -467,6 +474,10 @@ namespace _99x8Edit
                     this.InvokeOnEdit();
                     // Cell to be dragged
                     CellDragStart?.Invoke(this, new EventArgs());
+                    if(AllowOneStrokeEditing)
+                    {
+                        this.DoDragDrop(new DragEditing(this), DragDropEffects.Copy);
+                    }
                 }
                 // Base method diactivates the new opened window at above
                 //base.OnMouseDown(e);
@@ -474,41 +485,59 @@ namespace _99x8Edit
         }
         protected override void OnDragEnter(DragEventArgs drgevent)
         {
-            drgevent.Effect = DragDropEffects.None;
+            //drgevent.Effect = DragDropEffects.None;
             if (drgevent.Data.GetDataPresent(typeof(DragSelection)))
             {
-                // Accept only the drag objects created by itself
-                dynamic obj = drgevent.Data.GetData(typeof(DragSelection));
-                if (obj.Sender == this)
-                {
-                    // Multiple selection
-                    drgevent.Effect = DragDropEffects.Copy;
-                }
+                // Multiple selection
+                drgevent.Effect = DragDropEffects.Copy;
+            }
+            else if (drgevent.Data.GetDataPresent(typeof(DragEditing)))
+            {
+                // One stroke editing
+                drgevent.Effect = DragDropEffects.Copy;
             }
             base.OnDragEnter(drgevent);
         }
         protected override void OnDragOver(DragEventArgs drgevent)
         {
+            Point p = this.PointToClient(Cursor.Position);
+            int hovered_selection_x = Math.Min(p.X / (_cellWidth * _selectionWidth),
+                                               _columnNum / _selectionWidth - 1);
+            int hovered_selection_y = Math.Min(p.Y / (_cellHeight * _selectionHeight),
+                                               _rowNum / _selectionHeight - 1);
             if (drgevent.Data.GetDataPresent(typeof(DragSelection)))
             {
-                // Accept only the drag objects created by itself
-                dynamic obj = drgevent.Data.GetData(typeof(DragSelection));
-                if (obj.Sender == this)
+                // Multiple selection
+                if ((hovered_selection_x != _selection.ToX)
+                    || (hovered_selection_y != _selection.ToY))
                 {
-                    // Multiple selection
-                    Point p = this.PointToClient(Cursor.Position);
-                    int hovered_selection_x = Math.Min(p.X / (_cellWidth * _selectionWidth),
-                                                       _columnNum / _selectionWidth - 1);
-                    int hovered_selection_y = Math.Min(p.Y / (_cellHeight * _selectionHeight),
-                                                       _rowNum / _selectionHeight - 1);
-                    if ((hovered_selection_x != _selection.ToX)
-                        || (hovered_selection_y != _selection.ToY))
-                    {
-                        _selection.ToX = hovered_selection_x;
-                        _selection.ToY = hovered_selection_y;
-                        _updated = true;
-                        this.Refresh();
-                    }
+                    _selection.ToX = hovered_selection_x;
+                    _selection.ToY = hovered_selection_y;
+                    _updated = true;
+                    this.Refresh();
+                }
+            }
+            else if (drgevent.Data.GetDataPresent(typeof(DragEditing)))
+            {
+                // On one stroke editing, update current selection also
+                int hovered_cell_x = Math.Min(p.X / _cellWidth, _columnNum - 1);
+                int hovered_cell_y = Math.Min(p.Y / _cellHeight, _rowNum - 1);
+                int sub_x = hovered_cell_x % _selectionWidth;
+                int sub_y = hovered_cell_y % _selectionHeight;
+                if((_selection.X != hovered_selection_x) || (_selection.Y != hovered_selection_y)
+                    || (_sub.X != sub_x) || (_sub.Y != sub_y))
+                {
+                    // Selection changed
+                    _selection.X = hovered_selection_x;
+                    _selection.Y = hovered_selection_y;
+                    _sub.X = sub_x;
+                    _sub.Y = sub_y;
+                    _updated = true;
+                    this.Refresh();
+                    // Selection changed
+                    SelectionChanged?.Invoke(this, new EventArgs());
+                    // Cell edited
+                    this.InvokeOnEdit();
                 }
             }
             base.OnDragOver(drgevent);

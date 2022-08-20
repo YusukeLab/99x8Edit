@@ -15,10 +15,10 @@ namespace _99x8Edit
         private Bitmap bmpColorL = new Bitmap(32, 32);      // Color view
         private Bitmap bmpColorR = new Bitmap(32, 32);
         // For internal drag control
-        private class DnDPCG {
+        private class DnDPCG : DnDBase {
+            internal DnDPCG(Control c) : base(c) { }
             internal ClipPCG Data { get; set; }
         }
-        private class DnDEditor { }
         //------------------------------------------------------------------------------
         // Initialize
         public PCGEditor(Machine src, MainWindow parent)
@@ -381,7 +381,7 @@ namespace _99x8Edit
         {
             // Drag characters
             Rectangle r = viewPCG.SelectedRect;
-            DnDPCG d = new DnDPCG();
+            DnDPCG d = new DnDPCG(this);
             d.Data = this.CopyMultiplePCG(r);
             viewPCG.DoDragDrop(d, DragDropEffects.Copy);
         }
