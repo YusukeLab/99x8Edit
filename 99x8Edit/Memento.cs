@@ -22,7 +22,7 @@ namespace _99x8Edit
         {
             _objs.Add(s);
         }
-        internal IMementoTarget See(int index)
+        internal IMementoTarget LookAt(int index)
         {
             return _objs[index];
         }
@@ -146,7 +146,7 @@ namespace _99x8Edit
         {
             for (int i = 0; i < _targetList.Count; ++i)
             {
-                _targetList[i].Restore(m.See(i));
+                _targetList[i].Restore(m.LookAt(i));
             }
         }
     }
