@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace _99x8Edit
 {
@@ -12,7 +13,6 @@ namespace _99x8Edit
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
         private Point curMapOrg;       // Coordinate of left top corner of map
-        internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDPattern { }
         private class DnDMapPCG { }
@@ -544,24 +544,30 @@ namespace _99x8Edit
         }
         private void menu_fileLoadMap(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(CurrentFile,
+            string loaded_filename = "";
+            if (Utility.LoadDialogAndLoad(Config.Setting.MapFileDirectory,
                                           "Map File(*.map)|*.map",
                                           "Load map settings",
                                           dataSource.LoadMap,
                                           push: true,
-                                          out _))
+                                          out loaded_filename))
             {
                 this.RefreshAllViews();
+                Config.Setting.MapFileDirectory = Path.GetDirectoryName(loaded_filename);
             }
         }
         private void menu_fileSaveMap(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(CurrentFile,
-                                      "Map File(*.map)|*.map",
-                                      "Save map settings",
-                                      dataSource.SaveMap,
-                                      save_as: true,
-                                      out _);
+            string saved_filename = "";
+            if(Utility.SaveDialogAndSave(Config.Setting.MapFileDirectory,
+                                        "Map File(*.map)|*.map",
+                                        "Save map settings",
+                                        dataSource.SaveMap,
+                                        save_as: true,
+                                        out saved_filename))
+            {
+                Config.Setting.MapFileDirectory = Path.GetDirectoryName(saved_filename);
+            }
         }
         private void menu_editUndo(object sender, EventArgs e)
         {

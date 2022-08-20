@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace _99x8Edit
 {
@@ -12,7 +13,6 @@ namespace _99x8Edit
         private readonly MainWindow mainWin;
         private TabOrder tabList = new TabOrder();
         private Bitmap bmpPreview = new Bitmap(32, 32);         // Edit preview
-        internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDEditor { }
         //----------------------------------------------------------------------
@@ -664,11 +664,14 @@ namespace _99x8Edit
         }
         private void menu_fileImport(object sender, EventArgs e)
         {
-            if (Utility.ImportDialogAndImport(CurrentFile,
+            string imported_file = "";
+            if (Utility.ImportDialogAndImport(Config.Setting.ImportDirectory,
                                               Import.SpriteTypeFilter,
                                               "Select file to import",
-                                              dataSource.ImportSprite))
+                                              dataSource.ImportSprite,
+                                              out imported_file))
             {
+                Config.Setting.ImportDirectory = Path.GetDirectoryName(imported_file);
                 this.RefreshAllViews();
             }
         }
@@ -678,45 +681,57 @@ namespace _99x8Edit
         }
         private void menu_fileLoadSprite(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(CurrentFile,
+            string loaded_file = "";
+            if (Utility.LoadDialogAndLoad(Config.Setting.SpriteFileDirectory,
                                           "Sprite File(*.spr)|*.spr",
                                           "Load sprite settings",
                                           dataSource.LoadSprites,
                                           push: true,
-                                          out _))
+                                          out loaded_file))
             {
                 this.RefreshAllViews();
+                Config.Setting.SpriteFileDirectory = Path.GetDirectoryName(loaded_file);
             }
         }
         private void menu_fileSaveSprite(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(CurrentFile,
-                                      "Sprite File(*.spr)|*.spr",
-                                      "Save sprite settings",
-                                      dataSource.SaveSprites,
-                                      save_as: true,
-                                      out _);
+            string saved_file = "";
+            if(Utility.SaveDialogAndSave(Config.Setting.SpriteFileDirectory,
+                                        "Sprite File(*.spr)|*.spr",
+                                        "Save sprite settings",
+                                        dataSource.SaveSprites,
+                                        save_as: true,
+                                        out saved_file))
+            {
+                Config.Setting.SpriteFileDirectory = Path.GetDirectoryName(saved_file);
+            }
         }
         private void menu_fileLoadPalette(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(CurrentFile,
+            string loaded_file = "";
+            if (Utility.LoadDialogAndLoad(Config.Setting.PaletteDirectory,
                                          "PLT File(*.plt)|*.plt",
                                          "Load palette",
                                          dataSource.LoadPaletteSettings,
                                          push: true,     // Push memento
-                                         out _))
+                                         out loaded_file))
             {
                 this.RefreshAllViews();
+                Config.Setting.PaletteDirectory = Path.GetDirectoryName(loaded_file);
             }
         }
         private void menu_fileSavePalette(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(CurrentFile,
+            string saved_file = "";
+            if(Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
                                       "PLT File(*.plt)|*.plt",
                                       "Save palette",
                                       dataSource.SavePaletteSettings,
                                       save_as: true,
-                                      out _);
+                                      out saved_file))
+            {
+                Config.Setting.PaletteDirectory = Path.GetDirectoryName(saved_file);
+            }
         }
         private void menu_editUndo(object sender, EventArgs e)
         {

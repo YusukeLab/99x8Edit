@@ -166,7 +166,7 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // File
-        internal static bool SaveDialogAndSave(string current_file,
+        internal static bool SaveDialogAndSave(string file_name,
                                                string dialog_filter,
                                                string dialog_title,
                                                Action<BinaryWriter> exec_save,
@@ -189,14 +189,14 @@ namespace _99x8Edit
                 }
                 return false;
             };
-            String dir = Path.GetDirectoryName(current_file);
+            String dir = Path.GetDirectoryName(file_name);
             dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            if(!save_as)
+            if((!save_as) && File.Exists(file_name))
             {
                 // Directory exists and want to overwrite
-                if(do_save(current_file))
+                if(do_save(file_name))
                 {
-                    saved_file = current_file;
+                    saved_file = file_name;
                     return true;
                 }
                 return false;
@@ -257,8 +257,10 @@ namespace _99x8Edit
         internal static bool ImportDialogAndImport(string current_file,
                                                    string filter,
                                                    string title,
-                                                   Action<string, int> exec_import)
+                                                   Action<string, int> exec_import,
+                                                   out string imported_file)
         {
+            imported_file = "";
             String dir = Path.GetDirectoryName(current_file);
             dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
@@ -273,6 +275,7 @@ namespace _99x8Edit
                 {
                     MementoCaretaker.Instance.Push();
                     exec_import(dlg.FileName, dlg.FilterIndex - 1);
+                    imported_file = dlg.FileName;
                     return true;
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
@@ -285,8 +288,10 @@ namespace _99x8Edit
         internal static bool ExportDialogAndExport(string current_file,
                                                    string dialog_title,
                                                    string filter,
-                                                   Action<int, string> exec_save)
+                                                   Action<int, string> exec_save,
+                                                   out string exported_file)
         {
+            exported_file = "";
             String dir = Path.GetDirectoryName(current_file);
             dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             SaveFileDialog dlg = new SaveFileDialog();
@@ -302,6 +307,7 @@ namespace _99x8Edit
                 try
                 {
                     exec_save(dlg.FilterIndex - 1, dlg.FileName);
+                    exported_file = dlg.FileName;
                     return true;
                 }
                 catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)

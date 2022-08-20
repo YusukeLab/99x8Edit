@@ -30,17 +30,14 @@ namespace _99x8Edit
     internal class MementoCaretaker
     {
         // Singleton class for memento management
-        private static MementoCaretaker _singleInstance = new MementoCaretaker();
+        private static MementoCaretaker _instance = new MementoCaretaker();
         private List<IMementoTarget> _targetList = new List<IMementoTarget>();
         private List<Memento> _undoList = new List<Memento>();
         private List<Memento> _redoList = new List<Memento>();
         private Action _stateChanged;
         internal static MementoCaretaker Instance
         {
-            get
-            {
-                return _singleInstance;
-            }
+            get => _instance;
         }
         internal bool UndoEnable
         {

@@ -20,7 +20,6 @@ namespace _99x8Edit
         private SpriteEditor spriteWin;
         private PeekWindow peekWin;
         private About aboutWin;
-        private String currentFile = @"";
         private String peekPath = "";
         public MainWindow()
         {
@@ -30,10 +29,51 @@ namespace _99x8Edit
         {
             // Initialize VDP settings
             dataSource = new Machine();
-            dataSource.SetToDefault();
-            using (Stream s = new MemoryStream(Properties.Resources._default))
+            // Check drag and drop of project file
+            bool project_loaded = false;
+            String[] args = System.Environment.GetCommandLineArgs();
+            if (args.Length > 1)
             {
-                dataSource.LoadAllSettings(new BinaryReader(s));    // Init by resource
+                // Project file dropped
+                String dnd_path = args[args.Length - 1];
+                using BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
+                try
+                {
+                    dataSource.LoadAllSettings(br);
+                    Config.Setting.ProjectFile = dnd_path;
+                    project_loaded = true;
+                }
+                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
+                {
+                    MessageBox.Show(ex.Message, "Error reading project file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            // Load configuration
+            Config.Load();
+            if(!project_loaded)
+            {
+                try
+                {
+                    // Read the previous project file
+                    using Stream s = new FileStream(Config.Setting.ProjectFile, FileMode.Open);
+                    dataSource.LoadAllSettings(new BinaryReader(s));
+                }
+                catch
+                {
+                    // If failed, initialize by setting within the resource
+                    Config.Setting.ProjectFile = "";
+                    try
+                    {
+                        // Read from built in resource
+                        using Stream s = new MemoryStream(Properties.Resources._default);
+                        dataSource.LoadAllSettings(new BinaryReader(s));
+                    }
+                    catch
+                    {
+                        // Everything failed
+                        dataSource.SetToDefault();
+                    }
+                }
             }
             // Undo/Redo            
             MementoCaretaker.Instance.SetCallback(MementoStateChanged);
@@ -42,32 +82,12 @@ namespace _99x8Edit
             PCGWin = new PCGEditor(dataSource, this);
             mapWin = new MapEditor(dataSource, this);
             spriteWin = new SpriteEditor(dataSource, this);
-            // Check drag and drop of files
-            String[] args = System.Environment.GetCommandLineArgs();
-            if (args.Length > 1)
-            {
-                // See the last args since many files may have been dropped
-                String dnd_path = args[args.Length - 1];
-                using BinaryReader br = new BinaryReader(new FileStream(dnd_path, FileMode.Open));
-                try
-                {
-                    dataSource.LoadAllSettings(br);
-                    currentFile = dnd_path;
-                    PCGWin.CurrentFile = dnd_path;
-                    spriteWin.CurrentFile = dnd_path;
-                    mapWin.CurrentFile = dnd_path;
-                    PCGWin.ChangeOccuredByHost();
-                    mapWin.ChangeOccuredByHost();
-                    spriteWin.ChangeOccuredByHost();
-                }
-                catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    currentFile = "";
-                }
-            }
             // Open PCG editor as default
             PCGWin.Show();
+        }
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Config.Save();
         }
         //----------------------------------------------------------------------
         // For other forms and internal use
@@ -149,51 +169,42 @@ namespace _99x8Edit
         {
             // Called from button and child window
             string saved_filename = "";
-            if (Utility.SaveDialogAndSave(currentFile,
+            if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
                                           dataSource.SaveAllSettings,
                                           false,    // overwrite
                                           out saved_filename))
             {
-                currentFile = saved_filename;
-                PCGWin.CurrentFile = saved_filename;
-                mapWin.CurrentFile = saved_filename;
-                spriteWin.CurrentFile = saved_filename;
+                Config.Setting.ProjectFile = saved_filename;
             }
         }
         internal void SaveAsProject(object sender, EventArgs e)
         {
             // Called from button and child window
             string saved_filename = "";
-            if (Utility.SaveDialogAndSave(currentFile,
+            if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
                                           dataSource.SaveAllSettings,
                                           true,     // save as
                                           out saved_filename))
             {
-                currentFile = saved_filename;
-                PCGWin.CurrentFile = saved_filename;
-                mapWin.CurrentFile = saved_filename;
-                spriteWin.CurrentFile = saved_filename;
+                Config.Setting.ProjectFile = saved_filename;
             }
         }
         internal void LoadProject(object sender, EventArgs e)
         {
             // Called from button and child window
             String loaded_filename;
-            if (Utility.LoadDialogAndLoad(currentFile,
+            if (Utility.LoadDialogAndLoad(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Load settings",
                                           dataSource.LoadAllSettings,
                                           false,       // Won't push memento
                                           out loaded_filename))
             {
-                currentFile = loaded_filename;
-                PCGWin.CurrentFile = loaded_filename;
-                spriteWin.CurrentFile = loaded_filename;
-                mapWin.CurrentFile = loaded_filename;
+                Config.Setting.ProjectFile = loaded_filename;
                 // Update UI
                 PCGWin.ChangeOccuredByHost();
                 mapWin.ChangeOccuredByHost();
@@ -205,26 +216,41 @@ namespace _99x8Edit
         internal void ExportPCG(object sender, EventArgs e)
         {
             // Called from button and child window
-            Utility.ExportDialogAndExport(currentFile,
-                                          "Export PCG data to",
-                                          Export.PCGTypeFilter,
-                                          dataSource.ExportPCG);
+            string exported_file = "";
+            if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
+                                            "Export PCG data to",
+                                            Export.PCGTypeFilter,
+                                            dataSource.ExportPCG,
+                                            out exported_file))
+            {
+                Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
+            }
         }
         internal void ExportMap(object sender, EventArgs e)
         {
             // Called from button and child window
-            Utility.ExportDialogAndExport(currentFile,
-                                          "Export map data to",
-                                          Export.MapTypeFilter,
-                                          dataSource.ExportMap);
+            string exported_file = "";
+            if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
+                                            "Export map data to",
+                                            Export.MapTypeFilter,
+                                            dataSource.ExportMap,
+                                            out exported_file))
+            {
+                Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
+            }
         }
         internal void ExportSprite(object sender, EventArgs e)
         {
             // Called from button and child window
-            Utility.ExportDialogAndExport(currentFile,
-                                          "Export sprite data to",
-                                          Export.SpriteTypeFilter,
-                                          dataSource.ExportSprites);
+            string exported_file = "";
+            if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
+                                            "Export sprite data to",
+                                            Export.SpriteTypeFilter,
+                                            dataSource.ExportSprites,
+                                            out exported_file))
+            {
+                Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
+            }
         }
         private void btnUndo_Click(object sender, EventArgs e)
         {
@@ -253,7 +279,7 @@ namespace _99x8Edit
                 }
             }
             // Create window
-            String dir = Path.GetDirectoryName(peekPath);
+            String dir = Path.GetDirectoryName(Config.Setting.PeekDirectory);
             dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
@@ -263,6 +289,7 @@ namespace _99x8Edit
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                Config.Setting.PeekDirectory = Path.GetDirectoryName(dlg.FileName);
                 peekWin = new PeekWindow(dlg.FileName);
                 peekWin.Show();
                 peekPath = dlg.FileName;

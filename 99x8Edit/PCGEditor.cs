@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace _99x8Edit
 {
@@ -13,7 +14,6 @@ namespace _99x8Edit
         private TabOrder tabList = new TabOrder();
         private Bitmap bmpColorL = new Bitmap(32, 32);      // Color view
         private Bitmap bmpColorR = new Bitmap(32, 32);
-        internal String CurrentFile { get; set; }
         // For internal drag control
         private class DnDPCG {
             internal ClipPCG Data { get; set; }
@@ -739,11 +739,14 @@ namespace _99x8Edit
         }
         private void menu_fileImport(object sender, EventArgs e)
         {
-            if (Utility.ImportDialogAndImport(CurrentFile,
+            string imported_file = "";
+            if (Utility.ImportDialogAndImport(Config.Setting.ImportDirectory,
                                               Import.PCGTypeFilter,
                                               "Select file to import",
-                                              dataSource.ImportPCG))
+                                              dataSource.ImportPCG,
+                                              out imported_file))
             {
+                Config.Setting.ImportDirectory = Path.GetDirectoryName(imported_file);
                 this.RefreshAllViews();
             }
         }
@@ -753,44 +756,56 @@ namespace _99x8Edit
         }
         private void menu_fileLoadPCG(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(CurrentFile,
+            string loaded_filename = "";
+            if (Utility.LoadDialogAndLoad(Config.Setting.PCGFileDirectory,
                                           "PCG File(*.pcg)|*.pcg",
                                           "Load PCG settings",
                                           dataSource.LoadPCG,
                                           push: true,
-                                          out _))
+                                          out loaded_filename))
             {
                 this.RefreshAllViews();
+                Config.Setting.PCGFileDirectory = Path.GetDirectoryName(loaded_filename);
             }
         }
         private void menu_fileSavePCG(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(CurrentFile,
-                                      "PCG File(*.pcg)|*.pcg",
-                                      "Save PCG settings",
-                                      dataSource.SavePCG,
-                                      save_as: true,
-                                      out _); ;
+            string saved_filename = "";
+            if(Utility.SaveDialogAndSave(Config.Setting.PCGFileDirectory,
+                                        "PCG File(*.pcg)|*.pcg",
+                                        "Save PCG settings",
+                                        dataSource.SavePCG,
+                                        save_as: true,
+                                        out saved_filename))
+            {
+                Config.Setting.PCGFileDirectory = Path.GetDirectoryName(saved_filename);
+            }
         }
         private void menu_savePalette(object sender, EventArgs e)
         {
-            Utility.SaveDialogAndSave(CurrentFile,
-                                      "PLT File(*.plt)|*.plt",
-                                      "Save palette",
-                                      dataSource.SavePaletteSettings,
-                                      save_as: true,
-                                      out _);
+            string saved_filename = "";
+            if(Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
+                                        "PLT File(*.plt)|*.plt",
+                                        "Save palette",
+                                        dataSource.SavePaletteSettings,
+                                        save_as: true,
+                                        out saved_filename))
+            {
+                Config.Setting.PaletteDirectory = Path.GetDirectoryName(saved_filename);
+            }
         }
         private void menu_loadPalette(object sender, EventArgs e)
         {
-            if (Utility.LoadDialogAndLoad(CurrentFile,
+            string loaded_filename = "";
+            if (Utility.LoadDialogAndLoad(Config.Setting.PaletteDirectory,
                                          "PLT File(*.plt)|*.plt",
                                          "Load palette",
                                          dataSource.LoadPaletteSettings,
                                          push:  true,
-                                         out _))
+                                         out loaded_filename))
             {
                 this.RefreshAllViews();
+                Config.Setting.PaletteDirectory = Path.GetDirectoryName(loaded_filename);
             }
         }
         private void menu_editUndo(object sender, EventArgs e)
