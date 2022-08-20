@@ -16,6 +16,7 @@ namespace _99x8Edit
                 Color c = source.ColorOf(i);
                 viewPalette.SetBackground(c, i % viewPalette.ColumnNum, i / viewPalette.ColumnNum);
             }
+            viewPalette.Index = previous;
             colorSelected = callback;
         }
         private void PaletteSelector_Deactivate(object sender, EventArgs e)

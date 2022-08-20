@@ -44,6 +44,8 @@ namespace _99x8Edit
             toolStripFileSavePal.Click += new EventHandler(menu_fileSavePalette);
             toolStripEditUndo.Click += new EventHandler(menu_editUndo);
             toolStripEditRedo.Click += new EventHandler(menu_editRedo);
+            toolStripEditCurrent.Click += new EventHandler(menu_editColorCurrent);
+            toolStripEditToggle.Click += new EventHandler(menu_editColorToggle);
             // context menu
             toolStripSprCopy.Click += new EventHandler(contextSprite_copy);
             toolStripSprPaste.Click += new EventHandler(contextSprite_paste);
@@ -112,6 +114,8 @@ namespace _99x8Edit
             this.chkTMS.Checked = dataSource.IsTMS9918;
             this.toolStripFileLoadPal.Enabled = !dataSource.IsTMS9918;
             this.toolStripFileSavePal.Enabled = !dataSource.IsTMS9918;
+            this.toolStripEditCurrent.Checked = (Config.Setting.EditControlType == EditType.Current);
+            this.toolStripEditToggle.Checked = (Config.Setting.EditControlType == EditType.Toggle);
             this.Refresh();
         }
         private void UpdatePaletteView(bool refresh)
@@ -210,27 +214,27 @@ namespace _99x8Edit
         }
         void UpdateCurrentColorView(bool refresh)
         {
-            int length = 1;
+            int length = 2;
             // Draw current color of primary sprite
             int index16 = viewSprite.Index;
             int color_code_l = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
             Color cl = dataSource.ColorOf(color_code_l);
-            viewColor.SetBackground(cl, 0, 0);
+            viewColor.SetBackground(cl, 1, 0);
             if (dataSource.GetSpriteOverlay(index16))
             {
                 // Draw current color of overlayed sprite
                 index16 = (index16 + 1) % 64;
                 int color_code_r = dataSource.GetSpriteColorCode(index16, viewEdit.Y);
                 Color cr = dataSource.ColorOf(color_code_r);
-                viewColor.SetBackground(cr, 1, 0);
-                length = 2;
+                viewColor.SetBackground(cr, 2, 0);
+                length = 3;
                 if (!dataSource.IsTMS9918)
                 {
                     // Draw OR color of two sprites (V9938)
                     int color_code_or = color_code_l | color_code_r;
                     Color co = dataSource.ColorOf(color_code_or);
-                    viewColor.SetBackground(co, 2, 0);
-                    length = 3;
+                    viewColor.SetBackground(co, 3, 0);
+                    length = 4;
                     labelColorOR.Visible = true;
                 }
                 else
@@ -274,9 +278,14 @@ namespace _99x8Edit
             }
             this.RefreshAllViews();     // Everything changes
         }
-        private void viewColor_Click(object sender, EventArgs e)
+        private void viewColor_CellOnEdit(object sender, EventArgs e)
         {
-            if(viewColor.X == 2)
+            if (viewColor.X == 0)
+            {
+                // Current color is transparent
+                return;
+            }
+            if (viewColor.X == 3)
             {
                 // When OR color is clicked, open the list of OR colors 
                 PaletteOrColors or_win = new PaletteOrColors(dataSource);
@@ -285,7 +294,7 @@ namespace _99x8Edit
             }
             // Color selection
             int index16 = viewSprite.Index;
-            if(viewColor.X == 1)
+            if (viewColor.X == 2)
             {
                 index16 = (index16 + 1) % 64;  // For overlayed
             }
@@ -534,6 +543,11 @@ namespace _99x8Edit
             (int x, int y) = viewEdit.PosInEditor();
             this.EditCurrentSprite(x, y);
         }
+        private void viewEdit_SelectionChanged(object sender, EventArgs e)
+        {
+            // Current line has changed
+            this.UpdateCurrentColorView(true);
+        }
         private void contextEditor_copy(object sender, EventArgs e)
         {
             ClipOneSpriteLine clip = new ClipOneSpriteLine();
@@ -741,6 +755,18 @@ namespace _99x8Edit
         {
             mainWin.Redo();
         }
+        private void menu_editColorCurrent(object sender, EventArgs e)
+        {
+            toolStripEditCurrent.Checked = true;
+            toolStripEditToggle.Checked = false;
+            Config.Setting.EditControlType = EditType.Current;
+        }
+        private void menu_editColorToggle(object sender, EventArgs e)
+        {
+            toolStripEditCurrent.Checked = false;
+            toolStripEditToggle.Checked = true;
+            Config.Setting.EditControlType = EditType.Toggle;
+        }
         //---------------------------------------------------------------------
         // For the main window
         public void ChangeOccuredByHost()
@@ -777,36 +803,49 @@ namespace _99x8Edit
             int target_prev_pixel_ov = dataSource.GetSpritePixel(index16ov, x, y, true);
             // current_status will be: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
-            // Toggle the status
-            int target_stat = current_stat + 1;
-            if (dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
+            int updated_stat = current_stat;
+            if (Config.Setting.EditControlType == EditType.Current)
             {
-                if (dataSource.IsTMS9918)
-                {
-                    target_stat %= 3;       // Overlayed, no OR color
-                }
-                else
-                {
-                    target_stat %= 4;       // Overlayed, OR color available
-                }
+                // Set the pixel to current color
+                updated_stat = viewColor.X;
             }
             else
             {
-                target_stat %= 2;           // No overlay
+                // Toggle the status of pixel
+                updated_stat = current_stat + 1;
+                if (dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
+                {
+                    if (dataSource.IsTMS9918)
+                    {
+                        updated_stat %= 3;       // Overlayed, no OR color
+                    }
+                    else
+                    {
+                        updated_stat %= 4;       // Overlayed, OR color available
+                    }
+                }
+                else
+                {
+                    updated_stat %= 2;           // No overlay
+                }
             }
-            // So toggled status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
-            // set pixel of first sprite when above is 1 or 3
-            int pixel = ((target_stat == 1) || (target_stat == 3)) ? 1 : 0;
-            dataSource.SetSpritePixel(index16, x, y, pixel, push: true);
-            if (dataSource.GetSpriteOverlay(index16))
+            if(updated_stat != current_stat)
             {
-                // set pixel of overlayed sprite when above is 2 or 3
-                pixel = ((target_stat == 2) || (target_stat == 3)) ? 1 : 0;
-                dataSource.SetSpritePixel(index16ov, x, y, pixel, push: true);
+                MementoCaretaker.Instance.Push();
+                // So updated status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
+                // set pixel of first sprite when above is 1 or 3
+                int pixel = ((updated_stat == 1) || (updated_stat == 3)) ? 1 : 0;
+                dataSource.SetSpritePixel(index16, x, y, pixel, push: false);
+                if (dataSource.GetSpriteOverlay(index16))
+                {
+                    // set pixel of overlayed sprite when above is 2 or 3
+                    pixel = ((updated_stat == 2) || (updated_stat == 3)) ? 1 : 0;
+                    dataSource.SetSpritePixel(index16ov, x, y, pixel, push: false);
+                }
+                // Update views
+                this.UpdateSpriteEditView(refresh: true);
+                this.UpdateSpriteView(refresh: true);
             }
-            // Update views
-            this.UpdateSpriteEditView(refresh: true);
-            this.UpdateSpriteView(refresh: true);
         }
 
         private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)

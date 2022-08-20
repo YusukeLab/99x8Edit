@@ -22,6 +22,12 @@ namespace _99x8Edit
         public string SpriteFileDirectory { get; set; } = "";
         public string PaletteDirectory { get; set; } = "";
         public string PeekDirectory { get; set; } = "";
+        public EditType EditControlType { get; set; } = EditType.Current;
+    }
+    public enum EditType
+    {
+        Current,
+        Toggle
     }
     internal class Config
     {

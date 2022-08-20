@@ -80,6 +80,9 @@ namespace _99x8Edit
             this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this.viewColor = new _99x8Edit.MatrixControl();
@@ -96,7 +99,7 @@ namespace _99x8Edit
             // 
             this.labelColorR.AutoSize = true;
             this.labelColorR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorR.Location = new System.Drawing.Point(50, 394);
+            this.labelColorR.Location = new System.Drawing.Point(83, 394);
             this.labelColorR.Name = "labelColorR";
             this.labelColorR.Size = new System.Drawing.Size(13, 15);
             this.labelColorR.TabIndex = 25;
@@ -106,7 +109,7 @@ namespace _99x8Edit
             // 
             this.labelColorL.AutoSize = true;
             this.labelColorL.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorL.Location = new System.Drawing.Point(22, 394);
+            this.labelColorL.Location = new System.Drawing.Point(55, 394);
             this.labelColorL.Name = "labelColorL";
             this.labelColorL.Size = new System.Drawing.Size(13, 15);
             this.labelColorL.TabIndex = 24;
@@ -136,7 +139,7 @@ namespace _99x8Edit
             // 
             this.labelColorOR.AutoSize = true;
             this.labelColorOR.Font = new System.Drawing.Font("Yu Gothic UI", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelColorOR.Location = new System.Drawing.Point(81, 394);
+            this.labelColorOR.Location = new System.Drawing.Point(114, 394);
             this.labelColorOR.Name = "labelColorOR";
             this.labelColorOR.Size = new System.Drawing.Size(18, 15);
             this.labelColorOR.TabIndex = 27;
@@ -508,6 +511,9 @@ namespace _99x8Edit
             // toolStripBarEdit
             // 
             this.toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripEditCurrent,
+            this.toolStripEditToggle,
+            this.toolStripSeparator7,
             this.toolStripEditUndo,
             this.toolStripEditRedo});
             this.toolStripBarEdit.Name = "toolStripBarEdit";
@@ -515,18 +521,35 @@ namespace _99x8Edit
             this.toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
             this.toolStripBarEdit.Text = "Edit(&E)";
             // 
+            // toolStripEditCurrent
+            // 
+            this.toolStripEditCurrent.Name = "toolStripEditCurrent";
+            this.toolStripEditCurrent.Size = new System.Drawing.Size(288, 26);
+            this.toolStripEditCurrent.Text = "Set to current color when edit";
+            // 
+            // toolStripEditToggle
+            // 
+            this.toolStripEditToggle.Name = "toolStripEditToggle";
+            this.toolStripEditToggle.Size = new System.Drawing.Size(288, 26);
+            this.toolStripEditToggle.Text = "Toggle the color when edit";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(285, 6);
+            // 
             // toolStripEditUndo
             // 
             this.toolStripEditUndo.Name = "toolStripEditUndo";
             this.toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.toolStripEditUndo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditUndo.Size = new System.Drawing.Size(288, 26);
             this.toolStripEditUndo.Text = "Undo";
             // 
             // toolStripEditRedo
             // 
             this.toolStripEditRedo.Name = "toolStripEditRedo";
             this.toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditRedo.Size = new System.Drawing.Size(288, 26);
             this.toolStripEditRedo.Text = "Redo";
             // 
             // viewColor
@@ -536,20 +559,20 @@ namespace _99x8Edit
             this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewColor.CellHeight = 32;
             this.viewColor.CellWidth = 32;
-            this.viewColor.ColumnNum = 3;
+            this.viewColor.ColumnNum = 4;
             this.viewColor.DrawOverlayedSelection = false;
             this.viewColor.DrawTranparentColor = true;
+            this.viewColor.Index = 0;
             this.viewColor.Location = new System.Drawing.Point(10, 358);
             this.viewColor.Name = "viewColor";
             this.viewColor.RowNum = 1;
             this.viewColor.SelectionHeight = 1;
             this.viewColor.SelectionWidth = 1;
-            this.viewColor.Size = new System.Drawing.Size(98, 34);
+            this.viewColor.Size = new System.Drawing.Size(130, 34);
             this.viewColor.TabIndex = 50;
             this.viewColor.X = 0;
             this.viewColor.Y = 0;
-            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_Click);
-            this.viewColor.Click += new System.EventHandler(this.viewColor_Click);
+            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_CellOnEdit);
             // 
             // viewPalette
             // 
@@ -561,6 +584,7 @@ namespace _99x8Edit
             this.viewPalette.ColumnNum = 8;
             this.viewPalette.DrawOverlayedSelection = false;
             this.viewPalette.DrawTranparentColor = true;
+            this.viewPalette.Index = 0;
             this.viewPalette.Location = new System.Drawing.Point(13, 462);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.RowNum = 2;
@@ -586,6 +610,7 @@ namespace _99x8Edit
             this.viewSprite.ContextMenuStrip = this.contextSprites;
             this.viewSprite.DrawOverlayedSelection = false;
             this.viewSprite.DrawTranparentColor = false;
+            this.viewSprite.Index = 0;
             this.viewSprite.Location = new System.Drawing.Point(291, 64);
             this.viewSprite.Name = "viewSprite";
             this.viewSprite.RowNum = 16;
@@ -609,6 +634,7 @@ namespace _99x8Edit
             this.viewEdit.ContextMenuStrip = this.contextEditor;
             this.viewEdit.DrawOverlayedSelection = false;
             this.viewEdit.DrawTranparentColor = true;
+            this.viewEdit.Index = 0;
             this.viewEdit.Location = new System.Drawing.Point(9, 64);
             this.viewEdit.Name = "viewEdit";
             this.viewEdit.RowNum = 16;
@@ -619,6 +645,7 @@ namespace _99x8Edit
             this.viewEdit.X = 0;
             this.viewEdit.Y = 0;
             this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
+            this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEditor_CellOnEdit);
             // 
             // SpriteEditor
@@ -720,5 +747,8 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyColor;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorInverse;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditCurrent;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }

@@ -40,6 +40,8 @@ namespace _99x8Edit
             this.viewPalette.CellHeight = 32;
             this.viewPalette.CellWidth = 32;
             this.viewPalette.ColumnNum = 8;
+            this.viewPalette.DrawOverlayedSelection = false;
+            this.viewPalette.DrawTranparentColor = true;
             this.viewPalette.Location = new System.Drawing.Point(-1, -1);
             this.viewPalette.Name = "viewPalette";
             this.viewPalette.RowNum = 2;

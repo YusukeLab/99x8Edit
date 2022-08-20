@@ -221,6 +221,11 @@ namespace _99x8Edit
         {
             // Get linear index of selecion
             get => _selection.Y * SelectionColNum + _selection.X;
+            set
+            {
+                _selection.X = value % SelectionColNum;
+                _selection.Y = value / SelectionColNum;
+            }
         }
         [Browsable(false)]
         public int SelectionColNum
@@ -463,7 +468,8 @@ namespace _99x8Edit
                     // Cell to be dragged
                     CellDragStart?.Invoke(this, new EventArgs());
                 }
-                base.OnMouseDown(e);
+                // Base method diactivates the new opened window at above
+                //base.OnMouseDown(e);
             }
         }
         protected override void OnDragEnter(DragEventArgs drgevent)

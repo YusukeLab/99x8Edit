@@ -49,6 +49,8 @@ namespace _99x8Edit
             toolStripFileSavePal.Click += new EventHandler(menu_savePalette);
             toolStripEditUndo.Click += new EventHandler(menu_editUndo);
             toolStripEditRedo.Click += new EventHandler(menu_editRedo);
+            toolStripEditCurrent.Click += new EventHandler(menu_editColorCurrent);
+            toolStripEditToggle.Click += new EventHandler(menu_editColorToggle);
             // Context menu
             toolStripPCGCopy.Click += new EventHandler(contextPCG_copy);
             toolStripPCGPaste.Click += new EventHandler(contextPCG_paste);
@@ -117,6 +119,8 @@ namespace _99x8Edit
             this.chkTMS.Checked = dataSource.IsTMS9918;
             this.toolStripFileLoadPal.Enabled = !dataSource.IsTMS9918;
             this.toolStripFileSavePal.Enabled = !dataSource.IsTMS9918;
+            this.toolStripEditCurrent.Checked = (Config.Setting.EditControlType == EditType.Current);
+            this.toolStripEditToggle.Checked = (Config.Setting.EditControlType == EditType.Toggle);
             this.Refresh();
         }
         private void UpdatePaletteView(bool refresh)
@@ -235,14 +239,37 @@ namespace _99x8Edit
                       + (viewEdit.Y / 8) * viewPCG.ColumnNum
                       + viewEdit.X;                            // Selected character
             int prev_pixel = dataSource.GetPCGPixel(index, y, x);
-            // Toggle On/Off of the pixel
-            dataSource.SetPCGPixel(index, y, x, (prev_pixel == 0) ? 1 : 0, push: true);
+            if (Config.Setting.EditControlType == EditType.Current)
+            {
+                // Set to current color
+                if((viewColor.X == 0) && (prev_pixel == 0))
+                {
+                    // Set foreground color
+                    dataSource.SetPCGPixel(index, y, x, 1, push: true);
+                }
+                else if((viewColor.X == 1) && (prev_pixel != 0))
+                {
+                    // Current color is background, so reset foreground color
+                    dataSource.SetPCGPixel(index, y, x, 0, push: true);
+                }
+                else
+                {
+                    // No change occured
+                    return;
+                }
+            }
+            else
+            {
+                // Toggle the color of target pixel
+                dataSource.SetPCGPixel(index, y, x, (prev_pixel == 0) ? 1 : 0, push: true);
+            }
             this.UpdatePCGEditView(refresh: true);   // PCG Editor view changes
             this.UpdatePCGList(refresh: true);       // PCG list view changes also
             this.UpdateSandbox(refresh: true);       // Update sandbox view
         }
         private void viewEdit_SelectionChanged(object sender, EventArgs e)
         {
+            // Current line has changed
             this.UpdateCurrentColorView(refresh: true);
         }
         private void contextEditor_copy(object sender, EventArgs e)
@@ -632,6 +659,23 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Misc
+        private void viewColor_CellOnEdit(object sender, EventArgs e)
+        {
+            bool foreground = (viewColor.X == 0);
+            int target = this.TargetPCG();
+            // Callback for the color selection window
+            Action<int> callback = (x) =>
+            {
+                dataSource.SetPCGColor(target, viewEdit.Y % 8, x, foreground, push: true);
+                this.RefreshAllViews();
+            };
+            // Open the color selection window
+            int color_code = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground);
+            PaletteSelector palette_win = new PaletteSelector(dataSource, color_code, callback);
+            palette_win.StartPosition = FormStartPosition.Manual;
+            palette_win.Location = Cursor.Position;
+            palette_win.Show();
+        }
         private void viewPalette_CellOnEdit(object sender, EventArgs e)
         {
             if (!chkTMS.Checked)
@@ -677,23 +721,6 @@ namespace _99x8Edit
                 // Open the palette editor window
                 this.EditPalette(viewPalette.Y * 8 + viewPalette.X);
             }
-        }
-        private void viewColor_Click(object sender, EventArgs e)
-        {
-            bool foreground = (viewColor.X == 0);
-            int target = this.TargetPCG();
-            // Callback for the color selection window
-            Action<int> callback = (x) =>
-            {
-                dataSource.SetPCGColor(target, viewEdit.Y % 8, x, foreground, push: true);
-                this.RefreshAllViews();
-            };
-            // Open the color selection window
-            int color_code = dataSource.GetPCGColor(target, viewEdit.Y % 8, foreground);
-            PaletteSelector palette_win = new PaletteSelector(dataSource, color_code, callback);
-            palette_win.StartPosition = FormStartPosition.Manual;
-            palette_win.Location = Cursor.Position;
-            palette_win.Show();
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
@@ -815,6 +842,18 @@ namespace _99x8Edit
         private void menu_editRedo(object sender, EventArgs e)
         {
             mainWin.Redo();
+        }
+        private void menu_editColorCurrent(object sender, EventArgs e)
+        {
+            toolStripEditCurrent.Checked = true;
+            toolStripEditToggle.Checked = false;
+            Config.Setting.EditControlType = EditType.Current;
+        }
+        private void menu_editColorToggle(object sender, EventArgs e)
+        {
+            toolStripEditCurrent.Checked = false;
+            toolStripEditToggle.Checked = true;
+            Config.Setting.EditControlType = EditType.Toggle;
         }
         //---------------------------------------------------------------------
         // Utility

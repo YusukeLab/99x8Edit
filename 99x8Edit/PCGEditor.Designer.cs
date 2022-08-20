@@ -77,6 +77,9 @@ namespace _99x8Edit
             this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSand = new _99x8Edit.MatrixControl();
@@ -473,6 +476,9 @@ namespace _99x8Edit
             // toolStripBarEdit
             // 
             this.toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripEditCurrent,
+            this.toolStripEditToggle,
+            this.toolStripSeparator6,
             this.toolStripEditUndo,
             this.toolStripEditRedo});
             this.toolStripBarEdit.Name = "toolStripBarEdit";
@@ -480,18 +486,35 @@ namespace _99x8Edit
             this.toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
             this.toolStripBarEdit.Text = "Edit(&E)";
             // 
+            // toolStripEditCurrent
+            // 
+            this.toolStripEditCurrent.Name = "toolStripEditCurrent";
+            this.toolStripEditCurrent.Size = new System.Drawing.Size(288, 26);
+            this.toolStripEditCurrent.Text = "Set to current color when edit";
+            // 
+            // toolStripEditToggle
+            // 
+            this.toolStripEditToggle.Name = "toolStripEditToggle";
+            this.toolStripEditToggle.Size = new System.Drawing.Size(288, 26);
+            this.toolStripEditToggle.Text = "Toggle the color when edit";
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(285, 6);
+            // 
             // toolStripEditUndo
             // 
             this.toolStripEditUndo.Name = "toolStripEditUndo";
             this.toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.toolStripEditUndo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditUndo.Size = new System.Drawing.Size(288, 26);
             this.toolStripEditUndo.Text = "Undo";
             // 
             // toolStripEditRedo
             // 
             this.toolStripEditRedo.Name = "toolStripEditRedo";
             this.toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.toolStripEditRedo.Size = new System.Drawing.Size(179, 26);
+            this.toolStripEditRedo.Size = new System.Drawing.Size(288, 26);
             this.toolStripEditRedo.Text = "Redo";
             // 
             // viewSand
@@ -590,8 +613,7 @@ namespace _99x8Edit
             this.viewColor.TabIndex = 36;
             this.viewColor.X = 0;
             this.viewColor.Y = 0;
-            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_Click);
-            this.viewColor.Click += new System.EventHandler(this.viewColor_Click);
+            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_CellOnEdit);
             // 
             // viewPalette
             // 
@@ -712,5 +734,8 @@ namespace _99x8Edit
         private EditorControl viewEdit;
         private MatrixControl viewColor;
         private MatrixControl viewPalette;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditCurrent;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
     }
 }
