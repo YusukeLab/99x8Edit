@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace _99x8Edit
 {
     internal class ClipboardWrapper
     {
-        internal static readonly string _clipID = "99x8Edit";
+        private static readonly string _clipID = "99x8Edit";
         // For copy and paste actions
         internal static void SetData(ClipBase clip)
         {

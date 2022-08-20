@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace _99x8Edit
@@ -11,22 +7,19 @@ namespace _99x8Edit
     // RGB888 Palette editor window
     public partial class PaletteEditor : Form
     {
-        Action _paletteEdited;
-        public PaletteEditor(int R, int G, int B, Action callback)
+        private readonly Action<int, int, int> _paletteEdited;
+        public PaletteEditor(int r, int g, int b, Action<int, int, int> callback)
         {
             InitializeComponent();
-            textBoxR.Text = R.ToString();
-            textBoxG.Text = G.ToString();
-            textBoxB.Text = B.ToString();
-            trackBarR.Value = R;
-            trackBarG.Value = G;
-            trackBarB.Value = B;
+            textBoxR.Text = r.ToString();
+            textBoxG.Text = g.ToString();
+            textBoxB.Text = b.ToString();
+            trackBarR.Value = r;
+            trackBarG.Value = g;
+            trackBarB.Value = b;
             _paletteEdited = callback;
             this.UpdateColor();
         }
-        public int R => trackBarR.Value;
-        public int G => trackBarG.Value;
-        public int B => trackBarB.Value;
         protected override bool ProcessDialogKey(Keys keyData)
         {
             switch (keyData)
@@ -95,7 +88,9 @@ namespace _99x8Edit
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
-            _paletteEdited?.Invoke();
+            _paletteEdited?.Invoke(trackBarR.Value,
+                                   trackBarG.Value,
+                                   trackBarB.Value);
             this.Dispose();
         }
     }

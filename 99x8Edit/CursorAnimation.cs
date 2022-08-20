@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 
 namespace _99x8Edit
 {
     internal partial class CursorAnimation : Form
     {
         // Transparent window for the cursor effect, flying from control to control
-        private static Bitmap _bmp = null;
+        private static Bitmap _bmp;
         private readonly int _loop = 12;
         private Rectangle _start;
         private Rectangle _end;
@@ -41,8 +36,8 @@ namespace _99x8Edit
                 for (int i = 0; i < _loop; ++i)
                 {
                     // Use log to avoid constant speed
-                    int distance = (int)(Math.Log10((double)i + 1.0) * 1000.0);
-                    int max = (int)(Math.Log10((double)_loop) * 1000.0);
+                    int distance = (int)(Math.Log10(i + 1.0) * 1000.0);
+                    int max = (int)(Math.Log10(_loop) * 1000.0);
                     _current.X = _start.X + (_end.X - _start.X) * distance / max;
                     _current.Y = _start.Y + (_end.Y - _start.Y) * distance / max;
                     _current.Width = _start.Width + (_end.Width - _start.Width) * distance / max;

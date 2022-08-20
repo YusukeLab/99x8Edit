@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace _99x8Edit
@@ -44,15 +43,19 @@ namespace _99x8Edit
             int count = 0;
             for (int i = 0; i < source.Length; ++i)
             {
-                if ((int)(source[i]) != current_data)
+                if (source[i] != current_data)
                 {
                     if (count > 0)                      // New type of data started
                     {
-                        outputData.Add((byte)count);   // Record size and value of previous data
+                        if (current_data == -1)         // Not expected to happen. Fail safe
+                        {
+                            throw new Exception("Compression failed.");
+                        }
+                        outputData.Add((byte)count);    // Record size and value of previous data
                         outputData.Add((byte)current_data);
                     }
                     count = 1;
-                    current_data = (int)source[i];
+                    current_data = source[i];
                 }
                 else
                 {
@@ -68,6 +71,10 @@ namespace _99x8Edit
                     }
                 }
             }
+            if (current_data == -1) // Not expected to happen. Fail safe
+            {
+                throw new Exception("Compression failed.");
+            }
             outputData.Add((byte)count);      // Record size and value of previous data
             outputData.Add((byte)current_data);
             return outputData.ToArray();
@@ -82,6 +89,10 @@ namespace _99x8Edit
             // for output
             Dictionary<byte, int> pair_table = new Dictionary<byte, int>();
             byte[] work_buffer = source.Clone() as byte[];   // Default output buffer =  input data
+            if (work_buffer == null)
+            {
+                throw new Exception("Compression failed.");
+            }
             int[] chr_used = new int[256];
             int compressed_size = work_buffer.Length;
             do
@@ -154,7 +165,7 @@ namespace _99x8Edit
             foreach (KeyValuePair<byte, int> kvp in pair_table)
             {
                 // Output dictionary
-                ret.Add((byte)(kvp.Key));
+                ret.Add(kvp.Key);
                 ret.Add((byte)(kvp.Value >> 8));
                 ret.Add((byte)(kvp.Value & 0xFF));
             }

@@ -42,12 +42,12 @@ namespace _99x8Edit
         {
             get;
             set;
-        } = false;
+        }
         internal bool RedoEnable
         {
             get;
             set;
-        } = false;
+        }
         // For initialization
         internal void SetCallback(Action callback)
         {

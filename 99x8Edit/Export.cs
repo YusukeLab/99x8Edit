@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Drawing;
 
 namespace _99x8Edit
 {
@@ -80,20 +78,17 @@ namespace _99x8Edit
             RawCompressed_Map,
         };
         // Data to be exported, to be set by host
-        private byte[] _ptnGen = new byte[256 * 8];    // Pattern generator table
-        private byte[] _ptnClr = new byte[256 * 8];    // Pattern color table
-        private byte[] _nameTable = new byte[768];     // Sandbox(Pattern name table)
-        private byte[] _pltDat = { 0x00, 0x00, 0x00, 0x00, 0x11, 0x06, 0x33, 0x07,
-                                   0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
-                                   0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
-                                   0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
-        private bool _isTMS9918 = false;
-        private byte[] _mapPattern = new byte[256 * 4];  // One pattern mede by four characters
-        private byte[,] _mapData = new byte[64, 64];     // Map data[x, y](0..255)
-        private Int32 _mapWidth = 64;
-        private Int32 _mapHeight = 64;
-        private byte[] _spriteGen = new byte[256 * 8];   // Sprite pattern generator table
-        private byte[] _spriteClr = new byte[64 * 16];   // Sprite color(mode2)
+        private readonly byte[] _ptnGen;        // Pattern generator table
+        private readonly byte[] _ptnClr;        // Pattern color table
+        private readonly byte[] _nameTable;     // Sandbox(Pattern name table)
+        private readonly byte[] _pltDat;
+        private readonly bool _isTMS9918;
+        private readonly byte[] _mapPattern;    // One pattern mede by four characters
+        private readonly byte[,] _mapData;      // Map data[x, y](0..255)
+        private readonly Int32 _mapWidth;
+        private readonly Int32 _mapHeight;
+        private readonly byte[] _spriteGen;     // Sprite pattern generator table
+        private readonly byte[] _spriteClr;     // Sprite color(mode2)
         //------------------------------------------------------------------------
         // Initialize
         public Export(byte[] pcggen,
@@ -129,7 +124,7 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __PCGDAT_H__");
                 sr.WriteLine("#define __PCGDAT_H__");
-                string str = "";
+                string str;
                 if (!_isTMS9918)
                 {
                     sr.WriteLine("// Palette");
@@ -184,7 +179,7 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; PCG Data");
                 sr.WriteLine("; this export data is not tested");
-                string str = "";
+                string str;
                 if (!_isTMS9918)
                 {
                     sr.WriteLine("; Palette r8b8g8");
@@ -285,7 +280,7 @@ namespace _99x8Edit
                 sr.WriteLine("#define __MAPDAT_H__");
                 sr.WriteLine($"#define MAP_W   ({_mapWidth})");
                 sr.WriteLine($"#define MAP_H   ({_mapHeight})");
-                string str = "\t";
+                string str;
                 sr.WriteLine("// Map patterns");
                 if (type == MapType.CHeader)
                 {
@@ -329,7 +324,7 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; Map Data");
                 sr.WriteLine("; this export data is not tested");
-                string str = "";
+                string str;
                 sr.WriteLine("mapwidth:");
                 sr.WriteLine($"\tdb\t{_mapWidth}");
                 sr.WriteLine("mapheight:");
@@ -441,7 +436,7 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __SPRITEDAT_H__");
                 sr.WriteLine("#define __SPRITEDAT_H__");
-                string str = "";
+                string str;
                 sr.WriteLine("// Sprite generator table");
                 if (type == SpriteType.CHeader)
                 {
@@ -478,9 +473,8 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("; Sprite Data");
                 sr.WriteLine("; this export data is not tested");
-                string str = "";
+                string str;
                 sr.WriteLine("; Sprite generator table");
-                str = "";
                 if (type == SpriteType.ASMData)
                 {
                     sr.WriteLine("sprgen:");
@@ -495,7 +489,6 @@ namespace _99x8Edit
                 if (!_isTMS9918)
                 {
                     sr.WriteLine("; Sprite color table");
-                    str = "";
                     if (type == SpriteType.ASMData)
                     {
                         sr.WriteLine("sprclr:");
@@ -626,7 +619,7 @@ namespace _99x8Edit
                     src_row.Add(_mapData[i, y]);
                 }
                 CompressionBase encoder = Compression.Create(Compression.Type.RunLength);
-                byte[] comp = encoder.Encode(src_row.ToArray() as byte[]);
+                byte[] comp = encoder.Encode(src_row.ToArray());
                 comp_data.Add(comp);
                 offset += (ushort)comp.Length;
             }
@@ -645,7 +638,7 @@ namespace _99x8Edit
                     ret.Add(comp_data[i][j]);
                 }
             }
-            return ret.ToArray() as byte[];
+            return ret.ToArray();
         }
     }
 }

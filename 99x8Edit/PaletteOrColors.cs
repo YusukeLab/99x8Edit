@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Linq;
 
@@ -17,11 +14,11 @@ namespace _99x8Edit
         private const int _rowHeight = 38;
         private const int _rowMax = 11;
         private readonly Machine _dataSource;
-        private Bitmap _bmpColorList = new Bitmap(_colWidth * _colMax, _rowHeight * _rowMax);
-        private Bitmap _bmpPalette = new Bitmap(256, 64);        // Palette view
-        private Dictionary<int, int> _orgDict = new Dictionary<int, int>();
-        private Dictionary<int, int> _filteredDict = new Dictionary<int, int>();
-        private int _currentFilter = 0;
+        private readonly Bitmap _bmpColorList = new Bitmap(_colWidth * _colMax, _rowHeight * _rowMax);
+        private readonly Bitmap _bmpPalette = new Bitmap(256, 64);        // Palette view
+        private readonly Dictionary<int, int> _orgDict = new Dictionary<int, int>();
+        private Dictionary<int, int> _filteredDict;
+        private int _currentFilter;
         public PaletteOrColors(Machine src)
         {
             InitializeComponent();

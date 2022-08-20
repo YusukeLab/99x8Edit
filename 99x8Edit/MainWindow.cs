@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -20,7 +14,6 @@ namespace _99x8Edit
         private SpriteEditor _spriteWin;
         private PeekWindow _peekWin;
         private About _aboutWin;
-        private String _peekPath = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -31,7 +24,7 @@ namespace _99x8Edit
             _dataSource = new Machine();
             // Check drag and drop of project file
             bool project_loaded = false;
-            String[] args = System.Environment.GetCommandLineArgs();
+            String[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
                 // Project file dropped
@@ -170,13 +163,12 @@ namespace _99x8Edit
         internal void SaveProject(object sender, EventArgs e)
         {
             // Called from button and child window
-            string saved_filename = "";
             if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
                                           _dataSource.SaveAllSettings,
                                           false,    // overwrite
-                                          out saved_filename))
+                                          out string saved_filename))
             {
                 Config.Setting.ProjectFile = saved_filename;
             }
@@ -184,13 +176,12 @@ namespace _99x8Edit
         internal void SaveAsProject(object sender, EventArgs e)
         {
             // Called from button and child window
-            string saved_filename = "";
             if (Utility.SaveDialogAndSave(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Save settings",
                                           _dataSource.SaveAllSettings,
                                           true,     // save as
-                                          out saved_filename))
+                                          out string saved_filename))
             {
                 Config.Setting.ProjectFile = saved_filename;
             }
@@ -198,13 +189,12 @@ namespace _99x8Edit
         internal void LoadProject(object sender, EventArgs e)
         {
             // Called from button and child window
-            String loaded_filename;
             if (Utility.LoadDialogAndLoad(Config.Setting.ProjectFile,
                                           "VDP File(*.vdp)|*.vdp",
                                           "Load settings",
                                           _dataSource.LoadAllSettings,
                                           false,       // Won't push memento
-                                          out loaded_filename))
+                                          out string loaded_filename))
             {
                 Config.Setting.ProjectFile = loaded_filename;
                 // Update UI
@@ -218,12 +208,11 @@ namespace _99x8Edit
         internal void ExportPCG(object sender, EventArgs e)
         {
             // Called from button and child window
-            string exported_file = "";
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export PCG data to",
                                             Export.PCGTypeFilter,
                                             _dataSource.ExportPCG,
-                                            out exported_file))
+                                            out string exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
             }
@@ -231,12 +220,11 @@ namespace _99x8Edit
         internal void ExportMap(object sender, EventArgs e)
         {
             // Called from button and child window
-            string exported_file = "";
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export map data to",
                                             Export.MapTypeFilter,
                                             _dataSource.ExportMap,
-                                            out exported_file))
+                                            out string exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
             }
@@ -244,12 +232,11 @@ namespace _99x8Edit
         internal void ExportSprite(object sender, EventArgs e)
         {
             // Called from button and child window
-            string exported_file = "";
             if(Utility.ExportDialogAndExport(Config.Setting.ExportDirectory,
                                             "Export sprite data to",
                                             Export.SpriteTypeFilter,
                                             _dataSource.ExportSprites,
-                                            out exported_file))
+                                            out string exported_file))
             {
                 Config.Setting.ExportDirectory = Path.GetDirectoryName(exported_file);
             }
@@ -281,8 +268,11 @@ namespace _99x8Edit
                 }
             }
             // Create window
-            string dir = Path.GetDirectoryName(Config.Setting.PeekDirectory);
-            dir ??= System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            string dir = Config.Setting.PeekDirectory;
+            if (!Directory.Exists(dir))
+            {
+                dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
             dlg.Filter = "Rom(*.rom)|*.rom|All files(*.*)|*.*";
@@ -294,7 +284,6 @@ namespace _99x8Edit
                 Config.Setting.PeekDirectory = Path.GetDirectoryName(dlg.FileName);
                 _peekWin = new PeekWindow(dlg.FileName);
                 _peekWin.Show();
-                _peekPath = dlg.FileName;
             }
         }
         private void btnAbout_Click(object sender, EventArgs e)

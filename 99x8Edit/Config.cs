@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -10,9 +8,9 @@ namespace _99x8Edit
 {
     public class ConfigRoot
     {
-        public IndivisualSettings Settings { get; set; } = new IndivisualSettings();
+        public IndividualSettings Settings { get; set; } = new IndividualSettings();
     }
-    public class IndivisualSettings
+    public class IndividualSettings
     {
         public string ProjectFile { get; set; } = "";
         public string ImportDirectory { get; set; } = "";
@@ -33,7 +31,7 @@ namespace _99x8Edit
     {
         private static readonly string _filename = "appsettings.json";
         private static ConfigRoot _config = new ConfigRoot();
-        internal static IndivisualSettings Setting
+        internal static IndividualSettings Setting
         {
             get => _config.Settings;
         }
@@ -48,7 +46,10 @@ namespace _99x8Edit
                     .Build()
                     .Get<ConfigRoot>();
             }
-            catch {}
+            catch (Exception)
+            {
+                // Do nothing cause this may occur by invalid app setting file
+            }
         }
         internal static void Save()
         {
@@ -59,8 +60,12 @@ namespace _99x8Edit
             };
             jsonWriteOptions.Converters.Add(new JsonStringEnumConverter());
             string json = JsonSerializer.Serialize(_config, jsonWriteOptions);
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _filename);
-            File.WriteAllText(path, json);
+            string appdir = AppDomain.CurrentDomain.BaseDirectory;
+            if (appdir != null)
+            {
+                string path = Path.Combine(appdir, _filename);
+                File.WriteAllText(path, json);
+            }
         }
     }
 }

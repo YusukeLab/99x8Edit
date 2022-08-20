@@ -7,7 +7,7 @@ namespace _99x8Edit
     // Color selection window
     public partial class PaletteSelector : Form
     {
-        private Action<int> _colorSelected;
+        private readonly Action<int> _colorSelected;
         public PaletteSelector(Machine source, int previous, Action<int> callback)
         {
             InitializeComponent();

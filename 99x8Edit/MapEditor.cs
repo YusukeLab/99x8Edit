@@ -40,29 +40,29 @@ namespace _99x8Edit
             btnUp.Enabled = false;
             btnDown.Enabled = (_dataSource.MapHeight > viewMap.SelectionRowNum);
             // Refresh all views
-            this.RefreshAllViews();
+            RefreshAllViews();
             // Menu bar
-            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
-            toolStripFileSave.Click += new EventHandler(menu_fileSave);
-            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
-            toolStripFileImport.Click += new EventHandler(menu_fileImport);
-            toolStripFileExport.Click += new EventHandler(menu_fileExport);
-            toolStripFileLoadMap.Click += new EventHandler(menu_fileLoadMap);
-            toolStripFileSaveMap.Click += new EventHandler(menu_fileSaveMap);
-            toolStripEditUndo.Click += new EventHandler(menu_editUndo);
-            toolStripEditRedo.Click += new EventHandler(menu_editRedo);
+            toolStripFileLoad.Click += menu_fileLoad;
+            toolStripFileSave.Click += menu_fileSave;
+            toolStripFileSaveAs.Click += menu_fileSaveAs;
+            toolStripFileImport.Click += menu_fileImport;
+            toolStripFileExport.Click += menu_fileExport;
+            toolStripFileLoadMap.Click += menu_fileLoadMap;
+            toolStripFileSaveMap.Click += menu_fileSaveMap;
+            toolStripEditUndo.Click += menu_editUndo;
+            toolStripEditRedo.Click += menu_editRedo;
             // Context menu
-            toolStripPCGCopy.Click += new EventHandler(contextPCG_Copy);
-            toolStripPatternCopy.Click += new EventHandler(contextPtn_copy);
-            toolStripPatternPaste.Click += new EventHandler(contextPtn_paste);
-            toolStripPatternCopyDown.Click += new EventHandler(contextPtn_copyDown);
-            toolStripPatternCopyRight.Click += new EventHandler(contextPtn_copyRight);
-            toolStripMapCopy.Click += new EventHandler(contextMap_copy);
-            toolStripMapPaste.Click += new EventHandler(contextMap_paste);
-            toolStripMapDel.Click += new EventHandler(contextMap_del);
-            toolStripMapPaint.Click += new EventHandler(contextMap_paint);
-            toolStripMapCopyDown.Click += new EventHandler(contextMap_copyDown);
-            toolStripMapCopyRight.Click += new EventHandler(contextMap_copyRight);
+            toolStripPCGCopy.Click += contextPCG_Copy;
+            toolStripPatternCopy.Click += contextPtn_copy;
+            toolStripPatternPaste.Click += contextPtn_paste;
+            toolStripPatternCopyDown.Click += contextPtn_copyDown;
+            toolStripPatternCopyRight.Click += contextPtn_copyRight;
+            toolStripMapCopy.Click += contextMap_copy;
+            toolStripMapPaste.Click += contextMap_paste;
+            toolStripMapDel.Click += contextMap_del;
+            toolStripMapPaint.Click += contextMap_paint;
+            toolStripMapCopyDown.Click += contextMap_copyDown;
+            toolStripMapCopyRight.Click += contextMap_copyRight;
         }
         //------------------------------------------------------------------------------
         // Override
@@ -396,14 +396,14 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipMapPtn cmp:
+                case ClipMapPtn _:
                     // One map pattern has been pasted
                     _dataSource.SetMapData(_curMapOrg.X + viewMap.X,
                                            _curMapOrg.Y + viewMap.Y,
-                                           cmp.index, push: true);
+                                           clip.index, push: true);
                     this.UpdateMap(refresh: true);
                     break;
-                case ClipMapCell cmc:
+                case ClipMapCell _:
                     // Map data has been pasted
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
@@ -562,27 +562,25 @@ namespace _99x8Edit
         }
         private void menu_fileLoadMap(object sender, EventArgs e)
         {
-            string loaded_filename = "";
             if (Utility.LoadDialogAndLoad(Config.Setting.MapFileDirectory,
                                           "Map File(*.map)|*.map",
                                           "Load map settings",
                                           _dataSource.LoadMap,
                                           push: true,
-                                          out loaded_filename))
+                                          out string loaded_filename))
             {
-                this.RefreshAllViews();
                 Config.Setting.MapFileDirectory = Path.GetDirectoryName(loaded_filename);
+                this.RefreshAllViews();
             }
         }
         private void menu_fileSaveMap(object sender, EventArgs e)
         {
-            string saved_filename = "";
             if(Utility.SaveDialogAndSave(Config.Setting.MapFileDirectory,
                                         "Map File(*.map)|*.map",
                                         "Save map settings",
                                         _dataSource.SaveMap,
                                         save_as: true,
-                                        out saved_filename))
+                                        out string saved_filename))
             {
                 Config.Setting.MapFileDirectory = Path.GetDirectoryName(saved_filename);
             }

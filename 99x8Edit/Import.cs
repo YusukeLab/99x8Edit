@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Linq;
@@ -33,6 +31,7 @@ namespace _99x8Edit
         // Initialize
         public Import()
         {
+            // Nothing done
         }
         //------------------------------------------------------------------------
         // Properties
@@ -61,16 +60,16 @@ namespace _99x8Edit
             switch ((SpriteType)type)
             {
                 case SpriteType.MSXBASIC:
-                    this.BINtoSprite(filename, out_gen, out_clr, overlay);
+                    this.BINtoSpriteGen(filename, out_gen);
                     break;
                 case SpriteType.MSXBASIC_Color:
-                    this.BINtoSpriteColor(filename, out_gen, out_clr, overlay);
+                    this.BINtoSpriteColor(filename, out_clr, overlay);
                     break;
                 case SpriteType.RawPattern:
-                    this.RawToSpriteGen(filename, out_gen, out_clr, overlay);
+                    this.RawToSpriteGen(filename, out_gen);
                     break;
                 case SpriteType.RawColor:
-                    this.RawToSpriteColor(filename, out_gen, out_clr, overlay);
+                    this.RawToSpriteColor(filename, out_clr, overlay);
                     break;
             }
         }
@@ -137,16 +136,14 @@ namespace _99x8Edit
             _ = br.ReadUInt16();
             _ = br.ReadUInt16();
             // Read data
-            int gen_seek_addr = 0;
-            if(this.SeekBIN(0x0000, bin_start_addr, br, out gen_seek_addr))
+            if(this.SeekBIN(0x0000, bin_start_addr, br, out int gen_seek_addr))
             {
                 for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_gen[ptr] = br.ReadByte();
                 }
             }
-            int color_addr = 0;
-            if(this.SeekBIN(0x2000, bin_start_addr, br, out color_addr))
+            if(this.SeekBIN(0x2000, bin_start_addr, br, out int color_addr))
             {
                 for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
@@ -154,7 +151,7 @@ namespace _99x8Edit
                 }
             }
         }
-        private void BINtoSprite(string filename, byte[] out_gen, byte[] out_clrr, byte[] overlay)
+        private void BINtoSpriteGen(string filename, byte[] out_gen)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -167,8 +164,7 @@ namespace _99x8Edit
             _ = br.ReadUInt16();
             _ = br.ReadUInt16();
             // Read data
-            int gen_seek_addr = 0;
-            if (this.SeekBIN(0x3800, bin_start_addr, br, out gen_seek_addr))
+            if (this.SeekBIN(0x3800, bin_start_addr, br, out int gen_seek_addr))
             {
                 for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
@@ -176,7 +172,7 @@ namespace _99x8Edit
                 }
             }
         }
-        private void BINtoSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
+        private void BINtoSpriteColor(string filename, byte[] out_clr, byte[] overlay)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -189,10 +185,9 @@ namespace _99x8Edit
             _ = br.ReadUInt16();
             _ = br.ReadUInt16();
             // Read data
-            int gen_seek_addr = 0;
             // Won't see start address since there's no specified address
             Array.Clear(overlay, 0, 64);
-            if (this.SeekBIN(0, 0, br, out gen_seek_addr))
+            if (this.SeekBIN(0, 0, br, out int gen_seek_addr))
             {
                 for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
@@ -205,7 +200,7 @@ namespace _99x8Edit
                 }
             }
         }
-        private void RawToSpriteGen(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
+        private void RawToSpriteGen(string filename, byte[] out_gen)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
@@ -213,7 +208,7 @@ namespace _99x8Edit
                 out_gen[i] = br.ReadByte();
             }
         }
-        private void RawToSpriteColor(string filename, byte[] out_gen, byte[] out_clr, byte[] overlay)
+        private void RawToSpriteColor(string filename, byte[] out_clr, byte[] overlay)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             Array.Clear(overlay, 0, 64);

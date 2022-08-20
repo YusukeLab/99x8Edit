@@ -9,25 +9,23 @@ namespace _99x8Edit
     // Binary file viewer window
     public partial class PeekWindow : Form
     {
-        private BinaryReader _reader = null;
-        private long _seekAddr = 0;
-        private Bitmap[,] _bmps = new Bitmap[32, 32];
+        private BinaryReader _reader;
+        private long _seekAddr;
+        private readonly Bitmap[,] _bmps = new Bitmap[32, 32];
         enum PeekType
         {
             Linear = 0,
-            Sprite,
+            Sprite
         }
         private PeekType _type = PeekType.Linear;
-        // For internal drag control
-        private class DnDPeek { }
         //----------------------------------------------------------------------
         // Initialize
         public PeekWindow(string filename)
         {
             InitializeComponent();
             _reader = new BinaryReader(new FileStream(filename, FileMode.Open));
-            this.Text = "Peek - " + Path.GetFileName(filename);
-            toolStripCopy.Click += new EventHandler(contextPeek_copy);
+            base.Text = "Peek - " + Path.GetFileName(filename);
+            toolStripCopy.Click += contextPeek_copy;
             RefreshAllViews();
         }
         private void Peek_FormClosing(object sender, FormClosingEventArgs e)
@@ -90,7 +88,6 @@ namespace _99x8Edit
                     int bit = (dat >> (7 - j)) & 1;
                     if(bit != 0)
                     {
-                        Graphics g = Graphics.FromImage(_bmps[chr_x, chr_y]);
                         _bmps[chr_x, chr_y].SetPixel(j, pix_y, Color.Black);
                     }
                 }
@@ -141,7 +138,6 @@ namespace _99x8Edit
         }
         private void viewPtn_MatrixOnScroll(object sender, MatrixControl.ScrollEventArgs e)
         {
-            int dy = e.DY;
             if((e.DY < 0) && (_seekAddr > 0))
             {
                 _seekAddr -= 32 * 8 * 2;
@@ -161,12 +157,11 @@ namespace _99x8Edit
         private void txtAddr_Leave(object sender, EventArgs e)
         {
             // Address edited
-            long input_addr = 0;
             long validated_addr = 0;
             if(long.TryParse(txtAddr.Text,
                              System.Globalization.NumberStyles.HexNumber,
                              null,
-                             out input_addr))
+                             out long input_addr))
             {
                 if((input_addr > 0) && (input_addr < _reader.BaseStream.Length))
                 {
@@ -208,7 +203,7 @@ namespace _99x8Edit
                 // 1   2   3   4   5...    ...31
                 // 32  33  34...           ...63
                 int addr_in_screen = row * 8 * 32 + col * 8;
-                return (long)addr_in_screen + _seekAddr;
+                return addr_in_screen + _seekAddr;
             }
             else
             {
@@ -216,13 +211,13 @@ namespace _99x8Edit
                 // 2   4   6   8   10...   ...63
                 int base_addr_of_2rows = row * 64 * 8;
                 int addr_in_screen = base_addr_of_2rows + col * 16 + (row % 2) * 8;
-                return (long)addr_in_screen + _seekAddr;
+                return addr_in_screen + _seekAddr;
             }
         }
         private (int col, int row) AddressToColRow(long addr)
         {
-            int col = 0;
-            int row = 0;
+            int col;
+            int row;
             addr -= _seekAddr;
             if (_type == PeekType.Linear)
             {

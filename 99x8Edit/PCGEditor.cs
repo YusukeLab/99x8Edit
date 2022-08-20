@@ -32,42 +32,42 @@ namespace _99x8Edit
             _tabList.Add(viewPCG, viewPCG.Selector);
             _tabList.Add(viewSand, viewSand.Selector);
             // Initialize controls
-            chkTMS.Checked = this._dataSource.IsTMS9918;
+            chkTMS.Checked = _dataSource.IsTMS9918;
             // Refresh all views
-            this.RefreshAllViews();
+            RefreshAllViews();
             // Menu bar
-            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
-            toolStripFileSave.Click += new EventHandler(menu_fileSave);
-            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
-            toolStripFileImport.Click += new EventHandler(menu_fileImport);
-            toolStripFileExport.Click += new EventHandler(menu_fileExport);
-            toolStripFileLoadPCG.Click += new EventHandler(menu_fileLoadPCG);
-            toolStripFileSavePCG.Click += new EventHandler(menu_fileSavePCG);
-            toolStripFileLoadPal.Click += new EventHandler(menu_loadPalette);
-            toolStripFileSavePal.Click += new EventHandler(menu_savePalette);
-            toolStripEditUndo.Click += new EventHandler(menu_editUndo);
-            toolStripEditRedo.Click += new EventHandler(menu_editRedo);
-            toolStripEditCurrent.Click += new EventHandler(menu_editColorCurrent);
-            toolStripEditToggle.Click += new EventHandler(menu_editColorToggle);
+            toolStripFileLoad.Click += menu_fileLoad;
+            toolStripFileSave.Click += menu_fileSave;
+            toolStripFileSaveAs.Click += menu_fileSaveAs;
+            toolStripFileImport.Click += menu_fileImport;
+            toolStripFileExport.Click += menu_fileExport;
+            toolStripFileLoadPCG.Click += menu_fileLoadPCG;
+            toolStripFileSavePCG.Click += menu_fileSavePCG;
+            toolStripFileLoadPal.Click += menu_loadPalette;
+            toolStripFileSavePal.Click += menu_savePalette;
+            toolStripEditUndo.Click += menu_editUndo;
+            toolStripEditRedo.Click += menu_editRedo;
+            toolStripEditCurrent.Click += menu_editColorCurrent;
+            toolStripEditToggle.Click += menu_editColorToggle;
             // Context menu
-            toolStripPCGCopy.Click += new EventHandler(contextPCG_copy);
-            toolStripPCGPaste.Click += new EventHandler(contextPCG_paste);
-            toolStripPCGDel.Click += new EventHandler(contextPCG_delete);
-            toolStripPCGInverse.Click += new EventHandler(contextPCG_inverse);
-            toolStripPCGCopyDown.Click += new EventHandler(contextPCG_copyDown);
-            toolStripPCGCopyRight.Click += new EventHandler(contextPCG_copyRight);
-            toolStripSandboxCopy.Click += new EventHandler(contextSand_copy);
-            toolStripSandboxPaste.Click += new EventHandler(contextSand_paste);
-            toolStripSandboxDel.Click += new EventHandler(contextSand_delete);
-            toolStripSandboxPaint.Click += new EventHandler(contextSand_paint);
-            toolStripSandboxCopyDown.Click += new EventHandler(contextSand_copyDown);
-            toolStripSandboxCopyRight.Click += new EventHandler(contextSand_copyRight);
-            toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
-            toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
-            toolStripEditorDel.Click += new EventHandler(contextEditor_delete);
-            toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
-            toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
-            toolStripEditorPaint.Click += new EventHandler(contextEditor_paint);
+            toolStripPCGCopy.Click += contextPCG_copy;
+            toolStripPCGPaste.Click += contextPCG_paste;
+            toolStripPCGDel.Click += contextPCG_delete;
+            toolStripPCGInverse.Click += contextPCG_inverse;
+            toolStripPCGCopyDown.Click += contextPCG_copyDown;
+            toolStripPCGCopyRight.Click += contextPCG_copyRight;
+            toolStripSandboxCopy.Click += contextSand_copy;
+            toolStripSandboxPaste.Click += contextSand_paste;
+            toolStripSandboxDel.Click += contextSand_delete;
+            toolStripSandboxPaint.Click += contextSand_paint;
+            toolStripSandboxCopyDown.Click += contextSand_copyDown;
+            toolStripSandboxCopyRight.Click += contextSand_copyRight;
+            toolStripEditorCopy.Click += contextEditor_copy;
+            toolStripEditorPaste.Click += contextEditor_paste;
+            toolStripEditorDel.Click += contextEditor_delete;
+            toolStripEditorCopyDown.Click += contextEditor_copyDown;
+            toolStripEditorCopyRight.Click += contextEditor_copyRight;
+            toolStripEditorPaint.Click += contextEditor_paint;
         }
         //------------------------------------------------------------------------------
         // Override
@@ -303,7 +303,7 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipPCGLines cp:
+                case ClipPCGLines _:
                     MementoCaretaker.Instance.Push();
                     Rectangle r = viewEdit.SelectedRect;
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
@@ -417,19 +417,21 @@ namespace _99x8Edit
                 (int col_dst, int row_dst) = viewPCG.ScreenCoordinateToSelection(Cursor.Position);
                 // Characters has been dropped
                 MementoCaretaker.Instance.Push();
-                dynamic d = e.Data.GetData(typeof(DnDPCG));
-                ClipPCG clip = d.Data;
-                Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
+                if (e.Data.GetData(typeof(DnDPCG)) is DnDPCG obj)
                 {
-                    // Set each dropped characters
-                    byte[] gen = clip.pcgGen[rowcnt][colcnt];
-                    byte[] color = clip.pcgClr[rowcnt][colcnt];
-                    int target = viewPCG.IndexOf(col, row);
-                    _dataSource.SetPCGData(target, gen, color, push: false);
-                };
-                viewPCG.ForEachSelection(col_dst, row_dst, viewPCG.SelectedRect.Width,
-                                         viewPCG.SelectedRect.Height, callback);
-                this.RefreshAllViews();
+                    ClipPCG clip = obj.Data;
+                    Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
+                    {
+                        // Set each dropped characters
+                        byte[] gen = clip.pcgGen[rowcnt][colcnt];
+                        byte[] color = clip.pcgClr[rowcnt][colcnt];
+                        int target = viewPCG.IndexOf(col, row);
+                        _dataSource.SetPCGData(target, gen, color, push: false);
+                    };
+                    viewPCG.ForEachSelection(col_dst, row_dst, viewPCG.SelectedRect.Width,
+                        viewPCG.SelectedRect.Height, callback);
+                    this.RefreshAllViews();
+                }
             }
         }
         private void contextPCG_copy(object sender, EventArgs e)
@@ -443,7 +445,7 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipPCG cpc:
+                case ClipPCG _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> setpcg = (col, row, colcnt, rowcnt) =>
                     {
@@ -456,7 +458,7 @@ namespace _99x8Edit
                         clip.pcgGen?[0]?.Count, clip.pcgGen?.Count, setpcg);
                     this.RefreshAllViews();
                     break;
-                case ClipPeekedData cpd:
+                case ClipPeekedData _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> setpeek = (col, row, colcnt, rowcnt) =>
                     {
@@ -564,13 +566,13 @@ namespace _99x8Edit
         {
             ClipNametable clip = new ClipNametable();
             Rectangle r = viewSand.SelectedRect;
-            for(int X = r.Y; X < r.Y + r.Height; ++X)
+            for(int x = r.Y; x < r.Y + r.Height; ++x)
             {
                 List<int> l = new List<int>();
                 for(int y = r.X; y < r.X + r.Width; ++y)
                 {
                     // Copy each selected cells
-                    int index = viewSand.IndexOf(y, X);
+                    int index = viewSand.IndexOf(y, x);
                     l.Add(_dataSource.GetNameTable(index));
                 }
                 clip.pcgID.Add(l);
@@ -582,13 +584,13 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipPCG cp:
+                case ClipPCG _:
                     // Pasted from character list
                     int pcgIndex = clip.index;
                     _dataSource.SetNameTable(viewSand.Index, pcgIndex, true);
                     this.UpdateSandbox(refresh: true);
                     break;
-                case ClipNametable cn:
+                case ClipNametable _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                     {
@@ -763,12 +765,11 @@ namespace _99x8Edit
         }
         private void menu_fileImport(object sender, EventArgs e)
         {
-            string imported_file = "";
             if (Utility.ImportDialogAndImport(Config.Setting.ImportDirectory,
                                               Import.PCGTypeFilter,
                                               "Select file to import",
                                               _dataSource.ImportPCG,
-                                              out imported_file))
+                                              out string imported_file))
             {
                 Config.Setting.ImportDirectory = Path.GetDirectoryName(imported_file);
                 this.RefreshAllViews();
@@ -780,56 +781,52 @@ namespace _99x8Edit
         }
         private void menu_fileLoadPCG(object sender, EventArgs e)
         {
-            string loaded_filename = "";
             if (Utility.LoadDialogAndLoad(Config.Setting.PCGFileDirectory,
                                           "PCG File(*.pcg)|*.pcg",
                                           "Load PCG settings",
                                           _dataSource.LoadPCG,
                                           push: true,
-                                          out loaded_filename))
+                                          out string loaded_filename))
             {
-                this.RefreshAllViews();
                 Config.Setting.PCGFileDirectory = Path.GetDirectoryName(loaded_filename);
+                this.RefreshAllViews();
             }
         }
         private void menu_fileSavePCG(object sender, EventArgs e)
         {
-            string saved_filename = "";
             if(Utility.SaveDialogAndSave(Config.Setting.PCGFileDirectory,
                                         "PCG File(*.pcg)|*.pcg",
                                         "Save PCG settings",
                                         _dataSource.SavePCG,
                                         save_as: true,
-                                        out saved_filename))
+                                        out string saved_filename))
             {
                 Config.Setting.PCGFileDirectory = Path.GetDirectoryName(saved_filename);
             }
         }
         private void menu_savePalette(object sender, EventArgs e)
         {
-            string saved_filename = "";
             if(Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
                                         "PLT File(*.plt)|*.plt",
                                         "Save palette",
                                         _dataSource.SavePaletteSettings,
                                         save_as: true,
-                                        out saved_filename))
+                                        out string saved_filename))
             {
                 Config.Setting.PaletteDirectory = Path.GetDirectoryName(saved_filename);
             }
         }
         private void menu_loadPalette(object sender, EventArgs e)
         {
-            string loaded_filename = "";
             if (Utility.LoadDialogAndLoad(Config.Setting.PaletteDirectory,
                                          "PLT File(*.plt)|*.plt",
                                          "Load palette",
                                          _dataSource.LoadPaletteSettings,
                                          push:  true,
-                                         out loaded_filename))
+                                         out string loaded_filename))
             {
-                this.RefreshAllViews();
                 Config.Setting.PaletteDirectory = Path.GetDirectoryName(loaded_filename);
+                this.RefreshAllViews();
             }
         }
         private void menu_editUndo(object sender, EventArgs e)
@@ -879,16 +876,13 @@ namespace _99x8Edit
         }
         private void EditPalette(int index)
         {
-            (int R, int G, int B) = _dataSource.GetPalette(index);
-            PaletteEditor palette_win = null;
-            Action callback = () =>
+            Action<int, int, int> callback = (r, g, b) =>
             {
-                _dataSource.SetPalette(index,
-                                       palette_win.R, palette_win.G, palette_win.B,
-                                       push: true);
+                _dataSource.SetPalette(index, r, g, b, push: true);
                 this.RefreshAllViews();     // Everything changes
             };
-            palette_win = new PaletteEditor(R, G, B, callback);
+            (int R, int G, int B) = _dataSource.GetPalette(index);
+            PaletteEditor palette_win = new PaletteEditor(R, G, B, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();

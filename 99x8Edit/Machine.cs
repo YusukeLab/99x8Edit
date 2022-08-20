@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.IO;
 
@@ -17,7 +16,7 @@ namespace _99x8Edit
                                    0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
                                    0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
                                    0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
-        private bool _isTMS9918 = false;
+        private bool _isTMS9918;
         // Data, of map
         private byte[] _mapPattern = new byte[256 * 4];  // One pattern mede by four characters
         private byte[,] _mapData = new byte[64, 64];     // Map data[x, y](0..255)
@@ -85,10 +84,10 @@ namespace _99x8Edit
             for (int i = 0; i < 64; ++i)
             {
                 byte color_code = (byte)(i % 8 + 8);
-                _spriteClr16[i] = (byte)color_code;
+                _spriteClr16[i] = color_code;
                 for(int j = 0; j < 16; ++j)
                 {
-                    _spriteClr[i * 16 + j] = (byte)color_code;
+                    _spriteClr[i * 16 + j] = color_code;
                 }
                 _spriteOverlay[i] = 0;
             }
@@ -118,8 +117,7 @@ namespace _99x8Edit
         }
         void IMementoTarget.Restore(IMementoTarget m)
         {
-            Machine src = m as Machine;
-            if (m != null)
+            if (m is Machine src)
             {
                 _ptnGen = src._ptnGen.Clone() as byte[];
                 _ptnClr = src._ptnClr.Clone() as byte[];
@@ -215,13 +213,13 @@ namespace _99x8Edit
             for (int i = 0; i < 16; ++i)
             {
                 // Set the windows color to palette based on internal palette data
-                int R = (_pltDat[i * 2] >> 4);
-                int G = (_pltDat[i * 2 + 1]);
-                int B = (_pltDat[i * 2] & 0x0F);
-                R = (R * 255) / 7;
-                G = (G * 255) / 7;
-                B = (B * 255) / 7;
-                _colorOf[i] = Color.FromArgb(R, G, B);
+                int r = (_pltDat[i * 2] >> 4);
+                int g = (_pltDat[i * 2 + 1]);
+                int b = (_pltDat[i * 2] & 0x0F);
+                r = (r * 255) / 7;
+                g = (g * 255) / 7;
+                b = (b * 255) / 7;
+                _colorOf[i] = Color.FromArgb(r, g, b);
                 _brushOf[i] = new SolidBrush(_colorOf[i]);
             }
             this.UpdateAllViewItems();
@@ -293,13 +291,13 @@ namespace _99x8Edit
         internal void SaveMap(BinaryWriter br)
         {
             br.Write(_mapPattern);
-            br.Write((Int32)_mapWidth);
-            br.Write((Int32)_mapHeight);
+            br.Write(_mapWidth);
+            br.Write(_mapHeight);
             for (int i = 0; i < _mapHeight; ++i)
             {
                 for (int j = 0; j < _mapWidth; ++j)
                 {
-                    br.Write((byte)_mapData[j, i]);
+                    br.Write(_mapData[j, i]);
                 }
             }
         }
@@ -338,23 +336,23 @@ namespace _99x8Edit
         internal (int R, int G, int B) GetPalette(int color_code)
         {
             color_code = Math.Clamp(color_code, 0, 15);
-            int R = _pltDat[color_code * 2] >> 4;
-            int G = _pltDat[color_code * 2 + 1];
-            int B = _pltDat[color_code * 2] & 0x0F;
-            return (R, G, B);
+            int r = _pltDat[color_code * 2] >> 4;
+            int g = _pltDat[color_code * 2 + 1];
+            int b = _pltDat[color_code * 2] & 0x0F;
+            return (r, g, b);
         }
-        internal void SetPalette(int color_code, int R, int G, int B, bool push)
+        internal void SetPalette(int color_code, int r, int g, int b, bool push)
         {
             if (push) MementoCaretaker.Instance.Push();
             color_code = Math.Clamp(color_code, 0, 15);
-            R = Math.Clamp(R, 0, 7);
-            G = Math.Clamp(G, 0, 7);
-            B = Math.Clamp(B, 0, 7);
+            r = Math.Clamp(r, 0, 7);
+            g = Math.Clamp(g, 0, 7);
+            b = Math.Clamp(b, 0, 7);
             // Update palette
-            _pltDat[color_code * 2] = (byte)((R << 4) | B);
-            _pltDat[color_code * 2 + 1] = (byte)(G);
+            _pltDat[color_code * 2] = (byte)((r << 4) | b);
+            _pltDat[color_code * 2 + 1] = (byte)(g);
             // Update windows color corresponding to the color code
-            Color c = Color.FromArgb((R * 255) / 7, (G * 255) / 7, (B * 255) / 7);
+            Color c = Color.FromArgb((r * 255) / 7, (g * 255) / 7, (b * 255) / 7);
             _colorOf[color_code] = c;
             _brushOf[color_code] = new SolidBrush(c);
             // Update bitmaps
@@ -692,8 +690,8 @@ namespace _99x8Edit
         {
             public byte[] genData = new byte[32];   // 16x16 sprite
             public byte[] clrData = new byte[16];
-            public byte clr = 0;
-            public byte overlay = 0;
+            public byte clr;
+            public byte overlay;
         }
         internal OneSprite GetSpriteData(int index16)
         {
@@ -800,11 +798,11 @@ namespace _99x8Edit
         [Serializable]
         internal class SpriteLine
         {
-            public byte genData = 0;
-            public byte colorData = 0;
-            public byte overlayed = 0;
-            public byte genDataOv = 0;
-            public byte colorDataOv = 0;
+            public byte genData;
+            public byte colorData;
+            public byte overlayed;
+            public byte genDataOv;
+            public byte colorDataOv;
             public bool colorOnly = false;
         }
         internal SpriteLine GetSpriteLine(int index16, int line_x, int line_y)
@@ -881,52 +879,52 @@ namespace _99x8Edit
             index16 = Math.Clamp(index16, 0, 63);
             ver = Math.Clamp(ver, -15, 15);
             hor = Math.Clamp(hor, -15, 15);
-            Action right_shift = () =>
+            Action<int> right_shift = (id) =>
             {
                 // Right shift one 16x16 sprite
                 for(int i = 0; i < 16; ++i)
                 {
-                    Utility.Rotate16(ref _spriteGen[index16 * 32 + 0 + i],
-                                     ref _spriteGen[index16 * 32 + 16 + i]);
+                    Utility.Rotate16(ref _spriteGen[id * 32 + 0 + i],
+                                     ref _spriteGen[id * 32 + 16 + i]);
                 }
             };
-            Action down_shift = () =>
+            Action<int> down_shift = (id) =>
             {
                 // Down shift one 16x16 sprite
-                byte carry_gen_l = _spriteGen[index16 * 32 + 15];
-                byte carry_gen_r = _spriteGen[index16 * 32 + 31];
-                byte carry_clr = _spriteClr[index16 * 16 + 15];
+                byte carry_gen_l = _spriteGen[id * 32 + 15];
+                byte carry_gen_r = _spriteGen[id * 32 + 31];
+                byte carry_clr = _spriteClr[id * 16 + 15];
                 for (int i = 15; i >= 1; --i)
                 {
-                    _spriteGen[index16 * 32 + i] = _spriteGen[index16 * 32 + i - 1];
-                    _spriteGen[index16 * 32 + i + 16] = _spriteGen[index16 * 32 + i - 1 + 16];
-                    _spriteClr[index16 * 16 + i] = _spriteClr[index16 * 16 + i - 1];
+                    _spriteGen[id * 32 + i] = _spriteGen[id * 32 + i - 1];
+                    _spriteGen[id * 32 + i + 16] = _spriteGen[id * 32 + i - 1 + 16];
+                    _spriteClr[id * 16 + i] = _spriteClr[id * 16 + i - 1];
                 }
-                _spriteGen[index16 * 32] = carry_gen_l;
-                _spriteGen[index16 * 32 + 16] = carry_gen_r;
-                _spriteClr[index16 * 16] = carry_clr;
+                _spriteGen[id * 32] = carry_gen_l;
+                _spriteGen[id * 32 + 16] = carry_gen_r;
+                _spriteClr[id * 16] = carry_clr;
             };
             if (push) MementoCaretaker.Instance.Push();
             if (ver < 0) { ver += 16; }    // Left shift to right shift
             if (hor < 0) { hor += 16; }    // Up shift to down shift
             for(int cnt = 0; cnt < ver; ++cnt)
             {
-                right_shift();
+                right_shift(index16);
             }
             for (int cnt = 0; cnt < hor; ++cnt)
             {
-                down_shift();
+                down_shift(index16);
             }
             if (_spriteOverlay[index16] != 0)
             {
                 index16 = (index16 + 1) % 64;
                 for (int cnt = 0; cnt < ver; ++cnt)
                 {
-                    right_shift();
+                    right_shift(index16);
                 }
                 for (int cnt = 0; cnt < hor; ++cnt)
                 {
-                    down_shift();
+                    down_shift(index16);
                 }
             }
             this.UpdateSpriteBitmap();
@@ -947,13 +945,13 @@ namespace _99x8Edit
             {
                 for (int i = 0; i < 16; ++i)
                 {
-                    int R = _palette9918[i] >> 16;
-                    int G = (_palette9918[i] & 0xffff) >> 8;
-                    int B = _palette9918[i] & 0xff;
-                    Color c = Color.FromArgb(R, G, B);
+                    int r = _palette9918[i] >> 16;
+                    int g = (_palette9918[i] & 0xffff) >> 8;
+                    int b = _palette9918[i] & 0xff;
+                    Color c = Color.FromArgb(r, g, b);
                     if(c != _colorOf[i])
                     {
-                        _colorOf[i] = Color.FromArgb(R, G, B);
+                        _colorOf[i] = Color.FromArgb(r, g, b);
                         _brushOf[i] = new SolidBrush(c);
                     }
                 }
@@ -962,16 +960,16 @@ namespace _99x8Edit
             {
                 for (int i = 0; i < 16; ++i)
                 {
-                    int R = (_pltDat[i * 2] >> 4);
-                    int G = (_pltDat[i * 2 + 1]);
-                    int B = (_pltDat[i * 2] & 0x0F);
-                    R = (R * 255) / 7;
-                    G = (G * 255) / 7;
-                    B = (B * 255) / 7;
-                    Color c = Color.FromArgb(R, G, B);
+                    int r = (_pltDat[i * 2] >> 4);
+                    int g = (_pltDat[i * 2 + 1]);
+                    int b = (_pltDat[i * 2] & 0x0F);
+                    r = (r * 255) / 7;
+                    g = (g * 255) / 7;
+                    b = (b * 255) / 7;
+                    Color c = Color.FromArgb(r, g, b);
                     if (c != _colorOf[i])
                     {
-                        _colorOf[i] = Color.FromArgb(R, G, B);
+                        _colorOf[i] = Color.FromArgb(r, g, b);
                         _brushOf[i] = new SolidBrush(c);
                     }
                 }
@@ -1026,15 +1024,15 @@ namespace _99x8Edit
                 {
                     color_code = _spriteClr[addr_color + i] & 0x0F;
                 }
-                Color Fore = _colorOf[color_code];   // Color code to windows color
-                Color Back = Color.Transparent;
+                Color fore = _colorOf[color_code];   // Color code to windows color
+                Color back = Color.Transparent;
                 for (int j = 0; j < 8; ++j)         // Each pixel right to left
                 {
                     int x = (pattern >> j) & 1;     // Get one bit of pattern
                     if (x != 0)
-                        _bmpOneSprite[index8].SetPixel(7 - j, i, Fore);
+                        _bmpOneSprite[index8].SetPixel(7 - j, i, fore);
                     else
-                        _bmpOneSprite[index8].SetPixel(7 - j, i, Back);
+                        _bmpOneSprite[index8].SetPixel(7 - j, i, back);
                 }
             }
         }

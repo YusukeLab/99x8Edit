@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -145,8 +144,7 @@ namespace _99x8Edit
             if (focused)
             {
                 g.FillRectangle(Brushes.White, x + w - 4, y + h - 4, 4, 4);
-                Brush b = focused ? Brushes.Green : Brushes.DarkGreen;
-                g.FillRectangle(b, x + w - 3, y + h - 3, 3, 3);
+                g.FillRectangle(Brushes.Green, x + w - 3, y + h - 3, 3, 3);
             }
         }
         internal static void DrawSubSelection(Graphics g, int x, int y, int w, int h)
@@ -177,10 +175,10 @@ namespace _99x8Edit
                                                out string saved_file)
         {
             saved_file = "";
-            Func<string, bool> do_save = (file_name) =>
+            Func<string, bool> do_save = (path) =>
             {
                 using BinaryWriter br = new BinaryWriter(
-                    new FileStream(file_name, FileMode.Create));
+                    new FileStream(path, FileMode.Create));
                 try
                 {
                     exec_save(br);
@@ -202,7 +200,7 @@ namespace _99x8Edit
             else if (!Directory.Exists(dir))
             {
                 // No directory
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             if ((!save_as) && File.Exists(file_name))
             {
@@ -248,7 +246,7 @@ namespace _99x8Edit
             else if (!Directory.Exists(dir))
             {
                 // No directory
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
@@ -294,7 +292,7 @@ namespace _99x8Edit
             else if (!Directory.Exists(dir))
             {
                 // No directory
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = dir;
@@ -335,7 +333,7 @@ namespace _99x8Edit
             else if (!Directory.Exists(dir))
             {
                 // No directory
-                dir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                dir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.FileName = "";

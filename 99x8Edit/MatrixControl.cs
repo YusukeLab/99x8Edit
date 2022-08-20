@@ -364,7 +364,7 @@ namespace _99x8Edit
                     {
                         for (int x = 0; x < ColumnNum; ++x)
                         {
-                            if (_background[x, y] == null) continue;
+                            if (_background[x, y] == Color.Empty) continue;
                             SolidBrush b = new SolidBrush(_background[x, y]);
                             g.FillRectangle(b, x * _cellWidth, y * _cellHeight,
                                             _cellWidth, _cellHeight);

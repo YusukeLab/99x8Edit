@@ -29,40 +29,40 @@ namespace _99x8Edit
             // Initialize controls
             viewPreview.Image = _bmpPreview;
             // Refresh all views
-            this.RefreshAllViews();
+            RefreshAllViews();
             // Menu bar
-            toolStripFileLoad.Click += new EventHandler(menu_fileLoad);
-            toolStripFileSave.Click += new EventHandler(menu_fileSave);
-            toolStripFileSaveAs.Click += new EventHandler(menu_fileSaveAs);
-            toolStripFileImport.Click += new EventHandler(menu_fileImport);
-            toolStripFileExport.Click += new EventHandler(menu_fileExport);
-            toolStripFileLoadSprite.Click += new EventHandler(menu_fileLoadSprite);
-            toolStripFileSaveSprite.Click += new EventHandler(menu_fileSaveSprite);
-            toolStripFileLoadPal.Click += new EventHandler(menu_fileLoadPalette);
-            toolStripFileSavePal.Click += new EventHandler(menu_fileSavePalette);
-            toolStripEditUndo.Click += new EventHandler(menu_editUndo);
-            toolStripEditRedo.Click += new EventHandler(menu_editRedo);
-            toolStripEditCurrent.Click += new EventHandler(menu_editColorCurrent);
-            toolStripEditToggle.Click += new EventHandler(menu_editColorToggle);
+            toolStripFileLoad.Click += menu_fileLoad;
+            toolStripFileSave.Click += menu_fileSave;
+            toolStripFileSaveAs.Click += menu_fileSaveAs;
+            toolStripFileImport.Click += menu_fileImport;
+            toolStripFileExport.Click += menu_fileExport;
+            toolStripFileLoadSprite.Click += menu_fileLoadSprite;
+            toolStripFileSaveSprite.Click += menu_fileSaveSprite;
+            toolStripFileLoadPal.Click += menu_fileLoadPalette;
+            toolStripFileSavePal.Click += menu_fileSavePalette;
+            toolStripEditUndo.Click += menu_editUndo;
+            toolStripEditRedo.Click += menu_editRedo;
+            toolStripEditCurrent.Click += menu_editColorCurrent;
+            toolStripEditToggle.Click += menu_editColorToggle;
             // context menu
-            toolStripSprCopy.Click += new EventHandler(contextSprite_copy);
-            toolStripSprPaste.Click += new EventHandler(contextSprite_paste);
-            toolStripSprDel.Click += new EventHandler(contextSprite_del);
-            toolStripSprReverse.Click += new EventHandler(contextSprite_reverse);
-            toolStripSprCopyDown.Click += new EventHandler(contextSprite_copyDown);
-            toolStripSprCopyRight.Click += new EventHandler(contextSprite_copyRight);
-            toolStripRotateUp.Click += new EventHandler(contextSprite_rotate);
-            toolStripRotateDown.Click += new EventHandler(contextSprite_rotate);
-            toolStripRotateLeft.Click += new EventHandler(contextSprite_rotate);
-            toolStripRotateRight.Click += new EventHandler(contextSprite_rotate);
-            toolStripEditorCopy.Click += new EventHandler(contextEditor_copy);
-            toolStripEditorPaste.Click += new EventHandler(contextEditor_paste);
-            toolStripEditorDel.Click += new EventHandler(contextEditor_del);
-            toolStripEditorCopyDown.Click += new EventHandler(contextEditor_copyDown);
-            toolStripEditorCopyRight.Click += new EventHandler(contextEditor_copyRight);
-            toolStripEditorCopyColor.Click += new EventHandler(contextEditor_copyColor);
-            toolStripEditorInverse.Click += new EventHandler(contextEditor_inverse);
-            toolStripEditorPaint.Click += new EventHandler(contextEditor_paint);
+            toolStripSprCopy.Click += contextSprite_copy;
+            toolStripSprPaste.Click += contextSprite_paste;
+            toolStripSprDel.Click += contextSprite_del;
+            toolStripSprReverse.Click += contextSprite_reverse;
+            toolStripSprCopyDown.Click += contextSprite_copyDown;
+            toolStripSprCopyRight.Click += contextSprite_copyRight;
+            toolStripRotateUp.Click += contextSprite_rotate;
+            toolStripRotateDown.Click += contextSprite_rotate;
+            toolStripRotateLeft.Click += contextSprite_rotate;
+            toolStripRotateRight.Click += contextSprite_rotate;
+            toolStripEditorCopy.Click += contextEditor_copy;
+            toolStripEditorPaste.Click += contextEditor_paste;
+            toolStripEditorDel.Click += contextEditor_del;
+            toolStripEditorCopyDown.Click += contextEditor_copyDown;
+            toolStripEditorCopyRight.Click += contextEditor_copyRight;
+            toolStripEditorCopyColor.Click += contextEditor_copyColor;
+            toolStripEditorInverse.Click += contextEditor_inverse;
+            toolStripEditorPaint.Click += contextEditor_paint;
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -329,7 +329,7 @@ namespace _99x8Edit
                 // Left click is for primary sprite
                 index16ov = viewSprite.Index;
             }
-            else if ((e.Button == MouseButtons.Right) && (checkOverlay.Checked == true))
+            else if ((e.Button == MouseButtons.Right) && checkOverlay.Checked)
             {
                 // Right click is for overlayed sprite
                 index16ov = (viewSprite.Index + 1) % 64;
@@ -401,7 +401,7 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipSprite cs:
+                case ClipSprite _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                     {
@@ -413,7 +413,7 @@ namespace _99x8Edit
                         clip.sprites?[0]?.Count, clip.sprites?.Count, callback);
                     this.RefreshAllViews();
                     break;
-                case ClipPeekedData cp:
+                case ClipPeekedData _:
                     MementoCaretaker.Instance.Push();
                     // Copied from peek window
                     for (int i = 0; (i < clip.peeked.Count / 2)
@@ -545,7 +545,7 @@ namespace _99x8Edit
             // current_status is: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             (int x, int y) = viewEdit.PosInEditor();
             int current_stat = this.GetDotStatus(x, y);
-            int updated_stat = current_stat;
+            int updated_stat;
             if (Config.Setting.EditControlType == EditType.Current)
             {
                 // Set the pixel to current color
@@ -659,7 +659,7 @@ namespace _99x8Edit
             dynamic clip = ClipboardWrapper.GetData();
             switch (clip)
             {
-                case ClipOneSpriteLine co:
+                case ClipOneSpriteLine _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                     {
@@ -730,12 +730,11 @@ namespace _99x8Edit
         }
         private void menu_fileImport(object sender, EventArgs e)
         {
-            string imported_file = "";
             if (Utility.ImportDialogAndImport(Config.Setting.ImportDirectory,
                                               Import.SpriteTypeFilter,
                                               "Select file to import",
                                               _dataSource.ImportSprite,
-                                              out imported_file))
+                                              out string imported_file))
             {
                 Config.Setting.ImportDirectory = Path.GetDirectoryName(imported_file);
                 this.RefreshAllViews();
@@ -747,54 +746,50 @@ namespace _99x8Edit
         }
         private void menu_fileLoadSprite(object sender, EventArgs e)
         {
-            string loaded_file = "";
             if (Utility.LoadDialogAndLoad(Config.Setting.SpriteFileDirectory,
                                           "Sprite File(*.spr)|*.spr",
                                           "Load sprite settings",
                                           _dataSource.LoadSprites,
                                           push: true,
-                                          out loaded_file))
+                                          out string loaded_file))
             {
-                this.RefreshAllViews();
                 Config.Setting.SpriteFileDirectory = Path.GetDirectoryName(loaded_file);
+                this.RefreshAllViews();
             }
         }
         private void menu_fileSaveSprite(object sender, EventArgs e)
         {
-            string saved_file = "";
             if(Utility.SaveDialogAndSave(Config.Setting.SpriteFileDirectory,
                                         "Sprite File(*.spr)|*.spr",
                                         "Save sprite settings",
                                         _dataSource.SaveSprites,
                                         save_as: true,
-                                        out saved_file))
+                                        out string saved_file))
             {
                 Config.Setting.SpriteFileDirectory = Path.GetDirectoryName(saved_file);
             }
         }
         private void menu_fileLoadPalette(object sender, EventArgs e)
         {
-            string loaded_file = "";
             if (Utility.LoadDialogAndLoad(Config.Setting.PaletteDirectory,
                                          "PLT File(*.plt)|*.plt",
                                          "Load palette",
                                          _dataSource.LoadPaletteSettings,
                                          push: true,     // Push memento
-                                         out loaded_file))
+                                         out string loaded_file))
             {
-                this.RefreshAllViews();
                 Config.Setting.PaletteDirectory = Path.GetDirectoryName(loaded_file);
+                this.RefreshAllViews();
             }
         }
         private void menu_fileSavePalette(object sender, EventArgs e)
         {
-            string saved_file = "";
             if(Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
                                       "PLT File(*.plt)|*.plt",
                                       "Save palette",
                                       _dataSource.SavePaletteSettings,
                                       save_as: true,
-                                      out saved_file))
+                                      out string saved_file))
             {
                 Config.Setting.PaletteDirectory = Path.GetDirectoryName(saved_file);
             }
@@ -829,18 +824,13 @@ namespace _99x8Edit
         // Private use
         private void EditPalette(int index)
         {
-            (int R, int G, int B) = _dataSource.GetPalette(index);
-            PaletteEditor palette_win = null;
-            Action callback = () =>
+            Action<int, int, int> callback = (r, g, b) =>
             {
-                _dataSource.SetPalette(index,
-                                      palette_win.R,
-                                      palette_win.G,
-                                      palette_win.B,
-                                      push: true);
+                _dataSource.SetPalette(index, r, g, b, push: true);
                 this.RefreshAllViews();     // Everything changes
             };
-            palette_win = new PaletteEditor(R, G, B, callback);
+            (int R, int G, int B) = _dataSource.GetPalette(index);
+            PaletteEditor palette_win = new PaletteEditor(R, G, B, callback);
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
