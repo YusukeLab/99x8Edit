@@ -12,6 +12,8 @@ namespace _99x8Edit
         private readonly Machine _dataSource;
         private readonly MainWindow _mainWin;
         private readonly TabOrder _tabList = new TabOrder();
+
+        private FontBrowser _fontWin;
         // For internal drag control
         private class DnDPCG : DnDBase {
             internal DnDPCG(Control c) : base(c) { }
@@ -49,6 +51,7 @@ namespace _99x8Edit
             toolStripEditRedo.Click += menu_editRedo;
             toolStripEditCurrent.Click += menu_editColorCurrent;
             toolStripEditToggle.Click += menu_editColorToggle;
+            toolStripMenuFonts.Click += menu_fontBrowser;
             // Context menu
             toolStripPCGCopy.Click += contextPCG_copy;
             toolStripPCGPaste.Click += contextPCG_paste;
@@ -442,6 +445,7 @@ namespace _99x8Edit
             switch (clip)
             {
                 case ClipPCG _:
+                case ClipFont _:
                     MementoCaretaker.Instance.Push();
                     Action<int, int, int, int> setpcg = (col, row, colcnt, rowcnt) =>
                     {
@@ -844,6 +848,16 @@ namespace _99x8Edit
             toolStripEditCurrent.Checked = false;
             toolStripEditToggle.Checked = true;
             Config.Setting.EditControlType = EditType.Toggle;
+        }
+        private void menu_fontBrowser(object sender, EventArgs e)
+        {
+            _fontWin ??= new FontBrowser(_dataSource);
+            if (_fontWin.IsDisposed)
+            {
+                _fontWin = new FontBrowser(_dataSource);
+            }
+            _fontWin.Show();
+            _fontWin.BringToFront();
         }
         //---------------------------------------------------------------------
         // Utility

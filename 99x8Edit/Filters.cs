@@ -53,7 +53,7 @@ namespace _99x8Edit
                 int t = y * stride;
                 for (int x = 0; x < stride; x += ch_num)
                 {
-                    // Darkened line will be enlighted by upper and lower lines
+                    // Darkened line will be lighten by upper and lower lines
                     adst[t + x + 0] = (byte)(asrc[t + x + 0 - stride] >> 3 + asrc[t + x + 0 + stride] >> 3);
                     adst[t + x + 1] = (byte)(asrc[t + x + 1 - stride] >> 3 + asrc[t + x + 1 + stride] >> 3);
                     adst[t + x + 2] = (byte)(asrc[t + x + 2 - stride] >> 3 + asrc[t + x + 2 + stride] >> 3);

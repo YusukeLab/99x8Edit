@@ -41,6 +41,13 @@ namespace _99x8Edit
         internal List<List<int>> pcgIndex = new List<List<int>>();
     }
     [Serializable]
+    internal class ClipFont : ClipBase
+    {
+        internal List<List<byte[]>> pcgGen = new List<List<byte[]>>();
+        internal List<List<byte[]>> pcgClr = new List<List<byte[]>>();
+        internal List<List<int>> pcgIndex = new List<List<int>>();
+    }
+    [Serializable]
     internal class ClipPCGIndex : ClipBase
     {
         internal int pcgIndex;

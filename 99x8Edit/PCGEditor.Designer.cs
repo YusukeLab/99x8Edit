@@ -61,6 +61,8 @@ namespace _99x8Edit
             this.toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
             this.chkCRT = new System.Windows.Forms.CheckBox();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
@@ -82,13 +84,13 @@ namespace _99x8Edit
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripBarFonts = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuFonts = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSand = new _99x8Edit.MatrixControl();
             this.viewPCG = new _99x8Edit.MatrixControl();
             this.viewEdit = new _99x8Edit.EditorControl();
             this.viewColor = new _99x8Edit.MatrixControl();
             this.viewPalette = new _99x8Edit.MatrixControl();
-            this.toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.contextPCG.SuspendLayout();
             this.contextSandbox.SuspendLayout();
             this.contextEditor.SuspendLayout();
@@ -356,6 +358,19 @@ namespace _99x8Edit
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(205, 6);
             // 
+            // toolStripEditorPaint
+            // 
+            this.toolStripEditorPaint.Name = "toolStripEditorPaint";
+            this.toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.B)));
+            this.toolStripEditorPaint.Size = new System.Drawing.Size(208, 24);
+            this.toolStripEditorPaint.Text = "Paint";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
+            // 
             // toolStripEditorDel
             // 
             this.toolStripEditorDel.Name = "toolStripEditorDel";
@@ -380,7 +395,8 @@ namespace _99x8Edit
             this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripBarFile,
-            this.toolStripBarEdit});
+            this.toolStripBarEdit,
+            this.toolStripBarFonts});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
             this.menuStripMain.Size = new System.Drawing.Size(839, 28);
@@ -521,6 +537,22 @@ namespace _99x8Edit
             this.toolStripEditRedo.Size = new System.Drawing.Size(288, 26);
             this.toolStripEditRedo.Text = "Redo";
             // 
+            // toolStripBarFonts
+            // 
+            this.toolStripBarFonts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuFonts});
+            this.toolStripBarFonts.Name = "toolStripBarFonts";
+            this.toolStripBarFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.toolStripBarFonts.Size = new System.Drawing.Size(74, 24);
+            this.toolStripBarFonts.Text = "Fonts(&F)";
+            // 
+            // toolStripMenuFonts
+            // 
+            this.toolStripMenuFonts.Name = "toolStripMenuFonts";
+            this.toolStripMenuFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.toolStripMenuFonts.Size = new System.Drawing.Size(287, 26);
+            this.toolStripMenuFonts.Text = "Open Font Browser(&O)";
+            // 
             // viewSand
             // 
             this.viewSand.AllowDrop = true;
@@ -602,7 +634,7 @@ namespace _99x8Edit
             this.viewEdit.Y = 0;
             this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
-            this.viewEdit.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewEdit_CellOnEdit);
+            this.viewEdit.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewEdit_CellOnEdit);
             // 
             // viewColor
             // 
@@ -625,7 +657,7 @@ namespace _99x8Edit
             this.viewColor.TabIndex = 36;
             this.viewColor.X = 0;
             this.viewColor.Y = 0;
-            this.viewColor.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
+            this.viewColor.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
             // 
             // viewPalette
             // 
@@ -648,22 +680,9 @@ namespace _99x8Edit
             this.viewPalette.TabIndex = 37;
             this.viewPalette.X = 0;
             this.viewPalette.Y = 0;
-            this.viewPalette.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
+            this.viewPalette.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
             this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
             this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
-            // 
-            // toolStripEditorPaint
-            // 
-            this.toolStripEditorPaint.Name = "toolStripEditorPaint";
-            this.toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.B)));
-            this.toolStripEditorPaint.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorPaint.Text = "Paint";
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
             // 
             // PCGEditor
             // 
@@ -766,5 +785,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
         private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaint;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripBarFonts;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuFonts;
     }
 }
