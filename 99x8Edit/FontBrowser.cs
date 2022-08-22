@@ -77,9 +77,9 @@ namespace _99x8Edit
             for (int i = 0; i < len; ++i)
             {
                 // Each characters in textbox
-                Bitmap bmp = (_bmps[col, row] ??= new Bitmap(8, 8));
                 int col = i % _actualView.ColumnNum;
                 int row = i / _actualView.ColumnNum;
+                Bitmap bmp = (_bmps[col, row] ??= new Bitmap(8, 8));
                 _actualView.SetBackgroundColor(Color.Black, col, row);
                 if (i >= _textBox.TextLength)
                 {
