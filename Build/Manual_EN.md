@@ -42,7 +42,7 @@ About - Version info.
 ## PCG window
 
 PCG Editor - Here you can edit the selected character.   
-	Click the cell to toggle the on/off of each dots.  
+	Click the cell to edit each dots.  
 	Right click for further actions.  
 	Keyboard shortcuts are as below.  
 PCG - Select the character to edit. Right click for copy/paste actions.  
@@ -77,7 +77,7 @@ Map editor - The map. Pattern can be drag&dropped.
 ## Sprite window
 
 Sprite Editor - Edit the selected sprite.  
-	Click the cell to toggle the colors of each dots.  
+	Click the cell to edit each dots.  
 	Keyboard shortcuts are available also.  
   
 	Sprite editing on V9938(not TMS9918)  
