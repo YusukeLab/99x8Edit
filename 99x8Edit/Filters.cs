@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 namespace _99x8Edit
 {
     // Image effects
+    // Expected to be used as: Filter.Create(Filter.Type.CRT).Process([Your image]);
     public class Filter
     {
         public enum Type

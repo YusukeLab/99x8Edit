@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace _99x8Edit
 {
+    // Wrapper for the clipboard actions.
+    // Expected to be used as: ClipboardWrapper.SetData(new [Your clip object as below]);
     internal class ClipboardWrapper
     {
         private static readonly string _clipID = "99x8Edit";
