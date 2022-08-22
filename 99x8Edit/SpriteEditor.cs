@@ -537,7 +537,7 @@ namespace _99x8Edit
         private void viewEditor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             // Won't let undo when dragging
-            bool push =  push = e.ShouldPush;
+            bool push = e.ShouldPush;
             // current_status is: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             (int x, int y) = viewEdit.PosInEditor();
             int current_stat = this.GetDotStatus(x, y);
