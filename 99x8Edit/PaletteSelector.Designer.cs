@@ -51,7 +51,7 @@ namespace _99x8Edit
             this.viewPalette.TabIndex = 38;
             this.viewPalette.X = 0;
             this.viewPalette.Y = 0;
-            this.viewPalette.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewPalette_CellOnEdit);
+            this.viewPalette.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
             this.viewPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDown);
             // 
             // PaletteSelector

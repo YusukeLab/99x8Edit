@@ -53,10 +53,6 @@ namespace _99x8Edit
             int y = _selection.Y * _selectionHeight + _sub.Y;
             return (x, y);
         }
-        // The number of horizontal characters in one edit control
-        public int ChrColNum => _columnNum / 8;
-        // The number of vertical characters in one edit control
-        public int ChrRowNum => _rowNum / 8;
         //--------------------------------------------------------------------
         // Overrides
         protected override void OnPaint(PaintEventArgs e)

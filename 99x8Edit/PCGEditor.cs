@@ -225,14 +225,10 @@ namespace _99x8Edit
         // Controls
         //------------------------------------------------
         // Editor
-        private void viewEdit_CellOnEdit(object sender, EventArgs e)
+        private void viewEdit_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             // Won't let undo when dragging
-            bool push = true;
-            if (e is MatrixControl.EditEventArgs edit_event)
-            {
-                push = edit_event.ShouldPush;
-            }
+            bool push = e.ShouldPush;
             (int x, int y) = viewEdit.PosInEditor();
             bool prev_val = this.GetDotStatus(x, y); // on: true off: false
             if (Config.Setting.EditControlType == EditType.Current)
@@ -671,7 +667,7 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Misc
-        private void viewColor_CellOnEdit(object sender, EventArgs e)
+        private void viewColor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             bool foreground = (viewColor.X == 0);
             int target = this.TargetPCG();
@@ -689,7 +685,7 @@ namespace _99x8Edit
             palette_win.Location = Cursor.Position;
             palette_win.Show();
         }
-        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             if (!chkTMS.Checked)
             {

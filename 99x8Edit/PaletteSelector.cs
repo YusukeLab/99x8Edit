@@ -24,7 +24,7 @@ namespace _99x8Edit
         {
             this.Dispose();
         }
-        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             int color = viewPalette.Index;
             _colorSelected?.Invoke(color);

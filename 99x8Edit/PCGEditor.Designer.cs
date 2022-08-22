@@ -602,7 +602,7 @@ namespace _99x8Edit
             this.viewEdit.Y = 0;
             this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
             this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
-            this.viewEdit.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewEdit_CellOnEdit);
+            this.viewEdit.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewEdit_CellOnEdit);
             // 
             // viewColor
             // 
@@ -625,7 +625,7 @@ namespace _99x8Edit
             this.viewColor.TabIndex = 36;
             this.viewColor.X = 0;
             this.viewColor.Y = 0;
-            this.viewColor.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewColor_CellOnEdit);
+            this.viewColor.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
             // 
             // viewPalette
             // 
@@ -648,7 +648,7 @@ namespace _99x8Edit
             this.viewPalette.TabIndex = 37;
             this.viewPalette.X = 0;
             this.viewPalette.Y = 0;
-            this.viewPalette.CellOnEdit += new System.EventHandler<System.EventArgs>(this.viewPalette_CellOnEdit);
+            this.viewPalette.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
             this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
             this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
             // 

@@ -169,7 +169,7 @@ namespace _99x8Edit
         {
             // Set the CC flags of the sprite color
             /*
-                We don't update the CC flags when editing, since it will be a quite mess
+                We don't update the CC flags while editing, since it will be a quite mess
                 when there are copy, paste and other actions to overlayed sprite.
                 Anyway, we only need the CC flags for exporting, so we're going to update here.
              */
@@ -366,7 +366,7 @@ namespace _99x8Edit
         }
         internal Brush BrushOf(int color_code)
         {
-            // Color code(0-15) to windows brush, to avoid creating brushed everytime
+            // Color code(0-15) to windows brush, to avoid creating brushes every time
             color_code = Math.Clamp(color_code, 0, 15);
             return _brushOf[color_code];
         }

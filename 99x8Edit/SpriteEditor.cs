@@ -279,7 +279,7 @@ namespace _99x8Edit
             }
             this.RefreshAllViews();     // Everything changes
         }
-        private void viewColor_CellOnEdit(object sender, EventArgs e)
+        private void viewColor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             if (viewColor.X == 0)
             {
@@ -348,7 +348,7 @@ namespace _99x8Edit
                 this.EditPalette(viewPalette.Index);
             }
         }
-        private void viewPalette_CellOnEdit(object sender, EventArgs e)
+        private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             if (!chkTMS.Checked)
             {
@@ -534,14 +534,10 @@ namespace _99x8Edit
         }
         //-------------------------------------------------------
         // Sprite editor
-        private void viewEditor_CellOnEdit(object sender, EventArgs e)
+        private void viewEditor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
             // Won't let undo when dragging
-            bool push = true;
-            if (e is MatrixControl.EditEventArgs edit_event)
-            {
-                push = edit_event.ShouldPush;
-            }
+            bool push =  push = e.ShouldPush;
             // current_status is: 0:transparent, 1:first sprite, 2:second sprie, 3:both
             (int x, int y) = viewEdit.PosInEditor();
             int current_stat = this.GetDotStatus(x, y);

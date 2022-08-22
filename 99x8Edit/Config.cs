@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace _99x8Edit
 {
+    // For appsettings.json
     public class ConfigRoot
     {
         public IndividualSettings Settings { get; set; } = new IndividualSettings();
@@ -31,10 +32,7 @@ namespace _99x8Edit
     {
         private static readonly string _filename = "appsettings.json";
         private static ConfigRoot _config = new ConfigRoot();
-        internal static IndividualSettings Setting
-        {
-            get => _config.Settings;
-        }
+        internal static IndividualSettings Setting => _config.Settings;
         internal static void Load()
         {
             // Open the configuration file

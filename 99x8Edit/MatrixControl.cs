@@ -168,21 +168,20 @@ namespace _99x8Edit
         [Browsable(true)]
         [Description("Called when cell was dragged")]
         public event EventHandler<EventArgs> CellDragStart;
-        [Browsable(true)]
-        [Description("Called when a cell was going to be edited")]
-        public event EventHandler<EventArgs> CellOnEdit;
-
-        internal class EditEventArgs : EventArgs
+        public class EditEventArgs : EventArgs
         {
-            internal bool _shouldPush;
+            private bool _shouldPush;
 
-            internal EditEventArgs(bool should_push)
+            public EditEventArgs(bool should_push)
             {
                 _shouldPush = should_push;
             }
 
-            internal bool ShouldPush => _shouldPush;
+            public bool ShouldPush => _shouldPush;
         }
+        [Browsable(true)]
+        [Description("Called when a cell was going to be edited")]
+        public event EventHandler<EditEventArgs> CellOnEdit;
         public class ScrollEventArgs : EventArgs
         {
             public int DX { get; set; }
