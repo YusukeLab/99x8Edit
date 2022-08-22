@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace _99x8Edit
 {
@@ -19,10 +20,11 @@ namespace _99x8Edit
         protected bool _updated;            // Should be drawn to buffer
         protected Selection _selection;     // Current selection
         protected Selection _sub;           // Current sub selection
-        protected FilterBase _filter;       // Filter to be applyed
+        protected FilterBase _filter;       // Filter to be applied
         protected Bitmap[,] _cellImg;       // Images for each cells
         protected Color[,] _background;     // Background colors
-        private static Pen _dashedGray = new Pen(Color.Gray)     // For overlayed selection
+        private readonly PressedKeys _pressedKeys = new PressedKeys();  // For multiple key input
+        private static readonly Pen _dashedGray = new Pen(Color.Gray)   // For overlayed selection
         {
             DashStyle = DashStyle.Dash,
             Width = 2
@@ -539,6 +541,14 @@ namespace _99x8Edit
             }
             base.OnDragOver(drgevent);
         }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            _pressedKeys.Add(e.KeyCode);
+        }
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            _pressedKeys.Remove(e.KeyCode);
+        }
         protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
         {
             // Key events in sandbox
@@ -624,6 +634,11 @@ namespace _99x8Edit
                             MatrixOnScroll?.Invoke(this, se);
                         }
                     }
+                    if (_pressedKeys.IsPressed(Keys.Space))
+                    {
+                        // When space is pressed while moving, invoke editing
+                        this.InvokeOnEdit(should_push: true);
+                    }
                     break;
                 case Keys.Down:
                     if (AllowSubSelection)
@@ -663,6 +678,11 @@ namespace _99x8Edit
                             MatrixOnScroll?.Invoke(this, se);
                         }
                     }
+                    if (_pressedKeys.IsPressed(Keys.Space))
+                    {
+                        // When space is pressed while moving, invoke editing
+                        this.InvokeOnEdit(should_push: true);
+                    }
                     break;
                 case Keys.Left:
                     if (AllowSubSelection)
@@ -700,6 +720,11 @@ namespace _99x8Edit
                             };
                             MatrixOnScroll?.Invoke(this, se);
                         }
+                    }
+                    if (_pressedKeys.IsPressed(Keys.Space))
+                    {
+                        // When space is pressed while moving, invoke editing
+                        this.InvokeOnEdit(should_push: true);
                     }
                     break;
                 case Keys.Right:
@@ -740,6 +765,11 @@ namespace _99x8Edit
                             MatrixOnScroll?.Invoke(this, se);
                         }
                     }
+                    if (_pressedKeys.IsPressed(Keys.Space))
+                    {
+                        // When space is pressed while moving, invoke editing
+                        this.InvokeOnEdit(should_push: true);
+                    }
                     break;
             }
             base.OnPreviewKeyDown(e);
@@ -748,6 +778,27 @@ namespace _99x8Edit
         protected void InvokeOnEdit(bool should_push)
         {
             CellOnEdit?.Invoke(this, new EditEventArgs(should_push));
+        }
+        // For multiple key input
+        internal class PressedKeys
+        {
+            private readonly List<Keys> _pressed = new List<Keys>();
+            public void Add(Keys key) 
+            {
+                _pressed.Add(key);
+            }
+            public void Remove(Keys key)
+            {
+                _pressed.Remove(key);
+            }
+            public void Clear()
+            {
+                _pressed.Clear();
+            }
+            public bool IsPressed(Keys key)
+            {
+                return _pressed.Contains(key);
+            }
         }
     }
 }
