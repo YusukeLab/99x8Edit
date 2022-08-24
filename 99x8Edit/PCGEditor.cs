@@ -726,13 +726,13 @@ namespace _99x8Edit
             if (chkTMS.Checked && !_dataSource.IsTMS9918)
             {
                 // Set to TMS9918 and update palettes
-                _dataSource.SetPaletteToTMS9918(push: true);
+                _dataSource.SetPaletteTo9918(push: true);
                 this.RefreshAllViews();     // Everything changes
             }
             else if (!chkTMS.Checked && _dataSource.IsTMS9918)
             {
                 // Set to V9938 and update palettes
-                _dataSource.SetPaletteToV9938(push: true);
+                _dataSource.SetPaletteTo9938(push: true);
                 this.RefreshAllViews();     // Everything changes
             }
         }

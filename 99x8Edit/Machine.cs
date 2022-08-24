@@ -9,14 +9,15 @@ namespace _99x8Edit
     public class Machine : IMementoTarget, IExportable, IImportable
     {
         // Data, of PCG
-        private byte[] _ptnGen = new byte[256 * 8];    // Pattern generator table
-        private byte[] _ptnClr = new byte[256 * 8];    // Pattern color table
+        private byte[] _ptnGen = new byte[768 * 8];    // Pattern generator table
+        private byte[] _ptnClr = new byte[768 * 8];    // Pattern color table
         private byte[] _nameTable = new byte[768];     // Sandbox (Pattern name table)
         private byte[] _pltDat = { 0x00, 0x00, 0x00, 0x00, 0x11, 0x06, 0x33, 0x07,
                                    0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
                                    0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
                                    0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
         private bool _isTMS9918;
+        private bool _hasThreeBanks;
         // Data, of map
         private byte[] _mapPattern = new byte[256 * 4];  // One pattern mede by four characters
         private byte[,] _mapData = new byte[64, 64];     // Map data[x, y](0..255)
@@ -28,7 +29,7 @@ namespace _99x8Edit
         private byte[] _spriteClr = new byte[64 * 16];   // Sprite color (mode 2), colors for 16 lines
         private byte[] _spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
         // View
-        private Bitmap[] _bmpOneChr = new Bitmap[256];       // PCG
+        private Bitmap[] _bmpOneChr = new Bitmap[768];       // PCG
         private Bitmap[] _bmpOneSprite = new Bitmap[256];    // Sprite
         private Color[] _colorOf = new Color[16];            // Windows color corresponding to color code
         private Brush[] _brushOf = new Brush[16];
@@ -102,6 +103,7 @@ namespace _99x8Edit
                 _ptnGen = _ptnGen.Clone() as byte[],
                 _ptnClr = _ptnClr.Clone() as byte[],
                 _nameTable = _nameTable.Clone() as byte[],
+                _hasThreeBanks =  _hasThreeBanks,
                 _pltDat = _pltDat.Clone() as byte[],
                 _isTMS9918 = _isTMS9918,
                 _mapPattern = _mapPattern.Clone() as byte[],
@@ -122,6 +124,7 @@ namespace _99x8Edit
                 _ptnGen = src._ptnGen.Clone() as byte[];
                 _ptnClr = src._ptnClr.Clone() as byte[];
                 _nameTable = src._nameTable.Clone() as byte[];
+                _hasThreeBanks = src._hasThreeBanks;
                 _pltDat = src._pltDat.Clone() as byte[];
                 _isTMS9918 = src._isTMS9918;
                 _mapPattern = src._mapPattern.Clone() as byte[];
@@ -140,6 +143,7 @@ namespace _99x8Edit
         byte[] IExportable.PtnGen { get => _ptnGen; }
         byte[] IExportable.PtnClr { get => _ptnClr; }
         byte[] IExportable.NameTable { get => _nameTable; }
+        bool IExportable.HasThreeBanks { get => _hasThreeBanks; }
         byte[] IExportable.PltDat { get => _pltDat; }
         bool IExportable.IsTMS9918 { get => _isTMS9918; }
         byte[] IExportable.MapPattern { get => _mapPattern; }
@@ -153,6 +157,7 @@ namespace _99x8Edit
         byte[] IImportable.PtnGen { set => _ptnGen = value; }
         byte[] IImportable.PtnClr { set => _ptnClr = value; }
         byte[] IImportable.NameTable { set => _nameTable = value; }
+        bool IImportable.HasThreeBanks { set => _hasThreeBanks = value; }
         byte[] IImportable.PltDat { set => _pltDat = value; }
         bool IImportable.IsTMS9918 { set => _isTMS9918 = value; }
         byte[] IImportable.MapPattern { set => _mapPattern = value; }
@@ -215,12 +220,14 @@ namespace _99x8Edit
             this.SavePCG(br);
             this.SaveSprites(br);
             this.SaveMap(br);
+            this.SavePCGAdd(br);
         }
         internal void LoadAllSettings(BinaryReader br)
         {
             this.LoadPCG(br);
             this.LoadSprites(br);
             this.LoadMap(br);
+            this.LoadPCGAdd(br);
         }
         //--------------------------------------------------------------------
         // File IO for individual settings
@@ -247,21 +254,56 @@ namespace _99x8Edit
         }
         internal void SavePCG(BinaryWriter br)
         {
-            br.Write(_ptnGen);           // Pattern generator table
-            br.Write(_ptnClr);           // Pattern color table
+            // Basic PCG data - compatible from early builds
+            byte[] ptn_gen1 = new byte[256 * 8];
+            byte[] ptn_clr1 = new byte[256 * 8];
+            Array.Copy(_ptnGen, 0, ptn_gen1, 0, 256 * 8);
+            Array.Copy(_ptnClr, 0, ptn_clr1, 0, 256 * 8);
+            br.Write(ptn_gen1);           // Pattern generator table
+            br.Write(ptn_clr1);           // Pattern color table
             br.Write(_nameTable);        // Name table
             br.Write(_pltDat);           // Palette
             br.Write(_isTMS9918);        // Based on TMS9918 or not
         }
         internal void LoadPCG(BinaryReader br)
         {
-            br.Read((Span<byte>)_ptnGen);    // Pattern generator table
-            br.Read((Span<byte>)_ptnClr);    // Pattern color table
+            // Basic PCG data - compatible from early builds
+            byte[] ptn_gen1 = br.ReadBytes(256 * 8);    // Pattern generator table
+            byte[] ptn_clr1 = br.ReadBytes(256 * 8);    // Pattern color table
+            Array.Copy(ptn_gen1, 0, _ptnGen, 0, 256 * 8);
+            Array.Copy(ptn_clr1, 0, _ptnClr, 0, 256 * 8);
             br.Read((Span<byte>)_nameTable); // Name table
             br.Read((Span<byte>)_pltDat);    // Palette
             _isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
             this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
+        }
+        internal void SavePCGAdd(BinaryWriter br)
+        {
+            // Additional PCG Data
+            br.Write(_hasThreeBanks);
+            byte[] ptn_gen2 = new byte[512 * 8];
+            byte[] ptn_clr2 = new byte[512 * 8];
+            Array.Copy(_ptnGen, 256 * 8, ptn_gen2, 0, 512 * 8);
+            Array.Copy(_ptnClr, 256 * 8, ptn_clr2, 0, 512 * 8);
+            br.Write(ptn_gen2);           // Pattern generator table
+            br.Write(ptn_clr2);           // Pattern color table
+        }
+        internal void LoadPCGAdd(BinaryReader br)
+        {
+            // Additional PCG Data
+            try
+            {
+                _hasThreeBanks = br.ReadBoolean();
+                byte[] ptn_gen2 = br.ReadBytes(512 * 8);    // Pattern generator table
+                byte[] ptn_clr2 = br.ReadBytes(512 * 8);    // Pattern color table
+                Array.Copy(ptn_gen2, 0, _ptnGen, 256 * 8, 512 * 8);
+                Array.Copy(ptn_clr2, 0, _ptnClr, 256 * 8, 512 * 8);
+            }
+            catch (EndOfStreamException)
+            {
+                // No additional data
+            }
         }
         internal void SaveSprites(BinaryWriter br)
         {
@@ -340,14 +382,14 @@ namespace _99x8Edit
         //------------------------------------------------
         // Palettes and colors
         internal bool IsTMS9918 => _isTMS9918;
-        internal void SetPaletteToTMS9918(bool push)
+        internal void SetPaletteTo9918(bool push)
         {
             // Set the windows color to palette based on TMS9918
             if(push) MementoCaretaker.Instance.Push();
             _isTMS9918 = true;
             this.UpdateAllViewItems();  // Update bitmaps
         }
-        internal void SetPaletteToV9938(bool push)
+        internal void SetPaletteTo9938(bool push)
         {
             // Set the windows color to palette based on internal palette data
             if(push) MementoCaretaker.Instance.Push();
@@ -393,14 +435,19 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Programmable characters
+        internal bool HasThreeBanks
+        {
+            get => _hasThreeBanks;
+            set => _hasThreeBanks = value;
+        }
         internal Bitmap GetBitmapOfPCG(int pcg)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             return _bmpOneChr[pcg];
         }
         internal int GetPCGPixel(int pcg, int line, int x)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             x = Math.Clamp(x, 0, 7);
             int addr = pcg * 8 + line;
@@ -408,7 +455,7 @@ namespace _99x8Edit
         }
         internal void SetPCGPixel(int pcg, int line, int x, int data, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             x = Math.Clamp(x, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
@@ -425,8 +472,8 @@ namespace _99x8Edit
         }
         internal void CopyPCG(int src, int dst, bool push)
         {
-            src = Math.Clamp(src, 0, 255);
-            dst = Math.Clamp(dst, 0, 255);
+            src = Math.Clamp(src, 0, 767);
+            dst = Math.Clamp(dst, 0, 767);
             if (push) MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
@@ -437,7 +484,7 @@ namespace _99x8Edit
         }
         internal (byte[] gen, byte[] color) GetPCGData(int pcg)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             byte[] gen = new byte[8];
             byte[] color = new byte[8];
             for (int i = 0; i < 8; ++i)
@@ -449,7 +496,7 @@ namespace _99x8Edit
         }
         internal void SetPCGData(int pcg, byte[] gen, byte[] clr, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             for (int i = 0; i < 8; ++i)
             {
                 _ptnGen[pcg * 8 + i] = gen?[i] ?? 0;
@@ -459,7 +506,7 @@ namespace _99x8Edit
         }
         internal void ClearPCG(int pcg)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             MementoCaretaker.Instance.Push();
             for (int i = 0; i < 8; ++i)
             {
@@ -470,13 +517,13 @@ namespace _99x8Edit
         }
         internal (byte gen, byte color) GetPCGLine(int pcg, int line)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             return (_ptnGen[pcg * 8 + line], _ptnClr[pcg * 8 + line]);
         }
         internal void SetPCGLine(int pcg, int line, byte gen, byte color, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
             _ptnGen[pcg * 8 + line] = gen;
@@ -485,7 +532,7 @@ namespace _99x8Edit
         }
         internal void ClearPCGLine(int pcg, int line, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             if (push) MementoCaretaker.Instance.Push();
             _ptnGen[pcg * 8 + line] = 0;
@@ -494,7 +541,7 @@ namespace _99x8Edit
         }
         internal void InversePCG(int pcg, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             if (push) MementoCaretaker.Instance.Push();
             for(int i = 0; i < 8; ++i)
             {
@@ -506,7 +553,7 @@ namespace _99x8Edit
         }
         internal int GetPCGColor(int pcg, int line, bool foreground)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             int addr = pcg * 8 + line;
             if (foreground)
@@ -520,7 +567,7 @@ namespace _99x8Edit
         }
         internal void SetPCGColor(int pcg, int line, int color_code, bool isForeGround, bool push)
         {
-            pcg = Math.Clamp(pcg, 0, 255);
+            pcg = Math.Clamp(pcg, 0, 767);
             line = Math.Clamp(line, 0, 7);
             color_code = Math.Clamp(color_code, 0, 15);
             int addr = pcg * 8 + line;
@@ -998,14 +1045,14 @@ namespace _99x8Edit
         }
         private void UpdatePCGBitmap()
         {
-            for (int i = 0; i < 256; ++i)
+            for (int i = 0; i < 767; ++i)
             {
                 this.UpdatePCGBitmap(i);
             }
         }
         private void UpdatePCGBitmap(int pcg)
         {
-            _bmpOneChr[pcg] = _bmpOneChr[pcg] ?? new Bitmap(8, 8);
+            _bmpOneChr[pcg] ??= new Bitmap(8, 8);
             for (int i = 0; i < 8; ++i)          // Each line
             {
                 byte pattern_per_line = _ptnGen[pcg * 8 + i];    // Pattern of the line

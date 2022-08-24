@@ -11,6 +11,7 @@ namespace _99x8Edit
         internal byte[] PtnGen { set; }        // Pattern generator table
         internal byte[] PtnClr { set; }        // Pattern color table
         internal byte[] NameTable { set; }     // Sandbox(Pattern name table)
+        internal bool HasThreeBanks { set; }
         internal byte[] PltDat { set; }
         internal bool IsTMS9918 { set; }
         internal byte[] MapPattern { set; }    // One pattern mede by four characters
@@ -92,15 +93,15 @@ namespace _99x8Edit
         // Utility
         private void PNGtoPCG(string filename, IImportable dst)
         {
-            byte[] ptn_gen = new byte[256 * 8];
-            byte[] ptn_clr = new byte[256 * 8];
+            byte[] ptn_gen = new byte[768 * 8];
+            byte[] ptn_clr = new byte[768 * 8];
             Bitmap bmp = (Bitmap)Image.FromFile(filename);
             if(bmp == null)
             {
                 return;
             }
             int w = Math.Min(bmp.Width, 256);
-            int h = Math.Min(bmp.Height, 64);
+            int h = Math.Min(bmp.Height, 192);
             for(int col = 0; col < w / 8; ++col)
             {
                 for(int row = 0; row < h / 8; ++row)
@@ -134,13 +135,14 @@ namespace _99x8Edit
                                 // Foreground color is near, so set the corresponding bit
                                 ptn_gen[row * 256 + col * 8 + line] |= (byte)(1 << (7 - x));
                             }
-                            // Ignore nackground color since the corresponding value is 0
+                            // Ignore background color since the corresponding value is 0
                         }
                     }
                 }
             }
             dst.PtnGen = ptn_gen;
             dst.PtnClr = ptn_clr;
+            dst.HasThreeBanks = (bmp.Height >= 64);
         }
         private void BINtoPCG(string filename, IImportable dst)
         {
@@ -157,23 +159,23 @@ namespace _99x8Edit
             // Read data
             if(this.SeekBIN(0x0000, bin_start_addr, br, out int gen_seek_addr))
             {
-                byte[] out_gen = new byte[256 * 8];
-                for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                byte[] out_gen = new byte[768 * 8];
+                for (int ptr = 0; (ptr < 0x1800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_gen[ptr] = br.ReadByte();
                 }
-
                 dst.PtnGen = out_gen;
+                dst.HasThreeBanks = (br.BaseStream.Length - gen_seek_addr > 0x0800);
             }
-            if(this.SeekBIN(0x2000, bin_start_addr, br, out int color_addr))
+            if(this.SeekBIN(0x2000, bin_start_addr, br, out int color_seek_addr))
             {
-                byte[] out_clr = new byte[256 * 8];
-                for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
+                byte[] out_clr = new byte[768 * 8];
+                for (int ptr = 0; (ptr < 0x1800) && (color_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_clr[ptr] = br.ReadByte();
                 }
-
                 dst.PtnClr = out_clr;
+                dst.HasThreeBanks = (br.BaseStream.Length - color_seek_addr > 0x0800);
             }
         }
         private void BINtoSpriteGen(string filename, IImportable dst)

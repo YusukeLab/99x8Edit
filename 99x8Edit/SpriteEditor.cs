@@ -270,12 +270,12 @@ namespace _99x8Edit
             if (chkTMS.Checked && !_dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to TMS9918
-                _dataSource.SetPaletteToTMS9918(push: true);
+                _dataSource.SetPaletteTo9918(push: true);
             }
             else if (!chkTMS.Checked && _dataSource.IsTMS9918)
             {
                 // Set windows color of each color code to internal palette
-                _dataSource.SetPaletteToV9938(push: true);
+                _dataSource.SetPaletteTo9938(push: true);
             }
             this.RefreshAllViews();     // Everything changes
         }
