@@ -24,7 +24,8 @@ namespace _99x8Edit
             public enum Type
             {
                 PlusMinus,
-                Brackets
+                Brackets,
+                Comma
             }
             public Type KeyType { get; set; } 
             public int Value { get; set; }
@@ -182,6 +183,20 @@ namespace _99x8Edit
                     {
                         // Event for [ key
                         AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Brackets, -1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
+                    break;
+                case Keys.Oemcomma:
+                    {
+                        // Event for , key
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Comma, -1);
+                        AddKeyPressed?.Invoke(this, ke);
+                    }
+                    break;
+                case Keys.OemPeriod:
+                    {
+                        // Event for . key
+                        AddKeyEventArgs ke = new AddKeyEventArgs(AddKeyEventArgs.Type.Comma, 1);
                         AddKeyPressed?.Invoke(this, ke);
                     }
                     break;

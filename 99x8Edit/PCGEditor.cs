@@ -393,6 +393,12 @@ namespace _99x8Edit
                     _dataSource.SetPCGColor(target, line, back, isForeGround: false, push: true);
                     this.RefreshAllViews();
                     break;
+                case EditorControl.AddKeyEventArgs.Type.Comma:
+                    // Change current color cursor
+                    if (e.Value < 0) _viewColor.X = 0;
+                    if (e.Value > 0) _viewColor.X = 1;
+                    this.UpdateCurrentColorView(refresh: true);
+                    break;
             }
         }
         //------------------------------------------------

@@ -12,7 +12,8 @@ namespace _99x8Edit
         private readonly Machine _dataSource;
         private readonly MainWindow _mainWin;
         private readonly TabOrder _tabList = new TabOrder();
-        private readonly Bitmap _bmpPreview = new Bitmap(32, 32);         // Edit preview
+        private readonly Bitmap _bmpPreview = new Bitmap(32, 32);
+        private int _colorColNum = 1;   // Number of elements in current color view
         //----------------------------------------------------------------------
         // Initialize
         public SpriteEditor(Machine src, MainWindow parent)
@@ -215,7 +216,7 @@ namespace _99x8Edit
         }
         void UpdateCurrentColorView(bool refresh)
         {
-            int length = 2;
+            _colorColNum = 2;
             // Draw current color of primary sprite
             int index16 = _viewSprite.Index;
             int color_code_l = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
@@ -228,14 +229,14 @@ namespace _99x8Edit
                 int color_code_r = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
                 Color cr = _dataSource.ColorOf(color_code_r);
                 _viewColor.SetBackgroundColor(cr, 2, 0);
-                length = 3;
+                _colorColNum = 3;
                 if (!_dataSource.Is9918)
                 {
                     // Draw OR color of two sprites (V9938)
                     int color_code_or = color_code_l | color_code_r;
                     Color co = _dataSource.ColorOf(color_code_or);
                     _viewColor.SetBackgroundColor(co, 3, 0);
-                    length = 4;
+                    _colorColNum = 4;
                     labelColorOR.Visible = true;
                 }
                 else
@@ -249,10 +250,10 @@ namespace _99x8Edit
                 labelColorR.Visible = false;
             }
             // Width of color view is for available colors
-            _viewColor.Width = length * _viewColor.CellWidth + 2;
-            if(_viewColor.X >= length)
+            _viewColor.Width = _colorColNum * _viewColor.CellWidth + 2;
+            if(_viewColor.X >= _colorColNum)
             {
-                _viewColor.X = length - 1;   // Limit the selection
+                _viewColor.X = _colorColNum - 1;   // Limit the selection
             }
             if (refresh) _viewColor.Refresh();
         }
@@ -263,116 +264,6 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------------
         // Controls
-        //-------------------------------------------------------
-        // Misc
-        private void checkTMS_Click(object sender, EventArgs e)
-        {
-            if (_chkTMS.Checked && !_dataSource.Is9918)
-            {
-                // Set windows color of each color code to TMS9918
-                _dataSource.SetPaletteTo9918(push: true);
-            }
-            else if (!_chkTMS.Checked && _dataSource.Is9918)
-            {
-                // Set windows color of each color code to internal palette
-                _dataSource.SetPaletteTo9938(push: true);
-            }
-            this.RefreshAllViews();     // Everything changes
-        }
-        private void viewColor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
-        {
-            if (_viewColor.X == 0)
-            {
-                // Current color is transparent
-                return;
-            }
-            if (_viewColor.X == 3)
-            {
-                // When OR color is clicked, open the list of OR colors 
-                PaletteOrColors or_win = new PaletteOrColors(_dataSource);
-                or_win.Show();
-                return;
-            }
-            // Color selection
-            int index16 = _viewSprite.Index;
-            if (_viewColor.X == 2)
-            {
-                index16 = (index16 + 1) % 64;  // For overlayed
-            }
-            int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
-            // Callback from the selector window
-            Action<int> callback = (x) =>
-            {
-                if (x != 0)
-                {
-                    _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, x, push: true);
-                    this.RefreshAllViews();
-                }
-            };
-            // Open the selector
-            PaletteSelector win = new PaletteSelector(_dataSource, color_code, callback);
-            win.StartPosition = FormStartPosition.Manual;
-            win.Location = Cursor.Position;
-            win.Show();
-        }
-        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
-        {
-            int index16ov = 0;
-            // Palette view has been clicked
-            int clicked_color_num = _viewPalette.ScreenCoordinateToIndex(Cursor.Position);
-            // Update selection
-            _viewPalette.Index = clicked_color_num;
-            this.UpdatePaletteView(true);
-            // Update color table of current line
-            if (e.Button == MouseButtons.Left)
-            {
-                // Left click is for primary sprite
-                index16ov = _viewSprite.Index;
-            }
-            else if ((e.Button == MouseButtons.Right) && _chkOverlay.Checked)
-            {
-                // Right click is for overlayed sprite
-                index16ov = (_viewSprite.Index + 1) % 64;
-            }
-            if(clicked_color_num != 0)  // Ignore transparent
-            {
-                _dataSource.SetSpriteColorCode(index16ov, _viewEdit.Y, clicked_color_num, push: true);
-            }
-            this.RefreshAllViews();
-        }
-        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (!_chkTMS.Checked)
-            {
-                // Open the palette editor window
-                this.EditPalette(_viewPalette.Index);
-            }
-        }
-        private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
-        {
-            if (!_chkTMS.Checked)
-            {
-                // Open the palette editor window
-                this.EditPalette(_viewPalette.Index);
-            }
-        }
-        private void checkOverlay_Click(object sender, EventArgs e)
-        {
-            int index16 = _viewSprite.Index;
-            _dataSource.SetSpriteOverlay(index16,
-                                         overlay: (_chkOverlay.Checked),
-                                         push: true);
-            this.RefreshAllViews();
-        }
-        private void Sprites_Activated(object sender, EventArgs e)
-        {
-            // Redraw the views according to data at this timing
-            this.RefreshAllViews();
-        }
-        private void chkCRT_CheckedChanged(object sender, EventArgs e)
-        {
-            this.RefreshAllViews();
-        }
         //-------------------------------------------------------
         // Sprite selector
         private void viewSprite_SelectionChanged(object sender, EventArgs e)
@@ -578,6 +469,39 @@ namespace _99x8Edit
                 this.UpdateSpriteView(refresh: true);
             }
         }
+        private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
+        {
+            switch (e.KeyType)
+            {
+                case EditorControl.AddKeyEventArgs.Type.PlusMinus:
+                {
+                    // Increment/Decrement the color of primary sprite
+                    int index16 = _viewSprite.Index;
+                    int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
+                    color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
+                    _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, color_code, push: true);
+                    this.RefreshAllViews();
+                }
+                    break;
+                case EditorControl.AddKeyEventArgs.Type.Brackets:
+                {
+                    // Increment/Decrement the color of overlayed sprite
+                    int index16 = (_viewSprite.Index + 1) % 64; // For overlayed
+                    int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
+                    color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
+                    _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, color_code, push: true);
+                    this.RefreshAllViews();
+                }
+                    break;
+                case EditorControl.AddKeyEventArgs.Type.Comma:
+                    // Change current color cursor
+                    if (e.Value < 0) _viewColor.X--;
+                    if (e.Value > 0) _viewColor.X++;
+                    _viewColor.X = Math.Clamp(_viewColor.X, 0, _colorColNum - 1);
+                    this.UpdateCurrentColorView(refresh: true);
+                    break;
+            }
+        }
         private void viewEdit_SelectionChanged(object sender, EventArgs e)
         {
             // Current line has changed
@@ -709,6 +633,116 @@ namespace _99x8Edit
             _viewEdit.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSpriteEditView(refresh: true);
             this.UpdateSpriteView(refresh: true);
+        }
+        //-------------------------------------------------------
+        // Misc
+        private void checkTMS_Click(object sender, EventArgs e)
+        {
+            if (_chkTMS.Checked && !_dataSource.Is9918)
+            {
+                // Set windows color of each color code to TMS9918
+                _dataSource.SetPaletteTo9918(push: true);
+            }
+            else if (!_chkTMS.Checked && _dataSource.Is9918)
+            {
+                // Set windows color of each color code to internal palette
+                _dataSource.SetPaletteTo9938(push: true);
+            }
+            this.RefreshAllViews();     // Everything changes
+        }
+        private void viewColor_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
+        {
+            if (_viewColor.X == 0)
+            {
+                // Current color is transparent
+                return;
+            }
+            if (_viewColor.X == 3)
+            {
+                // When OR color is clicked, open the list of OR colors 
+                PaletteOrColors or_win = new PaletteOrColors(_dataSource);
+                or_win.Show();
+                return;
+            }
+            // Color selection
+            int index16 = _viewSprite.Index;
+            if (_viewColor.X == 2)
+            {
+                index16 = (index16 + 1) % 64;  // For overlayed
+            }
+            int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
+            // Callback from the selector window
+            Action<int> callback = (x) =>
+            {
+                if (x != 0)
+                {
+                    _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, x, push: true);
+                    this.RefreshAllViews();
+                }
+            };
+            // Open the selector
+            PaletteSelector win = new PaletteSelector(_dataSource, color_code, callback);
+            win.StartPosition = FormStartPosition.Manual;
+            win.Location = Cursor.Position;
+            win.Show();
+        }
+        private void viewPalette_MouseClick(object sender, MouseEventArgs e)
+        {
+            int index16ov = 0;
+            // Palette view has been clicked
+            int clicked_color_num = _viewPalette.ScreenCoordinateToIndex(Cursor.Position);
+            // Update selection
+            _viewPalette.Index = clicked_color_num;
+            this.UpdatePaletteView(true);
+            // Update color table of current line
+            if (e.Button == MouseButtons.Left)
+            {
+                // Left click is for primary sprite
+                index16ov = _viewSprite.Index;
+            }
+            else if ((e.Button == MouseButtons.Right) && _chkOverlay.Checked)
+            {
+                // Right click is for overlayed sprite
+                index16ov = (_viewSprite.Index + 1) % 64;
+            }
+            if (clicked_color_num != 0)  // Ignore transparent
+            {
+                _dataSource.SetSpriteColorCode(index16ov, _viewEdit.Y, clicked_color_num, push: true);
+            }
+            this.RefreshAllViews();
+        }
+        private void viewPalette_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (!_chkTMS.Checked)
+            {
+                // Open the palette editor window
+                this.EditPalette(_viewPalette.Index);
+            }
+        }
+        private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
+        {
+            if (!_chkTMS.Checked)
+            {
+                // Open the palette editor window
+                this.EditPalette(_viewPalette.Index);
+            }
+        }
+        private void checkOverlay_Click(object sender, EventArgs e)
+        {
+            int index16 = _viewSprite.Index;
+            _dataSource.SetSpriteOverlay(index16,
+                                         overlay: (_chkOverlay.Checked),
+                                         push: true);
+            this.RefreshAllViews();
+        }
+        private void Sprites_Activated(object sender, EventArgs e)
+        {
+            // Redraw the views according to data at this timing
+            this.RefreshAllViews();
+        }
+        private void chkCRT_CheckedChanged(object sender, EventArgs e)
+        {
+            this.RefreshAllViews();
         }
         //---------------------------------------------------------------------
         // Menu controls
@@ -885,28 +919,6 @@ namespace _99x8Edit
             if (x < 15)
                 if (this.GetDotStatus(x + 1, y) == prev_dot_status)
                     this.PaintSprite(x + 1, y, color_l, color_r, overlay, status);
-        }
-
-        private void viewEdit_AddKeyPressed(object sender, EditorControl.AddKeyEventArgs e)
-        {
-            if (e.KeyType == EditorControl.AddKeyEventArgs.Type.PlusMinus)
-            {
-                // Increment/Decrement the color of primary sprite
-                int index16 = _viewSprite.Index;
-                int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
-                color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
-                _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, color_code, push: true);
-                this.RefreshAllViews();
-            }
-            else if (e.KeyType == EditorControl.AddKeyEventArgs.Type.Brackets)
-            {
-                // Increment/Decrement the color of overlayed sprite
-                int index16 = (_viewSprite.Index + 1) % 64; // For overlayed
-                int color_code = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
-                color_code = Math.Clamp(color_code + e.Value, 1, 15);   // Avoid transparent
-                _dataSource.SetSpriteColorCode(index16, _viewEdit.Y, color_code, push: true);
-                this.RefreshAllViews();
-            }
         }
     }
 }

@@ -255,7 +255,7 @@ namespace _99x8Edit
         [Browsable(false)]
         public int SubY => _sub.Y;
         [Browsable(false)]
-        // For  overlayed sprite
+        // For overlayed sprite
         public bool DrawOverlayedSelection { get; set; } = false;
         //--------------------------------------------------------------------
         // Methods for hosts

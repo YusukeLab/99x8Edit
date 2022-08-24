@@ -63,6 +63,7 @@ CRT Filter - Emulates how it looks like on CRT displays.
 	1-8	Set/Reset the pixel corresponding to 1-8.  
 	+/-	Change the foreground color.  
 	[/]	Change the background color.  
+	,/.	Switch current color(background/foreground).  
 
 ## Map window
 On map window, you can create a map to be loaded in your game.  
