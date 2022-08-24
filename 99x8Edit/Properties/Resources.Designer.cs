@@ -71,6 +71,16 @@ namespace _99x8Edit.Properties {
         }
         
         /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap appicon {
+            get {
+                object obj = ResourceManager.GetObject("appicon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   型 System.Byte[] のローカライズされたリソースを検索します。
         /// </summary>
         internal static byte[] gentable {

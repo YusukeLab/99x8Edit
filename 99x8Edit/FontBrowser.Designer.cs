@@ -60,6 +60,7 @@ namespace _99x8Edit
             // 
             // _fontList
             // 
+            this._fontList.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._fontList.FormattingEnabled = true;
             this._fontList.ItemHeight = 20;
             this._fontList.Location = new System.Drawing.Point(29, 39);
@@ -71,6 +72,7 @@ namespace _99x8Edit
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label1.Location = new System.Drawing.Point(13, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(109, 20);
@@ -120,6 +122,7 @@ namespace _99x8Edit
             // _textBox
             // 
             this._textBox.AcceptsTab = true;
+            this._textBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this._textBox.Location = new System.Drawing.Point(229, 39);
             this._textBox.MaxLength = 256;
             this._textBox.Name = "_textBox";
@@ -132,6 +135,7 @@ namespace _99x8Edit
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(218, 13);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(105, 20);
@@ -141,6 +145,7 @@ namespace _99x8Edit
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(218, 118);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(87, 20);
@@ -149,6 +154,7 @@ namespace _99x8Edit
             // 
             // _fontSize
             // 
+            this._fontSize.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._fontSize.Location = new System.Drawing.Point(229, 313);
             this._fontSize.Maximum = new decimal(new int[] {
             12,
@@ -173,6 +179,7 @@ namespace _99x8Edit
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label4.Location = new System.Drawing.Point(224, 288);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(36, 20);
@@ -181,6 +188,7 @@ namespace _99x8Edit
             // 
             // _density
             // 
+            this._density.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._density.Location = new System.Drawing.Point(307, 313);
             this._density.Maximum = new decimal(new int[] {
             255,
@@ -205,6 +213,7 @@ namespace _99x8Edit
             // label5
             // 
             this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label5.Location = new System.Drawing.Point(302, 287);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 20);
@@ -214,7 +223,8 @@ namespace _99x8Edit
             // _italic
             // 
             this._italic.AutoSize = true;
-            this._italic.Location = new System.Drawing.Point(390, 296);
+            this._italic.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this._italic.Location = new System.Drawing.Point(390, 292);
             this._italic.Name = "_italic";
             this._italic.Size = new System.Drawing.Size(63, 24);
             this._italic.TabIndex = 43;
@@ -249,6 +259,7 @@ namespace _99x8Edit
             // label6
             // 
             this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label6.Location = new System.Drawing.Point(529, 287);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(45, 20);
@@ -282,6 +293,7 @@ namespace _99x8Edit
             // _bold
             // 
             this._bold.AutoSize = true;
+            this._bold.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._bold.Location = new System.Drawing.Point(390, 319);
             this._bold.Name = "_bold";
             this._bold.Size = new System.Drawing.Size(62, 24);
@@ -292,6 +304,7 @@ namespace _99x8Edit
             // 
             // _xoffset
             // 
+            this._xoffset.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._xoffset.Location = new System.Drawing.Point(229, 376);
             this._xoffset.Maximum = new decimal(new int[] {
             16,
@@ -311,6 +324,7 @@ namespace _99x8Edit
             // label7
             // 
             this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label7.Location = new System.Drawing.Point(224, 353);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(61, 20);
@@ -320,6 +334,7 @@ namespace _99x8Edit
             // label8
             // 
             this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label8.Location = new System.Drawing.Point(302, 353);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(60, 20);
@@ -328,6 +343,7 @@ namespace _99x8Edit
             // 
             // _yoffset
             // 
+            this._yoffset.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._yoffset.Location = new System.Drawing.Point(307, 376);
             this._yoffset.Maximum = new decimal(new int[] {
             16,

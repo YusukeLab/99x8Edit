@@ -694,6 +694,7 @@ namespace _99x8Edit
             // _chkBanks
             // 
             this._chkBanks.AutoSize = true;
+            this._chkBanks.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this._chkBanks.Location = new System.Drawing.Point(602, 37);
             this._chkBanks.Name = "_chkBanks";
             this._chkBanks.Size = new System.Drawing.Size(110, 24);
