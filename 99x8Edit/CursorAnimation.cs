@@ -24,7 +24,7 @@ namespace _99x8Edit
                 _bmp = new Bitmap(w, h);
             }
             InitializeComponent();
-            pict.Image = _bmp;
+            _pict.Image = _bmp;
             this.Draw();
         }
 
@@ -52,7 +52,7 @@ namespace _99x8Edit
         private void Draw()
         {
             this.Location = new Point(_current.X, _current.Y);
-            this.Size = pict.Size = new Size(_current.Width, _current.Height);
+            this.Size = _pict.Size = new Size(_current.Width, _current.Height);
             Graphics g = Graphics.FromImage(_bmp);
             g.Clear(Color.Transparent);
             g.DrawRectangle(Pens.LightGreen, 0, 0, _current.Width, _current.Height);

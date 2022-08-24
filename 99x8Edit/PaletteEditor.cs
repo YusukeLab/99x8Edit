@@ -11,12 +11,12 @@ namespace _99x8Edit
         public PaletteEditor(int r, int g, int b, Action<int, int, int> callback)
         {
             InitializeComponent();
-            textBoxR.Text = r.ToString();
-            textBoxG.Text = g.ToString();
-            textBoxB.Text = b.ToString();
-            trackBarR.Value = r;
-            trackBarG.Value = g;
-            trackBarB.Value = b;
+            _textBoxR.Text = r.ToString();
+            _textBoxG.Text = g.ToString();
+            _textBoxB.Text = b.ToString();
+            _trackBarR.Value = r;
+            _trackBarG.Value = g;
+            _trackBarB.Value = b;
             _paletteEdited = callback;
             this.UpdateColor();
         }
@@ -38,48 +38,48 @@ namespace _99x8Edit
         }
         private void UpdateColor()
         {
-            Color c = Color.FromArgb((trackBarR.Value * 255) / 7,
-                                     (trackBarG.Value * 255) / 7,
-                                     (trackBarB.Value * 255) / 7);
-            pictColor.BackColor = c;
+            Color c = Color.FromArgb((_trackBarR.Value * 255) / 7,
+                                     (_trackBarG.Value * 255) / 7,
+                                     (_trackBarB.Value * 255) / 7);
+            _pictColor.BackColor = c;
         }
         private void textBoxR_Leave(object sender, EventArgs e)
         {
-            int.TryParse(textBoxR.Text, out int val);
+            int.TryParse(_textBoxR.Text, out int val);
             val = Math.Clamp(val, 0, 7);
-            textBoxR.Text = val.ToString();
-            trackBarR.Value = val;
+            _textBoxR.Text = val.ToString();
+            _trackBarR.Value = val;
             this.UpdateColor();
         }
         private void textBoxG_Leave(object sender, EventArgs e)
         {
-            int.TryParse(textBoxG.Text, out int val);
+            int.TryParse(_textBoxG.Text, out int val);
             val = Math.Clamp(val, 0, 7);
-            textBoxG.Text = val.ToString();
-            trackBarG.Value = val;
+            _textBoxG.Text = val.ToString();
+            _trackBarG.Value = val;
             this.UpdateColor();
         }
         private void textBoxB_Leave(object sender, EventArgs e)
         {
-            int.TryParse(textBoxB.Text, out int val);
+            int.TryParse(_textBoxB.Text, out int val);
             val = Math.Clamp(val, 0, 7);
-            textBoxB.Text = val.ToString();
-            trackBarB.Value = val;
+            _textBoxB.Text = val.ToString();
+            _trackBarB.Value = val;
             this.UpdateColor();
         }
         private void trackBarR_ValueChanged(object sender, EventArgs e)
         {
-            textBoxR.Text = trackBarR.Value.ToString();
+            _textBoxR.Text = _trackBarR.Value.ToString();
             this.UpdateColor();
         }
         private void trackBarG_ValueChanged(object sender, EventArgs e)
         {
-            textBoxG.Text = trackBarG.Value.ToString();
+            _textBoxG.Text = _trackBarG.Value.ToString();
             this.UpdateColor();
         }
         private void trackBarB_ValueChanged(object sender, EventArgs e)
         {
-            textBoxB.Text = trackBarB.Value.ToString();
+            _textBoxB.Text = _trackBarB.Value.ToString();
             this.UpdateColor();
         }
         private void btnCancel_Click(object sender, EventArgs e)
@@ -88,9 +88,9 @@ namespace _99x8Edit
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
-            _paletteEdited?.Invoke(trackBarR.Value,
-                                   trackBarG.Value,
-                                   trackBarB.Value);
+            _paletteEdited?.Invoke(_trackBarR.Value,
+                                   _trackBarG.Value,
+                                   _trackBarB.Value);
             this.Dispose();
         }
     }

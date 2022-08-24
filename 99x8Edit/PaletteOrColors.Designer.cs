@@ -30,11 +30,11 @@ namespace _99x8Edit
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.viewColor = new System.Windows.Forms.PictureBox();
+            this._viewColor = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.viewPalette = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.viewColor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).BeginInit();
+            this._viewPalette = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this._viewColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._viewPalette)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -46,13 +46,13 @@ namespace _99x8Edit
             this.label1.TabIndex = 0;
             this.label1.Text = "Effective OR color list";
             // 
-            // viewColor
+            // _viewColor
             // 
-            this.viewColor.Location = new System.Drawing.Point(20, 50);
-            this.viewColor.Name = "viewColor";
-            this.viewColor.Size = new System.Drawing.Size(640, 418);
-            this.viewColor.TabIndex = 1;
-            this.viewColor.TabStop = false;
+            this._viewColor.Location = new System.Drawing.Point(20, 50);
+            this._viewColor.Name = "_viewColor";
+            this._viewColor.Size = new System.Drawing.Size(640, 418);
+            this._viewColor.TabIndex = 1;
+            this._viewColor.TabStop = false;
             // 
             // label2
             // 
@@ -63,31 +63,31 @@ namespace _99x8Edit
             this.label2.TabIndex = 2;
             this.label2.Text = "Filtered with:";
             // 
-            // viewPalette
+            // _viewPalette
             // 
-            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.Location = new System.Drawing.Point(20, 526);
-            this.viewPalette.Name = "viewPalette";
-            this.viewPalette.Size = new System.Drawing.Size(258, 66);
-            this.viewPalette.TabIndex = 31;
-            this.viewPalette.TabStop = false;
-            this.viewPalette.MouseMove += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseMove);
+            this._viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewPalette.Location = new System.Drawing.Point(20, 526);
+            this._viewPalette.Name = "_viewPalette";
+            this._viewPalette.Size = new System.Drawing.Size(258, 66);
+            this._viewPalette.TabIndex = 31;
+            this._viewPalette.TabStop = false;
+            this._viewPalette.MouseMove += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseMove);
             // 
             // PaletteOrColors
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(678, 628);
-            this.Controls.Add(this.viewPalette);
+            this.Controls.Add(this._viewPalette);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.viewColor);
+            this.Controls.Add(this._viewColor);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteOrColors";
             this.Text = "PaletteOrColors";
             this.Deactivate += new System.EventHandler(this.PaletteOrColors_Deactivate);
-            ((System.ComponentModel.ISupportInitialize)(this.viewColor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewPalette)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._viewColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._viewPalette)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -96,8 +96,8 @@ namespace _99x8Edit
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.PictureBox viewColor;
+        private System.Windows.Forms.PictureBox _viewColor;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox viewPalette;
+        private System.Windows.Forms.PictureBox _viewPalette;
     }
 }

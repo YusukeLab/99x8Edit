@@ -32,69 +32,71 @@ namespace _99x8Edit
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.contextPCG = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripPCGCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripPCGPaste = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripPCGCopyDown = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripPCGCopyRight = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripPCGDel = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripPCGInverse = new System.Windows.Forms.ToolStripMenuItem();
+            this._contextPCG = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripPCGCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGCopyRight = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripPCGDel = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGInverse = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.chkTMS = new System.Windows.Forms.CheckBox();
-            this.toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
+            this._chkTMS = new System.Windows.Forms.CheckBox();
+            this._toolTipPCG = new System.Windows.Forms.ToolTip(this.components);
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.contextSandbox = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripSandboxCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSandboxPaste = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSandboxCopyDown = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSandboxCopyRight = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSandboxDel = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSandboxPaint = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripEditorCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditorPaste = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
-            this.chkCRT = new System.Windows.Forms.CheckBox();
-            this.menuStripMain = new System.Windows.Forms.MenuStrip();
-            this.toolStripBarFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileLoad = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileLoadPCG = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSavePCG = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripBarFonts = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuFonts = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewSand = new _99x8Edit.MatrixControl();
-            this.viewPCG = new _99x8Edit.MatrixControl();
-            this.viewEdit = new _99x8Edit.EditorControl();
-            this.viewColor = new _99x8Edit.MatrixControl();
-            this.viewPalette = new _99x8Edit.MatrixControl();
-            this.contextPCG.SuspendLayout();
-            this.contextSandbox.SuspendLayout();
-            this.contextEditor.SuspendLayout();
-            this.menuStripMain.SuspendLayout();
+            this._contextSandbox = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripSandboxCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSandboxPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSandboxCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSandboxCopyRight = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripSandboxDel = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSandboxPaint = new System.Windows.Forms.ToolStripMenuItem();
+            this._contextEditor = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripEditorCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditorPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditorCopyDown = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditorCopyRight = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripEditorPaint = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripEditorDel = new System.Windows.Forms.ToolStripMenuItem();
+            this._chkCRT = new System.Windows.Forms.CheckBox();
+            this._menuStripMain = new System.Windows.Forms.MenuStrip();
+            this._toolStripBarFile = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileLoad = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileSave = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripFileImport = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileExport = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileLoadPCG = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileSavePCG = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripFileLoadPal = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripFileSavePal = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripBarEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripBarFonts = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripMenuFonts = new System.Windows.Forms.ToolStripMenuItem();
+            this._viewSand = new _99x8Edit.MatrixControl();
+            this._viewPCG = new _99x8Edit.MatrixControl();
+            this._viewEdit = new _99x8Edit.EditorControl();
+            this._viewColor = new _99x8Edit.MatrixControl();
+            this._viewPalette = new _99x8Edit.MatrixControl();
+            this._chkBanks = new System.Windows.Forms.CheckBox();
+            this._comboBank = new System.Windows.Forms.ComboBox();
+            this._contextPCG.SuspendLayout();
+            this._contextSandbox.SuspendLayout();
+            this._contextEditor.SuspendLayout();
+            this._menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -110,74 +112,74 @@ namespace _99x8Edit
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.ContextMenuStrip = this.contextPCG;
+            this.label2.ContextMenuStrip = this._contextPCG;
             this.label2.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label2.Location = new System.Drawing.Point(301, 37);
+            this.label2.Location = new System.Drawing.Point(301, 41);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "PCG";
             // 
-            // contextPCG
+            // _contextPCG
             // 
-            this.contextPCG.AllowDrop = true;
-            this.contextPCG.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextPCG.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripPCGCopy,
-            this.toolStripPCGPaste,
-            this.toolStripPCGCopyDown,
-            this.toolStripPCGCopyRight,
-            this.toolStripSeparator1,
-            this.toolStripPCGDel,
-            this.toolStripPCGInverse});
-            this.contextPCG.Name = "contextPCGList";
-            this.contextPCG.Size = new System.Drawing.Size(209, 154);
+            this._contextPCG.AllowDrop = true;
+            this._contextPCG.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextPCG.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripPCGCopy,
+            this._toolStripPCGPaste,
+            this._toolStripPCGCopyDown,
+            this._toolStripPCGCopyRight,
+            this._toolStripSeparator1,
+            this._toolStripPCGDel,
+            this._toolStripPCGInverse});
+            this._contextPCG.Name = "contextPCGList";
+            this._contextPCG.Size = new System.Drawing.Size(209, 154);
             // 
-            // toolStripPCGCopy
+            // _toolStripPCGCopy
             // 
-            this.toolStripPCGCopy.Name = "toolStripPCGCopy";
-            this.toolStripPCGCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripPCGCopy.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGCopy.Text = "Copy";
+            this._toolStripPCGCopy.Name = "_toolStripPCGCopy";
+            this._toolStripPCGCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this._toolStripPCGCopy.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopy.Text = "Copy";
             // 
-            // toolStripPCGPaste
+            // _toolStripPCGPaste
             // 
-            this.toolStripPCGPaste.Name = "toolStripPCGPaste";
-            this.toolStripPCGPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripPCGPaste.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGPaste.Text = "Paste";
+            this._toolStripPCGPaste.Name = "_toolStripPCGPaste";
+            this._toolStripPCGPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this._toolStripPCGPaste.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGPaste.Text = "Paste";
             // 
-            // toolStripPCGCopyDown
+            // _toolStripPCGCopyDown
             // 
-            this.toolStripPCGCopyDown.Name = "toolStripPCGCopyDown";
-            this.toolStripPCGCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.toolStripPCGCopyDown.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGCopyDown.Text = "Copy Down";
+            this._toolStripPCGCopyDown.Name = "_toolStripPCGCopyDown";
+            this._toolStripPCGCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this._toolStripPCGCopyDown.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopyDown.Text = "Copy Down";
             // 
-            // toolStripPCGCopyRight
+            // _toolStripPCGCopyRight
             // 
-            this.toolStripPCGCopyRight.Name = "toolStripPCGCopyRight";
-            this.toolStripPCGCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.toolStripPCGCopyRight.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGCopyRight.Text = "Copy Right";
+            this._toolStripPCGCopyRight.Name = "_toolStripPCGCopyRight";
+            this._toolStripPCGCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this._toolStripPCGCopyRight.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopyRight.Text = "Copy Right";
             // 
-            // toolStripSeparator1
+            // _toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
+            this._toolStripSeparator1.Name = "_toolStripSeparator1";
+            this._toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
             // 
-            // toolStripPCGDel
+            // _toolStripPCGDel
             // 
-            this.toolStripPCGDel.Name = "toolStripPCGDel";
-            this.toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripPCGDel.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGDel.Text = "Delete";
+            this._toolStripPCGDel.Name = "_toolStripPCGDel";
+            this._toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this._toolStripPCGDel.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGDel.Text = "Delete";
             // 
-            // toolStripPCGInverse
+            // _toolStripPCGInverse
             // 
-            this.toolStripPCGInverse.Name = "toolStripPCGInverse";
-            this.toolStripPCGInverse.Size = new System.Drawing.Size(208, 24);
-            this.toolStripPCGInverse.Text = "Swap Color";
+            this._toolStripPCGInverse.Name = "_toolStripPCGInverse";
+            this._toolStripPCGInverse.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGInverse.Text = "Swap Color";
             // 
             // label3
             // 
@@ -199,26 +201,26 @@ namespace _99x8Edit
             this.label4.TabIndex = 7;
             this.label4.Text = "Palette";
             // 
-            // chkTMS
+            // _chkTMS
             // 
-            this.chkTMS.AutoSize = true;
-            this.chkTMS.Checked = true;
-            this.chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkTMS.Location = new System.Drawing.Point(179, 524);
-            this.chkTMS.Name = "chkTMS";
-            this.chkTMS.Size = new System.Drawing.Size(92, 24);
-            this.chkTMS.TabIndex = 15;
-            this.chkTMS.Text = "TMS9918";
-            this.chkTMS.UseVisualStyleBackColor = true;
-            this.chkTMS.Click += new System.EventHandler(this.checkTMS_Click);
+            this._chkTMS.AutoSize = true;
+            this._chkTMS.Checked = true;
+            this._chkTMS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._chkTMS.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this._chkTMS.Location = new System.Drawing.Point(179, 524);
+            this._chkTMS.Name = "_chkTMS";
+            this._chkTMS.Size = new System.Drawing.Size(92, 24);
+            this._chkTMS.TabIndex = 15;
+            this._chkTMS.Text = "TMS9918";
+            this._chkTMS.UseVisualStyleBackColor = true;
+            this._chkTMS.Click += new System.EventHandler(this.checkTMS_Click);
             // 
-            // toolTipPCG
+            // _toolTipPCG
             // 
-            this.toolTipPCG.AutomaticDelay = 0;
-            this.toolTipPCG.AutoPopDelay = 0;
-            this.toolTipPCG.InitialDelay = 0;
-            this.toolTipPCG.ReshowDelay = 0;
+            this._toolTipPCG.AutomaticDelay = 0;
+            this._toolTipPCG.AutoPopDelay = 0;
+            this._toolTipPCG.InitialDelay = 0;
+            this._toolTipPCG.ReshowDelay = 0;
             // 
             // label5
             // 
@@ -250,467 +252,493 @@ namespace _99x8Edit
             this.label7.TabIndex = 19;
             this.label7.Text = "Sandbox";
             // 
-            // contextSandbox
+            // _contextSandbox
             // 
-            this.contextSandbox.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextSandbox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSandboxCopy,
-            this.toolStripSandboxPaste,
-            this.toolStripSandboxCopyDown,
-            this.toolStripSandboxCopyRight,
-            this.toolStripSeparator2,
-            this.toolStripSandboxDel,
-            this.toolStripSandboxPaint});
-            this.contextSandbox.Name = "contextPCGList";
-            this.contextSandbox.Size = new System.Drawing.Size(209, 154);
+            this._contextSandbox.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextSandbox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripSandboxCopy,
+            this._toolStripSandboxPaste,
+            this._toolStripSandboxCopyDown,
+            this._toolStripSandboxCopyRight,
+            this._toolStripSeparator2,
+            this._toolStripSandboxDel,
+            this._toolStripSandboxPaint});
+            this._contextSandbox.Name = "contextPCGList";
+            this._contextSandbox.Size = new System.Drawing.Size(209, 154);
             // 
-            // toolStripSandboxCopy
+            // _toolStripSandboxCopy
             // 
-            this.toolStripSandboxCopy.Name = "toolStripSandboxCopy";
-            this.toolStripSandboxCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripSandboxCopy.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxCopy.Text = "Copy";
+            this._toolStripSandboxCopy.Name = "_toolStripSandboxCopy";
+            this._toolStripSandboxCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this._toolStripSandboxCopy.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxCopy.Text = "Copy";
             // 
-            // toolStripSandboxPaste
+            // _toolStripSandboxPaste
             // 
-            this.toolStripSandboxPaste.Name = "toolStripSandboxPaste";
-            this.toolStripSandboxPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripSandboxPaste.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxPaste.Text = "Paste";
+            this._toolStripSandboxPaste.Name = "_toolStripSandboxPaste";
+            this._toolStripSandboxPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this._toolStripSandboxPaste.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxPaste.Text = "Paste";
             // 
-            // toolStripSandboxCopyDown
+            // _toolStripSandboxCopyDown
             // 
-            this.toolStripSandboxCopyDown.Name = "toolStripSandboxCopyDown";
-            this.toolStripSandboxCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.toolStripSandboxCopyDown.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxCopyDown.Text = "Copy Down";
+            this._toolStripSandboxCopyDown.Name = "_toolStripSandboxCopyDown";
+            this._toolStripSandboxCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this._toolStripSandboxCopyDown.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxCopyDown.Text = "Copy Down";
             // 
-            // toolStripSandboxCopyRight
+            // _toolStripSandboxCopyRight
             // 
-            this.toolStripSandboxCopyRight.Name = "toolStripSandboxCopyRight";
-            this.toolStripSandboxCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.toolStripSandboxCopyRight.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxCopyRight.Text = "Copy Right";
+            this._toolStripSandboxCopyRight.Name = "_toolStripSandboxCopyRight";
+            this._toolStripSandboxCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this._toolStripSandboxCopyRight.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxCopyRight.Text = "Copy Right";
             // 
-            // toolStripSeparator2
+            // _toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
+            this._toolStripSeparator2.Name = "_toolStripSeparator2";
+            this._toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
             // 
-            // toolStripSandboxDel
+            // _toolStripSandboxDel
             // 
-            this.toolStripSandboxDel.Name = "toolStripSandboxDel";
-            this.toolStripSandboxDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripSandboxDel.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxDel.Text = "Delete";
+            this._toolStripSandboxDel.Name = "_toolStripSandboxDel";
+            this._toolStripSandboxDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this._toolStripSandboxDel.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxDel.Text = "Delete";
             // 
-            // toolStripSandboxPaint
+            // _toolStripSandboxPaint
             // 
-            this.toolStripSandboxPaint.Name = "toolStripSandboxPaint";
-            this.toolStripSandboxPaint.Size = new System.Drawing.Size(208, 24);
-            this.toolStripSandboxPaint.Text = "Paint";
+            this._toolStripSandboxPaint.Name = "_toolStripSandboxPaint";
+            this._toolStripSandboxPaint.Size = new System.Drawing.Size(208, 24);
+            this._toolStripSandboxPaint.Text = "Paint";
             // 
-            // contextEditor
+            // _contextEditor
             // 
-            this.contextEditor.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextEditor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripEditorCopy,
-            this.toolStripEditorPaste,
-            this.toolStripEditorCopyDown,
-            this.toolStripEditorCopyRight,
-            this.toolStripSeparator3,
-            this.toolStripEditorPaint,
-            this.toolStripSeparator7,
-            this.toolStripEditorDel});
-            this.contextEditor.Name = "contextPCGList";
-            this.contextEditor.Size = new System.Drawing.Size(209, 160);
+            this._contextEditor.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextEditor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripEditorCopy,
+            this._toolStripEditorPaste,
+            this._toolStripEditorCopyDown,
+            this._toolStripEditorCopyRight,
+            this._toolStripSeparator3,
+            this._toolStripEditorPaint,
+            this._toolStripSeparator7,
+            this._toolStripEditorDel});
+            this._contextEditor.Name = "contextPCGList";
+            this._contextEditor.Size = new System.Drawing.Size(209, 160);
             // 
-            // toolStripEditorCopy
+            // _toolStripEditorCopy
             // 
-            this.toolStripEditorCopy.Name = "toolStripEditorCopy";
-            this.toolStripEditorCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.toolStripEditorCopy.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopy.Text = "Copy Line";
+            this._toolStripEditorCopy.Name = "_toolStripEditorCopy";
+            this._toolStripEditorCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this._toolStripEditorCopy.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorCopy.Text = "Copy Line";
             // 
-            // toolStripEditorPaste
+            // _toolStripEditorPaste
             // 
-            this.toolStripEditorPaste.Name = "toolStripEditorPaste";
-            this.toolStripEditorPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorPaste.Text = "Paste Line";
+            this._toolStripEditorPaste.Name = "_toolStripEditorPaste";
+            this._toolStripEditorPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this._toolStripEditorPaste.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorPaste.Text = "Paste Line";
             // 
-            // toolStripEditorCopyDown
+            // _toolStripEditorCopyDown
             // 
-            this.toolStripEditorCopyDown.Name = "toolStripEditorCopyDown";
-            this.toolStripEditorCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.toolStripEditorCopyDown.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopyDown.Text = "Copy Down";
+            this._toolStripEditorCopyDown.Name = "_toolStripEditorCopyDown";
+            this._toolStripEditorCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this._toolStripEditorCopyDown.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorCopyDown.Text = "Copy Down";
             // 
-            // toolStripEditorCopyRight
+            // _toolStripEditorCopyRight
             // 
-            this.toolStripEditorCopyRight.Name = "toolStripEditorCopyRight";
-            this.toolStripEditorCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.toolStripEditorCopyRight.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorCopyRight.Text = "Copy Right";
+            this._toolStripEditorCopyRight.Name = "_toolStripEditorCopyRight";
+            this._toolStripEditorCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this._toolStripEditorCopyRight.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorCopyRight.Text = "Copy Right";
             // 
-            // toolStripSeparator3
+            // _toolStripSeparator3
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(205, 6);
+            this._toolStripSeparator3.Name = "_toolStripSeparator3";
+            this._toolStripSeparator3.Size = new System.Drawing.Size(205, 6);
             // 
-            // toolStripEditorPaint
+            // _toolStripEditorPaint
             // 
-            this.toolStripEditorPaint.Name = "toolStripEditorPaint";
-            this.toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            this._toolStripEditorPaint.Name = "_toolStripEditorPaint";
+            this._toolStripEditorPaint.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.B)));
-            this.toolStripEditorPaint.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorPaint.Text = "Paint";
+            this._toolStripEditorPaint.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorPaint.Text = "Paint";
             // 
-            // toolStripSeparator7
+            // _toolStripSeparator7
             // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
+            this._toolStripSeparator7.Name = "_toolStripSeparator7";
+            this._toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
             // 
-            // toolStripEditorDel
+            // _toolStripEditorDel
             // 
-            this.toolStripEditorDel.Name = "toolStripEditorDel";
-            this.toolStripEditorDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.toolStripEditorDel.Size = new System.Drawing.Size(208, 24);
-            this.toolStripEditorDel.Text = "Delete";
+            this._toolStripEditorDel.Name = "_toolStripEditorDel";
+            this._toolStripEditorDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this._toolStripEditorDel.Size = new System.Drawing.Size(208, 24);
+            this._toolStripEditorDel.Text = "Delete";
             // 
-            // chkCRT
+            // _chkCRT
             // 
-            this.chkCRT.AutoSize = true;
-            this.chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.chkCRT.Location = new System.Drawing.Point(721, 37);
-            this.chkCRT.Name = "chkCRT";
-            this.chkCRT.Size = new System.Drawing.Size(94, 24);
-            this.chkCRT.TabIndex = 27;
-            this.chkCRT.Text = "CRT Filter";
-            this.chkCRT.UseVisualStyleBackColor = true;
-            this.chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
+            this._chkCRT.AutoSize = true;
+            this._chkCRT.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this._chkCRT.Location = new System.Drawing.Point(721, 37);
+            this._chkCRT.Name = "_chkCRT";
+            this._chkCRT.Size = new System.Drawing.Size(94, 24);
+            this._chkCRT.TabIndex = 27;
+            this._chkCRT.Text = "CRT Filter";
+            this._chkCRT.UseVisualStyleBackColor = true;
+            this._chkCRT.CheckedChanged += new System.EventHandler(this.chkCRT_CheckedChanged);
             // 
-            // menuStripMain
+            // _menuStripMain
             // 
-            this.menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripBarFile,
-            this.toolStripBarEdit,
-            this.toolStripBarFonts});
-            this.menuStripMain.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(839, 28);
-            this.menuStripMain.TabIndex = 31;
-            this.menuStripMain.Text = "menuStrip1";
+            this._menuStripMain.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripBarFile,
+            this._toolStripBarEdit,
+            this._toolStripBarFonts});
+            this._menuStripMain.Location = new System.Drawing.Point(0, 0);
+            this._menuStripMain.Name = "_menuStripMain";
+            this._menuStripMain.Size = new System.Drawing.Size(830, 28);
+            this._menuStripMain.TabIndex = 31;
+            this._menuStripMain.Text = "menuStrip1";
             // 
-            // toolStripBarFile
+            // _toolStripBarFile
             // 
-            this.toolStripBarFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripFileLoad,
-            this.toolStripFileSave,
-            this.toolStripFileSaveAs,
-            this.toolStripSeparator4,
-            this.toolStripFileImport,
-            this.toolStripFileExport,
-            this.toolStripFileLoadPCG,
-            this.toolStripFileSavePCG,
-            this.toolStripSeparator5,
-            this.toolStripFileLoadPal,
-            this.toolStripFileSavePal});
-            this.toolStripBarFile.Name = "toolStripBarFile";
-            this.toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
-            this.toolStripBarFile.Size = new System.Drawing.Size(63, 24);
-            this.toolStripBarFile.Text = "File(&F)";
+            this._toolStripBarFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripFileLoad,
+            this._toolStripFileSave,
+            this._toolStripFileSaveAs,
+            this._toolStripSeparator4,
+            this._toolStripFileImport,
+            this._toolStripFileExport,
+            this._toolStripFileLoadPCG,
+            this._toolStripFileSavePCG,
+            this._toolStripSeparator5,
+            this._toolStripFileLoadPal,
+            this._toolStripFileSavePal});
+            this._toolStripBarFile.Name = "_toolStripBarFile";
+            this._toolStripBarFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this._toolStripBarFile.Size = new System.Drawing.Size(63, 24);
+            this._toolStripBarFile.Text = "File(&F)";
             // 
-            // toolStripFileLoad
+            // _toolStripFileLoad
             // 
-            this.toolStripFileLoad.Name = "toolStripFileLoad";
-            this.toolStripFileLoad.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.toolStripFileLoad.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileLoad.Text = "Open Project(&O)";
+            this._toolStripFileLoad.Name = "_toolStripFileLoad";
+            this._toolStripFileLoad.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this._toolStripFileLoad.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileLoad.Text = "Open Project(&O)";
             // 
-            // toolStripFileSave
+            // _toolStripFileSave
             // 
-            this.toolStripFileSave.Name = "toolStripFileSave";
-            this.toolStripFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripFileSave.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileSave.Text = "Save Project";
+            this._toolStripFileSave.Name = "_toolStripFileSave";
+            this._toolStripFileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this._toolStripFileSave.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileSave.Text = "Save Project";
             // 
-            // toolStripFileSaveAs
+            // _toolStripFileSaveAs
             // 
-            this.toolStripFileSaveAs.Name = "toolStripFileSaveAs";
-            this.toolStripFileSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.toolStripFileSaveAs.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileSaveAs.Text = "Save Project As(&A)";
+            this._toolStripFileSaveAs.Name = "_toolStripFileSaveAs";
+            this._toolStripFileSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this._toolStripFileSaveAs.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileSaveAs.Text = "Save Project As(&A)";
             // 
-            // toolStripSeparator4
+            // _toolStripSeparator4
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(258, 6);
+            this._toolStripSeparator4.Name = "_toolStripSeparator4";
+            this._toolStripSeparator4.Size = new System.Drawing.Size(258, 6);
             // 
-            // toolStripFileImport
+            // _toolStripFileImport
             // 
-            this.toolStripFileImport.Name = "toolStripFileImport";
-            this.toolStripFileImport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
-            this.toolStripFileImport.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileImport.Text = "Import PCG(&I)";
+            this._toolStripFileImport.Name = "_toolStripFileImport";
+            this._toolStripFileImport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
+            this._toolStripFileImport.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileImport.Text = "Import PCG(&I)";
             // 
-            // toolStripFileExport
+            // _toolStripFileExport
             // 
-            this.toolStripFileExport.Name = "toolStripFileExport";
-            this.toolStripFileExport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.toolStripFileExport.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileExport.Text = "Export PCG(&E)";
+            this._toolStripFileExport.Name = "_toolStripFileExport";
+            this._toolStripFileExport.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this._toolStripFileExport.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileExport.Text = "Export PCG(&E)";
             // 
-            // toolStripFileLoadPCG
+            // _toolStripFileLoadPCG
             // 
-            this.toolStripFileLoadPCG.Name = "toolStripFileLoadPCG";
-            this.toolStripFileLoadPCG.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
-            this.toolStripFileLoadPCG.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileLoadPCG.Text = "Load PCG Data(&L)";
+            this._toolStripFileLoadPCG.Name = "_toolStripFileLoadPCG";
+            this._toolStripFileLoadPCG.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this._toolStripFileLoadPCG.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileLoadPCG.Text = "Load PCG Data(&L)";
             // 
-            // toolStripFileSavePCG
+            // _toolStripFileSavePCG
             // 
-            this.toolStripFileSavePCG.Name = "toolStripFileSavePCG";
-            this.toolStripFileSavePCG.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.toolStripFileSavePCG.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileSavePCG.Text = "Save PCG Data(&S)";
+            this._toolStripFileSavePCG.Name = "_toolStripFileSavePCG";
+            this._toolStripFileSavePCG.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this._toolStripFileSavePCG.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileSavePCG.Text = "Save PCG Data(&S)";
             // 
-            // toolStripSeparator5
+            // _toolStripSeparator5
             // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(258, 6);
+            this._toolStripSeparator5.Name = "_toolStripSeparator5";
+            this._toolStripSeparator5.Size = new System.Drawing.Size(258, 6);
             // 
-            // toolStripFileLoadPal
+            // _toolStripFileLoadPal
             // 
-            this.toolStripFileLoadPal.Name = "toolStripFileLoadPal";
-            this.toolStripFileLoadPal.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileLoadPal.Text = "Load Palette";
+            this._toolStripFileLoadPal.Name = "_toolStripFileLoadPal";
+            this._toolStripFileLoadPal.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileLoadPal.Text = "Load Palette";
             // 
-            // toolStripFileSavePal
+            // _toolStripFileSavePal
             // 
-            this.toolStripFileSavePal.Name = "toolStripFileSavePal";
-            this.toolStripFileSavePal.Size = new System.Drawing.Size(261, 26);
-            this.toolStripFileSavePal.Text = "Save Palette";
+            this._toolStripFileSavePal.Name = "_toolStripFileSavePal";
+            this._toolStripFileSavePal.Size = new System.Drawing.Size(261, 26);
+            this._toolStripFileSavePal.Text = "Save Palette";
             // 
-            // toolStripBarEdit
+            // _toolStripBarEdit
             // 
-            this.toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripEditCurrent,
-            this.toolStripEditToggle,
-            this.toolStripSeparator6,
-            this.toolStripEditUndo,
-            this.toolStripEditRedo});
-            this.toolStripBarEdit.Name = "toolStripBarEdit";
-            this.toolStripBarEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
-            this.toolStripBarEdit.Text = "Edit(&E)";
+            this._toolStripBarEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripEditCurrent,
+            this._toolStripEditToggle,
+            this._toolStripSeparator6,
+            this._toolStripEditUndo,
+            this._toolStripEditRedo});
+            this._toolStripBarEdit.Name = "_toolStripBarEdit";
+            this._toolStripBarEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this._toolStripBarEdit.Size = new System.Drawing.Size(67, 24);
+            this._toolStripBarEdit.Text = "Edit(&E)";
             // 
-            // toolStripEditCurrent
+            // _toolStripEditCurrent
             // 
-            this.toolStripEditCurrent.Name = "toolStripEditCurrent";
-            this.toolStripEditCurrent.Size = new System.Drawing.Size(288, 26);
-            this.toolStripEditCurrent.Text = "Set to current color when edit";
+            this._toolStripEditCurrent.Name = "_toolStripEditCurrent";
+            this._toolStripEditCurrent.Size = new System.Drawing.Size(288, 26);
+            this._toolStripEditCurrent.Text = "Set to current color when edit";
             // 
-            // toolStripEditToggle
+            // _toolStripEditToggle
             // 
-            this.toolStripEditToggle.Name = "toolStripEditToggle";
-            this.toolStripEditToggle.Size = new System.Drawing.Size(288, 26);
-            this.toolStripEditToggle.Text = "Toggle the color when edit";
+            this._toolStripEditToggle.Name = "_toolStripEditToggle";
+            this._toolStripEditToggle.Size = new System.Drawing.Size(288, 26);
+            this._toolStripEditToggle.Text = "Toggle the color when edit";
             // 
-            // toolStripSeparator6
+            // _toolStripSeparator6
             // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(285, 6);
+            this._toolStripSeparator6.Name = "_toolStripSeparator6";
+            this._toolStripSeparator6.Size = new System.Drawing.Size(285, 6);
             // 
-            // toolStripEditUndo
+            // _toolStripEditUndo
             // 
-            this.toolStripEditUndo.Name = "toolStripEditUndo";
-            this.toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.toolStripEditUndo.Size = new System.Drawing.Size(288, 26);
-            this.toolStripEditUndo.Text = "Undo";
+            this._toolStripEditUndo.Name = "_toolStripEditUndo";
+            this._toolStripEditUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this._toolStripEditUndo.Size = new System.Drawing.Size(288, 26);
+            this._toolStripEditUndo.Text = "Undo";
             // 
-            // toolStripEditRedo
+            // _toolStripEditRedo
             // 
-            this.toolStripEditRedo.Name = "toolStripEditRedo";
-            this.toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.toolStripEditRedo.Size = new System.Drawing.Size(288, 26);
-            this.toolStripEditRedo.Text = "Redo";
+            this._toolStripEditRedo.Name = "_toolStripEditRedo";
+            this._toolStripEditRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this._toolStripEditRedo.Size = new System.Drawing.Size(288, 26);
+            this._toolStripEditRedo.Text = "Redo";
             // 
-            // toolStripBarFonts
+            // _toolStripBarFonts
             // 
-            this.toolStripBarFonts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuFonts});
-            this.toolStripBarFonts.Name = "toolStripBarFonts";
-            this.toolStripBarFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
-            this.toolStripBarFonts.Size = new System.Drawing.Size(74, 24);
-            this.toolStripBarFonts.Text = "Fonts(&F)";
+            this._toolStripBarFonts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripMenuFonts});
+            this._toolStripBarFonts.Name = "_toolStripBarFonts";
+            this._toolStripBarFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this._toolStripBarFonts.Size = new System.Drawing.Size(74, 24);
+            this._toolStripBarFonts.Text = "Fonts(&F)";
             // 
-            // toolStripMenuFonts
+            // _toolStripMenuFonts
             // 
-            this.toolStripMenuFonts.Name = "toolStripMenuFonts";
-            this.toolStripMenuFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.toolStripMenuFonts.Size = new System.Drawing.Size(287, 26);
-            this.toolStripMenuFonts.Text = "Open Font Browser(&O)";
+            this._toolStripMenuFonts.Name = "_toolStripMenuFonts";
+            this._toolStripMenuFonts.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this._toolStripMenuFonts.Size = new System.Drawing.Size(287, 26);
+            this._toolStripMenuFonts.Text = "Open Font Browser(&O)";
             // 
-            // viewSand
+            // _viewSand
             // 
-            this.viewSand.AllowDrop = true;
-            this.viewSand.AllowMultipleSelection = true;
-            this.viewSand.AllowOneStrokeEditing = false;
-            this.viewSand.AllowSelection = true;
-            this.viewSand.AllowSubSelection = false;
-            this.viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewSand.CellHeight = 16;
-            this.viewSand.CellWidth = 16;
-            this.viewSand.ColumnNum = 32;
-            this.viewSand.ContextMenuStrip = this.contextSandbox;
-            this.viewSand.DrawOverlayedSelection = false;
-            this.viewSand.DrawTranparentColor = false;
-            this.viewSand.Index = 0;
-            this.viewSand.Location = new System.Drawing.Point(301, 227);
-            this.viewSand.Name = "viewSand";
-            this.viewSand.RowNum = 24;
-            this.viewSand.SelectionHeight = 1;
-            this.viewSand.SelectionWidth = 1;
-            this.viewSand.Size = new System.Drawing.Size(514, 386);
-            this.viewSand.TabIndex = 33;
-            this.viewSand.X = 0;
-            this.viewSand.Y = 0;
-            this.viewSand.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewSand_DragDrop);
-            this.viewSand.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewSand_DragEnter);
-            this.viewSand.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewSand_PreviewKeyDown);
+            this._viewSand.AllowDrop = true;
+            this._viewSand.AllowMultipleSelection = true;
+            this._viewSand.AllowOneStrokeEditing = false;
+            this._viewSand.AllowSelection = true;
+            this._viewSand.AllowSubSelection = false;
+            this._viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewSand.CellHeight = 16;
+            this._viewSand.CellWidth = 16;
+            this._viewSand.ColumnNum = 32;
+            this._viewSand.ContextMenuStrip = this._contextSandbox;
+            this._viewSand.DrawOverlayedSelection = false;
+            this._viewSand.DrawTranparentColor = false;
+            this._viewSand.Index = 0;
+            this._viewSand.Location = new System.Drawing.Point(301, 227);
+            this._viewSand.Name = "_viewSand";
+            this._viewSand.RowNum = 24;
+            this._viewSand.SelectionHeight = 1;
+            this._viewSand.SelectionWidth = 1;
+            this._viewSand.Size = new System.Drawing.Size(514, 386);
+            this._viewSand.TabIndex = 33;
+            this._viewSand.X = 0;
+            this._viewSand.Y = 0;
+            this._viewSand.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewSand_DragDrop);
+            this._viewSand.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewSand_DragEnter);
+            this._viewSand.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewSand_PreviewKeyDown);
             // 
-            // viewPCG
+            // _viewPCG
             // 
-            this.viewPCG.AllowDrop = true;
-            this.viewPCG.AllowMultipleSelection = true;
-            this.viewPCG.AllowOneStrokeEditing = false;
-            this.viewPCG.AllowSelection = true;
-            this.viewPCG.AllowSubSelection = false;
-            this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPCG.CellHeight = 16;
-            this.viewPCG.CellWidth = 16;
-            this.viewPCG.ColumnNum = 32;
-            this.viewPCG.ContextMenuStrip = this.contextPCG;
-            this.viewPCG.DrawOverlayedSelection = false;
-            this.viewPCG.DrawTranparentColor = false;
-            this.viewPCG.Index = 0;
-            this.viewPCG.Location = new System.Drawing.Point(301, 61);
-            this.viewPCG.Name = "viewPCG";
-            this.viewPCG.RowNum = 8;
-            this.viewPCG.SelectionHeight = 1;
-            this.viewPCG.SelectionWidth = 1;
-            this.viewPCG.Size = new System.Drawing.Size(514, 130);
-            this.viewPCG.TabIndex = 34;
-            this.viewPCG.X = 0;
-            this.viewPCG.Y = 0;
-            this.viewPCG.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewPCG_SelectionChanged);
-            this.viewPCG.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPCG_CellDragStart);
-            this.viewPCG.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragDrop);
-            this.viewPCG.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragEnter);
-            this.viewPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewPCG_PreviewKeyDown);
+            this._viewPCG.AllowDrop = true;
+            this._viewPCG.AllowMultipleSelection = true;
+            this._viewPCG.AllowOneStrokeEditing = false;
+            this._viewPCG.AllowSelection = true;
+            this._viewPCG.AllowSubSelection = false;
+            this._viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewPCG.CellHeight = 16;
+            this._viewPCG.CellWidth = 16;
+            this._viewPCG.ColumnNum = 32;
+            this._viewPCG.ContextMenuStrip = this._contextPCG;
+            this._viewPCG.DrawOverlayedSelection = false;
+            this._viewPCG.DrawTranparentColor = false;
+            this._viewPCG.Index = 0;
+            this._viewPCG.Location = new System.Drawing.Point(301, 66);
+            this._viewPCG.Name = "_viewPCG";
+            this._viewPCG.RowNum = 8;
+            this._viewPCG.SelectionHeight = 1;
+            this._viewPCG.SelectionWidth = 1;
+            this._viewPCG.Size = new System.Drawing.Size(514, 130);
+            this._viewPCG.TabIndex = 34;
+            this._viewPCG.X = 0;
+            this._viewPCG.Y = 0;
+            this._viewPCG.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewPCG_SelectionChanged);
+            this._viewPCG.CellDragStart += new System.EventHandler<System.EventArgs>(this.viewPCG_CellDragStart);
+            this._viewPCG.DragDrop += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragDrop);
+            this._viewPCG.DragEnter += new System.Windows.Forms.DragEventHandler(this.viewPCG_DragEnter);
+            this._viewPCG.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.viewPCG_PreviewKeyDown);
             // 
-            // viewEdit
+            // _viewEdit
             // 
-            this.viewEdit.AllowDrop = true;
-            this.viewEdit.AllowMultipleSelection = true;
-            this.viewEdit.AllowOneStrokeEditing = true;
-            this.viewEdit.AllowSelection = true;
-            this.viewEdit.AllowSubSelection = true;
-            this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewEdit.CellHeight = 16;
-            this.viewEdit.CellWidth = 16;
-            this.viewEdit.ColumnNum = 16;
-            this.viewEdit.ContextMenuStrip = this.contextEditor;
-            this.viewEdit.DrawOverlayedSelection = false;
-            this.viewEdit.DrawTranparentColor = true;
-            this.viewEdit.Index = 0;
-            this.viewEdit.Location = new System.Drawing.Point(14, 61);
-            this.viewEdit.Name = "viewEdit";
-            this.viewEdit.RowNum = 16;
-            this.viewEdit.SelectionHeight = 1;
-            this.viewEdit.SelectionWidth = 8;
-            this.viewEdit.Size = new System.Drawing.Size(258, 258);
-            this.viewEdit.TabIndex = 35;
-            this.viewEdit.X = 0;
-            this.viewEdit.Y = 0;
-            this.viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
-            this.viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
-            this.viewEdit.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewEdit_CellOnEdit);
+            this._viewEdit.AllowDrop = true;
+            this._viewEdit.AllowMultipleSelection = true;
+            this._viewEdit.AllowOneStrokeEditing = true;
+            this._viewEdit.AllowSelection = true;
+            this._viewEdit.AllowSubSelection = true;
+            this._viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewEdit.CellHeight = 16;
+            this._viewEdit.CellWidth = 16;
+            this._viewEdit.ColumnNum = 16;
+            this._viewEdit.ContextMenuStrip = this._contextEditor;
+            this._viewEdit.DrawOverlayedSelection = false;
+            this._viewEdit.DrawTranparentColor = true;
+            this._viewEdit.Index = 0;
+            this._viewEdit.Location = new System.Drawing.Point(14, 61);
+            this._viewEdit.Name = "_viewEdit";
+            this._viewEdit.RowNum = 16;
+            this._viewEdit.SelectionHeight = 1;
+            this._viewEdit.SelectionWidth = 8;
+            this._viewEdit.Size = new System.Drawing.Size(258, 258);
+            this._viewEdit.TabIndex = 35;
+            this._viewEdit.X = 0;
+            this._viewEdit.Y = 0;
+            this._viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
+            this._viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
+            this._viewEdit.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewEdit_CellOnEdit);
             // 
-            // viewColor
+            // _viewColor
             // 
-            this.viewColor.AllowMultipleSelection = false;
-            this.viewColor.AllowOneStrokeEditing = false;
-            this.viewColor.AllowSelection = true;
-            this.viewColor.AllowSubSelection = false;
-            this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewColor.CellHeight = 32;
-            this.viewColor.CellWidth = 32;
-            this.viewColor.ColumnNum = 2;
-            this.viewColor.DrawOverlayedSelection = false;
-            this.viewColor.DrawTranparentColor = true;
-            this.viewColor.Index = 0;
-            this.viewColor.Location = new System.Drawing.Point(14, 358);
-            this.viewColor.Name = "viewColor";
-            this.viewColor.RowNum = 1;
-            this.viewColor.SelectionHeight = 1;
-            this.viewColor.SelectionWidth = 1;
-            this.viewColor.Size = new System.Drawing.Size(66, 34);
-            this.viewColor.TabIndex = 36;
-            this.viewColor.X = 0;
-            this.viewColor.Y = 0;
-            this.viewColor.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
+            this._viewColor.AllowMultipleSelection = false;
+            this._viewColor.AllowOneStrokeEditing = false;
+            this._viewColor.AllowSelection = true;
+            this._viewColor.AllowSubSelection = false;
+            this._viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewColor.CellHeight = 32;
+            this._viewColor.CellWidth = 32;
+            this._viewColor.ColumnNum = 2;
+            this._viewColor.DrawOverlayedSelection = false;
+            this._viewColor.DrawTranparentColor = true;
+            this._viewColor.Index = 0;
+            this._viewColor.Location = new System.Drawing.Point(14, 358);
+            this._viewColor.Name = "_viewColor";
+            this._viewColor.RowNum = 1;
+            this._viewColor.SelectionHeight = 1;
+            this._viewColor.SelectionWidth = 1;
+            this._viewColor.Size = new System.Drawing.Size(66, 34);
+            this._viewColor.TabIndex = 36;
+            this._viewColor.X = 0;
+            this._viewColor.Y = 0;
+            this._viewColor.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
             // 
-            // viewPalette
+            // _viewPalette
             // 
-            this.viewPalette.AllowMultipleSelection = false;
-            this.viewPalette.AllowOneStrokeEditing = false;
-            this.viewPalette.AllowSelection = true;
-            this.viewPalette.AllowSubSelection = false;
-            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.CellHeight = 32;
-            this.viewPalette.CellWidth = 32;
-            this.viewPalette.ColumnNum = 8;
-            this.viewPalette.DrawOverlayedSelection = false;
-            this.viewPalette.DrawTranparentColor = true;
-            this.viewPalette.Index = 0;
-            this.viewPalette.Location = new System.Drawing.Point(13, 550);
-            this.viewPalette.Name = "viewPalette";
-            this.viewPalette.RowNum = 2;
-            this.viewPalette.SelectionHeight = 1;
-            this.viewPalette.SelectionWidth = 1;
-            this.viewPalette.Size = new System.Drawing.Size(258, 66);
-            this.viewPalette.TabIndex = 37;
-            this.viewPalette.X = 0;
-            this.viewPalette.Y = 0;
-            this.viewPalette.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
-            this.viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
-            this.viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
+            this._viewPalette.AllowMultipleSelection = false;
+            this._viewPalette.AllowOneStrokeEditing = false;
+            this._viewPalette.AllowSelection = true;
+            this._viewPalette.AllowSubSelection = false;
+            this._viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewPalette.CellHeight = 32;
+            this._viewPalette.CellWidth = 32;
+            this._viewPalette.ColumnNum = 8;
+            this._viewPalette.DrawOverlayedSelection = false;
+            this._viewPalette.DrawTranparentColor = true;
+            this._viewPalette.Index = 0;
+            this._viewPalette.Location = new System.Drawing.Point(13, 550);
+            this._viewPalette.Name = "_viewPalette";
+            this._viewPalette.RowNum = 2;
+            this._viewPalette.SelectionHeight = 1;
+            this._viewPalette.SelectionWidth = 1;
+            this._viewPalette.Size = new System.Drawing.Size(258, 66);
+            this._viewPalette.TabIndex = 37;
+            this._viewPalette.X = 0;
+            this._viewPalette.Y = 0;
+            this._viewPalette.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
+            this._viewPalette.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseClick);
+            this._viewPalette.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDoubleClick);
+            // 
+            // _chkBanks
+            // 
+            this._chkBanks.AutoSize = true;
+            this._chkBanks.Location = new System.Drawing.Point(602, 37);
+            this._chkBanks.Name = "_chkBanks";
+            this._chkBanks.Size = new System.Drawing.Size(110, 24);
+            this._chkBanks.TabIndex = 38;
+            this._chkBanks.Text = "Three Banks";
+            this._chkBanks.UseVisualStyleBackColor = true;
+            this._chkBanks.Click += new System.EventHandler(this._chkBanks_Click);
+            // 
+            // _comboBank
+            // 
+            this._comboBank.FormattingEnabled = true;
+            this._comboBank.Items.AddRange(new object[] {
+            "Bank 0",
+            "Bank 1",
+            "Bank 2"});
+            this._comboBank.Location = new System.Drawing.Point(508, 34);
+            this._comboBank.Name = "_comboBank";
+            this._comboBank.Size = new System.Drawing.Size(83, 28);
+            this._comboBank.TabIndex = 39;
+            this._comboBank.SelectedIndexChanged += new System.EventHandler(this._comboBank_SelectedIndexChanged);
             // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(839, 642);
-            this.Controls.Add(this.viewPalette);
-            this.Controls.Add(this.viewColor);
+            this.ClientSize = new System.Drawing.Size(830, 642);
+            this.Controls.Add(this._comboBank);
+            this.Controls.Add(this._chkBanks);
+            this.Controls.Add(this._viewPalette);
+            this.Controls.Add(this._viewColor);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.viewEdit);
-            this.Controls.Add(this.viewPCG);
-            this.Controls.Add(this.viewSand);
-            this.Controls.Add(this.menuStripMain);
-            this.Controls.Add(this.chkCRT);
+            this.Controls.Add(this._viewEdit);
+            this.Controls.Add(this._viewPCG);
+            this.Controls.Add(this._viewSand);
+            this.Controls.Add(this._menuStripMain);
+            this.Controls.Add(this._chkCRT);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.chkTMS);
+            this.Controls.Add(this._chkTMS);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MainMenuStrip = this.menuStripMain;
+            this.MainMenuStrip = this._menuStripMain;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PCGEditor";
@@ -719,11 +747,11 @@ namespace _99x8Edit
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "PCG Editor";
             this.Activated += new System.EventHandler(this.FormPCG_Activated);
-            this.contextPCG.ResumeLayout(false);
-            this.contextSandbox.ResumeLayout(false);
-            this.contextEditor.ResumeLayout(false);
-            this.menuStripMain.ResumeLayout(false);
-            this.menuStripMain.PerformLayout();
+            this._contextPCG.ResumeLayout(false);
+            this._contextSandbox.ResumeLayout(false);
+            this._contextEditor.ResumeLayout(false);
+            this._menuStripMain.ResumeLayout(false);
+            this._menuStripMain.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -735,62 +763,64 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox chkTMS;
-        private System.Windows.Forms.ToolTip toolTipPCG;
+        private System.Windows.Forms.CheckBox _chkTMS;
+        private System.Windows.Forms.ToolTip _toolTipPCG;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ContextMenuStrip contextPCG;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopy;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGPaste;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGDel;
-        private System.Windows.Forms.ContextMenuStrip contextSandbox;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxCopy;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxPaste;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxDel;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxPaint;
-        private System.Windows.Forms.ContextMenuStrip contextEditor;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopy;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaste;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorDel;
-        private System.Windows.Forms.CheckBox chkCRT;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGInverse;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxCopyDown;
-        private System.Windows.Forms.ToolStripMenuItem toolStripSandboxCopyRight;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopyDown;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGCopyRight;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyDown;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorCopyRight;
-        private System.Windows.Forms.MenuStrip menuStripMain;
-        private System.Windows.Forms.ToolStripMenuItem toolStripBarFile;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoad;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileSave;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileSaveAs;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileImport;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileExport;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePCG;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPCG;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileLoadPal;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFileSavePal;
-        private System.Windows.Forms.ToolStripMenuItem toolStripBarEdit;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditUndo;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditRedo;
-        private MatrixControl viewSand;
-        private MatrixControl viewPCG;
-        private EditorControl viewEdit;
-        private MatrixControl viewColor;
-        private MatrixControl viewPalette;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditCurrent;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditToggle;
-        private System.Windows.Forms.ToolStripMenuItem toolStripEditorPaint;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripMenuItem toolStripBarFonts;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuFonts;
+        private System.Windows.Forms.ContextMenuStrip _contextPCG;
+        private System.Windows.Forms.ContextMenuStrip _contextSandbox;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxPaint;
+        private System.Windows.Forms.ContextMenuStrip _contextEditor;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorDel;
+        private System.Windows.Forms.CheckBox _chkCRT;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGInverse;
+        private System.Windows.Forms.MenuStrip _menuStripMain;
+        private MatrixControl _viewSand;
+        private MatrixControl _viewPCG;
+        private EditorControl _viewEdit;
+        private MatrixControl _viewColor;
+        private MatrixControl _viewPalette;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripBarFonts;
+        private System.Windows.Forms.CheckBox _chkBanks;
+        private System.Windows.Forms.ComboBox _comboBank;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGCopy;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGPaste;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGCopyRight;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGDel;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxCopy;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxPaste;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxCopyRight;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripSandboxDel;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorCopy;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorPaste;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorCopyDown;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorCopyRight;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditorPaint;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripBarFile;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileLoad;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileSave;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileSaveAs;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileImport;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileExport;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileLoadPCG;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileSavePCG;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileLoadPal;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripFileSavePal;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripBarEdit;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditCurrent;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditToggle;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditUndo;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripEditRedo;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripMenuFonts;
     }
 }

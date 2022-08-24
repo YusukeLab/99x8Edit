@@ -77,7 +77,7 @@ namespace _99x8Edit
                     int bit = ((chr[y] >> (7 - x)) & 1);
                     if (bit != 0)
                     {
-                        _colorPreview.SetBrush(b, x, y);
+                        _colorPreview.SetEditingDot(b, x, y);
                     }
                 }
             }

@@ -143,6 +143,12 @@ namespace _99x8Edit
             dst.PtnGen = ptn_gen;
             dst.PtnClr = ptn_clr;
             dst.HasThreeBanks = (bmp.Height >= 64);
+            byte[] nametable = new byte[768];
+            for (int i = 0; i < 768; ++i)
+            {
+                nametable[i] = (byte)(i % 256);
+            }
+            dst.NameTable = nametable;
         }
         private void BINtoPCG(string filename, IImportable dst)
         {

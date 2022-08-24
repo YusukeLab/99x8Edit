@@ -31,38 +31,38 @@ namespace _99x8Edit
             _dataSource = src;
             _mainWin = parent;
             // Tab order for the customed control
-            _tabList.Add(viewPCG, viewPCG.Selector);
-            _tabList.Add(viewPtn, viewPtn.Selector);
-            _tabList.Add(viewMap, viewMap.Selector);
+            _tabList.Add(_viewPCG, _viewPCG.Selector);
+            _tabList.Add(_viewPtn, _viewPtn.Selector);
+            _tabList.Add(_viewMap, _viewMap.Selector);
             // Initialize controls
-            btnLeft.Enabled = false;
-            btnRight.Enabled = (_dataSource.MapWidth > viewMap.SelectionColNum);
-            btnUp.Enabled = false;
-            btnDown.Enabled = (_dataSource.MapHeight > viewMap.SelectionRowNum);
+            _btnLeft.Enabled = false;
+            _btnRight.Enabled = (_dataSource.MapWidth > _viewMap.SelectionColNum);
+            _btnUp.Enabled = false;
+            _btnDown.Enabled = (_dataSource.MapHeight > _viewMap.SelectionRowNum);
             // Refresh all views
             RefreshAllViews();
             // Menu bar
-            toolStripFileLoad.Click += menu_fileLoad;
-            toolStripFileSave.Click += menu_fileSave;
-            toolStripFileSaveAs.Click += menu_fileSaveAs;
-            toolStripFileImport.Click += menu_fileImport;
-            toolStripFileExport.Click += menu_fileExport;
-            toolStripFileLoadMap.Click += menu_fileLoadMap;
-            toolStripFileSaveMap.Click += menu_fileSaveMap;
-            toolStripEditUndo.Click += menu_editUndo;
-            toolStripEditRedo.Click += menu_editRedo;
+            _toolStripFileLoad.Click += menu_fileLoad;
+            _toolStripFileSave.Click += menu_fileSave;
+            _toolStripFileSaveAs.Click += menu_fileSaveAs;
+            _toolStripFileImport.Click += menu_fileImport;
+            _toolStripFileExport.Click += menu_fileExport;
+            _toolStripFileLoadMap.Click += menu_fileLoadMap;
+            _toolStripFileSaveMap.Click += menu_fileSaveMap;
+            _toolStripEditUndo.Click += menu_editUndo;
+            _toolStripEditRedo.Click += menu_editRedo;
             // Context menu
-            toolStripPCGCopy.Click += contextPCG_Copy;
-            toolStripPatternCopy.Click += contextPtn_copy;
-            toolStripPatternPaste.Click += contextPtn_paste;
-            toolStripPatternCopyDown.Click += contextPtn_copyDown;
-            toolStripPatternCopyRight.Click += contextPtn_copyRight;
-            toolStripMapCopy.Click += contextMap_copy;
-            toolStripMapPaste.Click += contextMap_paste;
-            toolStripMapDel.Click += contextMap_del;
-            toolStripMapPaint.Click += contextMap_paint;
-            toolStripMapCopyDown.Click += contextMap_copyDown;
-            toolStripMapCopyRight.Click += contextMap_copyRight;
+            _toolStripPCGCopy.Click += contextPCG_Copy;
+            _toolStripPatternCopy.Click += contextPtn_copy;
+            _toolStripPatternPaste.Click += contextPtn_paste;
+            _toolStripPatternCopyDown.Click += contextPtn_copyDown;
+            _toolStripPatternCopyRight.Click += contextPtn_copyRight;
+            _toolStripMapCopy.Click += contextMap_copy;
+            _toolStripMapPaste.Click += contextMap_paste;
+            _toolStripMapDel.Click += contextMap_del;
+            _toolStripMapPaint.Click += contextMap_paint;
+            _toolStripMapCopyDown.Click += contextMap_copyDown;
+            _toolStripMapCopyRight.Click += contextMap_copyRight;
         }
         //------------------------------------------------------------------------------
         // Override
@@ -113,17 +113,17 @@ namespace _99x8Edit
         private void UpdatePCGList(bool refresh)
         {
             // Update all PCG list
-            for (int y = 0; y < viewPCG.RowNum; ++y)
+            for (int y = 0; y < _viewPCG.RowNum; ++y)
             {
-                for (int x = 0; x < viewPCG.ColumnNum; ++x)
+                for (int x = 0; x < _viewPCG.ColumnNum; ++x)
                 {
-                    int index = viewPCG.IndexOf(x, y);
-                    viewPCG.SetImage(_dataSource.GetBitmapOfPCG(index), x, y);
+                    int index = _viewPCG.IndexOf(x, y);
+                    _viewPCG.SetImage(_dataSource.GetBitmapOfPCG(index), x, y);
                 }
             }
             // CRT Filter
-            viewPCG.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
-            if (refresh) viewPCG.Refresh();
+            _viewPCG.Filter = (_chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
+            if (refresh) _viewPCG.Refresh();
         }
         private void UpdateMapPatterns(bool refresh)
         {
@@ -134,23 +134,23 @@ namespace _99x8Edit
                 {
                     for(int j = 0; j < 2; ++j)
                     {
-                        int pcg = _dataSource.GetPCGInPattern(viewPtn.IndexOf(col, row),
+                        int pcg = _dataSource.GetPCGInPattern(_viewPtn.IndexOf(col, row),
                                                               i * 2 + j);
                         Bitmap bmp = _dataSource.GetBitmapOfPCG(pcg);
-                        viewPtn.SetImage(bmp, col * 2 + j, row * 2 + i);
+                        _viewPtn.SetImage(bmp, col * 2 + j, row * 2 + i);
                     }
                 }
             };
-            for(int y = 0; y < viewPtn.SelectionRowNum; ++y)
+            for(int y = 0; y < _viewPtn.SelectionRowNum; ++y)
             {
-                for(int x = 0; x < viewPtn.SelectionColNum; ++x)
+                for(int x = 0; x < _viewPtn.SelectionColNum; ++x)
                 {
                     draw_one_ptn(x, y);
                 }
             }
             // CRT Filter
-            viewPtn.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
-            if (refresh) viewPtn.Refresh();
+            _viewPtn.Filter = (_chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
+            if (refresh) _viewPtn.Refresh();
         }
         private void UpdateMap(bool refresh)
         {
@@ -158,8 +158,8 @@ namespace _99x8Edit
             if ((_curMapOrg.X + 16 > _dataSource.MapWidth)
                 || (_curMapOrg.Y + 12 > _dataSource.MapHeight))
             {
-                txtMapX.Text = (_curMapOrg.X = 0).ToString();
-                txtMapY.Text = (_curMapOrg.Y = 0).ToString();
+                _txtMapX.Text = (_curMapOrg.X = 0).ToString();
+                _txtMapY.Text = (_curMapOrg.Y = 0).ToString();
             }
             // Draw cells in the map
             Action<int, int> one_map_pattern = (x, y) =>
@@ -174,27 +174,27 @@ namespace _99x8Edit
                     {
                         int map_pcg = _dataSource.GetPCGInPattern(map_ptn, i * 2 + j);
                         Bitmap img = _dataSource.GetBitmapOfPCG(map_pcg);
-                        viewMap.SetImage(img, x * 2 + j, y * 2 + i);
+                        _viewMap.SetImage(img, x * 2 + j, y * 2 + i);
                     }
                 }
             };
-            for (int i = 0; i < viewMap.SelectionRowNum; ++i)
+            for (int i = 0; i < _viewMap.SelectionRowNum; ++i)
             {
-                for (int j = 0; j < viewMap.SelectionColNum; ++j)
+                for (int j = 0; j < _viewMap.SelectionColNum; ++j)
                 {
                     one_map_pattern(j, i);
                 }
             }
             // CRT Filter
-            viewMap.Filter = (chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
-            if (refresh) viewMap.Refresh();
+            _viewMap.Filter = (_chkCRT.Checked) ? Filter.Create(Filter.Type.CRT) : null;
+            if (refresh) _viewMap.Refresh();
             // Controls corresponding to map
-            txtMapX.Text = _curMapOrg.X.ToString();
-            txtMapY.Text = _curMapOrg.Y.ToString();
-            btnLeft.Enabled = ((_curMapOrg.X > 0) && (_dataSource.MapWidth > viewMap.SelectionColNum));
-            btnRight.Enabled = (_curMapOrg.X < _dataSource.MapWidth - viewMap.SelectionColNum);
-            btnUp.Enabled = ((_curMapOrg.Y > 0) && (_dataSource.MapHeight > viewMap.SelectionRowNum));
-            btnDown.Enabled = (_curMapOrg.Y < _dataSource.MapHeight - viewMap.SelectionRowNum);
+            _txtMapX.Text = _curMapOrg.X.ToString();
+            _txtMapY.Text = _curMapOrg.Y.ToString();
+            _btnLeft.Enabled = ((_curMapOrg.X > 0) && (_dataSource.MapWidth > _viewMap.SelectionColNum));
+            _btnRight.Enabled = (_curMapOrg.X < _dataSource.MapWidth - _viewMap.SelectionColNum);
+            _btnUp.Enabled = ((_curMapOrg.Y > 0) && (_dataSource.MapHeight > _viewMap.SelectionRowNum));
+            _btnDown.Enabled = (_curMapOrg.Y < _dataSource.MapHeight - _viewMap.SelectionRowNum);
         }
         //-----------------------------------------------------------------
         // Controls
@@ -202,13 +202,13 @@ namespace _99x8Edit
         // PCG list
         private void viewPCG_CellDragStart(object sender, EventArgs e)
         {
-            viewPCG.DoDragDrop(new DnDPCG(this), DragDropEffects.Copy);
+            _viewPCG.DoDragDrop(new DnDPCG(this), DragDropEffects.Copy);
         }
         private void contextPCG_Copy(object sender, EventArgs e)
         {
             ClipPCGIndex clip = new ClipPCGIndex()
             {
-                pcgIndex = viewPCG.Index
+                pcgIndex = _viewPCG.Index
             };
             ClipboardWrapper.SetData(clip);
         }
@@ -216,15 +216,15 @@ namespace _99x8Edit
         // Patterns
         private void viewPtn_CellDragStart(object sender, EventArgs e)
         {
-            viewPtn.DoDragDrop(new DnDPattern(this), DragDropEffects.Copy);
+            _viewPtn.DoDragDrop(new DnDPattern(this), DragDropEffects.Copy);
         }
         private void contextPtn_copy(object sender, EventArgs e)
         {
             ClipMapPtn clip = new ClipMapPtn()
             {
-                index = viewPtn.Index
+                index = _viewPtn.Index
             };
-            Rectangle r = viewPtn.SelectedRect;
+            Rectangle r = _viewPtn.SelectedRect;
             for (int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<byte[]> l = new List<byte[]>();
@@ -247,18 +247,18 @@ namespace _99x8Edit
                     Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
                     {
                         // For each copied patterns
-                        int target = viewPtn.IndexOf(col, row);
+                        int target = _viewPtn.IndexOf(col, row);
                         _dataSource.SetPattern(target, cm.ptns[rowcnt][colcnt], push: false);
                     };
-                    viewPtn.ForEachSelection(viewPtn.X, viewPtn.Y,
+                    _viewPtn.ForEachSelection(_viewPtn.X, _viewPtn.Y,
                                              clip.ptns?[0]?.Count, clip.ptns?.Count, callback);
                     this.UpdateMapPatterns(refresh: true);
                     this.UpdateMap(refresh: true);
                     break;
                 case ClipPCGIndex cp:
                     int src = cp.pcgIndex;
-                    int target_ptn = viewPtn.Index;
-                    int target_no = viewPtn.SubY * 2 + viewPtn.SubX;
+                    int target_ptn = _viewPtn.Index;
+                    int target_no = _viewPtn.SubY * 2 + _viewPtn.SubX;
                     _dataSource.SetPCGInPattern(target_ptn, target_no, src, push: true);
                     this.UpdateMapPatterns(refresh: true);
                     this.UpdateMap(refresh: true);
@@ -268,31 +268,31 @@ namespace _99x8Edit
         private void contextPtn_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewPtn.SelectedRect;
+            Rectangle r = _viewPtn.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected patterns
-                int src = viewPtn.IndexOf(col, r.Y);
-                int dst = viewPtn.IndexOf(col, row);
+                int src = _viewPtn.IndexOf(col, r.Y);
+                int dst = _viewPtn.IndexOf(col, row);
                 byte[] dat = _dataSource.GetPattern(src);
                 _dataSource.SetPattern(dst, dat, push: false);
             };
-            viewPtn.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            _viewPtn.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.RefreshAllViews();
         }
         private void contextPtn_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewPtn.SelectedRect;
+            Rectangle r = _viewPtn.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected patterns
-                int src = viewPtn.IndexOf(r.X, row);
-                int dst = viewPtn.IndexOf(col, row);
+                int src = _viewPtn.IndexOf(r.X, row);
+                int dst = _viewPtn.IndexOf(col, row);
                 byte[] dat = _dataSource.GetPattern(src);
                 _dataSource.SetPattern(dst, dat, push: false);
             };
-            viewPtn.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            _viewPtn.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
         private void panelPtn_DragEnter(object sender, DragEventArgs e)
@@ -310,21 +310,21 @@ namespace _99x8Edit
         }
         private void panelPtn_DragDrop(object sender, DragEventArgs e)
         {
-            (int col, int row) = viewPtn.ScreenCoordinateToSelection(Cursor.Position);
-            int target = viewPtn.IndexOf(col, row);
+            (int col, int row) = _viewPtn.ScreenCoordinateToSelection(Cursor.Position);
+            int target = _viewPtn.IndexOf(col, row);
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
                 // Other map pattern has been dropped
-                _dataSource.CopyMapPattern(viewPtn.Index, target, push: true);
+                _dataSource.CopyMapPattern(_viewPtn.Index, target, push: true);
                 this.UpdateMapPatterns(refresh: true);
                 this.UpdateMap(refresh: true);
             }
             else if (e.Data.GetDataPresent(typeof(DnDPCG)))
             {
                 // Character has been dropped from PCG list
-                (int col_sub, int row_sub) = viewPtn.ScreenCoordinateToCell(Cursor.Position);
+                (int col_sub, int row_sub) = _viewPtn.ScreenCoordinateToCell(Cursor.Position);
                 int target_no = col_sub % 2 + (row_sub % 2) * 2;
-                _dataSource.SetPCGInPattern(target, target_no, viewPCG.Index, push: true);
+                _dataSource.SetPCGInPattern(target, target_no, _viewPCG.Index, push: true);
                 this.UpdateMapPatterns(refresh: true); 
                 this.UpdateMap(refresh: true);
             }
@@ -337,10 +337,10 @@ namespace _99x8Edit
                 case Keys.Enter:
                 case Keys.Space:
                     // Keyboard space and enter to send pattern to map
-                    _dataSource.SetMapData(_curMapOrg.X + viewMap.X,
-                                           _curMapOrg.Y + viewMap.Y,
-                                           viewPtn.Index, push: true);
-                    viewMap.IncrementSelection();
+                    _dataSource.SetMapData(_curMapOrg.X + _viewMap.X,
+                                           _curMapOrg.Y + _viewMap.Y,
+                                           _viewPtn.Index, push: true);
+                    _viewMap.IncrementSelection();
                     this.UpdateMap(refresh: true);
                     break;
             }
@@ -356,7 +356,7 @@ namespace _99x8Edit
                 _curMapOrg.Y += e.DY;
                 this.UpdateMap(refresh: true);
             }
-            if((e.DY > 0) && (_curMapOrg.Y + e.DY <= _dataSource.MapHeight - viewMap.SelectionRowNum))
+            if((e.DY > 0) && (_curMapOrg.Y + e.DY <= _dataSource.MapHeight - _viewMap.SelectionRowNum))
             {
                 // Down
                 _curMapOrg.Y += e.DY;
@@ -368,7 +368,7 @@ namespace _99x8Edit
                 _curMapOrg.X += e.DX;
                 this.UpdateMap(refresh: true);
             }
-            if ((e.DX > 0) && (_curMapOrg.X + e.DX <= _dataSource.MapWidth - viewMap.SelectionColNum))
+            if ((e.DX > 0) && (_curMapOrg.X + e.DX <= _dataSource.MapWidth - _viewMap.SelectionColNum))
             {
                 // Right
                 _curMapOrg.X += e.DX;
@@ -378,7 +378,7 @@ namespace _99x8Edit
         private void contextMap_copy(object sender, EventArgs e)
         {
             ClipMapCell clip = new ClipMapCell();
-            Rectangle r = viewMap.SelectedRect;
+            Rectangle r = _viewMap.SelectedRect;
             for(int i = r.Y; i < r.Y + r.Height; ++i)
             {
                 List<int> l = new List<int>();
@@ -398,8 +398,8 @@ namespace _99x8Edit
             {
                 case ClipMapPtn _:
                     // One map pattern has been pasted
-                    _dataSource.SetMapData(_curMapOrg.X + viewMap.X,
-                                           _curMapOrg.Y + viewMap.Y,
+                    _dataSource.SetMapData(_curMapOrg.X + _viewMap.X,
+                                           _curMapOrg.Y + _viewMap.Y,
                                            clip.index, push: true);
                     this.UpdateMap(refresh: true);
                     break;
@@ -413,7 +413,7 @@ namespace _99x8Edit
                             _curMapOrg.Y + row,
                             clip.ptnID[rowcnt][colcnt], push: false);
                     };
-                    viewMap.ForEachSelection(viewMap.X, viewMap.Y,
+                    _viewMap.ForEachSelection(_viewMap.X, _viewMap.Y,
                         clip.ptnID?[0]?.Count, clip.ptnID?.Count, callback);
                     this.UpdateMap(refresh: true);
                     break;
@@ -427,39 +427,39 @@ namespace _99x8Edit
                 // Delete each map patterns
                 _dataSource.SetMapData(_curMapOrg.X + col, _curMapOrg.Y + row, 0, push: false);
             };
-            viewMap.ForEachSelection(callback);
+            _viewMap.ForEachSelection(callback);
             this.UpdateMap(refresh: true);
         }
         private void contextMap_paint(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            this.PaintMap(_curMapOrg.X + viewMap.X, _curMapOrg.Y + viewMap.Y, viewPtn.Index);
+            this.PaintMap(_curMapOrg.X + _viewMap.X, _curMapOrg.Y + _viewMap.Y, _viewPtn.Index);
             this.UpdateMap(refresh: true);
         }
         private void contextMap_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewMap.SelectedRect;
+            Rectangle r = _viewMap.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected map tiles
                 int src = _dataSource.GetMapData(_curMapOrg.X + col, _curMapOrg.Y + r.Y);
                 _dataSource.SetMapData(_curMapOrg.X + col, _curMapOrg.Y + row, src, push: false);
             };
-            viewMap.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            _viewMap.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.UpdateMap(refresh: true);
         }
         private void contextMap_copyRight(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
-            Rectangle r = viewMap.SelectedRect;
+            Rectangle r = _viewMap.SelectedRect;
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected map tiles
                 int src = _dataSource.GetMapData(_curMapOrg.X + r.X, _curMapOrg.Y + row);
                 _dataSource.SetMapData(_curMapOrg.X + col, _curMapOrg.Y + row, src, push: false);
             };
-            viewMap.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            _viewMap.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateMap(refresh: true);
         }
         private void panelMap_DragEnter(object sender, DragEventArgs e)
@@ -475,8 +475,8 @@ namespace _99x8Edit
             if (e.Data.GetDataPresent(typeof(DnDPattern)))
             {
                 // Map pattern has been dropped
-                (int col, int row) = viewMap.ScreenCoordinateToSelection(Cursor.Position);
-                _dataSource.SetMapData(col, row, viewPtn.Index, push: true);
+                (int col, int row) = _viewMap.ScreenCoordinateToSelection(Cursor.Position);
+                _dataSource.SetMapData(col, row, _viewPtn.Index, push: true);
                 this.UpdateMap(refresh: true);
             }
         }
@@ -485,27 +485,27 @@ namespace _99x8Edit
         private void btnLeft_Click(object sender, EventArgs e)
         {
             // Scrolling map leftward
-            _curMapOrg.X = Math.Max(_curMapOrg.X - viewMap.SelectionColNum, 0);
+            _curMapOrg.X = Math.Max(_curMapOrg.X - _viewMap.SelectionColNum, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnRight_Click(object sender, EventArgs e)
         {
             // Scrolling map rightward
-            _curMapOrg.X = Math.Min(_curMapOrg.X + viewMap.SelectionColNum,
-                                   _dataSource.MapWidth - viewMap.SelectionColNum);
+            _curMapOrg.X = Math.Min(_curMapOrg.X + _viewMap.SelectionColNum,
+                                   _dataSource.MapWidth - _viewMap.SelectionColNum);
             this.UpdateMap(refresh: true);
         }
         private void btnUp_Click(object sender, EventArgs e)
         {
             // Scrolling map upward
-            _curMapOrg.Y = Math.Max(_curMapOrg.Y - viewMap.SelectionRowNum, 0);
+            _curMapOrg.Y = Math.Max(_curMapOrg.Y - _viewMap.SelectionRowNum, 0);
             this.UpdateMap(refresh: true);
         }
         private void btnDown_Click(object sender, EventArgs e)
         {
             // Scrolling map downward
-            _curMapOrg.Y = Math.Min(_curMapOrg.Y + viewMap.SelectionRowNum,
-                                   _dataSource.MapHeight - viewMap.SelectionRowNum);
+            _curMapOrg.Y = Math.Min(_curMapOrg.Y + _viewMap.SelectionRowNum,
+                                   _dataSource.MapHeight - _viewMap.SelectionRowNum);
             this.UpdateMap(refresh: true);
         }
         private void btnMapSize_Click(object sender, EventArgs e)
@@ -516,12 +516,12 @@ namespace _99x8Edit
             {
                 _dataSource.MapWidth = dlg.MapWidth;
                 _dataSource.MapHeight = dlg.MapHeight;
-                txtMapX.Text = (_curMapOrg.X = 0).ToString();
-                txtMapY.Text = (_curMapOrg.Y = 0).ToString();
-                btnLeft.Enabled = false;
-                btnRight.Enabled = (_dataSource.MapWidth > viewMap.SelectionColNum);
-                btnUp.Enabled = false;
-                btnDown.Enabled = (_dataSource.MapHeight > viewMap.SelectionRowNum);
+                _txtMapX.Text = (_curMapOrg.X = 0).ToString();
+                _txtMapY.Text = (_curMapOrg.Y = 0).ToString();
+                _btnLeft.Enabled = false;
+                _btnRight.Enabled = (_dataSource.MapWidth > _viewMap.SelectionColNum);
+                _btnUp.Enabled = false;
+                _btnDown.Enabled = (_dataSource.MapHeight > _viewMap.SelectionRowNum);
                 this.RefreshAllViews();     // Everything changes
             }
         }

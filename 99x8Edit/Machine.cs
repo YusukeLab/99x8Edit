@@ -48,8 +48,11 @@ namespace _99x8Edit
         internal void SetToDefault()
         {
             // Pattern generator, color, name table
-            _ptnGen = Properties.Resources.gentable;
-            for (int i = 0; i < 256 * 8; ++i)
+            byte[] resource = Properties.Resources.gentable;
+            Array.Copy(resource, _ptnGen, 256 * 8);
+            Array.Copy(resource, 0, _ptnGen, 256 * 8, 256 * 8);
+            Array.Copy(resource, 0, _ptnGen, 512 * 8, 256 * 8);
+            for (int i = 0; i < 768 * 8; ++i)
             {
                 _ptnClr[i] = 0xF0;
             }
@@ -200,7 +203,6 @@ namespace _99x8Edit
                 Palette = _colorOf        // Import with current palette(temp)
             };
             i.ImportPCG(filename, type, this);
-            Array.Clear(_nameTable, index: 0, length: 768);
             this.UpdateAllViewItems();
         }
         internal void ImportSprite(String filename, int type)
@@ -438,7 +440,11 @@ namespace _99x8Edit
         internal bool HasThreeBanks
         {
             get => _hasThreeBanks;
-            set => _hasThreeBanks = value;
+        }
+        internal void SetThreeBanks(bool val, bool push)
+        {
+            if(push) MementoCaretaker.Instance.Push();
+            _hasThreeBanks = val;
         }
         internal Bitmap GetBitmapOfPCG(int pcg)
         {
@@ -596,6 +602,7 @@ namespace _99x8Edit
         internal void SetNameTable(int addr, int data, bool push)
         {
             addr = Math.Clamp(addr, 0, 767);
+            data = Math.Clamp(addr, 0, 255);
             if (push)
             {
                 MementoCaretaker.Instance.Push();

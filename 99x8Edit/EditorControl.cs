@@ -39,9 +39,9 @@ namespace _99x8Edit
         public event EventHandler<AddKeyEventArgs> AddKeyPressed;
         //--------------------------------------------------------------------
         // Methods and properties for hosts
-        public void SetBrush(Brush b, int col, int row)
+        public void SetEditingDot(Brush b, int col, int row)
         {
-            // Set brush to not to be created everytime
+            // Set brush to not to be created every time
             _brush ??= new Brush[ColumnNum, RowNum];
             _brush[col, row] = b;
             _updated = true;

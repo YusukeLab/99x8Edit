@@ -29,36 +29,39 @@ namespace _99x8Edit
         /// </summary>
         private void InitializeComponent()
         {
-            this.viewPalette = new _99x8Edit.MatrixControl();
+            this._viewPalette = new _99x8Edit.MatrixControl();
             this.SuspendLayout();
             // 
-            // viewPalette
+            // _viewPalette
             // 
-            this.viewPalette.AllowMultipleSelection = false;
-            this.viewPalette.AllowSubSelection = false;
-            this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.viewPalette.CellHeight = 32;
-            this.viewPalette.CellWidth = 32;
-            this.viewPalette.ColumnNum = 8;
-            this.viewPalette.DrawOverlayedSelection = false;
-            this.viewPalette.DrawTranparentColor = true;
-            this.viewPalette.Location = new System.Drawing.Point(-1, -1);
-            this.viewPalette.Name = "viewPalette";
-            this.viewPalette.RowNum = 2;
-            this.viewPalette.SelectionHeight = 1;
-            this.viewPalette.SelectionWidth = 1;
-            this.viewPalette.Size = new System.Drawing.Size(258, 66);
-            this.viewPalette.TabIndex = 38;
-            this.viewPalette.X = 0;
-            this.viewPalette.Y = 0;
-            this.viewPalette.CellOnEdit += new System.EventHandler<MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
-            this.viewPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDown);
+            this._viewPalette.AllowMultipleSelection = false;
+            this._viewPalette.AllowOneStrokeEditing = false;
+            this._viewPalette.AllowSelection = true;
+            this._viewPalette.AllowSubSelection = false;
+            this._viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._viewPalette.CellHeight = 32;
+            this._viewPalette.CellWidth = 32;
+            this._viewPalette.ColumnNum = 8;
+            this._viewPalette.DrawOverlayedSelection = false;
+            this._viewPalette.DrawTranparentColor = true;
+            this._viewPalette.Index = 0;
+            this._viewPalette.Location = new System.Drawing.Point(-1, -1);
+            this._viewPalette.Name = "_viewPalette";
+            this._viewPalette.RowNum = 2;
+            this._viewPalette.SelectionHeight = 1;
+            this._viewPalette.SelectionWidth = 1;
+            this._viewPalette.Size = new System.Drawing.Size(258, 66);
+            this._viewPalette.TabIndex = 38;
+            this._viewPalette.X = 0;
+            this._viewPalette.Y = 0;
+            this._viewPalette.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewPalette_CellOnEdit);
+            this._viewPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.viewPalette_MouseDown);
             // 
             // PaletteSelector
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(256, 64);
-            this.Controls.Add(this.viewPalette);
+            this.Controls.Add(this._viewPalette);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteSelector";
             this.ShowInTaskbar = false;
@@ -70,6 +73,6 @@ namespace _99x8Edit
 
         #endregion
 
-        private MatrixControl viewPalette;
+        private MatrixControl _viewPalette;
     }
 }

@@ -25,7 +25,7 @@ namespace _99x8Edit
             InitializeComponent();
             _reader = new BinaryReader(new FileStream(filename, FileMode.Open));
             base.Text = "Peek - " + Path.GetFileName(filename);
-            toolStripCopy.Click += contextPeek_copy;
+            _toolStripCopy.Click += contextPeek_copy;
             RefreshAllViews();
         }
         private void Peek_FormClosing(object sender, FormClosingEventArgs e)
@@ -60,8 +60,8 @@ namespace _99x8Edit
         {
             this.UpdatePeek();
             this.UpdateAddr();
-            btnLinear.Checked = (_type == PeekType.Linear);
-            btnSprites.Checked = (_type == PeekType.Sprite);
+            _btnLinear.Checked = (_type == PeekType.Linear);
+            _btnSprites.Checked = (_type == PeekType.Sprite);
         }
         private void UpdatePeek()
         {
@@ -74,7 +74,7 @@ namespace _99x8Edit
                     _bmps[col, row] ??= new Bitmap(8, 8);
                     Graphics g = Graphics.FromImage(_bmps[col, row]);
                     g.Clear(Color.Gray);
-                    viewPeek.SetImage(_bmps[col, row], col, row);
+                    _viewPeek.SetImage(_bmps[col, row], col, row);
                 }
             }
             for(int i = 0; i < 8192 && i < length_left; ++i)
@@ -92,16 +92,16 @@ namespace _99x8Edit
                     }
                 }
             }
-            viewPeek.Refresh();
+            _viewPeek.Refresh();
         }
         private void UpdateAddr()
         {
-            btnUp.Enabled = (_seekAddr > 0);
-            btnDown.Enabled = (_seekAddr < _reader.BaseStream.Length - 2);
+            _btnUp.Enabled = (_seekAddr > 0);
+            _btnDown.Enabled = (_seekAddr < _reader.BaseStream.Length - 2);
             {
-                btnUp.Enabled = true;
+                _btnUp.Enabled = true;
             }
-            txtAddr.Text = _seekAddr.ToString("x6");
+            _txtAddr.Text = _seekAddr.ToString("x6");
         }
         //----------------------------------------------------------------------
         // Controls
@@ -109,7 +109,7 @@ namespace _99x8Edit
         {
             ClipPeekedData clip = new ClipPeekedData();
             // Copy selected sprites
-            Rectangle r = viewPeek.SelectedRect;
+            Rectangle r = _viewPeek.SelectedRect;
             // 16x16 Selection to 8x8 cell index
             r.X *= 2;
             r.Y *= 2;
@@ -158,7 +158,7 @@ namespace _99x8Edit
         {
             // Address edited
             long validated_addr = 0;
-            if(long.TryParse(txtAddr.Text,
+            if(long.TryParse(_txtAddr.Text,
                              System.Globalization.NumberStyles.HexNumber,
                              null,
                              out long input_addr))
@@ -168,7 +168,7 @@ namespace _99x8Edit
                     validated_addr = input_addr;
                 }
             }
-            txtAddr.Text = validated_addr.ToString("x6");
+            _txtAddr.Text = validated_addr.ToString("x6");
             _seekAddr = validated_addr;
             this.RefreshAllViews();
         }
@@ -185,13 +185,13 @@ namespace _99x8Edit
         private void btnLinear_Click(object sender, EventArgs e)
         {
             _type = PeekType.Linear;
-            btnSprites.Checked = false;
+            _btnSprites.Checked = false;
             this.RefreshAllViews();
         }
         private void btnSprites_Click(object sender, EventArgs e)
         {
             _type = PeekType.Sprite;
-            btnLinear.Checked = false;
+            _btnLinear.Checked = false;
             this.RefreshAllViews();
         }
         //----------------------------------------------------------------------

@@ -22,6 +22,7 @@ namespace _99x8Edit
         {
             // Initialize VDP settings
             _dataSource = new Machine();
+            _dataSource.SetToDefault();
             // Check drag and drop of project file
             bool project_loaded = false;
             String[] args = Environment.GetCommandLineArgs();
@@ -107,8 +108,8 @@ namespace _99x8Edit
         internal void MementoStateChanged()
         {
             // For MementoCaretaker
-            btnUndo.Enabled = MementoCaretaker.Instance.UndoEnable;
-            btnRedo.Enabled = MementoCaretaker.Instance.RedoEnable;
+            _btnUndo.Enabled = MementoCaretaker.Instance.UndoEnable;
+            _btnRedo.Enabled = MementoCaretaker.Instance.RedoEnable;
         }
         //----------------------------------------------------------------------
         // Controls

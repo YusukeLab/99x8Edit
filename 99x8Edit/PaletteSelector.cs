@@ -14,10 +14,10 @@ namespace _99x8Edit
             for (int i = 1; i < 16; ++i)
             {
                 Color c = source.ColorOf(i);
-                viewPalette.SetBackgroundColor(c, i % viewPalette.ColumnNum,
-                                               i / viewPalette.ColumnNum);
+                _viewPalette.SetBackgroundColor(c, i % _viewPalette.ColumnNum,
+                                               i / _viewPalette.ColumnNum);
             }
-            viewPalette.Index = previous;
+            _viewPalette.Index = previous;
             _colorSelected = callback;
         }
         private void PaletteSelector_Deactivate(object sender, EventArgs e)
@@ -26,13 +26,13 @@ namespace _99x8Edit
         }
         private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
-            int color = viewPalette.Index;
+            int color = _viewPalette.Index;
             _colorSelected?.Invoke(color);
             this.Dispose();
         }
         private void viewPalette_MouseDown(object sender, MouseEventArgs e)
         {
-            int color = viewPalette.Index;
+            int color = _viewPalette.Index;
             _colorSelected?.Invoke(color);
             this.Dispose();
         }

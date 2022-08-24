@@ -32,9 +32,9 @@ namespace _99x8Edit
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtW = new System.Windows.Forms.TextBox();
+            this._txtW = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtH = new System.Windows.Forms.TextBox();
+            this._txtH = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -69,14 +69,14 @@ namespace _99x8Edit
             this.label1.TabIndex = 2;
             this.label1.Text = "Map width";
             // 
-            // txtW
+            // _txtW
             // 
-            this.txtW.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtW.Location = new System.Drawing.Point(119, 14);
-            this.txtW.Name = "txtW";
-            this.txtW.Size = new System.Drawing.Size(74, 27);
-            this.txtW.TabIndex = 3;
-            this.txtW.Leave += new System.EventHandler(this.txtW_Leave);
+            this._txtW.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this._txtW.Location = new System.Drawing.Point(119, 14);
+            this._txtW.Name = "_txtW";
+            this._txtW.Size = new System.Drawing.Size(74, 27);
+            this._txtW.TabIndex = 3;
+            this._txtW.Leave += new System.EventHandler(this.txtW_Leave);
             // 
             // label2
             // 
@@ -88,22 +88,22 @@ namespace _99x8Edit
             this.label2.TabIndex = 4;
             this.label2.Text = "Map height";
             // 
-            // txtH
+            // _txtH
             // 
-            this.txtH.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtH.Location = new System.Drawing.Point(119, 58);
-            this.txtH.Name = "txtH";
-            this.txtH.Size = new System.Drawing.Size(74, 27);
-            this.txtH.TabIndex = 5;
-            this.txtH.Leave += new System.EventHandler(this.txtH_Leave);
+            this._txtH.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this._txtH.Location = new System.Drawing.Point(119, 58);
+            this._txtH.Name = "_txtH";
+            this._txtH.Size = new System.Drawing.Size(74, 27);
+            this._txtH.TabIndex = 5;
+            this._txtH.Leave += new System.EventHandler(this.txtH_Leave);
             // 
             // MapSize
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(232, 144);
-            this.Controls.Add(this.txtH);
+            this.Controls.Add(this._txtH);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtW);
+            this.Controls.Add(this._txtW);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -125,8 +125,8 @@ namespace _99x8Edit
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtW;
+        private System.Windows.Forms.TextBox _txtW;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtH;
+        private System.Windows.Forms.TextBox _txtH;
     }
 }

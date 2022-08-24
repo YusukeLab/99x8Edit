@@ -23,8 +23,8 @@ namespace _99x8Edit
         {
             InitializeComponent();
             _dataSource = src;
-            viewColor.Image = _bmpColorList;
-            viewPalette.Image = _bmpPalette;
+            _viewColor.Image = _bmpColorList;
+            _viewPalette.Image = _bmpPalette;
             // Make list of the elements of OR colors
             for (int i = 1; i < 16; ++i)
             {
@@ -99,7 +99,7 @@ namespace _99x8Edit
                     ++row;
                 }
             }
-            viewColor.Refresh();
+            _viewColor.Refresh();
         }
         private void UpdatePaletteView()
         {
@@ -114,7 +114,7 @@ namespace _99x8Edit
             int x = _currentFilter % 8 * 32;
             int y = _currentFilter / 8 * 32;
             Utility.DrawSelection(g, x, y, 31, 31, true);
-            viewPalette.Refresh();
+            _viewPalette.Refresh();
         }
         private void viewPalette_MouseMove(object sender, MouseEventArgs e)
         {
