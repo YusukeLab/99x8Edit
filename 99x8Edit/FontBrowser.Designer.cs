@@ -125,8 +125,8 @@ namespace _99x8Edit
             this._textBox.Name = "_textBox";
             this._textBox.Size = new System.Drawing.Size(514, 65);
             this._textBox.TabIndex = 36;
-            this._textBox.Text = "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_{|}~abcdefghijklmn" +
-    "opqrstuvwxyz";
+            this._textBox.Text = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnop" +
+    "qrstuvwxyz{|}~";
             this._textBox.TextChanged += new System.EventHandler(this._textBox_TextChanged);
             // 
             // label2
