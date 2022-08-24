@@ -47,9 +47,15 @@ namespace _99x8Edit
             this.label6 = new System.Windows.Forms.Label();
             this._colorPreview = new _99x8Edit.EditorControl();
             this._bold = new System.Windows.Forms.CheckBox();
+            this._xoffset = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this._yoffset = new System.Windows.Forms.NumericUpDown();
             this.contextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._fontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._density)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._xoffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._yoffset)).BeginInit();
             this.SuspendLayout();
             // 
             // _fontList
@@ -284,11 +290,69 @@ namespace _99x8Edit
             this._bold.UseVisualStyleBackColor = true;
             this._bold.CheckedChanged += new System.EventHandler(this._bold_CheckedChanged);
             // 
+            // _xoffset
+            // 
+            this._xoffset.Location = new System.Drawing.Point(229, 376);
+            this._xoffset.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this._xoffset.Minimum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            -2147483648});
+            this._xoffset.Name = "_xoffset";
+            this._xoffset.Size = new System.Drawing.Size(62, 27);
+            this._xoffset.TabIndex = 48;
+            this._xoffset.ValueChanged += new System.EventHandler(this._offset_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(224, 353);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(61, 20);
+            this.label7.TabIndex = 49;
+            this.label7.Text = "X Offset";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(302, 353);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(60, 20);
+            this.label8.TabIndex = 51;
+            this.label8.Text = "Y Offset";
+            // 
+            // _yoffset
+            // 
+            this._yoffset.Location = new System.Drawing.Point(307, 376);
+            this._yoffset.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this._yoffset.Minimum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            -2147483648});
+            this._yoffset.Name = "_yoffset";
+            this._yoffset.Size = new System.Drawing.Size(62, 27);
+            this._yoffset.TabIndex = 50;
+            this._yoffset.ValueChanged += new System.EventHandler(this._offset_ValueChanged);
+            // 
             // FontBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 495);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this._yoffset);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this._xoffset);
             this.Controls.Add(this._bold);
             this.Controls.Add(this._colorPreview);
             this.Controls.Add(this.label6);
@@ -314,6 +378,8 @@ namespace _99x8Edit
             this.contextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._fontSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._density)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._xoffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._yoffset)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -338,5 +404,9 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem toolStripCopy;
         private EditorControl _colorPreview;
         private System.Windows.Forms.CheckBox _bold;
+        private System.Windows.Forms.NumericUpDown _xoffset;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown _yoffset;
     }
 }

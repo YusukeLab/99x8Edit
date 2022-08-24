@@ -100,7 +100,9 @@ namespace _99x8Edit
             if (_bold.Checked) style |= FontStyle.Bold;
             using Font fnt = new Font(name, size, style, GraphicsUnit.Pixel);
             // Region
-            Rectangle r = new Rectangle(0, 0, 8, 8);
+            int xoffset = Decimal.ToInt32(_xoffset.Value);
+            int yoffset = Decimal.ToInt32(_yoffset.Value);
+            Rectangle r = new Rectangle(xoffset, yoffset, 16, 16);
             // Threshold to draw
             int threshold = 256 - Decimal.ToInt32(_density.Value);
             for (int i = 0; i < len; ++i)
@@ -119,7 +121,7 @@ namespace _99x8Edit
                 char chr = _textBox.Text[i];
                 Graphics g = Graphics.FromImage(bmp);
                 g.Clear(Color.Black);
-                TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.Bottom;
+                TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.Top;
                 TextRenderer.DrawText(g, chr.ToString(), fnt, r, Color.White, flags);
                 for (int y = 0; y < 8; ++y)
                 {
@@ -135,7 +137,7 @@ namespace _99x8Edit
                         }
                         else
                         {
-                            bmp.SetPixel(x, y, Color.Transparent);
+                            bmp.SetPixel(x, y, Color.Black);
                         }
                     }
                 }
@@ -229,6 +231,10 @@ namespace _99x8Edit
             this.RefreshAllViews();
         }
         private void _bold_CheckedChanged(object sender, EventArgs e)
+        {
+            this.RefreshAllViews();
+        }
+        private void _offset_ValueChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
         }
