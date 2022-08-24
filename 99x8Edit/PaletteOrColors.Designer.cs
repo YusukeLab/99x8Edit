@@ -75,13 +75,13 @@ namespace _99x8Edit
             // 
             // PaletteOrColors
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(678, 628);
             this.Controls.Add(this._viewPalette);
             this.Controls.Add(this.label2);
             this.Controls.Add(this._viewColor);
             this.Controls.Add(this.label1);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "PaletteOrColors";
             this.Text = "PaletteOrColors";
