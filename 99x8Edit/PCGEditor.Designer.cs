@@ -568,7 +568,7 @@ namespace _99x8Edit
             this._viewSand.ColumnNum = 32;
             this._viewSand.ContextMenuStrip = this._contextSandbox;
             this._viewSand.DrawOverlayedSelection = false;
-            this._viewSand.DrawTranparentColor = false;
+            this._viewSand.DrawTransparentColor = false;
             this._viewSand.Index = 0;
             this._viewSand.Location = new System.Drawing.Point(301, 227);
             this._viewSand.Name = "_viewSand";
@@ -596,7 +596,7 @@ namespace _99x8Edit
             this._viewPCG.ColumnNum = 32;
             this._viewPCG.ContextMenuStrip = this._contextPCG;
             this._viewPCG.DrawOverlayedSelection = false;
-            this._viewPCG.DrawTranparentColor = false;
+            this._viewPCG.DrawTransparentColor = false;
             this._viewPCG.Index = 0;
             this._viewPCG.Location = new System.Drawing.Point(301, 66);
             this._viewPCG.Name = "_viewPCG";
@@ -626,7 +626,7 @@ namespace _99x8Edit
             this._viewEdit.ColumnNum = 16;
             this._viewEdit.ContextMenuStrip = this._contextEditor;
             this._viewEdit.DrawOverlayedSelection = false;
-            this._viewEdit.DrawTranparentColor = true;
+            this._viewEdit.DrawTransparentColor = true;
             this._viewEdit.Index = 0;
             this._viewEdit.Location = new System.Drawing.Point(14, 61);
             this._viewEdit.Name = "_viewEdit";
@@ -652,7 +652,7 @@ namespace _99x8Edit
             this._viewColor.CellWidth = 32;
             this._viewColor.ColumnNum = 2;
             this._viewColor.DrawOverlayedSelection = false;
-            this._viewColor.DrawTranparentColor = true;
+            this._viewColor.DrawTransparentColor = true;
             this._viewColor.Index = 0;
             this._viewColor.Location = new System.Drawing.Point(14, 358);
             this._viewColor.Name = "_viewColor";
@@ -676,7 +676,7 @@ namespace _99x8Edit
             this._viewPalette.CellWidth = 32;
             this._viewPalette.ColumnNum = 8;
             this._viewPalette.DrawOverlayedSelection = false;
-            this._viewPalette.DrawTranparentColor = true;
+            this._viewPalette.DrawTransparentColor = true;
             this._viewPalette.Index = 0;
             this._viewPalette.Location = new System.Drawing.Point(13, 550);
             this._viewPalette.Name = "_viewPalette";

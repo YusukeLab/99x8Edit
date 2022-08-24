@@ -40,9 +40,9 @@ namespace _99x8Edit
             List<byte> outputData = new List<byte>();
             int current_data = -1;
             int count = 0;
-            for (int i = 0; i < source.Length; ++i)
+            foreach (byte dat in source)
             {
-                if (source[i] != current_data)
+                if (dat != current_data)
                 {
                     if (count > 0)                      // New type of data started
                     {
@@ -54,7 +54,7 @@ namespace _99x8Edit
                         outputData.Add((byte)current_data);
                     }
                     count = 1;
-                    current_data = source[i];
+                    current_data = dat;
                 }
                 else
                 {
@@ -115,19 +115,19 @@ namespace _99x8Edit
                 // Search unused value
                 int unused = Array.IndexOf(chr_used, 0);
                 // Search most frequent byte pairs
-                int bestcount = pairs_count.Values.Max();
-                int bestpair = pairs_count.FirstOrDefault(c => c.Value == bestcount).Key;
+                int best_count = pairs_count.Values.Max();
+                int best_pair = pairs_count.FirstOrDefault(c => c.Value == best_count).Key;
                 // If there are enough pairs and unused value, compress
-                if ((bestcount < threshold ) || (unused == -1))
+                if ((best_count < threshold ) || (unused == -1))
                 {
                     break;  // End compression
                 }
-                pair_table.Add((byte)unused, bestpair);
+                pair_table.Add((byte)unused, best_pair);
                 // Replace the most frequent pairs to unused value
                 int buffer_read_index = 0;
                 int buffer_write_index = 0;
-                int best_left = bestpair >> 8;
-                int best_right = bestpair & 0xFF;
+                int best_left = best_pair >> 8;
+                int best_right = best_pair & 0xFF;
                 while (buffer_read_index < compressed_size)
                 {
                     if(buffer_read_index < compressed_size - 1)

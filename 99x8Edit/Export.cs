@@ -12,7 +12,7 @@ namespace _99x8Edit
         internal bool HasThreeBanks { get; }
         internal byte[] PltDat { get; }
         internal bool Is9918 { get; }
-        internal byte[] MapPattern { get; }    // One pattern mede by four characters
+        internal byte[] MapPattern { get; }    // One pattern made by four characters
         internal byte[,] MapData { get; }      // Map data[x, y](0..255)
         internal Int32 MapWidth { get; }
         internal Int32 MapHeight { get; }
@@ -92,8 +92,8 @@ namespace _99x8Edit
             RawCompressed_Pattern,
             RawCompressed_Map,
         };
-        // Data to be exported, to be set by host
-        private IExportable _src;
+        // Data to be exported
+        private readonly IExportable _src;
         //------------------------------------------------------------------------
         // Initialize
         public Export(IExportable src)
@@ -627,7 +627,7 @@ namespace _99x8Edit
                 byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(src_partial);
                 for (int i = 0; i < comp.Length; ++i)
                 {
-                    if (i % 16 == 0) ret += $"\tdb\t";
+                    if (i % 16 == 0) ret += "\tdb\t";
                     ret += $"{comp[i]}";
                     if (i % 16 == 15) ret += "\r\n";
                     else ret += ", ";

@@ -162,7 +162,7 @@ namespace _99x8Edit
         } = false;
         [Browsable(true)]
         [Description("Draw transparent color for background")]
-        public bool DrawTranparentColor
+        public bool DrawTransparentColor
         {
             get;
             set;
@@ -177,14 +177,11 @@ namespace _99x8Edit
         public event EventHandler<EventArgs> CellDragStart;
         public class EditEventArgs : EventArgs
         {
-            private bool _shouldPush;
-
             public EditEventArgs(bool should_push)
             {
-                _shouldPush = should_push;
+                ShouldPush = should_push;
             }
-
-            public bool ShouldPush => _shouldPush;
+            public bool ShouldPush { get; }
         }
         [Browsable(true)]
         [Description("Called when a cell was going to be edited")]
@@ -235,7 +232,7 @@ namespace _99x8Edit
         [Browsable(false)]
         public int Index
         {
-            // Get linear index of selecion
+            // Get linear index of selection
             get => _selection.Y * SelectionColNum + _selection.X;
             set
             {
@@ -361,7 +358,7 @@ namespace _99x8Edit
                 // If something has been changed, redraw the buffer
                 Graphics g = Graphics.FromImage(_bmp);
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                if (DrawTranparentColor)
+                if (DrawTransparentColor)
                 {
                     Utility.DrawTransparent(_bmp);
                 }
@@ -433,12 +430,12 @@ namespace _99x8Edit
             this.Focus();
             if (e.Button == MouseButtons.Left)
             {
-                // Coodinate to selection col/row
+                // Coordinate to selection col/row
                 int clicked_selection_x = Math.Min(e.X / (_cellWidth * _selectionWidth),
                                                    _columnNum / _selectionWidth - 1);
                 int clicked_selection_y = Math.Min(e.Y / (_cellHeight * _selectionHeight),
                                                    _rowNum / _selectionHeight - 1);
-                // Coodinato to sub selection col/row
+                // Coordinate to sub selection col/row
                 int clicked__sub_x = Math.Min((e.X / _cellWidth) % _selectionWidth,
                                               _selectionWidth - 1);
                 int clicked__sub_y = Math.Min((e.Y / _cellHeight) % _selectionHeight,
@@ -459,7 +456,7 @@ namespace _99x8Edit
                         _selection.X = clicked_selection_x;
                         _selection.Y = clicked_selection_y;
                         // For host
-                        SelectionChanged?.Invoke(this, new EventArgs());
+                        SelectionChanged?.Invoke(this, EventArgs.Empty);
                     }
                     // Move sub selection
                     _sub.X = clicked__sub_x;
@@ -481,7 +478,7 @@ namespace _99x8Edit
                     // Cell edited
                     this.InvokeOnEdit(should_push: true);
                     // Cell to be dragged
-                    CellDragStart?.Invoke(this, new EventArgs());
+                    CellDragStart?.Invoke(this, EventArgs.Empty);
                     if(AllowOneStrokeEditing)
                     {
                         this.DoDragDrop(new DragEditing(this), DragDropEffects.Copy);
@@ -543,7 +540,7 @@ namespace _99x8Edit
                     _updated = true;
                     this.Refresh();
                     // Selection changed
-                    SelectionChanged?.Invoke(this, new EventArgs());
+                    SelectionChanged?.Invoke(this, EventArgs.Empty);
                     // Cell edited
                     this.InvokeOnEdit(should_push: false);
                 }
@@ -611,7 +608,7 @@ namespace _99x8Edit
                             _selection.Y--;
                             _sub.Y = _selectionHeight - 1;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else if (_sub.Y > 0)
@@ -629,7 +626,7 @@ namespace _99x8Edit
                             // Selection upward
                             _selection.Y--;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else
@@ -658,7 +655,7 @@ namespace _99x8Edit
                             _selection.Y++;
                             _sub.Y = 0;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else if (_sub.Y < _selectionHeight - 1)
@@ -674,7 +671,7 @@ namespace _99x8Edit
                         {
                             _selection.Y++;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else
@@ -701,7 +698,7 @@ namespace _99x8Edit
                             _selection.X--;
                             _sub.X = _selectionWidth - 1;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else if (_sub.X > 0)
@@ -717,7 +714,7 @@ namespace _99x8Edit
                         {
                             _selection.X--;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else
@@ -745,7 +742,7 @@ namespace _99x8Edit
                             _selection.X++;
                             _sub.X = 0;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else if (_sub.X < _selectionWidth - 1)
@@ -761,7 +758,7 @@ namespace _99x8Edit
                         {
                             _selection.X++;
                             _updated = true;
-                            SelectionChanged?.Invoke(this, new EventArgs());
+                            SelectionChanged?.Invoke(this, EventArgs.Empty);
                             this.Refresh();
                         }
                         else
@@ -799,10 +796,6 @@ namespace _99x8Edit
             public void Remove(Keys key)
             {
                 _pressed.Remove(key);
-            }
-            public void Clear()
-            {
-                _pressed.Clear();
             }
             public bool IsPressed(Keys key)
             {

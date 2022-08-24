@@ -32,7 +32,7 @@ namespace _99x8Edit
                 {
                     if (i == j)
                     {
-                        // Igonore the same pair
+                        // Ignore the same pair
                         continue;
                     }
                     int key = i << 4 | j;

@@ -191,11 +191,14 @@ namespace _99x8Edit
                         for (int j = 0; j < 8; ++j)
                         {
                             // For each pixels
-                            Color c = bmp.GetPixel(j, i);
-                            if (c.R > 0)
+                            if (bmp != null)
                             {
-                                byte bit = (byte)(1 << (7 - j));
-                                gen[i] |= bit;
+                                Color c = bmp.GetPixel(j, i);
+                                if (c.R > 0)
+                                {
+                                    byte bit = (byte)(1 << (7 - j));
+                                    gen[i] |= bit;
+                                }
                             }
                         }
                         color[i] = (byte)(_colorCode[i] << 4);

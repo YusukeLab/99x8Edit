@@ -25,7 +25,7 @@ namespace _99x8Edit
         private int _tx;                // Multiple selection to
         private int _ty;
         private Rectangle _selection;   // Selected cols and rows
-        private Rectangle _display;     // Selection on display coodinate
+        private Rectangle _display;     // Selection on display coordinate
         public Selection(int cell_width, int cell_height)
         {
             // Width and height are for calculating coordinates
@@ -72,7 +72,7 @@ namespace _99x8Edit
         public Rectangle Selected => _selection;
         // Coordinates in one control
         internal Rectangle Display => _display;
-        // Coodinates in whole screen
+        // Coordinates in whole screen
         internal Rectangle GetScreenPos(Control c)
         {
             Point p = new Point(_display.X, _display.Y);

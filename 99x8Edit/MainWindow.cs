@@ -252,21 +252,18 @@ namespace _99x8Edit
         }
         private void btnPeek_Click(object sender, EventArgs e)
         {
-            if (_peekWin != null)
+            if (_peekWin is { IsDisposed: false })
             {
-                if (_peekWin.IsDisposed == false)
+                if (_peekWin.Visible)
                 {
-                    if (_peekWin.Visible)
-                    {
-                        _peekWin.Hide();
-                    }
-                    else
-                    {
-                        _peekWin.Show();
-                        _peekWin.BringToFront();
-                    }
-                    return;
+                    _peekWin.Hide();
                 }
+                else
+                {
+                    _peekWin.Show();
+                    _peekWin.BringToFront();
+                }
+                return;
             }
             // Create window
             string dir = Config.Setting.PeekDirectory;
@@ -289,16 +286,11 @@ namespace _99x8Edit
         }
         private void btnAbout_Click(object sender, EventArgs e)
         {
-            if (_aboutWin != null)
+            _aboutWin ??= new About();
+            if (_aboutWin.IsDisposed)
             {
-                if (_aboutWin.IsDisposed == false)
-                {
-                    _aboutWin.Show();
-                    _aboutWin.BringToFront();
-                    return;
-                }
+                _aboutWin = new About();
             }
-            _aboutWin = new About();
             _aboutWin.Show();
         }
     }

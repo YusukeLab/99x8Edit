@@ -90,7 +90,7 @@ namespace _99x8Edit
             this._actualView.ColumnNum = 32;
             this._actualView.ContextMenuStrip = this.contextMenu;
             this._actualView.DrawOverlayedSelection = false;
-            this._actualView.DrawTranparentColor = false;
+            this._actualView.DrawTransparentColor = false;
             this._actualView.Index = 0;
             this._actualView.Location = new System.Drawing.Point(229, 144);
             this._actualView.Name = "_actualView";
@@ -126,7 +126,7 @@ namespace _99x8Edit
             this._textBox.Size = new System.Drawing.Size(514, 65);
             this._textBox.TabIndex = 36;
             this._textBox.Text = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnop" +
-    "qrstuvwxyz{|}~";
+    "qrstuvwxyz{|}~ ";
             this._textBox.TextChanged += new System.EventHandler(this._textBox_TextChanged);
             // 
             // label2
@@ -233,7 +233,7 @@ namespace _99x8Edit
             this._colorMatrix.CellWidth = 20;
             this._colorMatrix.ColumnNum = 1;
             this._colorMatrix.DrawOverlayedSelection = false;
-            this._colorMatrix.DrawTranparentColor = false;
+            this._colorMatrix.DrawTransparentColor = false;
             this._colorMatrix.Index = 0;
             this._colorMatrix.Location = new System.Drawing.Point(544, 313);
             this._colorMatrix.Name = "_colorMatrix";
@@ -267,7 +267,7 @@ namespace _99x8Edit
             this._colorPreview.CellWidth = 20;
             this._colorPreview.ColumnNum = 8;
             this._colorPreview.DrawOverlayedSelection = false;
-            this._colorPreview.DrawTranparentColor = true;
+            this._colorPreview.DrawTransparentColor = true;
             this._colorPreview.Index = 0;
             this._colorPreview.Location = new System.Drawing.Point(581, 313);
             this._colorPreview.Name = "_colorPreview";

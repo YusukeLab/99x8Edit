@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
 namespace _99x8Edit
 {
@@ -14,7 +14,8 @@ namespace _99x8Edit
         private readonly TabOrder _tabList = new TabOrder();
         private FontBrowser _fontWin;
         // For internal drag control
-        private class DnDPCG : DnDBase {
+        private class DnDPCG : DnDBase
+        {
             internal DnDPCG(Control c) : base(c) { }
             internal ClipPCG Data { get; set; }
         }
@@ -602,10 +603,10 @@ namespace _99x8Edit
         {
             ClipNametable clip = new ClipNametable();
             Rectangle r = _viewSand.SelectedRect;
-            for(int x = r.Y; x < r.Y + r.Height; ++x)
+            for (int x = r.Y; x < r.Y + r.Height; ++x)
             {
                 List<int> l = new List<int>();
-                for(int y = r.X; y < r.X + r.Width; ++y)
+                for (int y = r.X; y < r.X + r.Width; ++y)
                 {
                     // Copy each selected cells
                     int index = _viewSand.IndexOf(y, x);
@@ -850,7 +851,7 @@ namespace _99x8Edit
         }
         private void menu_fileSavePCG(object sender, EventArgs e)
         {
-            if(Utility.SaveDialogAndSave(Config.Setting.PCGFileDirectory,
+            if (Utility.SaveDialogAndSave(Config.Setting.PCGFileDirectory,
                                         "PCG File(*.pcg)|*.pcg",
                                         "Save PCG settings",
                                         _dataSource.SavePCG,
@@ -862,7 +863,7 @@ namespace _99x8Edit
         }
         private void menu_savePalette(object sender, EventArgs e)
         {
-            if(Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
+            if (Utility.SaveDialogAndSave(Config.Setting.PaletteDirectory,
                                         "PLT File(*.plt)|*.plt",
                                         "Save palette",
                                         _dataSource.SavePaletteSettings,
@@ -878,7 +879,7 @@ namespace _99x8Edit
                                          "PLT File(*.plt)|*.plt",
                                          "Load palette",
                                          _dataSource.LoadPaletteSettings,
-                                         push:  true,
+                                         push: true,
                                          out string loaded_filename))
             {
                 Config.Setting.PaletteDirectory = Path.GetDirectoryName(loaded_filename);
@@ -1044,7 +1045,7 @@ namespace _99x8Edit
         private int TargetPCG(int index, int line_x, int line_y)
         {
             return index + (line_y / 8) * _viewPCG.ColumnNum + line_x
-                   +_comboBank.SelectedIndex * 256;
+                   + _comboBank.SelectedIndex * 256;
         }
     }
 }

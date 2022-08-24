@@ -130,7 +130,7 @@ namespace _99x8Edit
             this._viewPeek.ColumnNum = 32;
             this._viewPeek.ContextMenuStrip = this._contextPeek;
             this._viewPeek.DrawOverlayedSelection = false;
-            this._viewPeek.DrawTranparentColor = false;
+            this._viewPeek.DrawTransparentColor = false;
             this._viewPeek.Index = 0;
             this._viewPeek.Location = new System.Drawing.Point(8, 65);
             this._viewPeek.Name = "_viewPeek";

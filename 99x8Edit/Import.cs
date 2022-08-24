@@ -14,7 +14,7 @@ namespace _99x8Edit
         internal bool HasThreeBanks { set; }
         internal byte[] PltDat { set; }
         internal bool Is9918 { set; }
-        internal byte[] MapPattern { set; }    // One pattern mede by four characters
+        internal byte[] MapPattern { set; }    // One pattern made by four characters
         internal byte[,] MapData { set; }      // Map data[x, y](0..255)
         internal Int32 MapWidth { set; }
         internal Int32 MapHeight { set; }
@@ -31,12 +31,12 @@ namespace _99x8Edit
                                                 + "|MSX BSAVE format, color data(*.bin)|*.bin"
                                                 + "|Raw pattern data(*.raw)|*.raw"
                                                 + "|Raw color data(*.raw)|*.raw";
-        enum PCGType
+        internal enum PCGType
         {
             MSXBASIC = 0,
             PNG
         };
-        enum SpriteType
+        internal enum SpriteType
         {
             MSXBASIC = 0,
             MSXBASIC_Color,

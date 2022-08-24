@@ -873,7 +873,7 @@ namespace _99x8Edit
             // check pixel of overlayed sprite
             int index16ov = (index16 + 1) % 64;
             int target_prev_pixel_ov = _dataSource.GetSpritePixel(index16ov, x, y, true);
-            // current_status will be: 0:transparent, 1:first sprite, 2:second sprie, 3:both
+            // current_status will be: 0:transparent, 1:first sprite, 2:second sprite, 3:both
             int current_stat = target_prev_pixel + (target_prev_pixel_ov << 1);
             return current_stat;
         }
@@ -882,7 +882,7 @@ namespace _99x8Edit
             if (push) MementoCaretaker.Instance.Push();
             int index16 = _viewSprite.Index;
             int index16ov = (index16 + 1) % 64;
-            // Updated status is, 0:transparent, 1:first sprite, 2:second sprie, 3:both
+            // Updated status is, 0:transparent, 1:first sprite, 2:second sprite, 3:both
             // set pixel of first sprite when above is 1 or 3
             int pixel = ((val == 1) || (val == 3)) ? 1 : 0;
             _dataSource.SetSpritePixel(index16, x, y, pixel, push: false);

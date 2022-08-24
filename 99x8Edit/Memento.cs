@@ -31,13 +31,12 @@ namespace _99x8Edit
     internal class MementoCaretaker
     {
         // Singleton class for memento management
-        private static readonly MementoCaretaker _instance = new MementoCaretaker();
         private static readonly int _undoCnt = 256;
         private readonly List<IMementoTarget> _targetList = new List<IMementoTarget>();
         private readonly List<Memento> _undoList = new List<Memento>();
         private readonly List<Memento> _redoList = new List<Memento>();
         private Action _stateChanged;
-        internal static MementoCaretaker Instance => _instance;
+        internal static MementoCaretaker Instance { get; } = new MementoCaretaker();
         internal bool UndoEnable
         {
             get;
@@ -51,7 +50,7 @@ namespace _99x8Edit
         // For initialization
         internal void SetCallback(Action callback)
         {
-            // Called when UndoEnable/RndoEnable have changed
+            // Called when UndoEnable/RedoEnable have changed
             _stateChanged = callback;
         }
         internal void AddTarget(IMementoTarget target)
@@ -132,9 +131,9 @@ namespace _99x8Edit
         private Memento CreateCurrentMemento()
         {
             Memento current = new Memento();
-            for (int i = 0; i < _targetList.Count; ++i)
+            foreach (IMementoTarget t in _targetList)
             {
-                current.Add(_targetList[i].CreateCopy());
+                current.Add(t.CreateCopy());
             }
             return current;
         }

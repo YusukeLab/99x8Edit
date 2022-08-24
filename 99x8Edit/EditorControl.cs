@@ -63,7 +63,7 @@ namespace _99x8Edit
             if (_updated)
             {
                 // If something has been changed, redraw the buffer
-                if(this.DrawTranparentColor)
+                if(this.DrawTransparentColor)
                 {
                     Utility.DrawTransparent(_bmp);
                 }

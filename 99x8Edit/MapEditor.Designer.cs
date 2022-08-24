@@ -417,7 +417,7 @@ namespace _99x8Edit
             this._viewPCG.ColumnNum = 32;
             this._viewPCG.ContextMenuStrip = this._contextPCG;
             this._viewPCG.DrawOverlayedSelection = false;
-            this._viewPCG.DrawTranparentColor = false;
+            this._viewPCG.DrawTransparentColor = false;
             this._viewPCG.Index = 0;
             this._viewPCG.Location = new System.Drawing.Point(14, 64);
             this._viewPCG.Name = "_viewPCG";
@@ -458,7 +458,7 @@ namespace _99x8Edit
             this._viewMap.ColumnNum = 32;
             this._viewMap.ContextMenuStrip = this._contextMap;
             this._viewMap.DrawOverlayedSelection = false;
-            this._viewMap.DrawTranparentColor = false;
+            this._viewMap.DrawTransparentColor = false;
             this._viewMap.Index = 0;
             this._viewMap.Location = new System.Drawing.Point(14, 239);
             this._viewMap.Name = "_viewMap";
@@ -486,7 +486,7 @@ namespace _99x8Edit
             this._viewPtn.ColumnNum = 32;
             this._viewPtn.ContextMenuStrip = this._contextPattern;
             this._viewPtn.DrawOverlayedSelection = false;
-            this._viewPtn.DrawTranparentColor = false;
+            this._viewPtn.DrawTransparentColor = false;
             this._viewPtn.Index = 0;
             this._viewPtn.Location = new System.Drawing.Point(579, 65);
             this._viewPtn.Name = "_viewPtn";

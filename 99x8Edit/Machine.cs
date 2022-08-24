@@ -19,20 +19,20 @@ namespace _99x8Edit
         private bool _is9918;
         private bool _hasThreeBanks;
         // Data, of map
-        private byte[] _mapPattern = new byte[256 * 4];  // One pattern mede by four characters
+        private byte[] _mapPattern = new byte[256 * 4];  // One pattern made by four characters
         private byte[,] _mapData = new byte[64, 64];     // Map data[x, y](0..255)
         private Int32 _mapWidth = 64;
         private Int32 _mapHeight = 64;
         // Data, of sprites
         private byte[] _spriteGen = new byte[256 * 8];   // Sprite pattern generator table
-        private byte[] _spriteClr16 = new byte[64];      // Sorute color (for mode 1)
+        private byte[] _spriteClr16 = new byte[64];      // Sprite color (for mode 1)
         private byte[] _spriteClr = new byte[64 * 16];   // Sprite color (mode 2), colors for 16 lines
         private byte[] _spriteOverlay = new byte[64];    // Will overlay next sprite(1) or not(0)
         // View
-        private Bitmap[] _bmpOneChr = new Bitmap[768];       // PCG
-        private Bitmap[] _bmpOneSprite = new Bitmap[256];    // Sprite
-        private Color[] _colorOf = new Color[16];            // Windows color corresponding to color code
-        private Brush[] _brushOf = new Brush[16];
+        private readonly Bitmap[] _bmpOneChr = new Bitmap[768];       // PCG
+        private readonly Bitmap[] _bmpOneSprite = new Bitmap[256];    // Sprite
+        private readonly Color[] _colorOf = new Color[16];   // Windows color corresponding to color code
+        private readonly Brush[] _brushOf = new Brush[16];
         // Consts(For TMS9918 view, we need higher resolution than RGB8)
         private static readonly int[] _palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
                                                        0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
@@ -143,18 +143,18 @@ namespace _99x8Edit
         }
         //--------------------------------------------------------------------
         // For Export
-        byte[] IExportable.PtnGen { get => _ptnGen; }
-        byte[] IExportable.PtnClr { get => _ptnClr; }
-        byte[] IExportable.NameTable { get => _nameTable; }
-        bool IExportable.HasThreeBanks { get => _hasThreeBanks; }
-        byte[] IExportable.PltDat { get => _pltDat; }
-        bool IExportable.Is9918 { get => _is9918; }
-        byte[] IExportable.MapPattern { get => _mapPattern; }
-        byte[,] IExportable.MapData { get => _mapData; }
-        Int32 IExportable.MapWidth { get => _mapWidth; }
-        Int32 IExportable.MapHeight { get => _mapHeight; }
-        byte[] IExportable.SpriteGen { get => _spriteGen; }
-        byte[] IExportable.SpriteClr { get => _spriteClr; }
+        byte[] IExportable.PtnGen => _ptnGen;
+        byte[] IExportable.PtnClr => _ptnClr;
+        byte[] IExportable.NameTable => _nameTable;
+        bool IExportable.HasThreeBanks => _hasThreeBanks;
+        byte[] IExportable.PltDat => _pltDat;
+        bool IExportable.Is9918 => _is9918;
+        byte[] IExportable.MapPattern => _mapPattern;
+        byte[,] IExportable.MapData => _mapData;
+        Int32 IExportable.MapWidth => _mapWidth;
+        Int32 IExportable.MapHeight => _mapHeight;
+        byte[] IExportable.SpriteGen => _spriteGen;
+        byte[] IExportable.SpriteClr => _spriteClr;
         //--------------------------------------------------------------------
         // For Import
         byte[] IImportable.PtnGen { set => _ptnGen = value; }
@@ -437,10 +437,7 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Programmable characters
-        internal bool HasThreeBanks
-        {
-            get => _hasThreeBanks;
-        }
+        internal bool HasThreeBanks => _hasThreeBanks;
         internal void SetThreeBanks(bool val, bool push)
         {
             if(push) MementoCaretaker.Instance.Push();
@@ -602,7 +599,7 @@ namespace _99x8Edit
         internal void SetNameTable(int addr, int data, bool push)
         {
             addr = Math.Clamp(addr, 0, 767);
-            data = Math.Clamp(addr, 0, 255);
+            data = Math.Clamp(data, 0, 255);
             if (push)
             {
                 MementoCaretaker.Instance.Push();
@@ -1073,10 +1070,7 @@ namespace _99x8Edit
                 for (int j = 0; j < 8; ++j)                     // Each pixel right to left
                 {
                     int x = (pattern_per_line >> j) & 1;        // Get one bit of pattern
-                    if (x != 0)
-                        _bmpOneChr[pcg].SetPixel(x: 7 - j, y: i, color: fore);
-                    else
-                        _bmpOneChr[pcg].SetPixel(x: 7 - j, y: i, color: back);
+                    _bmpOneChr[pcg].SetPixel(x: 7 - j, y: i, color: (x != 0) ? fore : back);
                 }
             }
         }
@@ -1089,7 +1083,7 @@ namespace _99x8Edit
         }
         private void UpdateSpriteBitmap(int index8)
         {
-            _bmpOneSprite[index8] = _bmpOneSprite[index8] ?? new Bitmap(8, 8);
+            _bmpOneSprite[index8] ??= new Bitmap(8, 8);
             int color_code = _spriteClr16[index8 / 4];
             int addr_color = (index8 / 4) * 16 + (index8 % 2) * 8;
             for (int i = 0; i < 8; ++i)    // Each line
@@ -1104,10 +1098,7 @@ namespace _99x8Edit
                 for (int j = 0; j < 8; ++j)         // Each pixel right to left
                 {
                     int x = (pattern >> j) & 1;     // Get one bit of pattern
-                    if (x != 0)
-                        _bmpOneSprite[index8].SetPixel(7 - j, i, fore);
-                    else
-                        _bmpOneSprite[index8].SetPixel(7 - j, i, back);
+                    _bmpOneSprite[index8].SetPixel(7 - j, i, (x != 0) ? fore : back);
                 }
             }
         }
