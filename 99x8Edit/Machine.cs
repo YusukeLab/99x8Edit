@@ -6,7 +6,7 @@ using System.IO;
 namespace _99x8Edit
 {
     // All VDP related data will be wrapped here
-    public class Machine : IMementoTarget
+    public class Machine : IMementoTarget, IExportable, IImportable
     {
         // Data, of PCG
         private byte[] _ptnGen = new byte[256 * 8];    // Pattern generator table
@@ -135,6 +135,79 @@ namespace _99x8Edit
                 this.UpdateAllViewItems();  // Update bitmaps
             }
         }
+        //--------------------------------------------------------------------
+        // For Export
+        byte[] IExportable.PtnGen { get => _ptnGen; }
+        byte[] IExportable.PtnClr { get => _ptnClr; }
+        byte[] IExportable.NameTable { get => _nameTable; }
+        byte[] IExportable.PltDat { get => _pltDat; }
+        bool IExportable.IsTMS9918 { get => _isTMS9918; }
+        byte[] IExportable.MapPattern { get => _mapPattern; }
+        byte[,] IExportable.MapData { get => _mapData; }
+        Int32 IExportable.MapWidth { get => _mapWidth; }
+        Int32 IExportable.MapHeight { get => _mapHeight; }
+        byte[] IExportable.SpriteGen { get => _spriteGen; }
+        byte[] IExportable.SpriteClr { get => _spriteClr; }
+        //--------------------------------------------------------------------
+        // For Import
+        byte[] IImportable.PtnGen { set => _ptnGen = value; }
+        byte[] IImportable.PtnClr { set => _ptnClr = value; }
+        byte[] IImportable.NameTable { set => _nameTable = value; }
+        byte[] IImportable.PltDat { set => _pltDat = value; }
+        bool IImportable.IsTMS9918 { set => _isTMS9918 = value; }
+        byte[] IImportable.MapPattern { set => _mapPattern = value; }
+        byte[,] IImportable.MapData { set => _mapData = value; }
+        Int32 IImportable.MapWidth { set => _mapWidth = value; }
+        Int32 IImportable.MapHeight { set => _mapHeight = value; }
+        byte[] IImportable.SpriteGen { set => _spriteGen = value; }
+        byte[] IImportable.SpriteClr { set => _spriteClr = value; }
+        byte[] IImportable.SpriteOverlay { set => _spriteOverlay = value; }
+        //--------------------------------------------------------------------
+        // Export methods
+        internal void ExportPCG(int type, string path)
+        {
+            Export e = new Export(src: this);
+            e.ExportPCG((Export.PCGType)type, path);
+        }
+        internal void ExportMap(int type, string path)
+        {
+            Export e = new Export(src: this);
+            e.ExportMap((Export.MapType)type, path);
+        }
+        internal void ExportSprites(int type, string path)
+        {
+            // Set the CC flags of the sprite color
+            /*
+                We don't update the CC flags while editing, since it will be a quite mess
+                when there are copy, paste and other actions to overlayed sprite.
+                Anyway, we only need the CC flags for exporting, so we're going to update here.
+             */
+            this.SetSpriteCCFlags();
+            Export e = new Export(src: this);
+            e.ExportSprites((Export.SpriteType)type, path);
+        }
+        //--------------------------------------------------------------------
+        // Import
+        internal void ImportPCG(string filename, int type)
+        {
+            Import i = new Import()
+            {
+                Palette = _colorOf        // Import with current palette(temp)
+            };
+            i.ImportPCG(filename, type, this);
+            Array.Clear(_nameTable, index: 0, length: 768);
+            this.UpdateAllViewItems();
+        }
+        internal void ImportSprite(String filename, int type)
+        {
+            Import i = new Import()
+            {
+                Palette = _colorOf        // Import with current palette(temp)
+            };
+            i.ImportSprite(filename, type, this);
+            Array.Fill<byte>(_spriteClr16, 0x0F);
+            this.UpdateAllViewItems();
+        }
         //------------------------------------------------------------------------
         // File IO
         internal void SaveAllSettings(BinaryWriter br)
@@ -150,59 +223,7 @@ namespace _99x8Edit
             this.LoadMap(br);
         }
         //--------------------------------------------------------------------
-        // Export methods
-        internal void ExportPCG(int type, string path)
-        {
-            Export e = new Export(_ptnGen, _ptnClr, _nameTable, _pltDat, _isTMS9918,
-                                  _mapPattern, _mapData, _mapWidth, _mapHeight,
-                                  _spriteGen, _spriteClr);
-            e.ExportPCG((Export.PCGType)type, path);
-        }
-        internal void ExportMap(int type, string path)
-        {
-            Export e = new Export(_ptnGen, _ptnClr, _nameTable, _pltDat, _isTMS9918,
-                                  _mapPattern, _mapData, _mapWidth, _mapHeight,
-                                  _spriteGen, _spriteClr);
-            e.ExportMap((Export.MapType)type, path);
-        }
-        internal void ExportSprites(int type, string path)
-        {
-            // Set the CC flags of the sprite color
-            /*
-                We don't update the CC flags while editing, since it will be a quite mess
-                when there are copy, paste and other actions to overlayed sprite.
-                Anyway, we only need the CC flags for exporting, so we're going to update here.
-             */
-            this.SetSpriteCCFlags();
-            Export e = new Export(_ptnGen, _ptnClr, _nameTable, _pltDat, _isTMS9918,
-                                  _mapPattern, _mapData, _mapWidth, _mapHeight,
-                                  _spriteGen, _spriteClr);
-            e.ExportSprites((Export.SpriteType)type, path);
-        }
-        //--------------------------------------------------------------------
-        // Import
-        internal void ImportPCG(string filename, int type)
-        {
-            Import i = new Import()
-            {
-                Palette = _colorOf        // Import with current palette(temp)
-            };
-            i.ImportPCG(filename, type, _ptnGen, _ptnClr);
-            Array.Clear(_nameTable, index: 0, length: 768);
-            this.UpdateAllViewItems();
-        }
-        internal void ImportSprite(String filename, int type)
-        {
-            Import i = new Import()
-            {
-                Palette = _colorOf        // Import with current palette(temp)
-            };
-            i.ImportSprite(filename, type, _spriteGen, _spriteClr, _spriteOverlay);
-            Array.Fill<byte>(_spriteClr16, 0x0F);
-            this.UpdateAllViewItems();
-        }
-        //--------------------------------------------------------------------
-        // File IO for indivisual settings
+        // File IO for individual settings
         internal void SavePaletteSettings(BinaryWriter br)
         {
             br.Write(_pltDat);
@@ -234,17 +255,17 @@ namespace _99x8Edit
         }
         internal void LoadPCG(BinaryReader br)
         {
-            br.Read((Span<byte>)_ptnGen);                // Pattern generator table
-            br.Read((Span<byte>)_ptnClr);                // Pattern color table
-            br.Read((Span<byte>)_nameTable);             // Name table
-            br.Read((Span<byte>)_pltDat);                // Palette
+            br.Read((Span<byte>)_ptnGen);    // Pattern generator table
+            br.Read((Span<byte>)_ptnClr);    // Pattern color table
+            br.Read((Span<byte>)_nameTable); // Name table
+            br.Read((Span<byte>)_pltDat);    // Palette
             _isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
             this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
         }
         internal void SaveSprites(BinaryWriter br)
         {
-            br.Write(_spriteGen);            // Sprite patten generator table
+            br.Write(_spriteGen);           // Sprite patten generator table
             for (int i = 0; i < 64; ++i)    // Sprite color for mode1
             {
                 for (int j = 0; j < 4; ++j)

@@ -6,7 +6,22 @@ using System.Linq;
 namespace _99x8Edit
 {
     // Importing data
-    public class Import
+    internal interface IImportable
+    {
+        internal byte[] PtnGen { set; }        // Pattern generator table
+        internal byte[] PtnClr { set; }        // Pattern color table
+        internal byte[] NameTable { set; }     // Sandbox(Pattern name table)
+        internal byte[] PltDat { set; }
+        internal bool IsTMS9918 { set; }
+        internal byte[] MapPattern { set; }    // One pattern mede by four characters
+        internal byte[,] MapData { set; }      // Map data[x, y](0..255)
+        internal Int32 MapWidth { set; }
+        internal Int32 MapHeight { set; }
+        internal byte[] SpriteGen { set; }     // Sprite pattern generator table
+        internal byte[] SpriteClr { set; }     // Sprite color(mode2)
+        internal byte[] SpriteOverlay { set; }
+    }
+    internal class Import
     {
         // Import types
         internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin"
@@ -43,40 +58,42 @@ namespace _99x8Edit
         }
         //------------------------------------------------------------------------
         // Methods
-        internal void ImportPCG(string filename, int type, byte[] out_gen, byte[] out_clr)
+        internal void ImportPCG(string filename, int type, IImportable dst)
         {
             switch((PCGType)type)
             {
                 case PCGType.MSXBASIC:
-                    this.BINtoPCG(filename, out_gen, out_clr);
+                    this.BINtoPCG(filename, dst);
                     break;
                 case PCGType.PNG:
-                    this.PNGtoPCG(filename, out_gen, out_clr);
+                    this.PNGtoPCG(filename, dst);
                     break;
             }
         }
-        internal void ImportSprite(string filename, int type, byte[] out_gen, byte[] out_clr, byte[] overlay)
+        internal void ImportSprite(string filename, int type, IImportable dst)
         {
             switch ((SpriteType)type)
             {
                 case SpriteType.MSXBASIC:
-                    this.BINtoSpriteGen(filename, out_gen);
+                    this.BINtoSpriteGen(filename, dst);
                     break;
                 case SpriteType.MSXBASIC_Color:
-                    this.BINtoSpriteColor(filename, out_clr, overlay);
+                    this.BINtoSpriteColor(filename, dst);
                     break;
                 case SpriteType.RawPattern:
-                    this.RawToSpriteGen(filename, out_gen);
+                    this.RawToSpriteGen(filename, dst);
                     break;
                 case SpriteType.RawColor:
-                    this.RawToSpriteColor(filename, out_clr, overlay);
+                    this.RawToSpriteColor(filename, dst);
                     break;
             }
         }
         //------------------------------------------------------------------------
         // Utility
-        private void PNGtoPCG(string filename, byte[] out_gen, byte[] out_clr)
+        private void PNGtoPCG(string filename, IImportable dst)
         {
+            byte[] ptn_gen = new byte[256 * 8];
+            byte[] ptn_clr = new byte[256 * 8];
             Bitmap bmp = (Bitmap)Image.FromFile(filename);
             if(bmp == null)
             {
@@ -106,7 +123,7 @@ namespace _99x8Edit
                         int max2_num = count.Max();
                         int max2_index = Array.IndexOf(count, max2_num);
                         // Color table of the line will be made of two frequent colors
-                        out_clr[row * 256 + col * 8 + line] = (byte)((max1_index << 4) | max2_index);
+                        ptn_clr[row * 256 + col * 8 + line] = (byte)((max1_index << 4) | max2_index);
                         // Make pattern generator table
                         for(int x = 0; x < 8; ++x)
                         {
@@ -115,15 +132,17 @@ namespace _99x8Edit
                             if(code == max1_index)
                             {
                                 // Foreground color is near, so set the corresponding bit
-                                out_gen[row * 256 + col * 8 + line] |= (byte)(1 << (7 - x));
+                                ptn_gen[row * 256 + col * 8 + line] |= (byte)(1 << (7 - x));
                             }
                             // Ignore nackground color since the corresponding value is 0
                         }
                     }
                 }
             }
+            dst.PtnGen = ptn_gen;
+            dst.PtnClr = ptn_clr;
         }
-        private void BINtoPCG(string filename, byte[] out_gen, byte[] out_clr)
+        private void BINtoPCG(string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -138,20 +157,26 @@ namespace _99x8Edit
             // Read data
             if(this.SeekBIN(0x0000, bin_start_addr, br, out int gen_seek_addr))
             {
+                byte[] out_gen = new byte[256 * 8];
                 for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_gen[ptr] = br.ReadByte();
                 }
+
+                dst.PtnGen = out_gen;
             }
             if(this.SeekBIN(0x2000, bin_start_addr, br, out int color_addr))
             {
+                byte[] out_clr = new byte[256 * 8];
                 for (int ptr = 0; (ptr < 0x0800) && (color_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_clr[ptr] = br.ReadByte();
                 }
+
+                dst.PtnClr = out_clr;
             }
         }
-        private void BINtoSpriteGen(string filename, byte[] out_gen)
+        private void BINtoSpriteGen(string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -166,13 +191,15 @@ namespace _99x8Edit
             // Read data
             if (this.SeekBIN(0x3800, bin_start_addr, br, out int gen_seek_addr))
             {
+                byte[] out_gen = new byte[256 * 8];
                 for (int ptr = 0; (ptr < 0x0800) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_gen[ptr] = br.ReadByte();
                 }
+                dst.SpriteGen = out_gen;
             }
         }
-        private void BINtoSpriteColor(string filename, byte[] out_clr, byte[] overlay)
+        private void BINtoSpriteColor(string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -186,9 +213,10 @@ namespace _99x8Edit
             _ = br.ReadUInt16();
             // Read data
             // Won't see start address since there's no specified address
-            Array.Clear(overlay, 0, 64);
             if (this.SeekBIN(0, 0, br, out int gen_seek_addr))
             {
+                byte[] overlay = new byte[64];
+                byte[] out_clr = new byte[64 * 16];
                 for (int ptr = 0; (ptr < 0x0400) && (gen_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     out_clr[ptr] = br.ReadByte();
@@ -198,20 +226,25 @@ namespace _99x8Edit
                         overlay[ptr / 16 - 1] = 1;
                     }
                 }
+                dst.SpriteOverlay = overlay;
+                dst.SpriteClr = out_clr;
             }
         }
-        private void RawToSpriteGen(string filename, byte[] out_gen)
+        private void RawToSpriteGen(string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            for(int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
+            byte[] out_gen = new byte[256 * 8];
+            for (int i = 0; (i < 0x0800) && (i < br.BaseStream.Length); ++i)
             {
                 out_gen[i] = br.ReadByte();
             }
+            dst.SpriteGen = out_gen;
         }
-        private void RawToSpriteColor(string filename, byte[] out_clr, byte[] overlay)
+        private void RawToSpriteColor(string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
-            Array.Clear(overlay, 0, 64);
+            byte[] overlay = new byte[64];
+            byte[] out_clr = new byte[64 * 16];
             for (int i = 0; (i < 0x0400) && (i < br.BaseStream.Length); ++i)
             {
                 out_clr[i] = br.ReadByte();
@@ -221,6 +254,8 @@ namespace _99x8Edit
                     overlay[i / 16 - 1] = 1;
                 }
             }
+            dst.SpriteOverlay = overlay;
+            dst.SpriteClr = out_clr;
         }
         private bool SeekBIN(int vram_addr, int bin_start_addr, BinaryReader br, out int seek_addr)
         {

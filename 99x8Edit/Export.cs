@@ -4,8 +4,22 @@ using System.IO;
 
 namespace _99x8Edit
 {
+    internal interface IExportable
+    {
+        internal byte[] PtnGen { get; }        // Pattern generator table
+        internal byte[] PtnClr { get; }        // Pattern color table
+        internal byte[] NameTable { get; }     // Sandbox(Pattern name table)
+        internal byte[] PltDat { get; }
+        internal bool IsTMS9918 { get; }
+        internal byte[] MapPattern { get; }    // One pattern mede by four characters
+        internal byte[,] MapData { get; }      // Map data[x, y](0..255)
+        internal Int32 MapWidth { get; }
+        internal Int32 MapHeight { get; }
+        internal byte[] SpriteGen { get; }     // Sprite pattern generator table
+        internal byte[] SpriteClr { get; }     // Sprite color(mode2)
+    }
     // Exporting data
-    public class Export
+    internal class Export
     {
         // Supported Export types
         internal static string PCGTypeFilter = "C Header(*.h)|*.h"
@@ -78,42 +92,12 @@ namespace _99x8Edit
             RawCompressed_Map,
         };
         // Data to be exported, to be set by host
-        private readonly byte[] _ptnGen;        // Pattern generator table
-        private readonly byte[] _ptnClr;        // Pattern color table
-        private readonly byte[] _nameTable;     // Sandbox(Pattern name table)
-        private readonly byte[] _pltDat;
-        private readonly bool _isTMS9918;
-        private readonly byte[] _mapPattern;    // One pattern mede by four characters
-        private readonly byte[,] _mapData;      // Map data[x, y](0..255)
-        private readonly Int32 _mapWidth;
-        private readonly Int32 _mapHeight;
-        private readonly byte[] _spriteGen;     // Sprite pattern generator table
-        private readonly byte[] _spriteClr;     // Sprite color(mode2)
+        private IExportable _src;
         //------------------------------------------------------------------------
         // Initialize
-        public Export(byte[] pcggen,
-                      byte[] pcgclr,
-                      byte[] sandbox,
-                      byte[] plt,
-                      bool is9918,
-                      byte[] mapptn,
-                      byte[,] mapdat,
-                      Int32 mapw,
-                      Int32 maph,
-                      byte[] sprgen,
-                      byte[] sprclr)
+        public Export(IExportable src)
         {
-            _ptnGen = pcggen.Clone() as byte[];
-            _ptnClr = pcgclr.Clone() as byte[];
-            _nameTable = sandbox.Clone() as byte[];
-            _pltDat = plt.Clone() as byte[];
-            _isTMS9918 = is9918;
-            _mapPattern = mapptn.Clone() as byte[];
-            _mapData = mapdat.Clone() as byte[,];
-            _mapWidth = mapw;
-            _mapHeight = maph;
-            _spriteGen = sprgen.Clone() as byte[];
-            _spriteClr = sprclr.Clone() as byte[];
+            _src = src;
         }
         //------------------------------------------------------------------------
         // Methods
@@ -125,11 +109,11 @@ namespace _99x8Edit
                 sr.WriteLine("#ifndef __PCGDAT_H__");
                 sr.WriteLine("#define __PCGDAT_H__");
                 string str;
-                if (!_isTMS9918)
+                if (!_src.IsTMS9918)
                 {
                     sr.WriteLine("// Palette");
                     sr.WriteLine("const unsigned char palette[] = {");
-                    str = ArrayToCHeaderString(_pltDat, false);
+                    str = ArrayToCHeaderString(_src.PltDat, false);
                     sr.WriteLine(str);
                     sr.WriteLine("};");
                 }
@@ -137,12 +121,12 @@ namespace _99x8Edit
                 if (type == 0)
                 {
                     sr.WriteLine("const unsigned char ptngen[] = {");
-                    str = ArrayToCHeaderString(_ptnGen, false);
+                    str = ArrayToCHeaderString(_src.PtnGen, false);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char ptngen_compressed[] = {");
-                    str = ArrayToCHeaderString(_ptnGen, true);
+                    str = ArrayToCHeaderString(_src.PtnGen, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
@@ -150,12 +134,12 @@ namespace _99x8Edit
                 if (type == PCGType.CHeader)
                 {
                     sr.WriteLine("const unsigned char ptnclr[] = {");
-                    str = ArrayToCHeaderString(_ptnClr, false);
+                    str = ArrayToCHeaderString(_src.PtnClr, false);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char ptnclr_compressed[] = {");
-                    str = ArrayToCHeaderString(_ptnClr, true);
+                    str = ArrayToCHeaderString(_src.PtnClr, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
@@ -163,12 +147,12 @@ namespace _99x8Edit
                 if (type == PCGType.CHeader)
                 {
                     sr.WriteLine("const unsigned char nametable[] = {");
-                    str = ArrayToCHeaderString(_nameTable, false);
+                    str = ArrayToCHeaderString(_src.NameTable, false);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char nametable_compressed[] = {");
-                    str = ArrayToCHeaderString(_nameTable, true);
+                    str = ArrayToCHeaderString(_src.NameTable, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
@@ -180,47 +164,47 @@ namespace _99x8Edit
                 sr.WriteLine("; PCG Data");
                 sr.WriteLine("; this export data is not tested");
                 string str;
-                if (!_isTMS9918)
+                if (!_src.IsTMS9918)
                 {
                     sr.WriteLine("; Palette r8b8g8");
                     sr.WriteLine("palette:");
-                    str = ArrayToASMString(_pltDat, false);
+                    str = ArrayToASMString(_src.PltDat, false);
                     sr.WriteLine(str);
                 }
                 sr.WriteLine("; Character pattern generator table");
                 if (type == PCGType.ASMData)
                 {
                     sr.WriteLine("ptngen:");
-                    str = ArrayToASMString(_ptnGen, false);
+                    str = ArrayToASMString(_src.PtnGen, false);
                 }
                 else
                 {
                     sr.WriteLine("ptngen_compressed:");
-                    str = ArrayToASMString(_ptnGen, true);
+                    str = ArrayToASMString(_src.PtnGen, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Character pattern color table");
                 if (type == PCGType.ASMData)
                 {
                     sr.WriteLine("prnclr:");
-                    str = ArrayToASMString(_ptnClr, false);
+                    str = ArrayToASMString(_src.PtnClr, false);
                 }
                 else
                 {
                     sr.WriteLine("prnclr_compressed:");
-                    str = ArrayToASMString(_ptnClr, true);
+                    str = ArrayToASMString(_src.PtnClr, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Name table");
                 if (type == PCGType.ASMData)
                 {
                     sr.WriteLine("namtbl:");
-                    str = ArrayToASMString(_nameTable, false);
+                    str = ArrayToASMString(_src.NameTable, false);
                 }
                 else
                 {
                     sr.WriteLine("namtbl_compressed:");
-                    str = ArrayToASMString(_nameTable, true);
+                    str = ArrayToASMString(_src.NameTable, true);
                 }
                 sr.WriteLine(str);
             }
@@ -234,7 +218,7 @@ namespace _99x8Edit
                 br.Write((byte)0x07);
                 br.Write((byte)0);          // Execution address
                 br.Write((byte)0);
-                br.Write(_ptnGen);
+                br.Write(_src.PtnGen);
             }
             else if (type == PCGType.MSXBASIC_Color)
             {
@@ -246,28 +230,28 @@ namespace _99x8Edit
                 br.Write((byte)0x27);
                 br.Write((byte)0);          // Execution address
                 br.Write((byte)0);
-                br.Write(_ptnClr);
+                br.Write(_src.PtnClr);
             }
             else if (type == PCGType.Raw_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                br.Write(_ptnGen);
+                br.Write(_src.PtnGen);
             }
             else if (type == PCGType.Raw_Color)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                br.Write(_ptnClr);
+                br.Write(_src.PtnClr);
             }
             else if (type == PCGType.RawCompressed_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_ptnGen);
+                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_src.PtnGen);
                 br.Write(comp);
             }
             else if (type == PCGType.RawCompressed_Color)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_ptnClr);
+                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_src.PtnClr);
                 br.Write(comp);
             }
         }
@@ -278,19 +262,19 @@ namespace _99x8Edit
                 using StreamWriter sr = new StreamWriter(path, false);
                 sr.WriteLine("#ifndef __MAPDAT_H__");
                 sr.WriteLine("#define __MAPDAT_H__");
-                sr.WriteLine($"#define MAP_W   ({_mapWidth})");
-                sr.WriteLine($"#define MAP_H   ({_mapHeight})");
+                sr.WriteLine($"#define MAP_W   ({_src.MapWidth})");
+                sr.WriteLine($"#define MAP_H   ({_src.MapHeight})");
                 string str;
                 sr.WriteLine("// Map patterns");
                 if (type == MapType.CHeader)
                 {
                     sr.WriteLine("const unsigned char mapptn[] = {");
-                    str = ArrayToCHeaderString(_mapPattern, false);
+                    str = ArrayToCHeaderString(_src.MapPattern, false);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char mapptn_compressed[] = {");
-                    str = ArrayToCHeaderString(_mapPattern, true);
+                    str = ArrayToCHeaderString(_src.MapPattern, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
@@ -299,10 +283,10 @@ namespace _99x8Edit
                 if (type == MapType.CHeader)
                 {
                     sr.WriteLine("const unsigned char mapData[] = {");
-                    for (int i = 0; i < _mapWidth * _mapHeight; ++i)
+                    for (int i = 0; i < _src.MapWidth * _src.MapHeight; ++i)
                     {
                         if ((i != 0) && (i % 16) == 0) str += "\r\n\t";
-                        str += $"{_mapData[i % _mapWidth, i / _mapWidth]}, ";
+                        str += $"{_src.MapData[i % _src.MapWidth, i / _src.MapWidth]}, ";
                     }
                 }
                 else
@@ -326,19 +310,19 @@ namespace _99x8Edit
                 sr.WriteLine("; this export data is not tested");
                 string str;
                 sr.WriteLine("mapwidth:");
-                sr.WriteLine($"\tdb\t{_mapWidth}");
+                sr.WriteLine($"\tdb\t{_src.MapWidth}");
                 sr.WriteLine("mapheight:");
-                sr.WriteLine($"\tdb\t{_mapHeight}");
+                sr.WriteLine($"\tdb\t{_src.MapHeight}");
                 sr.WriteLine("; Map patterns");
                 if (type == MapType.ASMData)
                 {
                     sr.WriteLine("mapptn:");
-                    str = ArrayToASMString(_mapPattern, false);
+                    str = ArrayToASMString(_src.MapPattern, false);
                 }
                 else
                 {
                     sr.WriteLine("mapptn_compressed:");
-                    str = ArrayToASMString(_mapPattern, true);
+                    str = ArrayToASMString(_src.MapPattern, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Map data");
@@ -346,10 +330,10 @@ namespace _99x8Edit
                 if (type == MapType.ASMData)
                 {
                     sr.WriteLine("mapdat:");
-                    for (int i = 0; i < _mapWidth * _mapHeight; ++i)
+                    for (int i = 0; i < _src.MapWidth * _src.MapHeight; ++i)
                     {
                         if (i % 16 == 0) str += "\tdb\t";
-                        str += $"{_mapData[i % _mapWidth, i / _mapWidth]}";
+                        str += $"{_src.MapData[i % _src.MapWidth, i / _src.MapWidth]}";
                         if (i % 16 == 15) str += "\r\n";
                         else str += ", ";
                     }
@@ -379,12 +363,12 @@ namespace _99x8Edit
                 br.Write((byte)(pattern_size >> 8));
                 br.Write((byte)0);                      // Execution address
                 br.Write((byte)0);
-                br.Write(_mapPattern);
+                br.Write(_src.MapPattern);
             }
             else if (type == MapType.MSXBASIC_Map)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                int map_size = _mapWidth * _mapHeight;
+                int map_size = _src.MapWidth * _src.MapHeight;
                 br.Write((byte)0xFE);                   // BSAVE/BLOAD header
                 br.Write((byte)0x00);                   // Start address is 0x0000
                 br.Write((byte)0x00);
@@ -392,34 +376,34 @@ namespace _99x8Edit
                 br.Write((byte)(map_size >> 8));
                 br.Write((byte)0);                      // Execution address
                 br.Write((byte)0);
-                for (int i = 0; i < _mapHeight; ++i)
+                for (int i = 0; i < _src.MapHeight; ++i)
                 {
-                    for (int j = 0; j < _mapWidth; ++j)
+                    for (int j = 0; j < _src.MapWidth; ++j)
                     {
-                        br.Write(_mapData[j, i]);
+                        br.Write(_src.MapData[j, i]);
                     }
                 }
             }
             else if (type == MapType.Raw_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                br.Write(_mapPattern);
+                br.Write(_src.MapPattern);
             }
             else if (type == MapType.Raw_Map)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                for (int i = 0; i < _mapHeight; ++i)
+                for (int i = 0; i < _src.MapHeight; ++i)
                 {
-                    for (int j = 0; j < _mapWidth; ++j)
+                    for (int j = 0; j < _src.MapWidth; ++j)
                     {
-                        br.Write(_mapData[j, i]);
+                        br.Write(_src.MapData[j, i]);
                     }
                 }
             }
             else if (type == MapType.RawCompressed_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_mapPattern);
+                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_src.MapPattern);
                 br.Write(comp);
             }
             else if (type == MapType.RawCompressed_Map)
@@ -441,27 +425,27 @@ namespace _99x8Edit
                 if (type == SpriteType.CHeader)
                 {
                     sr.WriteLine("const unsigned char sprptn[] = {");
-                    str = ArrayToCHeaderString(_spriteGen, false);
+                    str = ArrayToCHeaderString(_src.SpriteGen, false);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char sprptn_compressed[] = {");
-                    str = ArrayToCHeaderString(_spriteGen, true);
+                    str = ArrayToCHeaderString(_src.SpriteGen, true);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
-                if (!_isTMS9918)
+                if (!_src.IsTMS9918)
                 {
                     sr.WriteLine("// Sprite color table");
                     if (type == SpriteType.CHeader)
                     {
                         sr.WriteLine("const unsigned char sprclr[] = {");
-                        str = ArrayToCHeaderString(_spriteClr, false);
+                        str = ArrayToCHeaderString(_src.SpriteClr, false);
                     }
                     else
                     {
                         sr.WriteLine("const unsigned char sprclr_compressed[] = {");
-                        str = ArrayToCHeaderString(_spriteClr, true);
+                        str = ArrayToCHeaderString(_src.SpriteClr, true);
                     }
                     sr.WriteLine(str);
                     sr.WriteLine("};");
@@ -478,26 +462,26 @@ namespace _99x8Edit
                 if (type == SpriteType.ASMData)
                 {
                     sr.WriteLine("sprgen:");
-                    str = ArrayToASMString(_spriteGen, false);
+                    str = ArrayToASMString(_src.SpriteGen, false);
                 }
                 else
                 {
                     sr.WriteLine("sprgen_compressed:");
-                    str = ArrayToASMString(_spriteGen, true);
+                    str = ArrayToASMString(_src.SpriteGen, true);
                 }
                 sr.WriteLine(str);
-                if (!_isTMS9918)
+                if (!_src.IsTMS9918)
                 {
                     sr.WriteLine("; Sprite color table");
                     if (type == SpriteType.ASMData)
                     {
                         sr.WriteLine("sprclr:");
-                        str = ArrayToASMString(_spriteClr, false);
+                        str = ArrayToASMString(_src.SpriteClr, false);
                     }
                     else
                     {
                         sr.WriteLine("sprclr_compressed:");
-                        str = ArrayToASMString(_spriteClr, true);
+                        str = ArrayToASMString(_src.SpriteClr, true);
                     }
                     sr.WriteLine(str);
                 }
@@ -512,7 +496,7 @@ namespace _99x8Edit
                 br.Write((byte)0x3F);
                 br.Write((byte)0);          // Execution address
                 br.Write((byte)0);
-                br.Write(_spriteGen);
+                br.Write(_src.SpriteGen);
             }
             else if (type == SpriteType.MSXBASIC_Color)
             {
@@ -525,28 +509,28 @@ namespace _99x8Edit
                 br.Write((byte)0x00);
                 br.Write((byte)0);          // Execution address
                 br.Write((byte)0);
-                br.Write(_spriteClr);
+                br.Write(_src.SpriteClr);
             }
             else if (type == SpriteType.Raw_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                br.Write(_spriteGen);
+                br.Write(_src.SpriteGen);
             }
             else if (type == SpriteType.Raw_Color)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                br.Write(_spriteClr);
+                br.Write(_src.SpriteClr);
             }
             else if (type == SpriteType.RawCompressed_Pattern)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_spriteGen);
+                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_src.SpriteGen);
                 br.Write(comp);
             }
             else if (type == SpriteType.RawCompressed_Color)
             {
                 using BinaryWriter br = new BinaryWriter(new FileStream(path, FileMode.Create));
-                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_spriteClr);
+                byte[] comp = Compression.Create(Compression.Type.BytePair).Encode(_src.SpriteClr);
                 br.Write(comp);
             }
         }
@@ -605,18 +589,18 @@ namespace _99x8Edit
             // Map will be compressed by run length encode, to be decoded realtime
             List<byte[]> comp_data = new List<byte[]>();
             // Head of data will be [offset to the data of row] * [number of rows]
-            ushort[] offset_to_row = new ushort[_mapHeight];
-            ushort offset = (ushort)(_mapHeight * 2);
+            ushort[] offset_to_row = new ushort[_src.MapHeight];
+            ushort offset = (ushort)(_src.MapHeight * 2);
             // Create data
-            for(int y = 0; y < _mapHeight; ++y)
+            for(int y = 0; y < _src.MapHeight; ++y)
             {
                 // Offset to the row data
                 offset_to_row[y] = offset;
                 // Compress each row
                 List<byte> src_row = new List<byte>();
-                for(int i = 0; i < _mapWidth; ++i)
+                for(int i = 0; i < _src.MapWidth; ++i)
                 {
-                    src_row.Add(_mapData[i, y]);
+                    src_row.Add(_src.MapData[i, y]);
                 }
                 CompressionBase encoder = Compression.Create(Compression.Type.RunLength);
                 byte[] comp = encoder.Encode(src_row.ToArray());
@@ -625,13 +609,13 @@ namespace _99x8Edit
             }
             // Make one compressed data
             List<byte> ret = new List<byte>();
-            for(int i = 0; i < _mapHeight; ++i)
+            for(int i = 0; i < _src.MapHeight; ++i)
             {
                 // Offset is stored as 2 byte little endian data
                 ret.Add((byte)(offset_to_row[i] & 0xFF));
                 ret.Add((byte)((offset_to_row[i]) >> 8 & 0xFF));
             }
-            for (int i = 0; i < _mapHeight; ++i)
+            for (int i = 0; i < _src.MapHeight; ++i)
             {
                 for(int j = 0; j < comp_data[i].Length; ++j)
                 {
