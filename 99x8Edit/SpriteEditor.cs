@@ -110,9 +110,9 @@ namespace _99x8Edit
             this.UpdateSpriteEditView(refresh: false);    // Sprite edit view
             this.UpdateCurrentColorView(refresh: false);  // Current color
             this.UpdateOverlayCheck(refresh: false);
-            this.chkTMS.Checked = _dataSource.IsTMS9918;
-            this.toolStripFileLoadPal.Enabled = !_dataSource.IsTMS9918;
-            this.toolStripFileSavePal.Enabled = !_dataSource.IsTMS9918;
+            this.chkTMS.Checked = _dataSource.Is9918;
+            this.toolStripFileLoadPal.Enabled = !_dataSource.Is9918;
+            this.toolStripFileSavePal.Enabled = !_dataSource.Is9918;
             this.toolStripEditCurrent.Checked = (Config.Setting.EditControlType == EditType.Current);
             this.toolStripEditToggle.Checked = (Config.Setting.EditControlType == EditType.Toggle);
             this.Refresh();
@@ -177,7 +177,7 @@ namespace _99x8Edit
                         int ptn_over = _dataSource.GetSpritePixel(index16ov, x, y, true);
                         if (ptn_over != 0)
                         {
-                            if (_dataSource.IsTMS9918)
+                            if (_dataSource.Is9918)
                             {
                                 if (color_code == 0)
                                 {
@@ -229,7 +229,7 @@ namespace _99x8Edit
                 Color cr = _dataSource.ColorOf(color_code_r);
                 viewColor.SetBackgroundColor(cr, 2, 0);
                 length = 3;
-                if (!_dataSource.IsTMS9918)
+                if (!_dataSource.Is9918)
                 {
                     // Draw OR color of two sprites (V9938)
                     int color_code_or = color_code_l | color_code_r;
@@ -267,12 +267,12 @@ namespace _99x8Edit
         // Misc
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (chkTMS.Checked && !_dataSource.IsTMS9918)
+            if (chkTMS.Checked && !_dataSource.Is9918)
             {
                 // Set windows color of each color code to TMS9918
                 _dataSource.SetPaletteTo9918(push: true);
             }
-            else if (!chkTMS.Checked && _dataSource.IsTMS9918)
+            else if (!chkTMS.Checked && _dataSource.Is9918)
             {
                 // Set windows color of each color code to internal palette
                 _dataSource.SetPaletteTo9938(push: true);
@@ -555,7 +555,7 @@ namespace _99x8Edit
                 if (_dataSource.GetSpriteOverlay(index16))   // Depends on overlay and vdp settings
                 {
                     // Limit the max value which depends on overlay and VDP
-                    if (_dataSource.IsTMS9918)
+                    if (_dataSource.Is9918)
                     {
                         updated_stat %= 3;       // Overlayed, no OR color
                     }

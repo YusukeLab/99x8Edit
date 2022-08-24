@@ -84,14 +84,17 @@ namespace _99x8Edit
                     }
                 }
                 // Draw selection
-                Utility.DrawSelection(g, _selection, this.Focused);
-                if (this.Focused && this.AllowSubSelection)
+                if (AllowSelection)
                 {
-                    // One dot can be selected when focused
-                    Utility.DrawSubSelection(g,
-                                             (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
-                                             (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
-                                             _cellWidth - 2, CellHeight - 2);
+                    Utility.DrawSelection(g, _selection, this.Focused);
+                    if (this.Focused && this.AllowSubSelection)
+                    {
+                        // One dot can be selected when focused
+                        Utility.DrawSubSelection(g,
+                            (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
+                            (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
+                            _cellWidth - 2, CellHeight - 2);
+                    }
                 }
                 _updated = false;
             }

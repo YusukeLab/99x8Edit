@@ -40,14 +40,16 @@ namespace _99x8Edit
             this.label3 = new System.Windows.Forms.Label();
             this._fontSize = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this._threshold = new System.Windows.Forms.NumericUpDown();
+            this._density = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this._italic = new System.Windows.Forms.CheckBox();
             this._colorMatrix = new _99x8Edit.MatrixControl();
             this.label6 = new System.Windows.Forms.Label();
+            this._colorPreview = new _99x8Edit.EditorControl();
+            this._bold = new System.Windows.Forms.CheckBox();
             this.contextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._fontSize)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._threshold)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._density)).BeginInit();
             this.SuspendLayout();
             // 
             // _fontList
@@ -74,6 +76,7 @@ namespace _99x8Edit
             this._actualView.AllowDrop = true;
             this._actualView.AllowMultipleSelection = true;
             this._actualView.AllowOneStrokeEditing = false;
+            this._actualView.AllowSelection = true;
             this._actualView.AllowSubSelection = false;
             this._actualView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._actualView.CellHeight = 16;
@@ -140,7 +143,7 @@ namespace _99x8Edit
             // 
             // _fontSize
             // 
-            this._fontSize.Location = new System.Drawing.Point(282, 315);
+            this._fontSize.Location = new System.Drawing.Point(229, 313);
             this._fontSize.Maximum = new decimal(new int[] {
             12,
             0,
@@ -164,48 +167,48 @@ namespace _99x8Edit
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(277, 290);
+            this.label4.Location = new System.Drawing.Point(224, 288);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(36, 20);
             this.label4.TabIndex = 40;
             this.label4.Text = "Size";
             // 
-            // _threshold
+            // _density
             // 
-            this._threshold.Location = new System.Drawing.Point(360, 315);
-            this._threshold.Maximum = new decimal(new int[] {
+            this._density.Location = new System.Drawing.Point(307, 313);
+            this._density.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this._threshold.Minimum = new decimal(new int[] {
+            this._density.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this._threshold.Name = "_threshold";
-            this._threshold.Size = new System.Drawing.Size(62, 27);
-            this._threshold.TabIndex = 41;
-            this._threshold.Value = new decimal(new int[] {
-            64,
+            this._density.Name = "_density";
+            this._density.Size = new System.Drawing.Size(62, 27);
+            this._density.TabIndex = 41;
+            this._density.Value = new decimal(new int[] {
+            192,
             0,
             0,
             0});
-            this._threshold.ValueChanged += new System.EventHandler(this._threshold_ValueChanged);
+            this._density.ValueChanged += new System.EventHandler(this._threshold_ValueChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(355, 289);
+            this.label5.Location = new System.Drawing.Point(302, 287);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(74, 20);
+            this.label5.Size = new System.Drawing.Size(58, 20);
             this.label5.TabIndex = 42;
-            this.label5.Text = "Threshold";
+            this.label5.Text = "Density";
             // 
             // _italic
             // 
             this._italic.AutoSize = true;
-            this._italic.Location = new System.Drawing.Point(282, 360);
+            this._italic.Location = new System.Drawing.Point(390, 296);
             this._italic.Name = "_italic";
             this._italic.Size = new System.Drawing.Size(63, 24);
             this._italic.TabIndex = 43;
@@ -217,6 +220,7 @@ namespace _99x8Edit
             // 
             this._colorMatrix.AllowMultipleSelection = false;
             this._colorMatrix.AllowOneStrokeEditing = false;
+            this._colorMatrix.AllowSelection = true;
             this._colorMatrix.AllowSubSelection = false;
             this._colorMatrix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._colorMatrix.CellHeight = 20;
@@ -225,7 +229,7 @@ namespace _99x8Edit
             this._colorMatrix.DrawOverlayedSelection = false;
             this._colorMatrix.DrawTranparentColor = false;
             this._colorMatrix.Index = 0;
-            this._colorMatrix.Location = new System.Drawing.Point(229, 313);
+            this._colorMatrix.Location = new System.Drawing.Point(544, 313);
             this._colorMatrix.Name = "_colorMatrix";
             this._colorMatrix.RowNum = 8;
             this._colorMatrix.SelectionHeight = 1;
@@ -239,22 +243,59 @@ namespace _99x8Edit
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(216, 290);
+            this.label6.Location = new System.Drawing.Point(529, 287);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(45, 20);
             this.label6.TabIndex = 45;
             this.label6.Text = "Color";
             // 
+            // _colorPreview
+            // 
+            this._colorPreview.AllowDrop = true;
+            this._colorPreview.AllowMultipleSelection = true;
+            this._colorPreview.AllowOneStrokeEditing = true;
+            this._colorPreview.AllowSelection = false;
+            this._colorPreview.AllowSubSelection = true;
+            this._colorPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._colorPreview.CellHeight = 20;
+            this._colorPreview.CellWidth = 20;
+            this._colorPreview.ColumnNum = 8;
+            this._colorPreview.DrawOverlayedSelection = false;
+            this._colorPreview.DrawTranparentColor = true;
+            this._colorPreview.Index = 0;
+            this._colorPreview.Location = new System.Drawing.Point(581, 313);
+            this._colorPreview.Name = "_colorPreview";
+            this._colorPreview.RowNum = 8;
+            this._colorPreview.SelectionHeight = 1;
+            this._colorPreview.SelectionWidth = 8;
+            this._colorPreview.Size = new System.Drawing.Size(162, 162);
+            this._colorPreview.TabIndex = 46;
+            this._colorPreview.X = 0;
+            this._colorPreview.Y = 0;
+            // 
+            // _bold
+            // 
+            this._bold.AutoSize = true;
+            this._bold.Location = new System.Drawing.Point(390, 319);
+            this._bold.Name = "_bold";
+            this._bold.Size = new System.Drawing.Size(62, 24);
+            this._bold.TabIndex = 47;
+            this._bold.Text = "Bold";
+            this._bold.UseVisualStyleBackColor = true;
+            this._bold.CheckedChanged += new System.EventHandler(this._bold_CheckedChanged);
+            // 
             // FontBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 495);
+            this.ClientSize = new System.Drawing.Size(764, 495);
+            this.Controls.Add(this._bold);
+            this.Controls.Add(this._colorPreview);
             this.Controls.Add(this.label6);
             this.Controls.Add(this._colorMatrix);
             this.Controls.Add(this._italic);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this._threshold);
+            this.Controls.Add(this._density);
             this.Controls.Add(this.label4);
             this.Controls.Add(this._fontSize);
             this.Controls.Add(this.label3);
@@ -269,10 +310,10 @@ namespace _99x8Edit
             this.Name = "FontBrowser";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "FontBrowser";
+            this.Text = "Font Browser";
             this.contextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._fontSize)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._threshold)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._density)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -288,12 +329,14 @@ namespace _99x8Edit
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown _fontSize;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown _threshold;
+        private System.Windows.Forms.NumericUpDown _density;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox _italic;
         private System.Windows.Forms.Label label6;
         private MatrixControl _colorMatrix;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem toolStripCopy;
+        private EditorControl _colorPreview;
+        private System.Windows.Forms.CheckBox _bold;
     }
 }

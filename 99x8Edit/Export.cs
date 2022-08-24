@@ -11,7 +11,7 @@ namespace _99x8Edit
         internal byte[] NameTable { get; }     // Sandbox(Pattern name table)
         internal bool HasThreeBanks { get; }
         internal byte[] PltDat { get; }
-        internal bool IsTMS9918 { get; }
+        internal bool Is9918 { get; }
         internal byte[] MapPattern { get; }    // One pattern mede by four characters
         internal byte[,] MapData { get; }      // Map data[x, y](0..255)
         internal Int32 MapWidth { get; }
@@ -110,7 +110,7 @@ namespace _99x8Edit
                 sr.WriteLine("#ifndef __PCGDAT_H__");
                 sr.WriteLine("#define __PCGDAT_H__");
                 string str;
-                if (!_src.IsTMS9918)
+                if (!_src.Is9918)
                 {
                     sr.WriteLine("// Palette");
                     sr.WriteLine("const unsigned char palette[] = {");
@@ -169,7 +169,7 @@ namespace _99x8Edit
                 sr.WriteLine("; PCG Data");
                 sr.WriteLine("; this export data is not tested");
                 string str;
-                if (!_src.IsTMS9918)
+                if (!_src.Is9918)
                 {
                     sr.WriteLine("; Palette r8b8g8");
                     sr.WriteLine("palette:");
@@ -489,7 +489,7 @@ namespace _99x8Edit
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
-                if (!_src.IsTMS9918)
+                if (!_src.Is9918)
                 {
                     sr.WriteLine("// Sprite color table");
                     if (type == SpriteType.CHeader)
@@ -525,7 +525,7 @@ namespace _99x8Edit
                     str = ArrayToASMString(_src.SpriteGen, compress: true);
                 }
                 sr.WriteLine(str);
-                if (!_src.IsTMS9918)
+                if (!_src.Is9918)
                 {
                     sr.WriteLine("; Sprite color table");
                     if (type == SpriteType.ASMData)

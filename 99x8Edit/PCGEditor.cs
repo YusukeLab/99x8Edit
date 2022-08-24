@@ -34,7 +34,7 @@ namespace _99x8Edit
             _tabList.Add(viewPCG, viewPCG.Selector);
             _tabList.Add(viewSand, viewSand.Selector);
             // Initialize controls
-            chkTMS.Checked = _dataSource.IsTMS9918;
+            chkTMS.Checked = _dataSource.Is9918;
             // Refresh all views
             RefreshAllViews();
             // Menu bar
@@ -118,9 +118,9 @@ namespace _99x8Edit
             this.UpdateSandbox(refresh: false);           // Sandbox view
             this.UpdatePCGEditView(refresh: false);       // PCG Editor
             this.UpdateCurrentColorView(refresh: false);  // Current color
-            this.chkTMS.Checked = _dataSource.IsTMS9918;
-            this.toolStripFileLoadPal.Enabled = !_dataSource.IsTMS9918;
-            this.toolStripFileSavePal.Enabled = !_dataSource.IsTMS9918;
+            this.chkTMS.Checked = _dataSource.Is9918;
+            this.toolStripFileLoadPal.Enabled = !_dataSource.Is9918;
+            this.toolStripFileSavePal.Enabled = !_dataSource.Is9918;
             this.toolStripEditCurrent.Checked = (Config.Setting.EditControlType == EditType.Current);
             this.toolStripEditToggle.Checked = (Config.Setting.EditControlType == EditType.Toggle);
             this.Refresh();
@@ -723,13 +723,13 @@ namespace _99x8Edit
         }
         private void checkTMS_Click(object sender, EventArgs e)
         {
-            if (chkTMS.Checked && !_dataSource.IsTMS9918)
+            if (chkTMS.Checked && !_dataSource.Is9918)
             {
                 // Set to TMS9918 and update palettes
                 _dataSource.SetPaletteTo9918(push: true);
                 this.RefreshAllViews();     // Everything changes
             }
-            else if (!chkTMS.Checked && _dataSource.IsTMS9918)
+            else if (!chkTMS.Checked && _dataSource.Is9918)
             {
                 // Set to V9938 and update palettes
                 _dataSource.SetPaletteTo9938(push: true);

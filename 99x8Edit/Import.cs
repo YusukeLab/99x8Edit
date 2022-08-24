@@ -13,7 +13,7 @@ namespace _99x8Edit
         internal byte[] NameTable { set; }     // Sandbox(Pattern name table)
         internal bool HasThreeBanks { set; }
         internal byte[] PltDat { set; }
-        internal bool IsTMS9918 { set; }
+        internal bool Is9918 { set; }
         internal byte[] MapPattern { set; }    // One pattern mede by four characters
         internal byte[,] MapData { set; }      // Map data[x, y](0..255)
         internal Int32 MapWidth { set; }

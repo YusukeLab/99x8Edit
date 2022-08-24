@@ -47,17 +47,45 @@ namespace _99x8Edit
             this.UpdateActualView(refresh: false);
             _colorMatrix.Refresh();
             _actualView.Refresh();
+            _colorPreview.Refresh();
         }
-
         private void UpdateColor(bool refresh)
         {
             // Update color view matrix
-            for (int i = 0; i < 8; ++i)
+            for (int y = 0; y < 8; ++y)
             {
-                Color c = _dataSource.ColorOf(_colorCode[i]);
-                _colorMatrix.SetBackgroundColor(c, 0, i);
+                Color c = _dataSource.ColorOf(_colorCode[y]);
+                _colorMatrix.SetBackgroundColor(c, 0, y);
             }
-            if (refresh) _colorMatrix.Refresh();
+            // Update preview
+            byte[] chr = new byte[]
+            {
+                0b00111110,
+                0b01000001,
+                0b01000001,
+                0b01000001,
+                0b01111111,
+                0b01000001,
+                0b01000001,
+                0b01000001,
+            };
+            for (int y = 0; y < 8; ++y)
+            {
+                Brush b = _dataSource.BrushOf(_colorCode[y]);
+                for (int x = 0; x < 8; ++x)
+                {
+                    int bit = ((chr[y] >> (7 - x)) & 1);
+                    if (bit != 0)
+                    {
+                        _colorPreview.SetBrush(b, x, y);
+                    }
+                }
+            }
+            if (refresh)
+            {
+                _colorMatrix.Refresh();
+                _colorPreview.Refresh();
+            }
         }
         private void UpdateActualView(bool refresh)
         {
@@ -67,13 +95,14 @@ namespace _99x8Edit
             int size = Decimal.ToInt32(_fontSize.Value);
             // Font
             string name = _fontList.SelectedItem.ToString();
-            using Font fnt = new Font(name, size,
-                _italic.Checked ? FontStyle.Italic : FontStyle.Regular,
-                GraphicsUnit.Pixel);
+            FontStyle style = FontStyle.Regular;
+            if (_italic.Checked) style |= FontStyle.Italic;
+            if (_bold.Checked) style |= FontStyle.Bold;
+            using Font fnt = new Font(name, size, style, GraphicsUnit.Pixel);
             // Region
             Rectangle r = new Rectangle(0, 0, 8, 8);
             // Threshold to draw
-            int threshold = Decimal.ToInt32(_threshold.Value);
+            int threshold = 256 - Decimal.ToInt32(_density.Value);
             for (int i = 0; i < len; ++i)
             {
                 // Each characters in textbox
@@ -103,6 +132,10 @@ namespace _99x8Edit
                         if (brightness >= threshold * 3)
                         {
                             bmp.SetPixel(x, y, c);
+                        }
+                        else
+                        {
+                            bmp.SetPixel(x, y, Color.Transparent);
                         }
                     }
                 }
@@ -192,6 +225,10 @@ namespace _99x8Edit
             this.RefreshAllViews();
         }
         private void _italic_CheckedChanged(object sender, EventArgs e)
+        {
+            this.RefreshAllViews();
+        }
+        private void _bold_CheckedChanged(object sender, EventArgs e)
         {
             this.RefreshAllViews();
         }

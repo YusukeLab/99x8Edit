@@ -16,7 +16,7 @@ namespace _99x8Edit
                                    0x17, 0x01, 0x27, 0x03, 0x51, 0x01, 0x27, 0x06,
                                    0x71, 0x01, 0x73, 0x03, 0x61, 0x06, 0x64, 0x06,
                                    0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
-        private bool _isTMS9918;
+        private bool _is9918;
         private bool _hasThreeBanks;
         // Data, of map
         private byte[] _mapPattern = new byte[256 * 4];  // One pattern mede by four characters
@@ -57,7 +57,7 @@ namespace _99x8Edit
             {
                 _nameTable[i] = 0;
             }
-            _isTMS9918 = true;
+            _is9918 = true;
             // Map patterns
             for (int i = 0; i < 256; ++i)
             {
@@ -105,7 +105,7 @@ namespace _99x8Edit
                 _nameTable = _nameTable.Clone() as byte[],
                 _hasThreeBanks =  _hasThreeBanks,
                 _pltDat = _pltDat.Clone() as byte[],
-                _isTMS9918 = _isTMS9918,
+                _is9918 = _is9918,
                 _mapPattern = _mapPattern.Clone() as byte[],
                 _mapData = _mapData.Clone() as byte[,],
                 _mapWidth = _mapWidth,
@@ -126,7 +126,7 @@ namespace _99x8Edit
                 _nameTable = src._nameTable.Clone() as byte[];
                 _hasThreeBanks = src._hasThreeBanks;
                 _pltDat = src._pltDat.Clone() as byte[];
-                _isTMS9918 = src._isTMS9918;
+                _is9918 = src._is9918;
                 _mapPattern = src._mapPattern.Clone() as byte[];
                 _mapData = src._mapData.Clone() as byte[,];
                 _mapWidth = src._mapWidth;
@@ -145,7 +145,7 @@ namespace _99x8Edit
         byte[] IExportable.NameTable { get => _nameTable; }
         bool IExportable.HasThreeBanks { get => _hasThreeBanks; }
         byte[] IExportable.PltDat { get => _pltDat; }
-        bool IExportable.IsTMS9918 { get => _isTMS9918; }
+        bool IExportable.Is9918 { get => _is9918; }
         byte[] IExportable.MapPattern { get => _mapPattern; }
         byte[,] IExportable.MapData { get => _mapData; }
         Int32 IExportable.MapWidth { get => _mapWidth; }
@@ -159,7 +159,7 @@ namespace _99x8Edit
         byte[] IImportable.NameTable { set => _nameTable = value; }
         bool IImportable.HasThreeBanks { set => _hasThreeBanks = value; }
         byte[] IImportable.PltDat { set => _pltDat = value; }
-        bool IImportable.IsTMS9918 { set => _isTMS9918 = value; }
+        bool IImportable.Is9918 { set => _is9918 = value; }
         byte[] IImportable.MapPattern { set => _mapPattern = value; }
         byte[,] IImportable.MapData { set => _mapData = value; }
         Int32 IImportable.MapWidth { set => _mapWidth = value; }
@@ -263,7 +263,7 @@ namespace _99x8Edit
             br.Write(ptn_clr1);           // Pattern color table
             br.Write(_nameTable);        // Name table
             br.Write(_pltDat);           // Palette
-            br.Write(_isTMS9918);        // Based on TMS9918 or not
+            br.Write(_is9918);        // Based on TMS9918 or not
         }
         internal void LoadPCG(BinaryReader br)
         {
@@ -274,7 +274,7 @@ namespace _99x8Edit
             Array.Copy(ptn_clr1, 0, _ptnClr, 0, 256 * 8);
             br.Read((Span<byte>)_nameTable); // Name table
             br.Read((Span<byte>)_pltDat);    // Palette
-            _isTMS9918 = br.ReadBoolean();   // Based on TMS9918 or not
+            _is9918 = br.ReadBoolean();   // Based on TMS9918 or not
             this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
         }
@@ -381,19 +381,19 @@ namespace _99x8Edit
         // For user interface
         //------------------------------------------------
         // Palettes and colors
-        internal bool IsTMS9918 => _isTMS9918;
+        internal bool Is9918 => _is9918;
         internal void SetPaletteTo9918(bool push)
         {
             // Set the windows color to palette based on TMS9918
             if(push) MementoCaretaker.Instance.Push();
-            _isTMS9918 = true;
+            _is9918 = true;
             this.UpdateAllViewItems();  // Update bitmaps
         }
         internal void SetPaletteTo9938(bool push)
         {
             // Set the windows color to palette based on internal palette data
             if(push) MementoCaretaker.Instance.Push();
-            _isTMS9918 = false;
+            _is9918 = false;
             this.UpdateAllViewItems();  // Update bitmaps
         }
         internal (int R, int G, int B) GetPalette(int color_code)
@@ -728,7 +728,7 @@ namespace _99x8Edit
         {
             index16 = Math.Clamp(index16, 0, 63);
             line = Math.Clamp(line, 0, 15);
-            if (_isTMS9918)
+            if (_is9918)
             {
                 return _spriteClr16[index16];
             }
@@ -743,7 +743,7 @@ namespace _99x8Edit
             line = Math.Clamp(line, 0, 15);
             code = Math.Clamp(code, 0, 15);
             if (push) MementoCaretaker.Instance.Push();
-            if (_isTMS9918)
+            if (_is9918)
             {
                 _spriteClr16[index16] = (byte)code;
             }
@@ -1009,7 +1009,7 @@ namespace _99x8Edit
         private void UpdateColorsByPalette()
         {
             // Update windows colors and brushes corresponding to data
-            if (_isTMS9918)
+            if (_is9918)
             {
                 for (int i = 0; i < 16; ++i)
                 {
@@ -1088,7 +1088,7 @@ namespace _99x8Edit
             for (int i = 0; i < 8; ++i)    // Each line
             {
                 byte pattern = _spriteGen[index8 * 8 + i];   // Pattern of the line
-                if (!_isTMS9918)
+                if (!_is9918)
                 {
                     color_code = _spriteClr[addr_color + i] & 0x0F;
                 }

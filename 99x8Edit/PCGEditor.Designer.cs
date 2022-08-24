@@ -558,6 +558,7 @@ namespace _99x8Edit
             this.viewSand.AllowDrop = true;
             this.viewSand.AllowMultipleSelection = true;
             this.viewSand.AllowOneStrokeEditing = false;
+            this.viewSand.AllowSelection = true;
             this.viewSand.AllowSubSelection = false;
             this.viewSand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewSand.CellHeight = 16;
@@ -585,6 +586,7 @@ namespace _99x8Edit
             this.viewPCG.AllowDrop = true;
             this.viewPCG.AllowMultipleSelection = true;
             this.viewPCG.AllowOneStrokeEditing = false;
+            this.viewPCG.AllowSelection = true;
             this.viewPCG.AllowSubSelection = false;
             this.viewPCG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPCG.CellHeight = 16;
@@ -614,6 +616,7 @@ namespace _99x8Edit
             this.viewEdit.AllowDrop = true;
             this.viewEdit.AllowMultipleSelection = true;
             this.viewEdit.AllowOneStrokeEditing = true;
+            this.viewEdit.AllowSelection = true;
             this.viewEdit.AllowSubSelection = true;
             this.viewEdit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewEdit.CellHeight = 16;
@@ -640,6 +643,7 @@ namespace _99x8Edit
             // 
             this.viewColor.AllowMultipleSelection = false;
             this.viewColor.AllowOneStrokeEditing = false;
+            this.viewColor.AllowSelection = true;
             this.viewColor.AllowSubSelection = false;
             this.viewColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewColor.CellHeight = 32;
@@ -663,6 +667,7 @@ namespace _99x8Edit
             // 
             this.viewPalette.AllowMultipleSelection = false;
             this.viewPalette.AllowOneStrokeEditing = false;
+            this.viewPalette.AllowSelection = true;
             this.viewPalette.AllowSubSelection = false;
             this.viewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.viewPalette.CellHeight = 32;

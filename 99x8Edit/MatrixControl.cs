@@ -134,6 +134,13 @@ namespace _99x8Edit
         }
         [Browsable(true)]
         [Description("Sub selection inside one selection")]
+        public bool AllowSelection
+        {
+            get;
+            set;
+        } = true;
+        [Browsable(true)]
+        [Description("Sub selection inside one selection")]
         public bool AllowSubSelection
         {
             get;
@@ -390,25 +397,28 @@ namespace _99x8Edit
                 // Apply filter
                 _filter?.Process(_bmp);
                 // Draw Selection
-                Utility.DrawSelection(g, _selection, this.Focused);
-                if (this.Focused && this.AllowSubSelection)
+                if (AllowSelection)
                 {
-                    Utility.DrawSubSelection(g,
-                                             (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
-                                             (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
-                                             _cellWidth - 2, CellHeight - 2);
-                }
-                // Overlayed selection
-                if(DrawOverlayedSelection)
-                {
-                    // For overlayed sprite selection
-                    int index = (Index + 1) % 64;
-                    int x = index % SelectionColNum;
-                    int y = index / SelectionColNum;
-                    g.DrawRectangle(_dashedGray, x * _selectionWidth * _cellWidth,
-                                    y * _selectionHeight * _cellHeight,
-                                    _selectionWidth * _cellWidth - 1,
-                                    _selectionHeight * _cellHeight - 1);
+                    Utility.DrawSelection(g, _selection, this.Focused);
+                    if (this.Focused && this.AllowSubSelection)
+                    {
+                        Utility.DrawSubSelection(g,
+                            (_selection.X * _selectionWidth + _sub.X) * _cellWidth,
+                            (_selection.Y * _selectionHeight + _sub.Y) * _cellHeight,
+                            _cellWidth - 2, CellHeight - 2);
+                    }
+                    // Overlayed selection
+                    if (DrawOverlayedSelection)
+                    {
+                        // For overlayed sprite selection
+                        int index = (Index + 1) % 64;
+                        int x = index % SelectionColNum;
+                        int y = index / SelectionColNum;
+                        g.DrawRectangle(_dashedGray, x * _selectionWidth * _cellWidth,
+                            y * _selectionHeight * _cellHeight,
+                            _selectionWidth * _cellWidth - 1,
+                            _selectionHeight * _cellHeight - 1);
+                    }
                 }
                 _updated = false;
             }
