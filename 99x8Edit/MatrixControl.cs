@@ -795,7 +795,12 @@ namespace _99x8Edit
             }
             public void Remove(Keys key)
             {
-                _pressed.Remove(key);
+                bool val = _pressed.Remove(key);
+                while (val)
+                {
+                    // Temp: previous keyup event may be dropped
+                    val = _pressed.Remove(key);
+                }
             }
             public bool IsPressed(Keys key)
             {
