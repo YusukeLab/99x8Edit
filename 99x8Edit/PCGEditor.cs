@@ -759,8 +759,10 @@ namespace _99x8Edit
         {
             MementoCaretaker.Instance.Push();
             int topleft = this.TargetPCG();
-            int fore_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8, foreground: true);
-            int back_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8, foreground: false);
+            int fore_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8,
+                                                    foreground: true);
+            int back_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8, 
+                                                    foreground: false);
             for (int row = 0; row < _viewEdit.SelectionRowNum; ++row)
             {
                 for (int col = 0; col < _viewEdit.SelectionColNum; ++col)
@@ -768,8 +770,10 @@ namespace _99x8Edit
                     int target = this.TargetPCG(topleft, col, row);
                     for (int line = 0; line < 8; ++line)
                     {
-                        _dataSource.SetPCGColor(target, line, fore_code, isForeGround: true, push: false);
-                        _dataSource.SetPCGColor(target, line, back_code, isForeGround: false, push: false);
+                        _dataSource.SetPCGColor(target, line, fore_code,
+                                                isForeGround: true, push: false);
+                        _dataSource.SetPCGColor(target, line, back_code, 
+                                                isForeGround: false, push: false);
                     }
                 }
             }
