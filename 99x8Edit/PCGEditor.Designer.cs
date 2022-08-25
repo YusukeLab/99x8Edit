@@ -96,10 +96,13 @@ namespace _99x8Edit
             this._viewPalette = new _99x8Edit.MatrixControl();
             this._chkBanks = new System.Windows.Forms.CheckBox();
             this._comboBank = new System.Windows.Forms.ComboBox();
+            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
             this._contextPCG.SuspendLayout();
             this._contextSandbox.SuspendLayout();
             this._contextEditor.SuspendLayout();
             this._menuStripMain.SuspendLayout();
+            this._contextColor.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -674,6 +677,7 @@ namespace _99x8Edit
             this._viewColor.CellHeight = 32;
             this._viewColor.CellWidth = 32;
             this._viewColor.ColumnNum = 2;
+            this._viewColor.ContextMenuStrip = this._contextColor;
             this._viewColor.DrawOverlayedSelection = false;
             this._viewColor.DrawTransparentColor = true;
             this._viewColor.Index = 0;
@@ -739,6 +743,20 @@ namespace _99x8Edit
             this._comboBank.TabIndex = 39;
             this._comboBank.SelectedIndexChanged += new System.EventHandler(this._comboBank_SelectedIndexChanged);
             // 
+            // _contextColor
+            // 
+            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripColorSetAll});
+            this._contextColor.Name = "contextPCGList";
+            this._contextColor.Size = new System.Drawing.Size(140, 28);
+            // 
+            // _toolStripColorSetAll
+            // 
+            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
+            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
+            this._toolStripColorSetAll.Text = "Set to All";
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -776,6 +794,7 @@ namespace _99x8Edit
             this._contextEditor.ResumeLayout(false);
             this._menuStripMain.ResumeLayout(false);
             this._menuStripMain.PerformLayout();
+            this._contextColor.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -847,8 +866,9 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem _toolStripEditRedo;
         private System.Windows.Forms.ToolStripMenuItem _toolStripMenuFonts;
         private System.Windows.Forms.ToolStripMenuItem _toolStripPCGHrev;
-        private System.Windows.Forms.ToolStripMenuItem toolStripPCGVrev;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem _toolStripPCGVrev;
+        private System.Windows.Forms.ContextMenuStrip _contextColor;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripColorSetAll;
     }
 }

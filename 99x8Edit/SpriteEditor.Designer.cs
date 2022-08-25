@@ -90,10 +90,13 @@ namespace _99x8Edit
             this._viewPalette = new _99x8Edit.MatrixControl();
             this._viewSprite = new _99x8Edit.MatrixControl();
             this._viewEdit = new _99x8Edit.EditorControl();
+            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this._viewPreview)).BeginInit();
             this._contextSprites.SuspendLayout();
             this._contextEditor.SuspendLayout();
             this._menuStripMain.SuspendLayout();
+            this._contextColor.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelColorR
@@ -572,6 +575,7 @@ namespace _99x8Edit
             this._viewColor.CellHeight = 32;
             this._viewColor.CellWidth = 32;
             this._viewColor.ColumnNum = 4;
+            this._viewColor.ContextMenuStrip = this._contextColor;
             this._viewColor.DrawOverlayedSelection = false;
             this._viewColor.DrawTransparentColor = true;
             this._viewColor.Index = 0;
@@ -666,6 +670,20 @@ namespace _99x8Edit
             this._viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this._viewEdit.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewEditor_CellOnEdit);
             // 
+            // _contextColor
+            // 
+            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripColorSetAll});
+            this._contextColor.Name = "contextPCGList";
+            this._contextColor.Size = new System.Drawing.Size(140, 28);
+            // 
+            // _toolStripColorSetAll
+            // 
+            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
+            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
+            this._toolStripColorSetAll.Text = "Set to All";
+            // 
             // SpriteEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -702,6 +720,7 @@ namespace _99x8Edit
             this._contextEditor.ResumeLayout(false);
             this._menuStripMain.ResumeLayout(false);
             this._menuStripMain.PerformLayout();
+            this._contextColor.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -769,5 +788,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem _toolStripEditorInverse;
         private System.Windows.Forms.ToolStripMenuItem _toolStripEditorPaint;
         private System.Windows.Forms.ToolStripSeparator _toolStripSeparator6;
+        private System.Windows.Forms.ContextMenuStrip _contextColor;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripColorSetAll;
     }
 }

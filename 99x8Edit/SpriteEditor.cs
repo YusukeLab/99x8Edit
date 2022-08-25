@@ -64,6 +64,7 @@ namespace _99x8Edit
             _toolStripEditorCopyColor.Click += contextEditor_copyColor;
             _toolStripEditorInverse.Click += contextEditor_inverse;
             _toolStripEditorPaint.Click += contextEditor_paint;
+            _toolStripColorSetAll.Click += contextColor_setAll;
         }
         //------------------------------------------------------------------------------
         // Overrides
@@ -685,6 +686,24 @@ namespace _99x8Edit
             win.StartPosition = FormStartPosition.Manual;
             win.Location = Cursor.Position;
             win.Show();
+        }
+        private void contextColor_setAll(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int index16 = _viewSprite.Index;
+            int index16ov = (index16 + 1) % 64;
+            bool overlay = _dataSource.GetSpriteOverlay(index16);
+            int color_l = _dataSource.GetSpriteColorCode(index16, _viewEdit.Y);
+            int color_r = _dataSource.GetSpriteColorCode(index16ov, _viewEdit.Y);
+            for (int line = 0; line < 16; ++line)
+            {
+                _dataSource.SetSpriteColorCode(index16, line, color_l, push: false);
+                if (overlay)
+                {
+                    _dataSource.SetSpriteColorCode(index16ov, line, color_r, push: false);
+                }
+            }
+            this.RefreshAllViews();
         }
         private void viewPalette_MouseClick(object sender, MouseEventArgs e)
         {

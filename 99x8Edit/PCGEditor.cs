@@ -74,6 +74,7 @@ namespace _99x8Edit
             _toolStripEditorCopyDown.Click += contextEditor_copyDown;
             _toolStripEditorCopyRight.Click += contextEditor_copyRight;
             _toolStripEditorPaint.Click += contextEditor_paint;
+            _toolStripColorSetAll.Click += contextColor_setAll;
         }
         //------------------------------------------------------------------------------
         // Override
@@ -753,6 +754,26 @@ namespace _99x8Edit
             palette_win.StartPosition = FormStartPosition.Manual;
             palette_win.Location = Cursor.Position;
             palette_win.Show();
+        }
+        private void contextColor_setAll(object sender, EventArgs e)
+        {
+            MementoCaretaker.Instance.Push();
+            int topleft = this.TargetPCG();
+            int fore_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8, foreground: true);
+            int back_code = _dataSource.GetPCGColor(topleft, _viewEdit.Y % 8, foreground: false);
+            for (int row = 0; row < _viewEdit.SelectionRowNum; ++row)
+            {
+                for (int col = 0; col < _viewEdit.SelectionColNum; ++col)
+                {
+                    int target = this.TargetPCG(topleft, col, row);
+                    for (int line = 0; line < 8; ++line)
+                    {
+                        _dataSource.SetPCGColor(target, line, fore_code, isForeGround: true, push: false);
+                        _dataSource.SetPCGColor(target, line, back_code, isForeGround: false, push: false);
+                    }
+                }
+            }
+            this.RefreshAllViews();
         }
         private void viewPalette_CellOnEdit(object sender, MatrixControl.EditEventArgs e)
         {
