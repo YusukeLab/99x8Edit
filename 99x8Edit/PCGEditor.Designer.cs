@@ -38,8 +38,11 @@ namespace _99x8Edit
             this._toolStripPCGCopyDown = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripPCGCopyRight = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this._toolStripPCGDel = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGHrev = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripPCGVrev = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripPCGInverse = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripPCGDel = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this._chkTMS = new System.Windows.Forms.CheckBox();
@@ -130,10 +133,13 @@ namespace _99x8Edit
             this._toolStripPCGCopyDown,
             this._toolStripPCGCopyRight,
             this._toolStripSeparator1,
-            this._toolStripPCGDel,
-            this._toolStripPCGInverse});
+            this._toolStripPCGHrev,
+            this._toolStripPCGVrev,
+            this._toolStripPCGInverse,
+            this.toolStripSeparator1,
+            this._toolStripPCGDel});
             this._contextPCG.Name = "contextPCGList";
-            this._contextPCG.Size = new System.Drawing.Size(209, 154);
+            this._contextPCG.Size = new System.Drawing.Size(209, 208);
             // 
             // _toolStripPCGCopy
             // 
@@ -168,18 +174,35 @@ namespace _99x8Edit
             this._toolStripSeparator1.Name = "_toolStripSeparator1";
             this._toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
             // 
-            // _toolStripPCGDel
+            // _toolStripPCGHrev
             // 
-            this._toolStripPCGDel.Name = "_toolStripPCGDel";
-            this._toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this._toolStripPCGDel.Size = new System.Drawing.Size(208, 24);
-            this._toolStripPCGDel.Text = "Delete";
+            this._toolStripPCGHrev.Name = "_toolStripPCGHrev";
+            this._toolStripPCGHrev.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGHrev.Text = "H Reverse";
+            // 
+            // _toolStripPCGVrev
+            // 
+            this._toolStripPCGVrev.Name = "_toolStripPCGVrev";
+            this._toolStripPCGVrev.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGVrev.Text = "V Reverse";
             // 
             // _toolStripPCGInverse
             // 
             this._toolStripPCGInverse.Name = "_toolStripPCGInverse";
             this._toolStripPCGInverse.Size = new System.Drawing.Size(208, 24);
             this._toolStripPCGInverse.Text = "Swap Color";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
+            // 
+            // _toolStripPCGDel
+            // 
+            this._toolStripPCGDel.Name = "_toolStripPCGDel";
+            this._toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this._toolStripPCGDel.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGDel.Text = "Delete";
             // 
             // label3
             // 
@@ -823,5 +846,9 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem _toolStripEditUndo;
         private System.Windows.Forms.ToolStripMenuItem _toolStripEditRedo;
         private System.Windows.Forms.ToolStripMenuItem _toolStripMenuFonts;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGHrev;
+        private System.Windows.Forms.ToolStripMenuItem toolStripPCGVrev;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripPCGVrev;
     }
 }

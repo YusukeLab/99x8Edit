@@ -554,6 +554,33 @@ namespace _99x8Edit
             }
             this.UpdatePCGBitmap(pcg);
         }
+        internal void ReversePCGH(int pcg, bool push)
+        {
+            pcg = Math.Clamp(pcg, 0, 767);
+            if (push) MementoCaretaker.Instance.Push();
+            for (int i = 0; i < 8; ++i)
+            {
+                byte dat = _ptnGen[pcg * 8 + i];
+                dat = (byte)((dat & 0x0F) << 4 | (dat & 0xF0) >> 4);
+                dat = (byte)((dat & 0x33) << 2 | (dat & 0xCC) >> 2);
+                dat = (byte)((dat & 0x55) << 1 | (dat & 0xAA) >> 1);
+                _ptnGen[pcg * 8 + i] = dat;
+            }
+            this.UpdatePCGBitmap(pcg);
+        }
+        internal void ReversePCGV(int pcg, bool push)
+        {
+            pcg = Math.Clamp(pcg, 0, 767);
+            if (push) MementoCaretaker.Instance.Push();
+            for (int i = 0; i < 4; ++i)
+            {
+                int addr1 = pcg * 8 + i;
+                int addr2 = pcg * 8 + 7 - i;
+                (_ptnGen[addr1], _ptnGen[addr2]) = (_ptnGen[addr2], _ptnGen[addr1]);
+                (_ptnClr[addr1], _ptnClr[addr2]) = (_ptnClr[addr2], _ptnClr[addr1]);
+            }
+            this.UpdatePCGBitmap(pcg);
+        }
         internal int GetPCGColor(int pcg, int line, bool foreground)
         {
             pcg = Math.Clamp(pcg, 0, 767);

@@ -58,6 +58,8 @@ namespace _99x8Edit
             _toolStripPCGPaste.Click += contextPCG_paste;
             _toolStripPCGDel.Click += contextPCG_delete;
             _toolStripPCGInverse.Click += contextPCG_inverse;
+            _toolStripPCGHrev.Click += contextPCG_Hrev;
+            _toolStripPCGVrev.Click += contextPCG_Vrev;
             _toolStripPCGCopyDown.Click += contextPCG_copyDown;
             _toolStripPCGCopyRight.Click += contextPCG_copyRight;
             _toolStripSandboxCopy.Click += contextSand_copy;
@@ -521,6 +523,24 @@ namespace _99x8Edit
             _dataSource.InversePCG(index, push: true);
             this.RefreshAllViews();
         }
+        private void contextPCG_Hrev(object sender, EventArgs e)
+        {
+            // Force current selection to single selection
+            _viewPCG.ResetMultipleSelection();
+            // HReverse current character
+            int index = _viewPCG.Index + _comboBank.SelectedIndex * 256;
+            _dataSource.ReversePCGH(index, push: true);
+            this.RefreshAllViews();
+        }
+        private void contextPCG_Vrev(object sender, EventArgs e)
+        {
+            // Force current selection to single selection
+            _viewPCG.ResetMultipleSelection();
+            // HReverse current character
+            int index = _viewPCG.Index + _comboBank.SelectedIndex * 256;
+            _dataSource.ReversePCGV(index, push: true);
+            this.RefreshAllViews();
+        }
         private void contextPCG_copyDown(object sender, EventArgs e)
         {
             MementoCaretaker.Instance.Push();
@@ -623,22 +643,28 @@ namespace _99x8Edit
             {
                 case ClipPCG _:
                     // Pasted from character list
-                    int pcgIndex = clip.index;
-                    // 0-255 in bank
-                    pcgIndex %= 256;
-                    _dataSource.SetNameTable(_viewSand.Index, pcgIndex, true);
+                    MementoCaretaker.Instance.Push();
+                    Action<int, int, int, int> pcg2sand = (col, row, colcnt, rowcnt) =>
+                    {
+                        int index = clip.pcgIndex[rowcnt][colcnt];
+                        index %= 256;    // 0-767 to 0-255
+                        int addr = _viewSand.IndexOf(col, row);
+                        _dataSource.SetNameTable(addr, index, push: false);
+                    };
+                    _viewSand.ForEachSelection(_viewSand.X, _viewSand.Y,
+                        clip.pcgIndex?[0]?.Count, clip.pcgIndex?.Count, pcg2sand);
                     this.UpdateSandbox(refresh: true);
                     break;
                 case ClipNametable _:
                     MementoCaretaker.Instance.Push();
-                    Action<int, int, int, int> callback = (col, row, colcnt, rowcnt) =>
+                    Action<int, int, int, int> sand2sand = (col, row, colcnt, rowcnt) =>
                     {
                         // Paste each copied cells
                         int index = _viewSand.IndexOf(col, row);
                         _dataSource.SetNameTable(index, clip.pcgID[rowcnt][colcnt], push: false);
                     };
                     _viewSand.ForEachSelection(_viewSand.X, _viewSand.Y,
-                        clip.pcgID?[0]?.Count, clip.pcgID?.Count, callback);
+                        clip.pcgID?[0]?.Count, clip.pcgID?.Count, sand2sand);
                     this.UpdateSandbox(refresh: true);
                     break;
             }
