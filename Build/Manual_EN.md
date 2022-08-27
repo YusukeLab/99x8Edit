@@ -6,6 +6,16 @@ The aim of 99x8Edit is to be a simple and practical editor for TMS9918/V9938
 applications, so any feedbacks and requests are welcome.  
 99x8Edit is free to use, and released under MIT license.  
 
+# Features
+Editing - Tiles, sprites, and map. Editing is as easy as operating Excel.  
+Export - Various Formats including assembly, C, raw data, and MSX BASIC(BSAVE format).  
+Import - Imports raw data, MSX BASIC format, PNG image.  
+Undo/Redo  
+Compression - Exported data can be compressed. Includes sample program to decode on real machine.  
+Peek - ROM data can be imaged for easy reference.  
+Font - TrueType fonts can be converted automatically for reference.  
+CRT Filter - Includes CRT filter to view how it looks on real machines.
+
 # Contact
 
 Twitter:@chocolatechnica
