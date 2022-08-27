@@ -25,7 +25,9 @@ namespace _99x8Edit
     internal class Import
     {
         // Import types
-        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin"
+        internal static string PCGTypeFilter = "MSX BASIC(*.bin)|*.bin" 
+                                             + "|Raw pattern data(*.raw)|*.raw"
+                                             + "|Raw color data(*.raw)|*.raw"
                                              + "|PNG File(*.png)|*.png";
         internal static string SpriteTypeFilter = "MSX BSAVE format, pattern data(*.bin)|*.bin"
                                                 + "|MSX BSAVE format, color data(*.bin)|*.bin"
@@ -34,6 +36,8 @@ namespace _99x8Edit
         internal enum PCGType
         {
             MSXBASIC = 0,
+            RawPattern,
+            RawColor,
             PNG
         };
         internal enum SpriteType
@@ -65,6 +69,12 @@ namespace _99x8Edit
             {
                 case PCGType.MSXBASIC:
                     this.BINtoPCG(filename, dst);
+                    break;
+                case PCGType.RawPattern:
+                    this.RAWtoPCGPattern(filename, dst);
+                    break;
+                case PCGType.RawColor:
+                    this.RAWtoPCGColor(filename, dst);
                     break;
                 case PCGType.PNG:
                     this.PNGtoPCG(filename, dst);
@@ -149,6 +159,23 @@ namespace _99x8Edit
                 nametable[i] = (byte)(i % 256);
             }
             dst.NameTable = nametable;
+        }
+        private void RAWtoPCGPattern(string filename, IImportable dst)
+        {
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            byte[] out_gen = new byte[768 * 8];
+            byte[] bytes_read = br.ReadBytes(768 * 8);
+            Array.Copy(bytes_read, out_gen, bytes_read.Length);
+            dst.PtnGen = out_gen;
+            dst.HasThreeBanks = (br.BaseStream.Length > 0x0800);
+        }
+        private void RAWtoPCGColor(string filename, IImportable dst)
+        {
+            using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
+            byte[] out_clr = new byte[768 * 8];
+            byte[] bytes_read = br.ReadBytes(768 * 8);
+            Array.Copy(bytes_read, out_clr, bytes_read.Length);
+            dst.PtnClr = out_clr;
         }
         private void BINtoPCG(string filename, IImportable dst)
         {
