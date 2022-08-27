@@ -555,6 +555,14 @@ namespace _99x8Edit
         {
             _pressedKeys.Remove(e.KeyCode);
         }
+        protected override void OnGotFocus(EventArgs e)
+        {
+            _pressedKeys.Clear();
+        }
+        protected override void OnLostFocus(EventArgs e)
+        {
+            _pressedKeys.Clear();
+        }
         protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
         {
             // Key events in sandbox
@@ -798,13 +806,16 @@ namespace _99x8Edit
                 bool val = _pressed.Remove(key);
                 while (val)
                 {
-                    // Temp: previous keyup event may be dropped
                     val = _pressed.Remove(key);
                 }
             }
             public bool IsPressed(Keys key)
             {
                 return _pressed.Contains(key);
+            }
+            public void Clear()
+            {
+                _pressed.Clear();
             }
         }
     }
