@@ -4,6 +4,8 @@
 such as MSX, Spectravideo, Sega Master System, and so on.  
 The aim of 99x8Edit is to be a simple and practical editor for your
 TMS9918/V9938 applications, so any feedbacks and requests are welcome.
+![capture]
+(https://user-images.githubusercontent.com/106167090/187049946-5ddc48bd-dc02-4d2f-8ebc-c47994e7c6e0.png)
 
 ## License
 99x8Edit is free to use, and released under MIT license.
