@@ -12,6 +12,9 @@ namespace _99x8Edit
         internal byte[] PtnClr { set; }        // Pattern color table
         internal byte[] NameTable { set; }     // Sandbox(Pattern name table)
         internal bool HasThreeBanks { set; }
+        internal byte NameTableMapW { set; }
+        internal byte NameTableMapH { set; }
+        internal byte[] NameTableMapped { set; }
         internal byte[] PltDat { set; }
         internal bool Is9918 { set; }
         internal byte[] MapPattern { set; }    // One pattern made by four characters

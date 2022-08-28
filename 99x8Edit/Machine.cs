@@ -18,6 +18,9 @@ namespace _99x8Edit
                                    0x11, 0x04, 0x65, 0x02, 0x55, 0x05, 0x77, 0x07};  // Palette [RB][xG][RB][xG][RB]...
         private bool _is9918;
         private bool _hasThreeBanks;
+        private byte _nameTableMapW = 1;
+        private byte _nameTableMapH = 1;
+        private byte[] _nameTableMapped = new byte[768 * 1 * 1];  // One bank for default
         // Data, of map
         private byte[] _mapPattern = new byte[256 * 4];  // One pattern made by four characters
         private byte[,] _mapData = new byte[64, 64];     // Map data[x, y](0..255)
@@ -33,7 +36,10 @@ namespace _99x8Edit
         private readonly Bitmap[] _bmpOneSprite = new Bitmap[256];    // Sprite
         private readonly Color[] _colorOf = new Color[16];   // Windows color corresponding to color code
         private readonly Brush[] _brushOf = new Brush[16];
-        // Consts(For TMS9918 view, we need higher resolution than RGB8)
+        // Consts
+        internal readonly int NameTableMapWMax = 16;
+        internal readonly int NameTableMapHMax = 12;
+        // For TMS9918 view, we need higher resolution than RGB8)
         private static readonly int[] _palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
                                                        0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
                                                        0xdb6559, 0xff897d, 0xccc35e, 0xded087,
@@ -107,6 +113,9 @@ namespace _99x8Edit
                 _ptnClr = _ptnClr.Clone() as byte[],
                 _nameTable = _nameTable.Clone() as byte[],
                 _hasThreeBanks =  _hasThreeBanks,
+                _nameTableMapW = _nameTableMapW,
+                _nameTableMapH = _nameTableMapH,
+                _nameTableMapped = _nameTableMapped.Clone() as byte[],
                 _pltDat = _pltDat.Clone() as byte[],
                 _is9918 = _is9918,
                 _mapPattern = _mapPattern.Clone() as byte[],
@@ -128,6 +137,9 @@ namespace _99x8Edit
                 _ptnClr = src._ptnClr.Clone() as byte[];
                 _nameTable = src._nameTable.Clone() as byte[];
                 _hasThreeBanks = src._hasThreeBanks;
+                _nameTableMapW = src._nameTableMapW;
+                _nameTableMapH = src._nameTableMapH;
+                _nameTableMapped = src._nameTableMapped.Clone() as byte[];
                 _pltDat = src._pltDat.Clone() as byte[];
                 _is9918 = src._is9918;
                 _mapPattern = src._mapPattern.Clone() as byte[];
@@ -147,6 +159,9 @@ namespace _99x8Edit
         byte[] IExportable.PtnClr => _ptnClr;
         byte[] IExportable.NameTable => _nameTable;
         bool IExportable.HasThreeBanks => _hasThreeBanks;
+        byte IExportable.NameTableMapW => _nameTableMapW;
+        byte IExportable.NameTableMapH => _nameTableMapH;
+        byte[] IExportable.NameTableMapped => _nameTableMapped;
         byte[] IExportable.PltDat => _pltDat;
         bool IExportable.Is9918 => _is9918;
         byte[] IExportable.MapPattern => _mapPattern;
@@ -161,6 +176,9 @@ namespace _99x8Edit
         byte[] IImportable.PtnClr { set => _ptnClr = value; }
         byte[] IImportable.NameTable { set => _nameTable = value; }
         bool IImportable.HasThreeBanks { set => _hasThreeBanks = value; }
+        byte IImportable.NameTableMapW { set => _nameTableMapW = value; }
+        byte IImportable.NameTableMapH { set => _nameTableMapH = value; }
+        byte[] IImportable.NameTableMapped { set => _nameTableMapped = value; }
         byte[] IImportable.PltDat { set => _pltDat = value; }
         bool IImportable.Is9918 { set => _is9918 = value; }
         byte[] IImportable.MapPattern { set => _mapPattern = value; }
@@ -280,33 +298,6 @@ namespace _99x8Edit
             this.UpdateColorsByPalette();
             this.UpdatePCGBitmap();
         }
-        internal void SavePCGAdd(BinaryWriter br)
-        {
-            // Additional PCG Data
-            br.Write(_hasThreeBanks);
-            byte[] ptn_gen2 = new byte[512 * 8];
-            byte[] ptn_clr2 = new byte[512 * 8];
-            Array.Copy(_ptnGen, 256 * 8, ptn_gen2, 0, 512 * 8);
-            Array.Copy(_ptnClr, 256 * 8, ptn_clr2, 0, 512 * 8);
-            br.Write(ptn_gen2);           // Pattern generator table
-            br.Write(ptn_clr2);           // Pattern color table
-        }
-        internal void LoadPCGAdd(BinaryReader br)
-        {
-            // Additional PCG Data
-            try
-            {
-                _hasThreeBanks = br.ReadBoolean();
-                byte[] ptn_gen2 = br.ReadBytes(512 * 8);    // Pattern generator table
-                byte[] ptn_clr2 = br.ReadBytes(512 * 8);    // Pattern color table
-                Array.Copy(ptn_gen2, 0, _ptnGen, 256 * 8, 512 * 8);
-                Array.Copy(ptn_clr2, 0, _ptnClr, 256 * 8, 512 * 8);
-            }
-            catch (EndOfStreamException)
-            {
-                // No additional data
-            }
-        }
         internal void SaveSprites(BinaryWriter br)
         {
             br.Write(_spriteGen);           // Sprite patten generator table
@@ -377,6 +368,45 @@ namespace _99x8Edit
                 {
                     _mapData[j, i] = br.ReadByte();
                 }
+            }
+        }
+        internal void SavePCGAdd(BinaryWriter br)
+        {
+            // Additional PCG Data
+            br.Write(_hasThreeBanks);
+            byte[] ptn_gen2 = new byte[512 * 8];
+            byte[] ptn_clr2 = new byte[512 * 8];
+            Array.Copy(_ptnGen, 256 * 8, ptn_gen2, 0, 512 * 8);
+            Array.Copy(_ptnClr, 256 * 8, ptn_clr2, 0, 512 * 8);
+            br.Write(ptn_gen2);           // Pattern generator table
+            br.Write(ptn_clr2);           // Pattern color table
+            // Additional name table map
+            br.Write(_nameTableMapW);
+            br.Write(_nameTableMapH);
+            br.Write(_nameTableMapped);
+        }
+        internal void LoadPCGAdd(BinaryReader br)
+        {
+            try
+            {
+                // Additional PCG Data
+                _hasThreeBanks = br.ReadBoolean();
+                byte[] ptn_gen2 = br.ReadBytes(512 * 8);    // Pattern generator table
+                byte[] ptn_clr2 = br.ReadBytes(512 * 8);    // Pattern color table
+                Array.Copy(ptn_gen2, 0, _ptnGen, 256 * 8, 512 * 8);
+                Array.Copy(ptn_clr2, 0, _ptnClr, 256 * 8, 512 * 8);
+                // Additional name table map
+                byte width = br.ReadByte();
+                if (width >= 1)
+                {
+                    _nameTableMapW = width;
+                    _nameTableMapH = br.ReadByte();
+                    _nameTableMapped = br.ReadBytes(_nameTableMapW * _nameTableMapH);
+                }
+            }
+            catch (EndOfStreamException)
+            {
+                // No additional data
             }
         }
         //--------------------------------------------------------------------
@@ -621,10 +651,12 @@ namespace _99x8Edit
         // Name table
         internal int GetNameTable(int addr)
         {
+            // Will be discontinued
             return _nameTable[addr];
         }
         internal void SetNameTable(int addr, int data, bool push)
         {
+            // Will be discontinued
             addr = Math.Clamp(addr, 0, 767);
             data = Math.Clamp(data, 0, 255);
             if (push)
@@ -632,6 +664,68 @@ namespace _99x8Edit
                 MementoCaretaker.Instance.Push();
             }
             _nameTable[addr] = (byte)data;
+        }
+        internal int NameTableMapW
+        {
+            get => _nameTableMapW;
+            set
+            {
+                value = Math.Clamp(value, 1, NameTableMapHMax);
+                byte[] new_buf = new byte[value * _nameTableMapH * 768];
+                for (int row = 0; row < _nameTableMapH; ++row)
+                {
+                    for (int col = 0; (col < value) && (col < _nameTableMapW); ++col)
+                    {
+                        int src = (row * _nameTableMapW + col) * 768;
+                        int dst = (row * value + col) * 768;
+                        Array.Copy(_nameTableMapped, src, new_buf, dst, 768);
+                    }
+                }
+                _nameTableMapW = (byte)value;
+                _nameTableMapped = new_buf;
+            }
+        }
+
+        internal int NameTableMapH
+        {
+            get => _nameTableMapH;
+            set
+            {
+                value = Math.Clamp(value, 1, NameTableMapWMax);
+                byte[] new_buf = new byte[_nameTableMapW * value * 768];
+                for (int row = 0; (row < value) && (row < _nameTableMapH); ++row)
+                {
+                    for (int col = 0; col < _nameTableMapW; ++col)
+                    {
+                        int src = (row * _nameTableMapW + col) * 768;
+                        int dst = (row * _nameTableMapW + col) * 768;
+                        Array.Copy(_nameTableMapped, src, new_buf, dst, 768);
+                    }
+                }
+                _nameTableMapH = (byte)value;
+                _nameTableMapped = new_buf;
+            }
+        }
+        internal int GetNameTableMapped(int mapx, int mapy, int x, int y)
+        {
+            mapx = Math.Clamp(mapx, 0, _nameTableMapW - 1);
+            mapy = Math.Clamp(mapy, 0, _nameTableMapH - 1);
+            x = Math.Clamp(x, 0, 31);
+            y = Math.Clamp(y, 0, 23);
+            int stride = _nameTableMapW * 768;
+            int addr = mapy * stride + mapx * 768 + y * 32 + x;
+            return _nameTableMapped[addr];
+        }
+        internal void SetNameTableMapped(int mapx, int mapy, int x, int y, int value)
+        {
+            mapx = Math.Clamp(mapx, 0, _nameTableMapW - 1);
+            mapy = Math.Clamp(mapy, 0, _nameTableMapH - 1);
+            x = Math.Clamp(x, 0, 31);
+            y = Math.Clamp(y, 0, 23);
+            value = Math.Clamp(value, 0, 255);
+            int stride = _nameTableMapW * 768;
+            int addr = mapy * stride + mapx * 768 + y * 32 + x;
+            _nameTableMapped[addr] = (byte)value;
         }
         //------------------------------------------------
         // Map pattern (4 pcg in each 256 patterns)

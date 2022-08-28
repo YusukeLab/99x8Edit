@@ -10,6 +10,9 @@ namespace _99x8Edit
         internal byte[] PtnClr { get; }        // Pattern color table
         internal byte[] NameTable { get; }     // Sandbox(Pattern name table)
         internal bool HasThreeBanks { get; }
+        internal byte NameTableMapW { get; }
+        internal byte NameTableMapH { get; }
+        internal byte[] NameTableMapped { get; }
         internal byte[] PltDat { get; }
         internal bool Is9918 { get; }
         internal byte[] MapPattern { get; }    // One pattern made by four characters
@@ -149,15 +152,17 @@ namespace _99x8Edit
                 sr.WriteLine(str);
                 sr.WriteLine("};");
                 sr.WriteLine("// Name table");
+                sr.WriteLine($"#define MAP_W   ({_src.NameTableMapW})");
+                sr.WriteLine($"#define MAP_H   ({_src.NameTableMapH})");
                 if (type == PCGType.CHeader)
                 {
                     sr.WriteLine("const unsigned char nametable[] = {");
-                    str = ArrayToCHeaderString(_src.NameTable, compress: false);
+                    str = NameTableToString(type);
                 }
                 else
                 {
                     sr.WriteLine("const unsigned char nametable_compressed[] = {");
-                    str = ArrayToCHeaderString(_src.NameTable, compress: true);
+                    str = NameTableToString(type);
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("};");
@@ -205,15 +210,19 @@ namespace _99x8Edit
                 }
                 sr.WriteLine(str);
                 sr.WriteLine("; Name table");
+                sr.WriteLine("mapwidth:");
+                sr.WriteLine($"\tdb\t{_src.NameTableMapW}");
+                sr.WriteLine("mapheight:");
+                sr.WriteLine($"\tdb\t{_src.NameTableMapH}");
                 if (type == PCGType.ASMData)
                 {
                     sr.WriteLine("namtbl:");
-                    str = ArrayToASMString(_src.NameTable, compress: false);
+                    str = NameTableToString(type);
                 }
                 else
                 {
                     sr.WriteLine("namtbl_compressed:");
-                    str = ArrayToASMString(_src.NameTable, compress: true);
+                    str = NameTableToString(type);
                 }
                 sr.WriteLine(str);
             }
@@ -644,6 +653,63 @@ namespace _99x8Edit
                 }
             }
             return ret;
+        }
+        private string NameTableToString(PCGType type)
+        {
+            switch (type)
+            {
+                case PCGType.CHeader:
+                    return ArrayToCHeaderString(_src.NameTableMapped, compress: false);
+                case PCGType.CCompressed:
+                    byte[] ccomp = this.CompressNameTable();
+                    return ArrayToCHeaderString(ccomp, compress: false);
+                case PCGType.ASMData:
+                    return ArrayToASMString(_src.NameTableMapped, compress: false);
+                case PCGType.ASMCompressed:
+                    byte[] asmcomp = this.CompressNameTable();
+                    return ArrayToASMString(asmcomp, compress: false);
+                default:
+                    throw new Exception("Unsupported type: exporting name table");
+            }
+        }
+        private byte[] CompressNameTable()
+        {
+            byte[] one_bank = new byte[768];
+            // Map will be compressed by run length encode, to be decoded realtime
+            List<byte[]> comp_data = new List<byte[]>();
+            // Head of data will be [offset to the data] * [rows] * [cols]
+            ushort[] offset_to_row = new ushort[_src.NameTableMapW * _src.NameTableMapH];
+            ushort offset = (ushort)(_src.NameTableMapW * _src.NameTableMapH * 2);
+            // Create data
+            for (int row = 0; row < _src.NameTableMapH; ++row)
+            {
+                for (int col = 0; col < _src.NameTableMapW; ++col)
+                {
+                    // Offset to the bank data
+                    offset_to_row[row * _src.NameTableMapW + col] = offset;
+                    // Compress each bank
+                    Array.Copy(_src.NameTableMapped,
+                               row * _src.NameTableMapW * 768 + col * 768,
+                               one_bank, 0, 768);
+                    CompressionBase encoder = Compression.Create(Compression.Type.RunLength);
+                    byte[] comp = encoder.Encode(one_bank);
+                    comp_data.Add(comp);
+                    offset += (ushort)comp.Length;
+                }
+            }
+            // Make one compressed data
+            List<byte> ret = new List<byte>();
+            for (int i = 0; i < _src.NameTableMapW * _src.NameTableMapH; ++i)
+            {
+                // Offset is stored as 2 byte little endian data
+                ret.Add((byte)(offset_to_row[i] & 0xFF));
+                ret.Add((byte)((offset_to_row[i]) >> 8 & 0xFF));
+            }
+            for (int i = 0; i < _src.NameTableMapH; ++i)
+            {
+                ret.AddRange(comp_data[i]);
+            }
+            return ret.ToArray();
         }
         private byte[] CompressMapData()
         {
