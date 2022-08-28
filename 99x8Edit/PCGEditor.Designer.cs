@@ -93,11 +93,12 @@ namespace _99x8Edit
             this._viewPCG = new _99x8Edit.MatrixControl();
             this._viewEdit = new _99x8Edit.EditorControl();
             this._viewColor = new _99x8Edit.MatrixControl();
+            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
             this._viewPalette = new _99x8Edit.MatrixControl();
             this._chkBanks = new System.Windows.Forms.CheckBox();
             this._comboBank = new System.Windows.Forms.ComboBox();
-            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnMove = new System.Windows.Forms.Button();
             this._contextPCG.SuspendLayout();
             this._contextSandbox.SuspendLayout();
             this._contextEditor.SuspendLayout();
@@ -272,7 +273,7 @@ namespace _99x8Edit
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Yu Gothic UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label7.Location = new System.Drawing.Point(301, 204);
+            this.label7.Location = new System.Drawing.Point(301, 216);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(67, 20);
             this.label7.TabIndex = 19;
@@ -596,7 +597,7 @@ namespace _99x8Edit
             this._viewSand.DrawOverlayedSelection = false;
             this._viewSand.DrawTransparentColor = false;
             this._viewSand.Index = 0;
-            this._viewSand.Location = new System.Drawing.Point(301, 227);
+            this._viewSand.Location = new System.Drawing.Point(301, 239);
             this._viewSand.Name = "_viewSand";
             this._viewSand.RowNum = 24;
             this._viewSand.SelectionHeight = 1;
@@ -692,6 +693,20 @@ namespace _99x8Edit
             this._viewColor.Y = 0;
             this._viewColor.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
             // 
+            // _contextColor
+            // 
+            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripColorSetAll});
+            this._contextColor.Name = "contextPCGList";
+            this._contextColor.Size = new System.Drawing.Size(140, 28);
+            // 
+            // _toolStripColorSetAll
+            // 
+            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
+            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
+            this._toolStripColorSetAll.Text = "Set to All";
+            // 
             // _viewPalette
             // 
             this._viewPalette.AllowMultipleSelection = false;
@@ -743,24 +758,22 @@ namespace _99x8Edit
             this._comboBank.TabIndex = 39;
             this._comboBank.SelectedIndexChanged += new System.EventHandler(this._comboBank_SelectedIndexChanged);
             // 
-            // _contextColor
+            // btnMove
             // 
-            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._toolStripColorSetAll});
-            this._contextColor.Name = "contextPCGList";
-            this._contextColor.Size = new System.Drawing.Size(140, 28);
-            // 
-            // _toolStripColorSetAll
-            // 
-            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
-            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
-            this._toolStripColorSetAll.Text = "Set to All";
+            this.btnMove.BackgroundImage = global::_99x8Edit.Properties.Resources.arrow;
+            this.btnMove.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnMove.Location = new System.Drawing.Point(762, 202);
+            this.btnMove.Name = "btnMove";
+            this.btnMove.Size = new System.Drawing.Size(50, 34);
+            this.btnMove.TabIndex = 40;
+            this.btnMove.UseVisualStyleBackColor = true;
+            this.btnMove.Click += new System.EventHandler(this.btnMove_Click);
             // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(830, 642);
+            this.Controls.Add(this.btnMove);
             this.Controls.Add(this._comboBank);
             this.Controls.Add(this._chkBanks);
             this.Controls.Add(this._viewPalette);
@@ -870,5 +883,6 @@ namespace _99x8Edit
         private System.Windows.Forms.ToolStripMenuItem _toolStripPCGVrev;
         private System.Windows.Forms.ContextMenuStrip _contextColor;
         private System.Windows.Forms.ToolStripMenuItem _toolStripColorSetAll;
+        private System.Windows.Forms.Button btnMove;
     }
 }

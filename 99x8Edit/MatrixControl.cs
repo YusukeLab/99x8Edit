@@ -85,26 +85,14 @@ namespace _99x8Edit
         public int ColumnNum
         {
             get => _columnNum;
-            set
-            {
-                _columnNum = value;
-                _cellImg = null;
-                _bmp = null;
-                _background = null;
-            }
+            set => _columnNum = value;
         }
         [Browsable(true)]
         [Description("Number of rows to be controlled")]
         public int RowNum
         {
             get => _rowNum;
-            set
-            {
-                _rowNum = value;
-                _cellImg = null;
-                _bmp = null;
-                _background = null;
-            }
+            set => _rowNum = value;
         }
         [Browsable(true)]
         [Description("Number of columns in one selection")]
@@ -260,6 +248,10 @@ namespace _99x8Edit
         {
             // Set images to be drawn
             _cellImg ??= new Bitmap[_columnNum, _rowNum];
+            if ((_cellImg.GetLength(0) < _columnNum) || (_cellImg.GetLength(1) < _rowNum))
+            {
+                _cellImg = new Bitmap[_columnNum, _rowNum];
+            }
             _cellImg[col, row] = img;
             _updated = true;
         }
@@ -267,6 +259,10 @@ namespace _99x8Edit
         {
             // Set the background colors of each cells
             _background ??= new Color[_columnNum, _rowNum];
+            if((_background.GetLength(0) < _columnNum) || (_background.GetLength(1) < _rowNum))
+            {
+                _background = new Color[_columnNum, _rowNum];
+            }
             _background[col, row] = c;
             _updated = true;
         }
@@ -353,6 +349,10 @@ namespace _99x8Edit
             base.OnPaint(e);
             // Draw to cells to buffer
             _bmp ??= new Bitmap(ColumnNum * CellWidth, RowNum * CellHeight);
+            if((_bmp.Width != ColumnNum * CellWidth) || (_bmp.Height != RowNum * CellHeight))
+            {
+                _bmp = new Bitmap(ColumnNum * CellWidth, RowNum * CellHeight);
+            }
             if (_updated)
             {
                 // If something has been changed, redraw the buffer

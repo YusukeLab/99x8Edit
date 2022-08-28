@@ -38,7 +38,7 @@ namespace _99x8Edit
         private readonly Brush[] _brushOf = new Brush[16];
         // Consts
         internal readonly int NameTableMapWMax = 16;
-        internal readonly int NameTableMapHMax = 12;
+        internal readonly int NameTableMapHMax = 16;
         // For TMS9918 view, we need higher resolution than RGB8)
         private static readonly int[] _palette9918 = { 0x000000, 0x000000, 0x3eb849, 0x74d07d,
                                                        0x5955e0, 0x8076f1, 0xb95e51, 0x65dbef,
@@ -401,7 +401,7 @@ namespace _99x8Edit
                 {
                     _nameTableMapW = width;
                     _nameTableMapH = br.ReadByte();
-                    _nameTableMapped = br.ReadBytes(_nameTableMapW * _nameTableMapH);
+                    _nameTableMapped = br.ReadBytes(_nameTableMapW * _nameTableMapH * 768);
                 }
             }
             catch (EndOfStreamException)
@@ -649,27 +649,12 @@ namespace _99x8Edit
         }
         //------------------------------------------------
         // Name table
-        internal int GetNameTable(int addr)
-        {
-            // Will be discontinued
-            return _nameTable[addr];
-        }
-        internal void SetNameTable(int addr, int data, bool push)
-        {
-            // Will be discontinued
-            addr = Math.Clamp(addr, 0, 767);
-            data = Math.Clamp(data, 0, 255);
-            if (push)
-            {
-                MementoCaretaker.Instance.Push();
-            }
-            _nameTable[addr] = (byte)data;
-        }
         internal int NameTableMapW
         {
             get => _nameTableMapW;
             set
             {
+                MementoCaretaker.Instance.Push();
                 value = Math.Clamp(value, 1, NameTableMapHMax);
                 byte[] new_buf = new byte[value * _nameTableMapH * 768];
                 for (int row = 0; row < _nameTableMapH; ++row)
@@ -691,6 +676,7 @@ namespace _99x8Edit
             get => _nameTableMapH;
             set
             {
+                MementoCaretaker.Instance.Push();
                 value = Math.Clamp(value, 1, NameTableMapWMax);
                 byte[] new_buf = new byte[_nameTableMapW * value * 768];
                 for (int row = 0; (row < value) && (row < _nameTableMapH); ++row)
@@ -706,7 +692,7 @@ namespace _99x8Edit
                 _nameTableMapped = new_buf;
             }
         }
-        internal int GetNameTableMapped(int mapx, int mapy, int x, int y)
+        internal int GetNameTable(int mapx, int mapy, int x, int y)
         {
             mapx = Math.Clamp(mapx, 0, _nameTableMapW - 1);
             mapy = Math.Clamp(mapy, 0, _nameTableMapH - 1);
@@ -716,16 +702,34 @@ namespace _99x8Edit
             int addr = mapy * stride + mapx * 768 + y * 32 + x;
             return _nameTableMapped[addr];
         }
-        internal void SetNameTableMapped(int mapx, int mapy, int x, int y, int value)
+        internal void SetNameTable(int mapx, int mapy, int x, int y, int value, bool push)
         {
             mapx = Math.Clamp(mapx, 0, _nameTableMapW - 1);
             mapy = Math.Clamp(mapy, 0, _nameTableMapH - 1);
             x = Math.Clamp(x, 0, 31);
             y = Math.Clamp(y, 0, 23);
             value = Math.Clamp(value, 0, 255);
+            if (push) MementoCaretaker.Instance.Push(); 
             int stride = _nameTableMapW * 768;
             int addr = mapy * stride + mapx * 768 + y * 32 + x;
             _nameTableMapped[addr] = (byte)value;
+        }
+        internal IEnumerable<byte> GetNameTableBank(int mapx, int mapy)
+        {
+            int addr = (mapy * _nameTableMapW + mapx) * 768;
+            for (int i = 0; i < 768; ++i)
+            {
+                yield return _nameTableMapped[addr + i];
+            }
+        }
+        internal void SetNameTableBank(int mapx, int mapy, byte[] data, bool push)
+        {
+            if(push) MementoCaretaker.Instance.Push();
+            int addr = (mapy * _nameTableMapW + mapx) * 768;
+            foreach (byte datum in data)
+            {
+                _nameTableMapped[addr++] = datum;
+            }
         }
         //------------------------------------------------
         // Map pattern (4 pcg in each 256 patterns)

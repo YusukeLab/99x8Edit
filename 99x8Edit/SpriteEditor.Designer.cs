@@ -87,11 +87,11 @@ namespace _99x8Edit
             this._toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this._viewColor = new _99x8Edit.MatrixControl();
+            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
             this._viewPalette = new _99x8Edit.MatrixControl();
             this._viewSprite = new _99x8Edit.MatrixControl();
             this._viewEdit = new _99x8Edit.EditorControl();
-            this._contextColor = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._toolStripColorSetAll = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this._viewPreview)).BeginInit();
             this._contextSprites.SuspendLayout();
             this._contextEditor.SuspendLayout();
@@ -590,6 +590,20 @@ namespace _99x8Edit
             this._viewColor.Y = 0;
             this._viewColor.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewColor_CellOnEdit);
             // 
+            // _contextColor
+            // 
+            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStripColorSetAll});
+            this._contextColor.Name = "contextPCGList";
+            this._contextColor.Size = new System.Drawing.Size(140, 28);
+            // 
+            // _toolStripColorSetAll
+            // 
+            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
+            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
+            this._toolStripColorSetAll.Text = "Set to All";
+            // 
             // _viewPalette
             // 
             this._viewPalette.AllowMultipleSelection = false;
@@ -669,20 +683,6 @@ namespace _99x8Edit
             this._viewEdit.AddKeyPressed += new System.EventHandler<_99x8Edit.EditorControl.AddKeyEventArgs>(this.viewEdit_AddKeyPressed);
             this._viewEdit.SelectionChanged += new System.EventHandler<System.EventArgs>(this.viewEdit_SelectionChanged);
             this._viewEdit.CellOnEdit += new System.EventHandler<_99x8Edit.MatrixControl.EditEventArgs>(this.viewEditor_CellOnEdit);
-            // 
-            // _contextColor
-            // 
-            this._contextColor.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this._contextColor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._toolStripColorSetAll});
-            this._contextColor.Name = "contextPCGList";
-            this._contextColor.Size = new System.Drawing.Size(140, 28);
-            // 
-            // _toolStripColorSetAll
-            // 
-            this._toolStripColorSetAll.Name = "_toolStripColorSetAll";
-            this._toolStripColorSetAll.Size = new System.Drawing.Size(139, 24);
-            this._toolStripColorSetAll.Text = "Set to All";
             // 
             // SpriteEditor
             // 

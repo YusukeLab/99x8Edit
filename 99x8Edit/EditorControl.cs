@@ -44,6 +44,10 @@ namespace _99x8Edit
         {
             // Set brush to not to be created every time
             _brush ??= new Brush[ColumnNum, RowNum];
+            if ((_brush.GetLength(0) < _columnNum) || (_brush.GetLength(1) < _rowNum))
+            {
+                _brush = new Brush[_columnNum, _rowNum];
+            }
             _brush[col, row] = b;
             _updated = true;
         }

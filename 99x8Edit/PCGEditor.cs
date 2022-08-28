@@ -13,6 +13,9 @@ namespace _99x8Edit
         private readonly MainWindow _mainWin;
         private readonly TabOrder _tabList = new TabOrder();
         private FontBrowser _fontWin;
+        private int _mapX;
+        private int _mapY;
+        private MapSelector _mapSelector;
         // For internal drag control
         private class DnDPCG : DnDBase
         {
@@ -217,12 +220,14 @@ namespace _99x8Edit
         }
         private void UpdateSandbox(bool refresh)
         {
+            _mapX = Math.Clamp(_mapX, 0, _dataSource.NameTableMapW - 1);
+            _mapY = Math.Clamp(_mapY, 0, _dataSource.NameTableMapH - 1);
             // Draw the sandbox
             for (int y = 0; y < _viewSand.RowNum; ++y)
             {
                 for (int x = 0; x < _viewSand.ColumnNum; ++x)
                 {
-                    int pcg = _dataSource.GetNameTable(_viewSand.IndexOf(x, y));
+                    int pcg = _dataSource.GetNameTable(_mapX, _mapY, x, y);
                     int bank = 0;
                     if (_dataSource.HasThreeBanks)
                     {
@@ -582,7 +587,8 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    _dataSource.SetNameTable(_viewSand.Index, _viewPCG.Index, push: true);
+                    _dataSource.SetNameTable(_mapX, _mapY, _viewSand.X, _viewSand.Y,
+                                             _viewPCG.Index, push: true);
                     _viewSand.IncrementSelection();
                     this.UpdateSandbox(refresh: true);
                     break;
@@ -613,8 +619,7 @@ namespace _99x8Edit
                     int src = clip.Data.pcgIndex[rowcnt][colcnt];
                     // 0-255 in bank
                     src %= 256;
-                    int dst_index = _viewSand.IndexOf(col, row);
-                    _dataSource.SetNameTable(dst_index, src, push: false);
+                    _dataSource.SetNameTable(_mapX, _mapY, col, row, src, push: false);
                 };
                 _viewSand.ForEachSelection(col_dst, row_dst, r_src.Width, r_src.Height, callback);
                 this.UpdateSandbox(refresh: true);
@@ -624,14 +629,13 @@ namespace _99x8Edit
         {
             ClipNametable clip = new ClipNametable();
             Rectangle r = _viewSand.SelectedRect;
-            for (int x = r.Y; x < r.Y + r.Height; ++x)
+            for (int y = r.Y; y < r.Y + r.Height; ++y)
             {
                 List<int> l = new List<int>();
-                for (int y = r.X; y < r.X + r.Width; ++y)
+                for (int x = r.X; x < r.X + r.Width; ++x)
                 {
                     // Copy each selected cells
-                    int index = _viewSand.IndexOf(y, x);
-                    l.Add(_dataSource.GetNameTable(index));
+                    l.Add(_dataSource.GetNameTable(_mapX, _mapY, x, y));
                 }
                 clip.pcgID.Add(l);
             }
@@ -649,8 +653,8 @@ namespace _99x8Edit
                     {
                         int index = clip.pcgIndex[rowcnt][colcnt];
                         index %= 256;    // 0-767 to 0-255
-                        int addr = _viewSand.IndexOf(col, row);
-                        _dataSource.SetNameTable(addr, index, push: false);
+                        _dataSource.SetNameTable(_mapX, _mapY, col, row,
+                                                 index, push: false);
                     };
                     _viewSand.ForEachSelection(_viewSand.X, _viewSand.Y,
                         clip.pcgIndex?[0]?.Count, clip.pcgIndex?.Count, pcg2sand);
@@ -661,8 +665,8 @@ namespace _99x8Edit
                     Action<int, int, int, int> sand2sand = (col, row, colcnt, rowcnt) =>
                     {
                         // Paste each copied cells
-                        int index = _viewSand.IndexOf(col, row);
-                        _dataSource.SetNameTable(index, clip.pcgID[rowcnt][colcnt], push: false);
+                        _dataSource.SetNameTable(_mapX, _mapY, col, row,
+                                                 clip.pcgID[rowcnt][colcnt], push: false);
                     };
                     _viewSand.ForEachSelection(_viewSand.X, _viewSand.Y,
                         clip.pcgID?[0]?.Count, clip.pcgID?.Count, sand2sand);
@@ -677,7 +681,7 @@ namespace _99x8Edit
             {
                 // Delete each selected cells
                 int index = _viewSand.IndexOf(col, row);
-                _dataSource.SetNameTable(index, 0, push: false);
+                _dataSource.SetNameTable(_mapX, _mapY, col, row, 0, push: false);
             };
             _viewSand.ForEachSelection(callback);
             this.UpdateSandbox(refresh: true);
@@ -700,10 +704,8 @@ namespace _99x8Edit
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected cells
-                int src_index = _viewSand.IndexOf(col, r.Y);
-                int src_dat = _dataSource.GetNameTable(src_index);
-                int dst_index = _viewSand.IndexOf(col, row);
-                _dataSource.SetNameTable(dst_index, src_dat, push: false);
+                int src = _dataSource.GetNameTable(_mapX, _mapY, col, r.Y);
+                _dataSource.SetNameTable(_mapX, _mapY, col, row, src, push: false);
             };
             _viewSand.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.UpdateSandbox(refresh: true);
@@ -715,10 +717,8 @@ namespace _99x8Edit
             Action<int, int> callback = (col, row) =>
             {
                 // For each selected cells
-                int src_index = _viewSand.IndexOf(r.X, row);
-                int src_dat = _dataSource.GetNameTable(src_index);
-                int dst_index = _viewSand.IndexOf(col, row);
-                _dataSource.SetNameTable(dst_index, src_dat, push: false);
+                int src = _dataSource.GetNameTable(_mapX, _mapY, r.X, row);
+                _dataSource.SetNameTable(_mapX, _mapY, col, row, src, push: false);
             };
             _viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.UpdateSandbox(refresh: true);
@@ -729,7 +729,8 @@ namespace _99x8Edit
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    _dataSource.SetNameTable(_viewSand.Index, _viewPCG.Index, push: true);
+                    _dataSource.SetNameTable(_mapX, _mapY, _viewSand.X, _viewSand.Y,
+                                             _viewPCG.Index, push: true);
                     _viewSand.IncrementSelection();
                     this.UpdateSandbox(refresh: true);
                     break;
@@ -1009,20 +1010,20 @@ namespace _99x8Edit
         }
         private void PaintSandbox(int x, int y, int val)
         {
-            int pcg_to_paint = _dataSource.GetNameTable(_viewSand.IndexOf(x, y));
+            int pcg_to_paint = _dataSource.GetNameTable(_mapX, _mapY, x, y);
             if (pcg_to_paint == val) return;
-            _dataSource.SetNameTable(_viewSand.IndexOf(x, y), val, push: false);
+            _dataSource.SetNameTable(_mapX, _mapY, x, y, val, push: false);
             if (y > 0)
-                if (_dataSource.GetNameTable(_viewSand.IndexOf(x, y - 1)) == pcg_to_paint)
+                if (_dataSource.GetNameTable(_mapX, _mapY, x, y - 1) == pcg_to_paint)
                     this.PaintSandbox(x, y - 1, val);
             if (y < 23)
-                if (_dataSource.GetNameTable(_viewSand.IndexOf(x, y + 1)) == pcg_to_paint)
+                if (_dataSource.GetNameTable(_mapX, _mapY, x, y + 1) == pcg_to_paint)
                     this.PaintSandbox(x, y + 1, val);
             if (x > 0)
-                if (_dataSource.GetNameTable(_viewSand.IndexOf(x - 1, y)) == pcg_to_paint)
+                if (_dataSource.GetNameTable(_mapX, _mapY, x - 1, y) == pcg_to_paint)
                     this.PaintSandbox(x - 1, y, val);
             if (x < 31)
-                if (_dataSource.GetNameTable(_viewSand.IndexOf(x + 1, y)) == pcg_to_paint)
+                if (_dataSource.GetNameTable(_mapX, _mapY, x + 1, y) == pcg_to_paint)
                     this.PaintSandbox(x + 1, y, val);
         }
         private void PaintPCG(int x, int y, bool foreground, int color_code)
@@ -1097,6 +1098,27 @@ namespace _99x8Edit
         {
             return index + (line_y / 8) * _viewPCG.ColumnNum + line_x
                    + _comboBank.SelectedIndex * 256;
+        }
+        private void btnMove_Click(object sender, EventArgs e)
+        {
+            void map_sel_changed(int x, int y)
+            {
+                _mapX = x;
+                _mapY = y;
+                this.UpdateSandbox(true);
+            }
+            if (_mapSelector is { IsDisposed: false })
+            {
+                if (!_mapSelector.Visible)
+                {
+                    _mapSelector.Show();
+                }
+                _mapSelector.BringToFront();
+                return;
+            }
+            _mapSelector = new MapSelector(_dataSource, _mapX, _mapY, map_sel_changed);
+            _mapSelector.Show();
+            _mapSelector.BringToFront();
         }
     }
 }

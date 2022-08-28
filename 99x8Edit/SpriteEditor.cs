@@ -252,7 +252,8 @@ namespace _99x8Edit
             }
             // Width of color view is for available colors
             _viewColor.Width = _colorColNum * _viewColor.CellWidth + 2;
-            if(_viewColor.X >= _colorColNum)
+            _viewColor.ColumnNum = _colorColNum;
+            if (_viewColor.X >= _colorColNum)
             {
                 _viewColor.X = _colorColNum - 1;   // Limit the selection
             }
