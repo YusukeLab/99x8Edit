@@ -389,13 +389,15 @@ namespace _99x8Edit
         {
             try
             {
-                // Additional PCG Data
+                // Restore name table of old saved data
+                Array.Copy(_nameTable, _nameTableMapped, 768);
+                // Additional PCG Data, if exists
                 _hasThreeBanks = br.ReadBoolean();
                 byte[] ptn_gen2 = br.ReadBytes(512 * 8);    // Pattern generator table
                 byte[] ptn_clr2 = br.ReadBytes(512 * 8);    // Pattern color table
                 Array.Copy(ptn_gen2, 0, _ptnGen, 256 * 8, 512 * 8);
                 Array.Copy(ptn_clr2, 0, _ptnClr, 256 * 8, 512 * 8);
-                // Additional name table map
+                // Additional name table map, if exists
                 byte width = br.ReadByte();
                 if (width >= 1)
                 {
