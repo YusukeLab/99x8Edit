@@ -85,6 +85,8 @@ namespace _99x8Edit
             this._toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripDrawTransparent = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripBarFonts = new System.Windows.Forms.ToolStripMenuItem();
@@ -528,6 +530,8 @@ namespace _99x8Edit
             this._toolStripEditCurrent,
             this._toolStripEditToggle,
             this._toolStripSeparator6,
+            this._toolStripDrawTransparent,
+            this.toolStripSeparator2,
             this._toolStripEditUndo,
             this._toolStripEditRedo});
             this._toolStripBarEdit.Name = "_toolStripBarEdit";
@@ -551,6 +555,17 @@ namespace _99x8Edit
             // 
             this._toolStripSeparator6.Name = "_toolStripSeparator6";
             this._toolStripSeparator6.Size = new System.Drawing.Size(285, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(285, 6);
+            // 
+            // _toolStripDrawTransparent
+            // 
+            this._toolStripDrawTransparent.Name = "_toolStripDrawTransparent";
+            this._toolStripDrawTransparent.Size = new System.Drawing.Size(288, 26);
+            this._toolStripDrawTransparent.Text = "No Transparent Color";
             // 
             // _toolStripEditUndo
             // 
@@ -884,5 +899,7 @@ namespace _99x8Edit
         private System.Windows.Forms.ContextMenuStrip _contextColor;
         private System.Windows.Forms.ToolStripMenuItem _toolStripColorSetAll;
         private System.Windows.Forms.Button btnMove;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripDrawTransparent;
     }
 }

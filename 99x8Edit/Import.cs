@@ -73,7 +73,7 @@ namespace _99x8Edit
             {
                 case PCGType.MSXBASIC:
                 case PCGType.piroPaint:
-                    this.BINtoPCG(filename, dst);
+                    this.BINtoPCG((PCGType)type, filename, dst);
                     break;
                 case PCGType.RawPattern:
                     this.RAWtoPCGPattern(filename, dst);
@@ -176,7 +176,7 @@ namespace _99x8Edit
             byte[] bytes_read = br.ReadBytes(768 * 8);
             Array.Copy(bytes_read, dst.PtnClr, bytes_read.Length);
         }
-        private void BINtoPCG(string filename, IImportable dst)
+        private void BINtoPCG(PCGType tpye, string filename, IImportable dst)
         {
             using BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open));
             // Read BSAVE header
@@ -202,6 +202,18 @@ namespace _99x8Edit
                 for (int ptr = 0; (ptr < 768) && (name_seek_addr + ptr < br.BaseStream.Length); ++ptr)
                 {
                     dst.NameTableMapped[ptr] = br.ReadByte();
+                }
+            }
+            // Read palette data when ext was sc4
+            string ext = Path.GetExtension(filename);
+            if((ext == ".sc4") || (ext == ".SC4"))
+            {
+                if (this.SeekBIN(0x1B80, bin_start_addr, br, out int palette_seek_addr))
+                {
+                    for (int ptr = 0; (ptr < 32) && (palette_seek_addr + ptr < br.BaseStream.Length); ++ptr)
+                    {
+                        dst.PltDat[ptr] = br.ReadByte();
+                    }
                 }
             }
             if (this.SeekBIN(0x2000, bin_start_addr, br, out int color_seek_addr))

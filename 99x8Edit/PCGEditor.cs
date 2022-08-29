@@ -55,6 +55,7 @@ namespace _99x8Edit
             _toolStripEditRedo.Click += menu_editRedo;
             _toolStripEditCurrent.Click += menu_editColorCurrent;
             _toolStripEditToggle.Click += menu_editColorToggle;
+            _toolStripDrawTransparent.Click += menu_paintTransparent;
             _toolStripMenuFonts.Click += menu_fontBrowser;
             // Context menu
             _toolStripPCGCopy.Click += contextPCG_copy;
@@ -160,9 +161,17 @@ namespace _99x8Edit
                             // One dot in one pcg
                             int p = _dataSource.GetPCGPixel(index, y, x);
                             int code = _dataSource.GetPCGColor(index, y, foreground: (p != 0));
-                            Brush b = _dataSource.BrushOf(code);
-                            // Ignore transparent
-                            _viewEdit.SetEditingDot((code != 0) ? b : null, j * 8 + x, i * 8 + y);
+                            if((code == 0) && (!_toolStripDrawTransparent.Checked))
+                            {
+                                // Transparent color
+                                _viewEdit.SetEditingDot(null, j * 8 + x, i * 8 + y);
+                            }
+                            else
+                            {
+                                // Corresponding color
+                                Brush b = _dataSource.BrushOf(code);
+                                _viewEdit.SetEditingDot(b, j * 8 + x, i * 8 + y);
+                            }
                         }
                     }
                 }
@@ -174,7 +183,7 @@ namespace _99x8Edit
             int target = this.TargetPCG();
             // Draw foreground color
             int color_code_l = _dataSource.GetPCGColor(target, _viewEdit.Y % 8, foreground: true);
-            if (color_code_l > 0)
+            if ((color_code_l > 0) || (_toolStripDrawTransparent.Checked))
             {
                 Color c = _dataSource.ColorOf(color_code_l);
                 _viewColor.SetBackgroundColor(c, 0, 0);
@@ -185,7 +194,7 @@ namespace _99x8Edit
             }
             // Draw background color
             int color_code_r = _dataSource.GetPCGColor(target, _viewEdit.Y % 8, foreground: false);
-            if (color_code_r > 0)
+            if ((color_code_r > 0) || (_toolStripDrawTransparent.Checked))
             {
                 Color c = _dataSource.ColorOf(color_code_r);
                 _viewColor.SetBackgroundColor(c, 1, 0);
@@ -844,6 +853,11 @@ namespace _99x8Edit
                 _dataSource.SetPaletteTo9938(push: true);
                 this.RefreshAllViews();     // Everything changes
             }
+        }
+        private void menu_paintTransparent(object sender, EventArgs e)
+        {
+            _toolStripDrawTransparent.Checked = !_toolStripDrawTransparent.Checked;
+            this.RefreshAllViews();
         }
         private void FormPCG_Activated(object sender, EventArgs e)
         {
