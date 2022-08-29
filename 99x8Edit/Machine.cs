@@ -172,22 +172,21 @@ namespace _99x8Edit
         byte[] IExportable.SpriteClr => _spriteClr;
         //--------------------------------------------------------------------
         // For Import
-        byte[] IImportable.PtnGen { set => _ptnGen = value; }
-        byte[] IImportable.PtnClr { set => _ptnClr = value; }
-        byte[] IImportable.NameTable { set => _nameTable = value; }
+        byte[] IImportable.PtnGen { get => _ptnGen; }
+        byte[] IImportable.PtnClr { get => _ptnClr; }
         bool IImportable.HasThreeBanks { set => _hasThreeBanks = value; }
         byte IImportable.NameTableMapW { set => _nameTableMapW = value; }
         byte IImportable.NameTableMapH { set => _nameTableMapH = value; }
-        byte[] IImportable.NameTableMapped { set => _nameTableMapped = value; }
-        byte[] IImportable.PltDat { set => _pltDat = value; }
+        byte[] IImportable.NameTableMapped { get => _nameTableMapped; }
+        byte[] IImportable.PltDat { get => _pltDat; }
         bool IImportable.Is9918 { set => _is9918 = value; }
-        byte[] IImportable.MapPattern { set => _mapPattern = value; }
-        byte[,] IImportable.MapData { set => _mapData = value; }
+        byte[] IImportable.MapPattern { get => _mapPattern; }
+        byte[,] IImportable.MapData { get => _mapData; }
         Int32 IImportable.MapWidth { set => _mapWidth = value; }
         Int32 IImportable.MapHeight { set => _mapHeight = value; }
-        byte[] IImportable.SpriteGen { set => _spriteGen = value; }
-        byte[] IImportable.SpriteClr { set => _spriteClr = value; }
-        byte[] IImportable.SpriteOverlay { set => _spriteOverlay = value; }
+        byte[] IImportable.SpriteGen { get => _spriteGen; }
+        byte[] IImportable.SpriteClr { get => _spriteClr; }
+        byte[] IImportable.SpriteOverlay { get => _spriteOverlay; }
         //--------------------------------------------------------------------
         // Export methods
         internal void ExportPCG(int type, string path)
