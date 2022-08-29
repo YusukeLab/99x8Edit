@@ -1175,7 +1175,7 @@ namespace _99x8Edit
         }
         private void UpdatePCGBitmap()
         {
-            for (int i = 0; i < 767; ++i)
+            for (int i = 0; i < 768; ++i)
             {
                 this.UpdatePCGBitmap(i);
             }
