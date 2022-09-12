@@ -648,6 +648,47 @@ namespace _99x8Edit
             // Update PCG bitmap
             this.UpdatePCGBitmap(addr / 8);
         }
+        internal void RotatePCG(int pcg, int ver, int hor, bool push)
+        {
+            if (push) MementoCaretaker.Instance.Push();
+            pcg = Math.Clamp(pcg, 0, 767);
+            ver = Math.Clamp(ver, -7, 7);
+            hor = Math.Clamp(hor, -7, 7);
+            Action down_shift = () =>
+            {
+                byte gen7 = _ptnGen[pcg * 8 + 7];
+                byte clr7 = _ptnClr[pcg * 8 + 7];
+                for (int i = 7; i >= 1; --i)
+                {
+                    _ptnGen[pcg * 8 + i] = _ptnGen[pcg * 8 + i - 1];
+                    _ptnClr[pcg * 8 + i] = _ptnClr[pcg * 8 + i - 1];
+                }
+                _ptnGen[pcg * 8] = gen7;
+                _ptnClr[pcg * 8] = clr7;
+            };
+            Action right_shift = () =>
+            {
+                for (int i = 0; i < 8; ++i)
+                {
+                    byte gen = _ptnGen[pcg * 8 + i];
+                    byte c = (byte)(gen & 1);
+                    gen >>= 1;
+                    gen |= (byte)(c << 7);
+                    _ptnGen[pcg * 8 + i] = gen;
+                }
+            };
+            if (ver < 0) { ver += 8; }    // Left shift to right shift
+            if (hor < 0) { hor += 8; }    // Up shift to down shift
+            for (int cnt = 0; cnt < ver; ++cnt)
+            {
+                down_shift();
+            }
+            for (int cnt = 0; cnt < hor; ++cnt)
+            {
+                right_shift();
+            }
+            this.UpdatePCGBitmap(pcg);
+        }
         //------------------------------------------------
         // Name table
         internal int NameTableMapW

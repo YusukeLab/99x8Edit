@@ -66,6 +66,10 @@ namespace _99x8Edit
             _toolStripPCGVrev.Click += contextPCG_Vrev;
             _toolStripPCGCopyDown.Click += contextPCG_copyDown;
             _toolStripPCGCopyRight.Click += contextPCG_copyRight;
+            _toolStripRotateUp.Click += contectPCG_rotateUp;
+            _toolStripRotateDown.Click += contectPCG_rotateDown;
+            _toolStripRotateLeft.Click += contectPCG_rotateLeft;
+            _toolStripRotateRight.Click += contectPCG_rotateRight;
             _toolStripSandboxCopy.Click += contextSand_copy;
             _toolStripSandboxPaste.Click += contextSand_paste;
             _toolStripSandboxDel.Click += contextSand_delete;
@@ -602,6 +606,26 @@ namespace _99x8Edit
                     this.UpdateSandbox(refresh: true);
                     break;
             }
+        }
+        private void contectPCG_rotateUp(object sender, EventArgs e)
+        {
+            _dataSource.RotatePCG(pcg: _viewPCG.Index, ver: -1, hor: 0, push: true);
+            this.RefreshAllViews();
+        }
+        private void contectPCG_rotateDown(object sender, EventArgs e)
+        {
+            _dataSource.RotatePCG(pcg: _viewPCG.Index, ver: 1, hor: 0, push: true);
+            this.RefreshAllViews();
+        }
+        private void contectPCG_rotateLeft(object sender, EventArgs e)
+        {
+            _dataSource.RotatePCG(pcg: _viewPCG.Index, ver: 0, hor: -1, push: true);
+            this.RefreshAllViews();
+        }
+        private void contectPCG_rotateRight(object sender, EventArgs e)
+        {
+            _dataSource.RotatePCG(pcg: _viewPCG.Index, ver: 0, hor: 1, push: true);
+            this.RefreshAllViews();
         }
         //------------------------------------------------
         // Sandbox

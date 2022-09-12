@@ -85,8 +85,8 @@ namespace _99x8Edit
             this._toolStripEditCurrent = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditToggle = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripDrawTransparent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripBarFonts = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,6 +101,11 @@ namespace _99x8Edit
             this._chkBanks = new System.Windows.Forms.CheckBox();
             this._comboBank = new System.Windows.Forms.ComboBox();
             this.btnMove = new System.Windows.Forms.Button();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this._toolStripRotateUp = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripRotateDown = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripRotateRight = new System.Windows.Forms.ToolStripMenuItem();
             this._contextPCG.SuspendLayout();
             this._contextSandbox.SuspendLayout();
             this._contextEditor.SuspendLayout();
@@ -143,71 +148,76 @@ namespace _99x8Edit
             this._toolStripPCGVrev,
             this._toolStripPCGInverse,
             this.toolStripSeparator1,
+            this._toolStripRotateUp,
+            this._toolStripRotateDown,
+            this._toolStripRotateLeft,
+            this._toolStripRotateRight,
+            this.toolStripSeparator3,
             this._toolStripPCGDel});
             this._contextPCG.Name = "contextPCGList";
-            this._contextPCG.Size = new System.Drawing.Size(209, 208);
+            this._contextPCG.Size = new System.Drawing.Size(287, 310);
             // 
             // _toolStripPCGCopy
             // 
             this._toolStripPCGCopy.Name = "_toolStripPCGCopy";
             this._toolStripPCGCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this._toolStripPCGCopy.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopy.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGCopy.Text = "Copy";
             // 
             // _toolStripPCGPaste
             // 
             this._toolStripPCGPaste.Name = "_toolStripPCGPaste";
             this._toolStripPCGPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this._toolStripPCGPaste.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGPaste.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGPaste.Text = "Paste";
             // 
             // _toolStripPCGCopyDown
             // 
             this._toolStripPCGCopyDown.Name = "_toolStripPCGCopyDown";
             this._toolStripPCGCopyDown.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this._toolStripPCGCopyDown.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopyDown.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGCopyDown.Text = "Copy Down";
             // 
             // _toolStripPCGCopyRight
             // 
             this._toolStripPCGCopyRight.Name = "_toolStripPCGCopyRight";
             this._toolStripPCGCopyRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this._toolStripPCGCopyRight.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGCopyRight.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGCopyRight.Text = "Copy Right";
             // 
             // _toolStripSeparator1
             // 
             this._toolStripSeparator1.Name = "_toolStripSeparator1";
-            this._toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
+            this._toolStripSeparator1.Size = new System.Drawing.Size(283, 6);
             // 
             // _toolStripPCGHrev
             // 
             this._toolStripPCGHrev.Name = "_toolStripPCGHrev";
-            this._toolStripPCGHrev.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGHrev.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGHrev.Text = "H Reverse";
             // 
             // _toolStripPCGVrev
             // 
             this._toolStripPCGVrev.Name = "_toolStripPCGVrev";
-            this._toolStripPCGVrev.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGVrev.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGVrev.Text = "V Reverse";
             // 
             // _toolStripPCGInverse
             // 
             this._toolStripPCGInverse.Name = "_toolStripPCGInverse";
-            this._toolStripPCGInverse.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGInverse.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGInverse.Text = "Swap Color";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(283, 6);
             // 
             // _toolStripPCGDel
             // 
             this._toolStripPCGDel.Name = "_toolStripPCGDel";
             this._toolStripPCGDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this._toolStripPCGDel.Size = new System.Drawing.Size(208, 24);
+            this._toolStripPCGDel.Size = new System.Drawing.Size(286, 24);
             this._toolStripPCGDel.Text = "Delete";
             // 
             // label3
@@ -556,16 +566,16 @@ namespace _99x8Edit
             this._toolStripSeparator6.Name = "_toolStripSeparator6";
             this._toolStripSeparator6.Size = new System.Drawing.Size(285, 6);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(285, 6);
-            // 
             // _toolStripDrawTransparent
             // 
             this._toolStripDrawTransparent.Name = "_toolStripDrawTransparent";
             this._toolStripDrawTransparent.Size = new System.Drawing.Size(288, 26);
             this._toolStripDrawTransparent.Text = "No Transparent Color";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(285, 6);
             // 
             // _toolStripEditUndo
             // 
@@ -784,6 +794,43 @@ namespace _99x8Edit
             this.btnMove.UseVisualStyleBackColor = true;
             this.btnMove.Click += new System.EventHandler(this.btnMove_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(283, 6);
+            // 
+            // _toolStripRotateUp
+            // 
+            this._toolStripRotateUp.Name = "_toolStripRotateUp";
+            this._toolStripRotateUp.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Up)));
+            this._toolStripRotateUp.Size = new System.Drawing.Size(286, 24);
+            this._toolStripRotateUp.Text = "Rotate Up";
+            // 
+            // _toolStripRotateDown
+            // 
+            this._toolStripRotateDown.Name = "_toolStripRotateDown";
+            this._toolStripRotateDown.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Down)));
+            this._toolStripRotateDown.Size = new System.Drawing.Size(286, 24);
+            this._toolStripRotateDown.Text = "Rotate Down";
+            // 
+            // _toolStripRotateLeft
+            // 
+            this._toolStripRotateLeft.Name = "_toolStripRotateLeft";
+            this._toolStripRotateLeft.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Left)));
+            this._toolStripRotateLeft.Size = new System.Drawing.Size(286, 24);
+            this._toolStripRotateLeft.Text = "Rotate Left";
+            // 
+            // _toolStripRotateRight
+            // 
+            this._toolStripRotateRight.Name = "_toolStripRotateRight";
+            this._toolStripRotateRight.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Right)));
+            this._toolStripRotateRight.Size = new System.Drawing.Size(286, 24);
+            this._toolStripRotateRight.Text = "Rotate Right";
+            // 
             // PCGEditor
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -901,5 +948,10 @@ namespace _99x8Edit
         private System.Windows.Forms.Button btnMove;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem _toolStripDrawTransparent;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripRotateUp;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripRotateDown;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripRotateLeft;
+        private System.Windows.Forms.ToolStripMenuItem _toolStripRotateRight;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
