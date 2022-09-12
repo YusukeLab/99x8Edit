@@ -574,7 +574,7 @@ namespace _99x8Edit
                 dst += bank * 256;
                 _dataSource.CopyPCG(src, dst, push: false);
             };
-            _viewSand.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
+            _viewPCG.ForEachSelection(r.X, r.Y + 1, r.Width, r.Height - 1, callback);
             this.RefreshAllViews();
         }
         private void contextPCG_copyRight(object sender, EventArgs e)
@@ -591,7 +591,7 @@ namespace _99x8Edit
                 dst += bank * 256;
                 _dataSource.CopyPCG(src, dst, push: false);
             };
-            _viewSand.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
+            _viewPCG.ForEachSelection(r.X + 1, r.Y, r.Width - 1, r.Height, callback);
             this.RefreshAllViews();
         }
         private void viewPCG_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
