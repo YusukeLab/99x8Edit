@@ -6,9 +6,9 @@ The aim of 99x8Edit is to be a simple and practical editor for your
 TMS9918/V9938 applications, so any feedbacks and requests are welcome.
 
 ## Features
-Editing - Tiles, sprites, and map. Editing is as easy as operating Excel.  
+Editing - Tiles, sprites, and map.  Excel-like keyboard inputs such as ctrl-d.   
 Export - Various Formats including assembly, C, raw data, and MSX BASIC(BSAVE format).  
-Import - Imports raw data, MSX BASIC format, PNG image.  
+Import - Imports raw data, MSX BASIC format, PNG image, and others.  
 Undo/Redo  
 Compression - Exported data can be compressed. Includes sample program to decode on real machine.  
 Peek - ROM data can be imaged for easy reference.  
