@@ -8,13 +8,14 @@
 #include "pcg_def.h"
 #include "map_def.h"
 #include "spr_def.h"
-
-void buf2vram(unsigned short src, unsigned short dst, unsigned short len);
-void vram2vram(unsigned short dst, unsigned short src, unsigned short size);
+// Prototype declaration
+void ram2vram(unsigned short, unsigned short, unsigned short);
+// Working buffer
+static unsigned char vrmbuf[768];
+// Main function
 void main()
 {
 	unsigned char val;
-	unsigned char vrmbuf[768];
 	unsigned short i, j, p, q, x, y;
 	unsigned char* ptr;
 	unsigned char byte_left;
@@ -24,21 +25,17 @@ void main()
 	// Sprite size is 16x16
 	set_sprite_mode(sprite_large);
 	// Read pattern generator table
-	buf2vram(ptngen, 0x0000, 0x0800);
+	ram2vram(ptngen, 0x0000, 0x0800);
+	// 2nd and 3rd row
+	ram2vram(ptngen, 0x0800, 0x0800);
+	ram2vram(ptngen, 0x1000, 0x0800);
 	// Read pattern color table
-	buf2vram(ptnclr, 0x2000, 0x0800);
-	// Copy definitions to 2nd and 3rd row
-	vram2vram(0x0800, 0x0000, 0x0800);
-	vram2vram(0x1000, 0x0000, 0x0800);
-	vram2vram(0x2800, 0x2000, 0x0800);
-	vram2vram(0x3000, 0x2000, 0x0800);
+	ram2vram(ptnclr, 0x2000, 0x0800);
+	// 2nd and 3rd row
+	ram2vram(ptnclr, 0x2800, 0x0800);
+	ram2vram(ptnclr, 0x3000, 0x0800);
 	// Read sprite pattern generator table
-	buf2vram(sprptn, 0x3800, 0x0800);
-	// Show sandbox
-	buf2vram(nametable, 0x1800, 768);
-	do {
-		val = get_trigger(0);
-	} while(!val);	// hit space bar to exit
+	ram2vram(sprptn, 0x3800, 0x0800);
 	// Show sprite
 	put_sprite_16(0, 128, 79, 1, 15);
 	// Show map
@@ -74,7 +71,7 @@ void main()
 				vrmbuf[p + 33] = mapptn[(val << 2) + 3];
 			}
 		}
-		buf2vram(vrmbuf, 0x1800, 768);
+		ram2vram(vrmbuf, 0x1800, 768);
 		do
 		{
 			val = msx_get_stick(0);
@@ -90,67 +87,31 @@ void main()
 		while(val == 0);
 	}
 }
-
 // Library
-unsigned short dst_addr;
-unsigned short src_addr;
-unsigned short cpy_size;
 #asm
-EXTERN	msxbios
-DEFC	MSX_BIOSCALL_RDVRM = $004A
-DEFC	MSX_BIOSCALL_WRTVRM = $004D
-DEFC	MSX_BIOSCALL_SETWRT = $0053
+extern 	msxbios
+public	_ram2vram
+defc	MSX_BIOSCALL_SETWRT = $0053
+_ram2vram:
+	ld		ix, 2
+	add		ix, sp
+	ld		d, (ix+5)
+	ld		e, (ix+4)
+	ld		h, (ix+3)
+	ld		l, (ix+2)
+	ld		b, (ix+1)
+	ld		c, (ix+0)
+	ld		ix, MSX_BIOSCALL_SETWRT
+	call	msxbios
+	di
+_ram2vram_loop:
+	ld		a,	(de)
+	out		($98), a
+	inc		de
+	dec		bc
+	ld		a, c
+	or		b
+	jr		nz, _ram2vram_loop
+	ei
+	ret
 #endasm
-void buf2vram(unsigned short src, unsigned short dst, unsigned short len)
-{
-	dst_addr = dst;
-	src_addr = src;
-	cpy_size = len;
-#asm
-	DI
-	LD	BC, (_cpy_size)
-	LD	DE, (_src_addr)
-	LD	HL, (_dst_addr)
-	LD	IX, MSX_BIOSCALL_SETWRT
-	CALL	msxbios
-MSX1_VWRITE_LOOP:
-	LD	A,	(DE)
-	OUT	($98), A
-	INC	DE
-	DEC	BC
-	LD	A, C
-	OR	B
-	JR	NZ, MSX1_VWRITE_LOOP
-	EI
-#endasm
-}
-void vram2vram(unsigned short dst, unsigned short src, unsigned short size)
-{
-	dst_addr = dst;
-	src_addr = src;
-	cpy_size = size;
-#asm
-	DI
-	LD		HL, (_cpy_size)
-	LD		C, L
-	LD		B, H
-	LD		HL, (_dst_addr)
-	EX		DE, HL
-	LD		HL,	(_src_addr)
-VRM_CPY_LOOP:
-	LD		IX, MSX_BIOSCALL_RDVRM
-	CALL 	msxbios
-	EX		DE, HL
-	LD		IX, MSX_BIOSCALL_WRTVRM
-	CALL 	msxbios
-	EX		DE, HL
-	INC		DE
-	INC		HL
-	DEC		BC
-	LD		A, B
-	OR		C
-	JR		NZ, VRM_CPY_LOOP
-	EI
-#endasm
-}
-
